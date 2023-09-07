@@ -2,7 +2,7 @@
 
 name: Test
 
-on:  # yamllint disable-line rule:truthy
+on: # yamllint disable-line rule:truthy
   pull_request: null
   push:
     branches:
@@ -20,45 +20,30 @@ jobs:
     strategy:
       matrix:
         php_version: [ '8.0', '8.1', '8.2' ]
-    name: PHP ${{ matrix.php_version }}
+        suite:
+          - acceptance
+          - climodule
+          - functional
+          - muloader
+          - unit
+          - webdriver
+          - wpcli_module
+          - wploader_multisite
+          - wploader_wpdb_interaction
+          - wploadersuite
+    name: ${{ matrix.suite }} php@${{ matrix.php_version }}
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Set up Docker BuildX
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build WordPress image
-        uses: docker/build-push-action@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          context: config/containers/php
-          file: config/containers/php/Dockerfile
-          load: true
-          push: false
-          tags: wp-browser-wordpress:php${{ matrix.php_version }}-apache
-          cache-from: type=gha,scope=${{ github.ref }}-${{ matrix.php_version }}-wordpress
-          cache-to: type=gha,scope=${{ github.ref }}-${{ matrix.php_version }}-wordpress
-          build-args: |
-            PHP_VERSION=${{ matrix.php_version }}
-            TARGET=wordpress
-
-      - name: Build Codeception image
-        uses: docker/build-push-action@v4
-        with:
-          context: config/containers/php
-          file: config/containers/php/Dockerfile
-          load: true
-          push: false
-          tags: wp-browser-wordpress:php${{ matrix.php_version }}-codeception
-          cache-from: type=gha,scope=${{ github.ref }}-${{ matrix.php_version }}-codeception
-          cache-to: type=gha,scope=${{ github.ref }}-${{ matrix.php_version }}-codeception
-          build-args: |
-            PHP_VERSION=${{ matrix.php_version }}
-            TARGET=codeception
-
-      - name: Build
-        run: bin/stack -p${{ matrix.php_version }} -s build
+          php-version: ${{ matrix.php_version }}
+          extensions: uopz, sqlite3, gd
+          ini-values: post_max_size=256M, max_execution_time=180, uopz.exit=1
+          tools: composer
 
       - name: Cache Composer dependencies
         uses: actions/cache@v3
@@ -67,34 +52,30 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('**/composer.json') }}
 
       - name: Install dependencies
-        run: bin/stack -p${{ matrix.php_version }} composer_update
+        run: composer update
 
-      - name: acceptance
-        run: bin/stack -p${{ matrix.php_version }} run acceptance --ext DotReporter
+      - name: Update ChromeDriver
+        run: vendor/bin/codecept chromedriver:update --binary /usr/bin/google-chrome
 
-      - name: climodule
-        run: bin/stack -p${{ matrix.php_version }} run climodule --ext DotReporter
+      - name: Create var/wordpress directory
+        run: mkdir -p var/wordpress
 
-      - name: functional
-        run: bin/stack -p${{ matrix.php_version }} run functional --ext DotReporter
+      - name: Start services
+        run: vendor/bin/codecept dev:start
 
-      - name: muloader
-        run: bin/stack -p${{ matrix.php_version }} run muloader --ext DotReporter
+      - name: Setup WordPress
+        run: php bin/setup-wp.php
 
-      - name: unit
-        run: bin/stack -p${{ matrix.php_version }} run unit --debug -f
+      - name: Run tests
+        id: test
+        run: vendor/bin/codecept run ${{ matrix.suite }}
 
-      - name: webdriver
-        run: bin/stack -p${{ matrix.php_version }} run webdriver --ext DotReporter
-
-      - name: wpcli_module
-        run: bin/stack -p${{ matrix.php_version }} run wpcli_module --ext DotReporter
-
-      - name: wploader_multisite
-        run: bin/stack -p${{ matrix.php_version }} run wploader_multisite --ext DotReporter
-
-      - name: wploader_wpdb_interaction
-        run: bin/stack -p${{ matrix.php_version }} run wploader_wpdb_interaction --ext DotReporter
-
-      - name: wploadersuite
-        run: bin/stack -p${{ matrix.php_version }} run wploadersuite --ext DotReporter
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: ${{ matrix.suite }}-php@${{ matrix.php_version }}-screenshots
+          path: |
+            var/_output/*.html
+            var/_output/*.png
+          retention-days: 3

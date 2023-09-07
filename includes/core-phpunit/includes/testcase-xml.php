@@ -71,7 +71,7 @@ abstract class WPXMLTestCase extends WPTestCase {
 	 * @param string $message   Optional. Message to display when the assertion fails.
 	 */
 	public function assertXMLEquals( $expectedXml, $actualXml, $message = '' ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
-		$this->assertSame( $this->normalizeXML( $expectedXml ), $this->normalizeXML( $actualXml ), $message ); //phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
+		$this->assertSame( $this->normalizeXML( $expectedXml ), $this->normalizeXML( $actualXml ), $message ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 	}
 
 	/**
@@ -88,7 +88,7 @@ abstract class WPXMLTestCase extends WPTestCase {
 	 * @param string $actualXml
 	 * @param string $message   Optional. Message to display when the assertion fails.
 	 */
-	public function assertXMLNotEquals( $expectedXml, $actualXml, $message = '' ) { //phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
-		$this->assertNotEquals( $this->normalizeXML( $expectedXml ), $this->normalizeXML( $actualXml ), $message ); //phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
+	public function assertXMLNotEquals( $expectedXml, $actualXml, $message = '' ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
+		$this->assertNotEquals( $this->normalizeXML( $expectedXml ), $this->normalizeXML( $actualXml ), $message ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 	}
 }

@@ -198,6 +198,8 @@ class WPDb extends Db
      */
     protected bool $populated;
 
+    protected ?string $blogUrl = null;
+
     /**
      * WPDb constructor.
      *
@@ -779,7 +781,7 @@ class WPDb extends Db
             $id = $this->grabLatestEntryByFromDatabase($postTableName, $idColumn) + 1;
             /** @var array{url: string} $config Validated module config. */
             $config = $this->config;
-            $post = Post::buildPostData($id, $config['url'], $data);
+            $post = Post::buildPostData($id, $this->grabSiteUrl(), $data);
             $hasMeta = !empty($data['meta']) || !empty($data['meta_input']);
             $hasTerms = !empty($data['terms']) || !empty($data['tax_input']);
             $meta = [];
@@ -1728,7 +1730,12 @@ class WPDb extends Db
         $currentBlogId = $this->blogId;
         $this->useMainBlog();
         $option_id = $this->haveOptionInDatabase('_site_option_' . $key, $value);
-        $this->useBlog($currentBlogId);
+
+        if (empty($currentBlogId)) {
+            $this->useMainBlog();
+        } else {
+            $this->useBlog($currentBlogId);
+        }
 
         return $option_id;
     }
@@ -1746,7 +1753,7 @@ class WPDb extends Db
      */
     public function useMainBlog(): void
     {
-        $this->useBlog(0);
+        $this->useBlog(1);
     }
 
     /**
@@ -1754,22 +1761,84 @@ class WPDb extends Db
      *
      * This has nothing to do with WordPress `switch_to_blog` function, this code will affect the table prefixes used.
      *
+     * @param int $blogId The ID of the blog to use.
+     * @throws ModuleException If the blog ID is not an integer greater than or equal to 0.
      * @example
      * ```php
      * // Switch to the blog with ID 23.
      * $I->useBlog(23);
      * // Switch back to the main blog.
      * $I->useMainBlog();
+     * // Switch to the main blog using this method.
+     * $I->useBlog(1);
      * ```
-     *
-     * @param int $blogId The ID of the blog to use.
      */
-    public function useBlog(int $blogId = 0): void
+    public function useBlog(int $blogId = 1): void
     {
-        if (!(is_numeric($blogId) && intval($blogId) === $blogId && intval($blogId) >= 0)) {
-            throw new InvalidArgumentException('Id must be an integer greater than or equal to 0');
+        if ($blogId < 0) {
+            throw new InvalidArgumentException('Id must be an integer greater than 0');
         }
-        $this->blogId = intval($blogId);
+
+        if ($blogId === 1) {
+            $this->blogId = 1;
+            $this->blogUrl = $this->grabSiteUrl();
+            return;
+        }
+
+        $this->blogId = $blogId;
+        $this->blogUrl = $this->grabBlogUrl($blogId);
+    }
+
+    /**
+     * Gets the blog URL from the Blog ID.
+     *
+     * @param int $blogId The ID of the blog to get the URL for.
+     *
+     * @return string The blog URL.
+     * @throws ModuleException If the blog ID is not found in the database.
+     *
+     * @example
+     * ```php
+     * // Get the URL for the main blog.
+     * $mainBlogUrl = $I->grabBlogUrl();
+     * // Get the URL for the blog with ID 23.
+     * $blog23Url = $I->grabBlogUrl(23);
+     * ```
+     */
+    public function grabBlogUrl(int $blogId = 1): string
+    {
+        if ($blogId === 0) {
+            return $this->grabSiteUrl();
+        }
+
+        $domain = $this->grabFromDatabase(
+            $this->grabPrefixedTableNameFor('blogs'),
+            'domain',
+            ['blog_id' => $blogId]
+        );
+
+        $path = $this->grabFromDatabase(
+            $this->grabPrefixedTableNameFor('blogs'),
+            'path',
+            ['blog_id' => $blogId]
+        );
+
+        if (!($domain && $path && is_string($domain) && is_string($path))) {
+            throw new ModuleException(
+                $this,
+                "Couldn't find the blog with ID {$blogId} in the database."
+            );
+        }
+
+        /** @var array{url: string} $config Validated module config. */
+        $config = $this->config;
+        $siteUrl = $config['url'];
+        $siteScheme = parse_url($siteUrl, PHP_URL_SCHEME);
+
+        // In the site URL replace HOST and PATH with the blog's domain and path.
+        $blogUrl = rtrim($siteScheme . '://' . $domain . $path, '/');
+
+        return $blogUrl;
     }
 
     /**

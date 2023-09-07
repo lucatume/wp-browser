@@ -1362,7 +1362,7 @@ class WPLoaderTest extends Unit
                 'hello-dolly/hello.php',
                 'woocommerce/woocommerce.php',
             ],
-            'theme' => 'twentytwenty-child'
+            'theme' => 'some-child-theme'
         ];
         $db = (new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost))->create();
         $installation = Installation::scaffold($wpRootDir, 'latest')
@@ -1379,9 +1379,10 @@ class WPLoaderTest extends Unit
         $installation->runWpCliCommandOrThrow([
             'scaffold',
             'child-theme',
-            'twentytwenty-child',
+            'some-child-theme',
             '--parent_theme=twentytwenty',
-            '--theme_name=twentytwenty-child'
+            '--theme_name=some-child-theme',
+            '--force'
         ]);
 
         $wpLoader = $this->module();
@@ -1389,7 +1390,7 @@ class WPLoaderTest extends Unit
             $wpLoader->_initialize();
 
             Assert::assertEquals('twentytwenty', get_option('template'));
-            Assert::assertEquals('twentytwenty-child', get_option('stylesheet'));
+            Assert::assertEquals('some-child-theme', get_option('stylesheet'));
 
             return [
                 'bootstrapOutput' => $wpLoader->_getBootstrapOutput(),
@@ -1447,7 +1448,8 @@ class WPLoaderTest extends Unit
             'child-theme',
             'twentytwenty-child',
             '--parent_theme=twentytwenty',
-            '--theme_name=twentytwenty-child'
+            '--theme_name=twentytwenty-child',
+            '--force'
         ]);
 
         $wpLoader = $this->module();

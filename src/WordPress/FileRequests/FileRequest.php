@@ -279,8 +279,7 @@ abstract class FileRequest
         });
 
         // Do not trigger external and internal requests.
-        $this->setConstant('WP_HTTP_BLOCK_EXTERNAL', true)
-            ->setPreloadFilter('block_local_requests', '__return_true');
+        $this->setPreloadFilter('block_local_requests', '__return_true');
 
         return $this;
     }

@@ -37,5 +37,4 @@ abstract class WPXMLRPCTestCase extends WPTestCase {
 			)
 		);
 	}
-
 }

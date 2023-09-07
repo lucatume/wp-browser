@@ -7,7 +7,6 @@ use Codeception\Test\Unit;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
-use lucatume\WPBrowser\Utils\Filesystem;
 use Symfony\Component\Process\Process;
 
 class PhpBuiltinServerProcessMock extends Process
@@ -40,16 +39,31 @@ class PhpBuiltInServerTest extends Unit
 
     /**
      * @before
+     */
+    public function backupPidFiles(): void
+    {
+        $pidFile = PhpBuiltInServer::getPidFile();
+        if (is_file($pidFile)) {
+            rename($pidFile, $pidFile . '.bak');
+        }
+    }
+
+    /**
+     * @before
+     */
+    public function resetPhpBuiltinServerProcessMockInstances():void{
+        PhpBuiltinServerProcessMock::$instances = [];
+    }
+
+    /**
      * @after
      */
-    public function cleanUp(): void
+    public function restorePidFiles(): void
     {
-        if (is_file(PhpBuiltInServer::getPidFile())) {
-            unlink(PhpBuiltInServer::getPidFile());
+        $pidFile = PhpBuiltInServer::getPidFile();
+        if (is_file($pidFile . '.bak')) {
+            rename($pidFile . '.bak', $pidFile);
         }
-        $dir = __DIR__;
-        `pgrep -f 'php -S.*$dir' | xargs kill`;
-        PhpBuiltinServerProcessMock::$instances = [];
     }
 
     /**

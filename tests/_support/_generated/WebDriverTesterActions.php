@@ -1,4 +1,4 @@
-<?php  //[STAMP] ee2bcabe1733c0cd2814f2c2702135fb
+<?php  //[STAMP] 5c093a81126ea678358ab73669a3350e
 // phpcs:ignoreFile
 namespace _generated;
 
@@ -5202,19 +5202,45 @@ trait WebDriverTesterActions
      *
      * This has nothing to do with WordPress `switch_to_blog` function, this code will affect the table prefixes used.
      *
+     * @param int $blogId The ID of the blog to use.
+     * @throws ModuleException If the blog ID is not an integer greater than or equal to 0.
      * @example
      * ```php
      * // Switch to the blog with ID 23.
      * $I->useBlog(23);
      * // Switch back to the main blog.
      * $I->useMainBlog();
+     * // Switch to the main blog using this method.
+     * $I->useBlog(1);
      * ```
-     *
-     * @param int $blogId The ID of the blog to use.
      * @see \lucatume\WPBrowser\Module\WPDb::useBlog()
      */
-    public function useBlog(int $blogId = 0): void {
+    public function useBlog(int $blogId = 1): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('useBlog', func_get_args()));
+    }
+
+ 
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * Gets the blog URL from the Blog ID.
+     *
+     * @param int $blogId The ID of the blog to get the URL for.
+     *
+     * @return string The blog URL.
+     * @throws ModuleException If the blog ID is not found in the database.
+     *
+     * @example
+     * ```php
+     * // Get the URL for the main blog.
+     * $mainBlogUrl = $I->grabBlogUrl();
+     * // Get the URL for the blog with ID 23.
+     * $blog23Url = $I->grabBlogUrl(23);
+     * ```
+     * @see \lucatume\WPBrowser\Module\WPDb::grabBlogUrl()
+     */
+    public function grabBlogUrl(int $blogId = 1): string {
+        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogUrl', func_get_args()));
     }
 
  

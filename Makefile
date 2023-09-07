@@ -36,3 +36,12 @@ update_sqlite_plugin:
 
 docs_serve:
 	mkdocs serve -a 0.0.0.0:8000
+
+wordpress_install:
+	php bin/setup-wp.php
+
+clean_procs:
+	pgrep -f 'php -S' | xargs kill
+	pgrep chromedriver | xargs kill
+	rm -f var/_output/*.pid var/_output/*.running
+.PHONY: clean_procs

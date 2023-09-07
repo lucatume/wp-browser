@@ -27,8 +27,14 @@ modules:
             port: '%CHROMEDRIVER_PORT%'
             window_size: 1200x1000
             capabilities:
-                chromeOptions:
-                    args: ["--disable-gpu", "--proxy-server='direct://'", "--proxy-bypass-list=*"]
+              "goog:chromeOptions":
+                args:
+                  - "--headless"
+                  - "--disable-gpu"
+                  - "--disable-dev-shm-usage"
+                  - "--proxy-server='direct://'"
+                  - "--proxy-bypass-list=*"
+                  - "--no-sandbox"
         lucatume\WPBrowser\Module\WPDb:
             dbUrl: '%WORDPRESS_DB_URL%'
             dump: 'tests/Support/Data/dump.sql'

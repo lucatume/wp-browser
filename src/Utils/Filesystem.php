@@ -13,6 +13,7 @@ namespace lucatume\WPBrowser\Utils;
 use Exception;
 use InvalidArgumentException;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
+use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
 
 /**

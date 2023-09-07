@@ -15,13 +15,23 @@ class ChromedriverTest extends Unit
 
     /**
      * @before
-     * @after
      */
-    public function removePidFiles(): void
+    public function backupPidFiles(): void
     {
         $pidFile = ChromeDriver::getPidFile();
         if (is_file($pidFile)) {
-            unlink($pidFile);
+            rename($pidFile, $pidFile . '.bak');
+        }
+    }
+
+    /**
+     * @after
+     */
+    public function restorePidFiles(): void
+    {
+        $pidFile = ChromeDriver::getPidFile();
+        if (is_file($pidFile . '.bak')) {
+            rename($pidFile . '.bak', $pidFile);
         }
     }
 
@@ -88,6 +98,10 @@ class ChromedriverTest extends Unit
                 return null;
             }
 
+            public function stop(float $timeout = 10, ?int $signal = null): ?int
+            {
+                return 5;
+            }
         };
         $this->uopzSetMock(Process::class, $mockProcess);
 

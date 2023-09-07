@@ -215,6 +215,25 @@ bootstrap: _bootstrap.php
 modules:
   enabled:
     - \Helper\Integration
+    - lucatume\WPBrowser\Module\WPWebDriver:
+        url: 'http://localhost:8080'
+        adminUsername: 'admin'
+        adminPassword: 'password'
+        adminPath: '/wp-admin'
+        browser: chrome
+        host: 'localhost'
+        port: '4444'
+        path: '/'
+        window_size: false
+        capabilities:
+          "goog:chromeOptions":
+            args:
+              - "--headless"
+              - "--disable-gpu"
+              - "--disable-dev-shm-usage"
+              - "--proxy-server='direct://'"
+              - "--proxy-bypass-list=*"
+              - "--no-sandbox"
     - lucatume\WPBrowser\Module\WPDb:
         dbUrl: 'mysql://root:password@localhost:3306/wordpress'
         url: 'http://localhost:8080'

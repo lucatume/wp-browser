@@ -1,4 +1,4 @@
-<?php  //[STAMP] 64d55efee35d30b2dff4343facf2c883
+<?php  //[STAMP] 7c0b373e3e58a065597b2778cc58c82d
 // phpcs:ignoreFile
 namespace _generated;
 
@@ -36,16 +36,16 @@ trait Wploader_wpdb_interactionTesterActions
      * The value will first look at the `WP_PLUGIN_DIR` constant, then the `pluginsFolder` configuration parameter
      * and will, finally, look in the default path from the WordPress root directory.
      *
+     * @param string $path A relative path to append to te plugins directory absolute path.
+     *
+     * @return string The absolute path to the `pluginsFolder` path or the same with a relative path appended if `$path`
+     *                is provided.
      * @example
      * ```php
      * $plugins = $this->getPluginsFolder();
      * $hello = $this->getPluginsFolder('hello.php');
      * ```
      *
-     * @param string $path A relative path to append to te plugins directory absolute path.
-     *
-     * @return string The absolute path to the `pluginsFolder` path or the same with a relative path appended if `$path`
-     *                is provided.
      * @see \lucatume\WPBrowser\Module\WPLoader::getPluginsFolder()
      */
     public function getPluginsFolder(string $path = ""): string {
@@ -58,16 +58,16 @@ trait Wploader_wpdb_interactionTesterActions
      *
      * Returns the absolute path to the themes directory.
      *
+     * @param string $path A relative path to append to te themes directory absolute path.
+     *
+     * @return string The absolute path to the `themesFolder` path or the same with a relative path appended if `$path`
+     *                is provided.
      * @example
      * ```php
      * $themes = $this->getThemesFolder();
      * $twentytwenty = $this->getThemesFolder('/twentytwenty');
      * ```
      *
-     * @param string $path A relative path to append to te themes directory absolute path.
-     *
-     * @return string The absolute path to the `themesFolder` path or the same with a relative path appended if `$path`
-     *                is provided.
      * @see \lucatume\WPBrowser\Module\WPLoader::getThemesFolder()
      */
     public function getThemesFolder(string $path = ""): string {
@@ -82,14 +82,14 @@ trait Wploader_wpdb_interactionTesterActions
      * This methods gives access to the same factories provided by the
      * [Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/).
      *
+     * @return FactoryStore A factory store, proxy to get hold of the Core suite object
+     *                                                     factories.
+     *
      * @example
      * ```php
      * $postId = $I->factory()->post->create();
      * $userId = $I->factory()->user->create(['role' => 'administrator']);
      * ```
-     *
-     * @return FactoryStore A factory store, proxy to get hold of the Core suite object
-     *                                                     factories.
      *
      * @link https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/
      * @see \lucatume\WPBrowser\Module\WPLoader::factory()
@@ -104,6 +104,9 @@ trait Wploader_wpdb_interactionTesterActions
      *
      * Returns the absolute path to the WordPress content directory.
      *
+     * @param string $path An optional path to append to the content directory absolute path.
+     *
+     * @return string The content directory absolute path, or a path in it.
      * @example
      * ```php
      * $content = $this->getContentFolder();
@@ -111,9 +114,6 @@ trait Wploader_wpdb_interactionTesterActions
      * $twentytwenty = $this->getContentFolder('themes/twentytwenty');
      * ```
      *
-     * @param string $path An optional path to append to the content directory absolute path.
-     *
-     * @return string The content directory absolute path, or a path in it.
      * @see \lucatume\WPBrowser\Module\WPLoader::getContentFolder()
      */
     public function getContentFolder(string $path = ""): string {
@@ -1772,19 +1772,45 @@ trait Wploader_wpdb_interactionTesterActions
      *
      * This has nothing to do with WordPress `switch_to_blog` function, this code will affect the table prefixes used.
      *
+     * @param int $blogId The ID of the blog to use.
+     * @throws ModuleException If the blog ID is not an integer greater than or equal to 0.
      * @example
      * ```php
      * // Switch to the blog with ID 23.
      * $I->useBlog(23);
      * // Switch back to the main blog.
      * $I->useMainBlog();
+     * // Switch to the main blog using this method.
+     * $I->useBlog(1);
      * ```
-     *
-     * @param int $blogId The ID of the blog to use.
      * @see \lucatume\WPBrowser\Module\WPDb::useBlog()
      */
-    public function useBlog(int $blogId = 0): void {
+    public function useBlog(int $blogId = 1): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('useBlog', func_get_args()));
+    }
+
+ 
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * Gets the blog URL from the Blog ID.
+     *
+     * @param int $blogId The ID of the blog to get the URL for.
+     *
+     * @return string The blog URL.
+     * @throws ModuleException If the blog ID is not found in the database.
+     *
+     * @example
+     * ```php
+     * // Get the URL for the main blog.
+     * $mainBlogUrl = $I->grabBlogUrl();
+     * // Get the URL for the blog with ID 23.
+     * $blog23Url = $I->grabBlogUrl(23);
+     * ```
+     * @see \lucatume\WPBrowser\Module\WPDb::grabBlogUrl()
+     */
+    public function grabBlogUrl(int $blogId = 1): string {
+        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogUrl', func_get_args()));
     }
 
  

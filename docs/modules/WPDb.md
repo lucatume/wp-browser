@@ -163,6 +163,7 @@ The module provides the following methods:
 * `grabBlogTableName(int $blogId, string $table)` : `string`
 * `grabBlogTableNames(int $blogId)` : `array`
 * `grabBlogTablePrefix(int $blogId)` : `string`
+* `grabBlogUrl(int [$blogId])` : `string`
 * `grabBlogVersionsTableName()` : `string`
 * `grabBlogsTableName()` : `string`
 * `grabColumnFromDatabase(string $table, string $column, array [$criteria])` : `array`

@@ -300,6 +300,7 @@ class InstallationTest extends Unit
             );
 
         $this->assertEquals('6.1', trim($installation->runWpCliCommandOrThrow(['core', 'version'])->getOutput()));
+        $this->assertEquals(1, $installation->runWpCliCommand(['config', 'has', 'FOO-BAR'])->getExitCode());
     }
 
     /**
@@ -327,6 +328,7 @@ class InstallationTest extends Unit
             );
 
         $this->assertEquals('6.1', trim($installation->runWpCliCommandOrThrow(['core', 'version'])->getOutput()));
+        $this->assertEquals(1, $installation->runWpCliCommand(['config', 'has', 'FOO-BAR'])->getExitCode());
     }
 
     /**

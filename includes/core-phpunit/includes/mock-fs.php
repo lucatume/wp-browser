@@ -73,7 +73,6 @@ class WP_Filesystem_MockFS extends WP_Filesystem_Base {
 				$this->put_contents( $path, 'This is a test file' );
 			}
 		}
-
 	}
 
 	/**
@@ -190,23 +189,22 @@ class WP_Filesystem_MockFS extends WP_Filesystem_Base {
 				continue;
 			}
 
-			$struct         = array();
-			$struct['name'] = $entry->name;
-			$struct['type'] = $entry->type;
+			$struc         = array();
+			$struc['name'] = $entry->name;
+			$struc['type'] = $entry->type;
 
-			if ( 'd' === $struct['type'] ) {
+			if ( 'd' === $struc['type'] ) {
 				if ( $recursive ) {
-					$struct['files'] = $this->dirlist( trailingslashit( $path ) . trailingslashit( $struct['name'] ), $include_hidden, $recursive );
+					$struc['files'] = $this->dirlist( trailingslashit( $path ) . trailingslashit( $struc['name'] ), $include_hidden, $recursive );
 				} else {
-					$struct['files'] = array();
+					$struc['files'] = array();
 				}
 			}
 
-			$ret[ $entry->name ] = $struct;
+			$ret[ $entry->name ] = $struc;
 		}
 		return $ret;
 	}
-
 }
 
 class MockFS_Node {

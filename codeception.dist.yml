@@ -10,6 +10,7 @@ settings:
     memory_limit: 1024M
 params:
     - tests/.env
+    - env
 bootstrap: _bootstrap.php
 coverage:
     enabled: true
@@ -19,8 +20,28 @@ wpFolder: '%WORDPRESS_ROOT_DIR%'
 extensions:
     enabled:
         - "lucatume\\WPBrowser\\Extension\\EventDispatcherBridge"
+        - "lucatume\\WPBrowser\\Extension\\BuiltInServerController"
+        - "lucatume\\WPBrowser\\Extension\\ChromeDriverController"
+        - "lucatume\\WPBrowser\\Extension\\DockerComposeController"
+    config:
+        "lucatume\\WPBrowser\\Extension\\BuiltInServerController":
+            docroot: '%WORDPRESS_ROOT_DIR%'
+            port: '%WORDPRESS_LOCALHOST_PORT%'
+            workers: 5
+        "lucatume\\WPBrowser\\Extension\\ChromeDriverController":
+            port: '%CHROMEDRIVER_PORT%'
+            binary: '%CHROMEDRIVER_BINARY%'
+        "lucatume\\WPBrowser\\Extension\\DockerComposeController":
+            compose-file: docker-compose.yml
+            env-file: tests/.env
     commands:
         - "lucatume\\WPBrowser\\Command\\RunOriginal"
         - "lucatume\\WPBrowser\\Command\\RunAll"
         - "lucatume\\WPBrowser\\Command\\GenerateWPUnit"
         - "lucatume\\WPBrowser\\Command\\ChromedriverUpdate"
+        - "lucatume\\WPBrowser\\Command\\DevStart"
+        - "lucatume\\WPBrowser\\Command\\DevStop"
+        - "lucatume\\WPBrowser\\Command\\DevRestart"
+        - "lucatume\\WPBrowser\\Command\\DevInfo"
+        - "lucatume\\WPBrowser\\Command\\DbImport"
+        - "lucatume\\WPBrowser\\Command\\DbExport"
