@@ -1,7 +1,5 @@
 # wp-browser
 
-[![CI](https://github.com/lucatume/wp-browser/workflows/CI/badge.svg)](https://github.com/lucatume/wp-browser/actions?query=branch%3Amaster)
-
 You can use wp-browser to test WordPress sites, plugins and themes.
 
 ## Installation
