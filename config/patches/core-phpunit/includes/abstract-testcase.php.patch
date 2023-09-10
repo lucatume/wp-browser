@@ -1,0 +1,67 @@
+diff --git a/includes/core-phpunit/includes/abstract-testcase.php b/includes/core-phpunit/includes/abstract-testcase.php
+index 38f846e5..8b627a4c 100644
+--- a/includes/core-phpunit/includes/abstract-testcase.php
++++ b/includes/core-phpunit/includes/abstract-testcase.php
+@@ -19,6 +19,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
+ 	protected $caught_deprecated       = array();
+ 	protected $expected_doing_it_wrong = array();
+ 	protected $caught_doing_it_wrong   = array();
++	private static ?string $calledClass = null;
+ 
+ 	protected static $hooks_saved = array();
+ 	protected static $ignore_files;
+@@ -37,7 +38,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
+ 	 *
+ 	 * @return WP_UnitTest_Factory The fixture factory.
+ 	 */
+-	protected static function factory() {
++	public static function factory() {
+ 		static $factory = null;
+ 		if ( ! $factory ) {
+ 			$factory = new WP_UnitTest_Factory();
+@@ -53,7 +54,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
+ 	 * @return string The class name.
+ 	 */
+ 	public static function get_called_class() {
+-		return get_called_class();
++		return self::$called_class ?? get_called_class();
+ 	}
+ 
+ 	/**
+@@ -69,7 +70,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
+ 		$wpdb->db_connect();
+ 		ini_set( 'display_errors', 1 );
+ 
+-		$class = get_called_class();
++		$class = self::$calledClass ?? get_called_class();
+ 
+ 		if ( method_exists( $class, 'wpSetUpBeforeClass' ) ) {
+ 			call_user_func( array( $class, 'wpSetUpBeforeClass' ), self::factory() );
+@@ -82,7 +83,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
+ 	 * Runs the routine after all tests have been run.
+ 	 */
+ 	public static function tear_down_after_class() {
+-		$class = get_called_class();
++		$class = self::$calledClass ?? get_called_class();
+ 
+ 		if ( method_exists( $class, 'wpTearDownAfterClass' ) ) {
+ 			call_user_func( array( $class, 'wpTearDownAfterClass' ) );
+@@ -623,7 +624,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
+ 	 *
+ 	 * @since 4.2.0
+ 	 */
+-	protected function assert_post_conditions() {
++	public function assert_post_conditions() {
+ 		$this->expectedDeprecated();
+ 	}
+ 
+@@ -1604,4 +1605,9 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
+ 
+ 		touch( $file );
+ 	}
++
++	public function setCalledClass(string $class): void
++	{
++		self::$calledClass = $class;
++	}
+ }

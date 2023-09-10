@@ -9,7 +9,7 @@ class MetaDeleteCest
      *
      * @test
      */
-    public function it_should_remove_all_the_meta_associated_with_a_post_by_default(AcceptanceTester $I)
+    public function it_should_remove_all_the_meta_associated_with_a_post_by_default(AcceptanceTester $I): void
     {
         $id = $I->havePostInDatabase(['meta_input' => ['foo' => 'bar', 'baz' => 'bar']]);
 
@@ -29,7 +29,7 @@ class MetaDeleteCest
      *
      * @test
      */
-    public function it_should_not_purge_post_meta_if_not_required(AcceptanceTester $I)
+    public function it_should_not_purge_post_meta_if_not_required(AcceptanceTester $I): void
     {
         $id = $I->havePostInDatabase(['meta_input' => ['foo' => 'bar', 'baz' => 'bar']]);
 
@@ -49,7 +49,7 @@ class MetaDeleteCest
      *
      * @test
      */
-    public function it_should_remove_a_user_meta_when_removing_the_user_by_default(AcceptanceTester $I)
+    public function it_should_remove_a_user_meta_when_removing_the_user_by_default(AcceptanceTester $I): void
     {
         $id = $I->haveUserInDatabase('user');
         $I->haveUserMetaInDatabase($id, 'foo', 'baz');
@@ -71,7 +71,7 @@ class MetaDeleteCest
      *
      * @test
      */
-    public function it_should_not_remove_a_user_meta_when_removing_the_user_if_not_required(AcceptanceTester $I)
+    public function it_should_not_remove_a_user_meta_when_removing_the_user_if_not_required(AcceptanceTester $I): void
     {
         $id = $I->haveUserInDatabase('user');
         $I->haveUserMetaInDatabase($id, 'foo', 'baz');
@@ -93,7 +93,7 @@ class MetaDeleteCest
      *
      * @test
      */
-    public function it_should_remove_a_term_meta_when_removing_the_term_by_default(AcceptanceTester $I)
+    public function it_should_remove_a_term_meta_when_removing_the_term_by_default(AcceptanceTester $I): void
     {
         $termData = $I->haveTermInDatabase('term', 'taxonomy');
         $id = reset($termData);
@@ -116,7 +116,7 @@ class MetaDeleteCest
      *
      * @test
      */
-    public function it_should_not_remove_a_term_meta_when_removing_if_not_required(AcceptanceTester $I)
+    public function it_should_not_remove_a_term_meta_when_removing_if_not_required(AcceptanceTester $I): void
     {
         $termData = $I->haveTermInDatabase('term', 'taxonomy');
         $id = reset($termData);
@@ -139,7 +139,7 @@ class MetaDeleteCest
      *
      * @test
      */
-    public function it_should_remove_a_comment_meta_when_removing_the_comment_by_default(AcceptanceTester $I)
+    public function it_should_remove_a_comment_meta_when_removing_the_comment_by_default(AcceptanceTester $I): void
     {
         $id = $I->haveCommentInDatabase($I->havePostInDatabase());
         $I->haveCommentMetaInDatabase($id, 'foo', 'baz');
@@ -161,7 +161,7 @@ class MetaDeleteCest
      *
      * @test
      */
-    public function it_should_not_remove_a_comment_meta_removing_if_not_required(AcceptanceTester $I)
+    public function it_should_not_remove_a_comment_meta_removing_if_not_required(AcceptanceTester $I): void
     {
         $id = $I->haveCommentInDatabase($I->havePostInDatabase());
         $I->haveCommentMetaInDatabase($id, 'foo', 'baz');

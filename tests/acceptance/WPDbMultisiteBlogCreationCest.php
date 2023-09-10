@@ -1,7 +1,8 @@
 <?php
 
-use tad\WPBrowser\Generators\Date;
-use tad\WPBrowser\Generators\Tables;
+use Codeception\Lib\Driver\MySql;
+use lucatume\WPBrowser\Generators\Date;
+use lucatume\WPBrowser\Generators\Tables;
 
 class WPDbMultisiteBlogCreationCest
 {
@@ -11,16 +12,16 @@ class WPDbMultisiteBlogCreationCest
      */
     protected $tables;
 
-    public function _before(FunctionalTester $I)
+    public function _before(FunctionalTester $I): void
     {
-        $this->tables = new Tables();
+        $this->tables = new Tables(MySql::class);
     }
 
     /**
      * @test
      * it should allow having blogs in the database in subdomain multisite installation
      */
-    public function it_should_allow_having_blogs_in_the_database_in_subdomain_multisite_installation(FunctionalTester $I)
+    public function it_should_allow_having_blogs_in_the_database_in_subdomain_multisite_installation(FunctionalTester $I): void
     {
         $now = time();
         Date::_injectNow($now);
@@ -61,7 +62,7 @@ class WPDbMultisiteBlogCreationCest
      * @test
      * it should allow having blogs in the database in subfolder multisite installation
      */
-    public function it_should_allow_having_blogs_in_the_database_in_subfolder_multisite_installation(FunctionalTester $I)
+    public function it_should_allow_having_blogs_in_the_database_in_subfolder_multisite_installation(FunctionalTester $I): void
     {
         $now = time();
         Date::_injectNow($now);
@@ -102,7 +103,7 @@ class WPDbMultisiteBlogCreationCest
      * @test
      * it should allow overriding defaults when having blogs
      */
-    public function it_should_allow_overriding_defaults_when_having_blogs(FunctionalTester $I)
+    public function it_should_allow_overriding_defaults_when_having_blogs(FunctionalTester $I): void
     {
         $now = time() - 3600;
         Date::_injectNow($now);
@@ -131,7 +132,7 @@ class WPDbMultisiteBlogCreationCest
      * @test
      * it should replace number placeholder when inserting many blogs
      */
-    public function it_should_replace_number_placeholder_when_inserting_many_blogs(FunctionalTester $I)
+    public function it_should_replace_number_placeholder_when_inserting_many_blogs(FunctionalTester $I): void
     {
         $blogIds = $I->haveManyBlogsInDatabase(5, [
             'domain' => "{{n}}_blog_{{n}}.{$I->getSiteDomain()}",
@@ -151,7 +152,7 @@ class WPDbMultisiteBlogCreationCest
      * @test
      * it should allow not to have blog in the database
      */
-    public function it_should_allow_not_to_have_blog_in_the_database(FunctionalTester $I)
+    public function it_should_allow_not_to_have_blog_in_the_database(FunctionalTester $I): void
     {
         $id = $I->haveBlogInDatabase('foo', [], false);
 
@@ -164,7 +165,7 @@ class WPDbMultisiteBlogCreationCest
      * @test
      * it should scaffold new blog tables
      */
-    public function it_should_scaffold_new_blog_tables(FunctionalTester $I)
+    public function it_should_scaffold_new_blog_tables(FunctionalTester $I): void
     {
         $id = $I->haveBlogInDatabase('testsite', [], false);
 

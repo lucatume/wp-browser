@@ -9,7 +9,7 @@ class WPDbImportSqlCest
      *
      * @test
      */
-    public function should_support_importing_a_sql_string(AcceptanceTester $I)
+    public function should_support_importing_a_sql_string(AcceptanceTester $I): void
     {
         $sqlString = "INSERT INTO wp_postmeta SET post_id = 23, meta_key = '_from_dump', meta_value='test test test';";
 
@@ -23,7 +23,7 @@ class WPDbImportSqlCest
      *
      * @test
      */
-    public function should_roll_back_sql_string_imports_between_tests(AcceptanceTester $I)
+    public function should_roll_back_sql_string_imports_between_tests(AcceptanceTester $I): void
     {
         $I->dontSeePostMetaInDatabase([ 'post_id' => 23, 'meta_key' => '_from_dump', 'meta_value' => 'test test test' ]);
     }
@@ -33,7 +33,7 @@ class WPDbImportSqlCest
      *
      * @test
      */
-    public function should_allow_importing_multiple_sql_strings(AcceptanceTester  $I)
+    public function should_allow_importing_multiple_sql_strings(AcceptanceTester  $I): void
     {
         $sqlStrings = [
             "INSERT INTO wp_postmeta SET post_id = 89, meta_key = '_from_dump_23', meta_value='test test test';",
@@ -53,7 +53,7 @@ class WPDbImportSqlCest
      *
      * @test
      */
-    public function should_throw_if_sql_code_is_not_valid(\AcceptanceTester $I)
+    public function should_throw_if_sql_code_is_not_valid(AcceptanceTester $I): void
     {
         $sqlString = "INSERT INTO florb zap;";
 

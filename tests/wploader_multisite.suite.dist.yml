@@ -14,7 +14,7 @@ modules:
             dbPassword: '%WORDPRESS_DB_PASSWORD%'
             wpDebug: true
             tablePrefix: '%WORDPRESS_TABLE_PREFIX%'
-            adminEmail: 'admin@%WORDPRESS_DOMAIN%'
+            adminEmail: 'admin@wordpress.test'
             title: Test
             configFile: ''
             theme: dummy

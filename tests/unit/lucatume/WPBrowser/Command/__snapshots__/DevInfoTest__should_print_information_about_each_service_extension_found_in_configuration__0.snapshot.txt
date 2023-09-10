@@ -1,0 +1,16 @@
+BuiltInServer:
+  name: BuiltInServerController
+  description: 'A built-in PHP server controller.'
+  version: 1.0.0
+  docroot: var/wordpress
+ChromeDriver:
+  name: ChromeDriverController
+  description: 'A ChromeDriver controller.'
+  version: 1.0.0
+  port: 2389
+DockerCompose:
+  name: DockerComposeController
+  description: 'A Docker Compose controller.'
+  version: 1.0.0
+  compose-file: docker-compose.yml
+

@@ -1,86 +1,20 @@
 version: "3.8"
-networks:
-  test:
-    name: wpbrowser_php_${PHP_VERSION:-5.6}
+
 services:
   database:
-    container_name: wpbrowser_v3_php_${PHP_VERSION:-5.6}_database
+    container_name: wpbrowser_database
     image: mariadb:10.8
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
-      MYSQL_DATABASE: wordpress
+      MYSQL_ROOT_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      MYSQL_USER: ${WORDPRESS_DB_NAME} # Same as db name.
+      MYSQL_PASSWORD: ${WORDPRESS_DB_NAME} # Same as db name.
+      MYSQL_DATABASE: ${WORDPRESS_DB_NAME} # Same as db name.
     healthcheck:
-      test: [ "CMD", "mysqlshow", "-uroot", "-ppassword",  "wordpress" ]
+      test: [ "CMD", "mysqlshow", "-u${WORDPRESS_DB_USER}", "-p${WORDPRESS_DB_PASSWORD}",  "${WORDPRESS_DB_NAME}" ]
       interval: 1s
       timeout: 1s
       retries: 30
-    networks:
-      - test
     tmpfs:
       - /var/lib/mysql
-  wordpress:
-    container_name: wpbrowser_v3_php_${PHP_VERSION:-5.6}_wordpress
-    user: "${USER_UID}:${USER_GID}"
-    sysctls:
-      - net.ipv4.ip_unprivileged_port_start=0
-    image: lucatume/wp-browser-v3-build:php${PHP_VERSION:-5.6}-apache
-    build:
-      context: ./containers/php
-      dockerfile: "Dockerfile${DOCKERFILE_SUFFIX:-}"
-      args:
-        PHP_VERSION: "${PHP_VERSION:-5.6}"
-        USER_UID: "${USER_UID:-33}"
-        USER_GID: "${USER_GID:-33}"
-        USER_NAME: "${USER_NAME:-www-data}"
-        TARGET: "wordpress"
-    depends_on:
-      database:
-        condition: service_healthy
-    networks:
-      test:
-        aliases:
-          - wordpress.test
-          - one.wordpress.test
-          - two.wordpress.test
-          - test1.wordpress.test
-          - test2.wordpress.test
-          - blog0.wordpress.test
-          - blog1.wordpress.test
-          - blog2.wordpress.test
-    volumes:
-      - ./var/wordpress:/var/www/html
-    working_dir: /var/www/html
-  chrome:
-    container_name: wpbrowser_v3_php_${PHP_VERSION:-5.6}_chrome
-    image: selenium/standalone-chrome:3.141.59-20210105
-    networks:
-      - test
-    depends_on:
-      - wordpress
-  codecept:
-    container_name: wpbrowser_v3_php_${PHP_VERSION:-5.6}_codeception
-    user: "${USER_UID}:${USER_GID}"
-    image: lucatume/wp-browser-v3-build:php${PHP_VERSION:-5.6}-codeception
-    build:
-      context: ./containers/php
-      dockerfile: "Dockerfile${DOCKERFILE_SUFFIX:-}"
-      args:
-        PHP_VERSION: "${PHP_VERSION:-5.6}"
-        USER_UID: "${USER_UID:-33}"
-        USER_GID: "${USER_GID:-33}"
-        USER_NAME: "${USER_NAME:-www-data}"
-        TARGET: "codeception"
-    depends_on:
-      - database
-      - wordpress
-      - chrome
-    environment:
-      COMPOSER_CACHE_DIR: "${PWD}/var/cache/composer"
-    networks:
-      - test
-    volumes:
-      - "${PWD}:${PWD}"
-    working_dir: "${PWD}"
-    entrypoint: tail -f /dev/null
+    ports:
+      - "${WORDPRESS_DB_LOCALHOST_PORT}:3306"

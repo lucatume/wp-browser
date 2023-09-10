@@ -1,4 +1,4 @@
-class_name: WebDriverTester
+actor: WebDriverTester
 modules:
   enabled:
     - \Helper\WebDriver
@@ -14,14 +14,20 @@ modules:
       browser: chrome
       host: '%CHROMEDRIVER_HOST%'
       port: '%CHROMEDRIVER_PORT%'
+      path: '/'
       window_size: false
+      wait: 5
       capabilities:
-        chromeOptions:
-          args: ["--headless", "--disable-gpu", "--proxy-server='direct://'", "--proxy-bypass-list=*"]
+        "goog:chromeOptions":
+          args:
+            - "--headless"
+            - "--disable-gpu"
+            - "--disable-dev-shm-usage"
+            - "--proxy-server='direct://'"
+            - "--proxy-bypass-list=*"
+            - "--no-sandbox"
     WPDb:
-      dsn: 'mysql:host=%WORDPRESS_DB_HOST%;dbname=%WORDPRESS_DB_NAME%'
-      user: '%WORDPRESS_DB_USER%'
-      password: '%WORDPRESS_DB_PASSWORD%'
+      dbUrl: '%WORDPRESS_DB_URL%'
       dump: 'tests/_data/dump.sql'
       populate: true
       cleanup: true

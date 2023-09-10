@@ -1,30 +1,31 @@
 <?php
 
+use lucatume\WPBrowser\TestCase\WPTestCase;
+use lucatume\WPBrowser\Utils\Db;
 use PHPUnit\Framework\AssertionFailedError;
-use function tad\WPBrowser\importDumpWithMysqlBin;
 
-class TablePrefixTest extends \Codeception\TestCase\WPTestCase
+class TablePrefixTest extends WPTestCase
 {
 
     public static $otherInstallationPrefix = 'foo_';
 
-    public static function wpSetUpBeforeClass()
+    public static function wpSetUpBeforeClass(): void
     {
         self::importOtherPrefixInstallation();
     }
 
-    protected static function importOtherPrefixInstallation()
+    protected static function importOtherPrefixInstallation(): void
     {
         $dumpFile = self::getDumpFilePath();
-        list($dbName, $dbUser, $dbPass, $dbHost) = self::getDbAccessCredentials();
+        [$dbName, $dbUser, $dbPass, $dbHost] = self::getDbAccessCredentials();
 
-        importDumpWithMysqlBin($dumpFile, $dbName, $dbUser, $dbPass, $dbHost);
+        Db::importDumpWithMysqlBin($dumpFile, $dbName, $dbUser, $dbPass, $dbHost);
     }
 
     /**
      * @return string
      */
-    protected static function getDumpFilePath()
+    protected static function getDumpFilePath(): string
     {
         $dumpFile = codecept_data_dir('foo-installation.sql');
         return $dumpFile;
@@ -33,18 +34,18 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase
     /**
      * @return array
      */
-    protected static function getDbAccessCredentials()
+    protected static function getDbAccessCredentials(): array
     {
 
         $creds = [
-            getenv('WORDPRESS_DB_NAME'),
-            getenv('WORDPRESS_DB_USER'),
-            getenv('WORDPRESS_DB_PASSWORD') ?: '',
-            getenv('WORDPRESS_DB_HOST')
+            $_ENV['WORDPRESS_DB_NAME'],
+            $_ENV['WORDPRESS_DB_USER'],
+            $_ENV['WORDPRESS_DB_PASSWORD'] ?: '',
+            $_ENV['WORDPRESS_DB_HOST'],
         ];
 
         if (count(array_filter($creds)) < 3) {
-            throw new \RuntimeException('Could not fetch database credentials.');
+            throw new RuntimeException('Could not fetch database credentials.');
         }
 
         return $creds;
@@ -54,9 +55,9 @@ class TablePrefixTest extends \Codeception\TestCase\WPTestCase
      * @test
      * it should not destroy another installation on the same database
      */
-    public function it_should_not_destroy_another_installation_on_the_same_database()
+    public function it_should_not_destroy_another_installation_on_the_same_database(): void
     {
-        list($dbName, $dbUser, $dbPass, $dbHost) = self::getDbAccessCredentials();
+        [$dbName, $dbUser, $dbPass, $dbHost] = self::getDbAccessCredentials();
 
         try {
             $db = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPass);

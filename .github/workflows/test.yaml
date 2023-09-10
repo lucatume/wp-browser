@@ -1,204 +1,81 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+
 name: Test
-on: [ push ]
+
+on: # yamllint disable-line rule:truthy
+  pull_request: null
+  push:
+    branches:
+      - "master"
+
+permissions:
+  contents: "read"
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
 jobs:
-  test_codeception_lt_4_php_56:
+  test:
     strategy:
       matrix:
-        codeception_version: [ 2, 3 ]
-    name: PHP 5.6, Codeception ${{ matrix.codeception_version }}
+        php_version: [ '8.0', '8.1', '8.2' ]
+        suite:
+          - acceptance
+          - climodule
+          - functional
+          - muloader
+          - unit
+          - webdriver
+          - wpcli_module
+          - wploader_multisite
+          - wploader_wpdb_interaction
+          - wploadersuite
+    name: ${{ matrix.suite }} php@${{ matrix.php_version }}
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - uses: docker/setup-buildx-action@v2
-      - name: Build WordPress image
-        uses: docker/build-push-action@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          context: containers/php
-          file: containers/php/Dockerfile-PHP-5.6
-          push: false
-          tags: lucatume/wp-browser-v3-build:php5.6-apache
-          cache-from: type=gha,scope=5.6
-          cache-to: type=gha,mode=max,scope=5.6
-          build-args: |
-            PHP_VERSION=5.6
-            TARGET=wordpress
-            USER_UID=33
-            USER_GID=33
-            USER_NAME=www-data
-      - name: Build Codeception image
-        uses: docker/build-push-action@v4
-        with:
-          context: containers/php
-          file: containers/php/Dockerfile-PHP-5.6
-          push: false
-          tags: lucatume/wp-browser-v3-build:php5.6-codeception
-          cache-from: type=gha,scope=5.6
-          cache-to: type=gha,mode=max,scope=5.6
-          build-args: |
-            PHP_VERSION=5.6
-            TARGET=codeception
-            USER_UID=33
-            USER_GID=33
-            USER_NAME=www-data
-      - name: Build stack
-        run: bin/stack -p5.6 build
+          php-version: ${{ matrix.php_version }}
+          extensions: uopz, sqlite3, gd
+          ini-values: post_max_size=256M, max_execution_time=180, uopz.exit=1
+          tools: composer
+
       - name: Cache Composer dependencies
         uses: actions/cache@v3
         with:
           path: var/cache/composer
-          key: ${{ runner.os }}-${{ hashFiles('**/composer.json') }}-${{ matrix.codeception_version }}
+          key: ${{ runner.os }}-${{ hashFiles('**/composer.json') }}
+
       - name: Install dependencies
-        run: bin/stack -p5.6 -c${{ matrix.codeception_version }} composer_update
-      - name: Test
-        run: bin/stack -p5.6 test
-  test_codeception_lt_4_php_74:
-    strategy:
-      matrix:
-        codeception_version: [ 2, 3 ]
-    name: PHP 7.4, Codeception ${{ matrix.codeception_version }}
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - uses: docker/setup-buildx-action@v2
-      - name: Build WordPress image
-        uses: docker/build-push-action@v4
+        run: composer update
+
+      - name: Update ChromeDriver
+        run: vendor/bin/codecept chromedriver:update --binary /usr/bin/google-chrome
+
+      - name: Create var/wordpress directory
+        run: mkdir -p var/wordpress
+
+      - name: Start services
+        run: vendor/bin/codecept dev:start
+
+      - name: Setup WordPress
+        run: php bin/setup-wp.php
+
+      - name: Run tests
+        id: test
+        run: vendor/bin/codecept run ${{ matrix.suite }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
         with:
-          context: containers/php
-          file: containers/php/Dockerfile
-          push: false
-          tags: lucatume/wp-browser-v3-build:php7.4-apache
-          cache-from: type=gha,scope=7.4
-          cache-to: type=gha,mode=max,scope=7.4
-          build-args: |
-            PHP_VERSION=7.4
-            TARGET=wordpress
-            USER_UID=33
-            USER_GID=33
-            USER_NAME=www-data
-      - name: Build Codeception image
-        uses: docker/build-push-action@v4
-        with:
-          context: containers/php
-          file: containers/php/Dockerfile
-          push: false
-          tags: lucatume/wp-browser-v3-build:php7.4-codeception
-          cache-from: type=gha,scope=7.4
-          cache-to: type=gha,mode=max,scope=7.4
-          build-args: |
-            PHP_VERSION=7.4
-            TARGET=codeception
-            USER_UID=33
-            USER_GID=33
-            USER_NAME=www-data
-      - name: Build stack
-        run: bin/stack -p7.4 build
-      - name: Cache Composer dependencies
-        uses: actions/cache@v3
-        with:
-          path: var/cache/composer
-          key: ${{ runner.os }}-${{ hashFiles('**/composer.json') }}-${{ matrix.codeception_version }}
-      - name: Install dependencies
-        run: bin/stack -p7.4 -c${{ matrix.codeception_version }} composer_update
-      - name: Test
-        run: bin/stack -p7.4 test
-  test_codeception_4_php_56:
-    name: PHP 5.6, Codeception 4
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - uses: docker/setup-buildx-action@v2
-      - name: Build WordPress image
-        uses: docker/build-push-action@v4
-        with:
-          context: containers/php
-          file: containers/php/Dockerfile-PHP-5.6
-          push: false
-          tags: lucatume/wp-browser-v3-build:php5.6-apache
-          cache-from: type=gha,scope=5.6
-          cache-to: type=gha,mode=max,scope=5.6
-          build-args: |
-            PHP_VERSION=5.6
-            TARGET=wordpress
-            USER_UID=33
-            USER_GID=33
-            USER_NAME=www-data
-      - name: Build Codeception image
-        uses: docker/build-push-action@v4
-        with:
-          context: containers/php
-          file: containers/php/Dockerfile-PHP-5.6
-          push: false
-          tags: lucatume/wp-browser-v3-build:php5.6-codeception
-          cache-from: type=gha,scope=5.6
-          cache-to: type=gha,mode=max,scope=5.6
-          build-args: |
-            PHP_VERSION=5.6
-            TARGET=codeception
-            USER_UID=33
-            USER_GID=33
-            USER_NAME=www-data
-      - name: Build
-        run: bin/stack -p5.6 build
-      - name: Cache Composer dependencies
-        uses: actions/cache@v3
-        with:
-          path: var/cache/composer
-          key: ${{ runner.os }}-${{ hashFiles('**/composer.codecept-4.json') }}-${{ matrix.codeception_version }}
-      - name: Install dependencies
-        run: bin/stack -p5.6 -c4 composer_update
-      - name: Test
-        run: bin/stack -p5.6 test
-  test_codeception_4:
-    strategy:
-      matrix:
-        php_version: [ '7.4', '8.0', '8.1' ]
-    name: PHP ${{ matrix.php_version }}, Codeception 4
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - uses: docker/setup-buildx-action@v2
-      - name: Build WordPress image
-        uses: docker/build-push-action@v4
-        with:
-          context: containers/php
-          file: containers/php/Dockerfile
-          push: false
-          tags: lucatume/wp-browser-v3-build:php${{ matrix.php_version }}-apache
-          cache-from: type=gha,scope=${{ matrix.php_version }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.php_version }}
-          build-args: |
-            PHP_VERSION=${{ matrix.php_version }}
-            TARGET=wordpress
-            USER_UID=33
-            USER_GID=33
-            USER_NAME=www-data
-      - name: Build Codeception image
-        uses: docker/build-push-action@v4
-        with:
-          context: containers/php
-          file: containers/php/Dockerfile
-          push: false
-          tags: lucatume/wp-browser-v3-build:php${{ matrix.php_version }}-codeception
-          cache-from: type=gha,scope=${{ matrix.php_version }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.php_version }}
-          build-args: |
-            PHP_VERSION=${{ matrix.php_version }}
-            TARGET=codeception
-            USER_UID=33
-            USER_GID=33
-            USER_NAME=www-data
-      - name: Build
-        run: bin/stack -p${{ matrix.php_version }} build
-      - name: Cache Composer dependencies
-        uses: actions/cache@v3
-        with:
-          path: var/cache/composer
-          key: ${{ runner.os }}-${{ hashFiles('**/composer.codecept-4.json') }}-${{ matrix.codeception_version }}
-      - name: Install dependencies
-        run: bin/stack -p${{ matrix.php_version }} -c4 composer_update
-      - name: Test
-        run: bin/stack -p${{ matrix.php_version }} test
+          name: ${{ matrix.suite }}-php@${{ matrix.php_version }}-screenshots
+          path: |
+            var/_output/*.html
+            var/_output/*.png
+          retention-days: 3

@@ -2,36 +2,27 @@
 .idea
 .DS_Store
 
-_build/*.zip
-_build/*.gz
+.cache
 
 # Composer files.
 vendor/
-composer.lock
 
-# Local test configuration files.
+# Cache
+var
+
+# Local configuration files.
 codeception.yml
 tests/*.suite.yml
-.env.testing.local
 tests/_output
-
-# Var folder for cached and compiled stuff.
-var
+docker-compose.override.yml
 
 # Patchwork cache folder.
 src/Codeception/Module/patchwork.json
-src/includes/patchwork.json
-
-# Some local vim files
-tags
-*.swp
+lib/includes/patchwork.json
+composer.lock
 
 # Release notes
 .rel
 
 # Backup files and folders
 *.bak
-
-# WordPress test directory.
-_wordpress
-wp-cli.yml

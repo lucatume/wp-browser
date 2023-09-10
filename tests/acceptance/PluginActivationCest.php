@@ -1,6 +1,8 @@
 <?php
 
 
+use Codeception\Configuration;
+
 class PluginActivationCest
 {
 
@@ -9,12 +11,12 @@ class PluginActivationCest
      */
     protected $delete = [];
 
-    public function _before(AcceptanceTester $I)
+    public function _before(AcceptanceTester $I): void
     {
         $this->deleteFiles();
     }
 
-    protected function deleteFiles()
+    protected function deleteFiles(): void
     {
         foreach ($this->delete as $file) {
             if (file_exists($file)) {
@@ -23,12 +25,12 @@ class PluginActivationCest
         }
     }
 
-    public function _after(AcceptanceTester $I)
+    public function _after(AcceptanceTester $I): void
     {
         $this->deleteFiles();
     }
 
-    public function _failed(AcceptanceTester $I)
+    public function _failed(AcceptanceTester $I): void
     {
         $this->deleteFiles();
     }
@@ -38,7 +40,7 @@ class PluginActivationCest
      *
      * @test
      */
-    public function be_able_to_activate_plugins(AcceptanceTester $I)
+    public function be_able_to_activate_plugins(AcceptanceTester $I): void
     {
         $I->loginAsAdmin();
         $I->amOnPluginsPage();
@@ -57,7 +59,7 @@ class PluginActivationCest
      */
     public function be_able_to_activate_plugins_in_a_long_list(
         AcceptanceTester $I
-    ) {
+    ): void {
         $this->scaffoldTestPlugins();
 
         $I->loginAsAdmin();
@@ -70,9 +72,9 @@ class PluginActivationCest
         $I->seePluginDeactivated('plugin-z');
     }
 
-    protected function scaffoldTestPlugins()
+    protected function scaffoldTestPlugins(): void
     {
-        $config = (\Codeception\Configuration::config());
+        $config = (Configuration::config());
         $wpFolder = $config['wpFolder'];
         $template
             = <<< HANDLEBARS
@@ -102,7 +104,7 @@ HANDLEBARS;
      *
      * @test
      */
-    public function be_able_to_activate_multiple_plugins(AcceptanceTester $I)
+    public function be_able_to_activate_multiple_plugins(AcceptanceTester $I): void
     {
         $this->scaffoldTestPlugins();
 

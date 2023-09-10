@@ -1,0 +1,54 @@
+{
+	"name": "roots/wordpress-core-installer",
+	"description": "A custom installer to handle deploying WordPress with composer",
+	"keywords": [
+		"wordpress"
+	],
+	"type": "composer-plugin",
+	"license": "GPL-2.0-or-later",
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+	"authors": [
+		{
+			"name": "John P. Bloch",
+			"email": "me@johnpbloch.com"
+		},
+		{
+			"name": "Roots",
+			"email": "team@roots.io"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"Roots\\Composer\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Tests\\Roots\\Composer\\": "tests/"
+		}
+	},
+	"extra": {
+		"class": "Roots\\Composer\\WordPressCorePlugin"
+	},
+	"require": {
+		"composer-plugin-api": "^1.0 || ^2.0",
+		"php": ">=5.6.0"
+	},
+	"require-dev": {
+		"composer/composer": "^1.0 || ^2.0",
+		"phpunit/phpunit": ">=5.7.27"
+	},
+	"conflict": {
+		"composer/installers": "<1.0.6"
+	},
+	"replace": {
+ 		"johnpbloch/wordpress-core-installer":"*"
+	},
+	"scripts": {
+		"test:phpunit": "phpunit",
+		"test": [
+			"@test:phpunit"
+		]
+	}
+}

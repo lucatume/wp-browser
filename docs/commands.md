@@ -1,258 +1,224 @@
-# Custom commands provided by wp-browser
-The project comes with its own set of custom Codeception commands.  
+## Codeception commands provided by the library
 
-The commands provide functionalities to quickly scaffold different types of tests.
-Any other `codecept` command remains intact and available. 
+The library provides some custom commands that can be added to the project Codeception configuration file (
+either `codeception.yml` or `codeception.dist.yml`).
 
-## Adding the commands to an existing project
-The commands are added to the main Codeception configuration file, `codeception.yml`, when scaffolding a project via the `codecept init wp-browser` command.  
+### `run` and `codeception:run`
 
-They can be added to any existing project adding, or editing, the `commands` section of the configuration file:
+Enable the commands with:
 
 ```yaml
 extensions:
-    commands:
-        - "Codeception\\Command\\GenerateWPUnit"
-        - "Codeception\\Command\\GenerateWPRestApi"
-        - "Codeception\\Command\\GenerateWPRestController"
-        - "Codeception\\Command\\GenerateWPRestPostTypeController"
-        - "Codeception\\Command\\GenerateWPAjax"
-        - "Codeception\\Command\\GenerateWPCanonical"
-        - "Codeception\\Command\\GenerateWPXMLRPC"
+  commands:
+    - "lucatume\\WPBrowser\\Command\\RunOriginal"
+    - "lucatume\\WPBrowser\\Command\\RunAll"
 ```
 
-## Generation commands
-The library provides commands to quickly scaffold **integration** test cases for specific types of WordPress components, see [levels of testing for more information](./../levels-of-testing.md).  
+WordPress extensive use of global variables, constants and side effectes makes it difficult to run multiple test suites
+in the same process without running into conflicts due to leaking state and side effects.
+For this reason the project replaces Codeception `run` command with one that will run each suite in a separate process.
+You can invoke the original Codeception command using the `codeception:run` command.
+Just like [the original][1], the `run` command accepts all the arguments and options of the original Codeception
+command.
 
-The tests are almost identical to the ones you could write in a [PHPUnit based Core suite](https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/) with the exception of extending the `Codeception\TestCase\WPTestCase` test case.
+Run all the suites, each one in a separate process:
 
-### generate:wpunit
-Generates a test case extending the `\Codeception\TestCase\WPTestCase` class using the
-
-```sh
-  codecept generate:wpunit suite SomeClass
+```bash
+vendor/bin/codecept run
 ```
 
-The command will generate a skeleton test case like
+Run only the `Integration` suite:
 
-
-```php
-<?php
-
-class SomeClassTest extends \Codeception\TestCase\WPTestCase
-{
-    public function setUp()
-    {
-      parent::setUp();
-    }
-
-    public function tearDown()
-    {
-      parent::tearDown();
-    }
-
-    // tests
-    public function testMe()
-    {
-    }
-
-}
+```bash
+vendor/bin/codecept run Integration
 ```
 
-### generate:wprest
-Generates a test case extending the `\Codeception\TestCase\WPRestApiTestCase` class using the
+Run a specific test file:
 
-```sh
-  codecept generate:wprest suite SomeClass
+```bash
+vendor/bin/codecept run Integration tests/Integration/MyTest.php
 ```
 
-The command will generate a skeleton test case like
+Run a specific test method:
 
-
-```php
-<?php
-
-class SomeClassTest extends \Codeception\TestCase\WPRestApiTestCase
-{
-    public function setUp()
-    {
-      parent::setUp();
-    }
-
-    public function tearDown()
-    {
-      parent::tearDown();
-    }
-
-    // tests
-    public function testMe()
-    {
-    }
-
-}
+```bash
+vendor/bin/codecept run Integration tests/Integration/MyTest.php:testMyMethod
 ```
 
-### generate:wprestcontroller
-Generates a test case extending the `\Codeception\TestCase\WPRestControllerTestCase` class using the
+Read the [Codeception documentation][1] for more information about the `run` command.
 
-```sh
-  codecept generate:wprest suite SomeClass
+[1]: https://codeception.com/docs/reference/Commands#Run
+
+### `dev:start`
+
+Enable the command with:
+
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\DevStart"
 ```
 
-The command will generate a skeleton test case like
+If not already running, start the services required to run the tests.
+The started services are read from the Codeception configuration file (either `codeception.yml`
+or `codeception.dist.yml`), from the `extensions` section, under the `config` key.
 
+Given the following configuration:
 
-```php
-<?php
-
-class SomeClassTest extends \Codeception\TestCase\WPRestControllerTestCase
-{
-    public function setUp()
-    {
-      parent::setUp();
-    }
-
-    public function tearDown()
-    {
-      parent::tearDown();
-    }
-
-    // tests
-    public function testMe()
-    {
-    }
-
-}
-```
-### generate:wprestposttypecontroller
-Generates a test case extending the `\Codeception\TestCase\WPRestPostTypeControllerTestCase` class using the
-
-```sh
-  codecept generate:wprest suite SomeClass
+```yaml
+extensions:
+  enabled:
+    - lucatume\WPBrowser\Extension\ChromeDriverController
+    - lucatume\WPBrowser\Extension\BuiltInServerController
+    - lucatume\WPBrowser\Extension\DockerComposeController
+  config:
+    "lucatume\\WPBrowser\\Extension\\ChromeDriverController":
+      port: '%CHROMEDRIVER_PORT%'
+    "lucatume\\WPBrowser\\Extension\\BuiltInServerController":
+      docroot: '%WORDPRESS_ROOT_DIR%'
+      workers: 5
+      port: '%BUILT_IN_SERVER_PORT%'
+    "lucatume\\WPBrowser\\Extension\\DockerComposeController":
+      compose-file: 'tests/docker-compose.yml'
+      env-file: 'tests/.env'
 ```
 
-The command will generate a skeleton test case like
+Running the command will start ChromeDriver, the built-in PHP server and Docker Compose.
 
+### `dev:stop`
 
-```php
-<?php
+Enable the command with:
 
-class SomeClassTest extends \Codeception\TestCase\WPRestPostTypeControllerTestCase
-{
-    public function setUp()
-    {
-      parent::setUp();
-    }
-
-    public function tearDown()
-    {
-      parent::tearDown();
-    }
-
-    // tests
-    public function testMe()
-    {
-    }
-
-}
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\DevStop"
 ```
 
-### generate:wpajax
-Generates a test case extending the `\Codeception\TestCase\WPAjaxTestCase` class using the
+If running, stop the services required to run the tests.
+The stopped services are read from the Codeception configuration file (either `codeception.yml`
+or `codeception.dist.yml`), from the `extensions` section, under the `config` key.
 
-```sh
-  codecept generate:wpajax suite SomeClass
+Given the following configuration:
+
+```yaml
+extensions:
+  enabled:
+    - "lucatume\\WPBrowser\\Extension\\ChromeDriverController"
+    - "lucatume\\WPBrowser\\Extension\\BuiltInServerController"
+    - "lucatume\\WPBrowser\\Extension\\DockerComposeController"
+  config:
+    "lucatume\\WPBrowser\\Extension\\ChromeDriverController":
+      port: '%CHROMEDRIVER_PORT%'
+    "lucatume\\WPBrowser\\Extension\\BuiltInServerController":
+      docroot: '%WORDPRESS_ROOT_DIR%'
+      workers: 5
+      port: '%BUILT_IN_SERVER_PORT%'
+    "lucatume\\WPBrowser\\Extension\\DockerComposeController":
+      compose-file: 'tests/docker-compose.yml'
+      env-file: 'tests/.env'
 ```
 
-The command will generate a skeleton test case like
+Running the command will stop ChromeDriver, the built-in PHP server and Docker Compose.
 
+### `dev:restart`
 
-```php
-<?php
+Enable the command with:
 
-class SomeClassTest extends \Codeception\TestCase\WPAjaxTestCase
-{
-    public function setUp()
-    {
-      parent::setUp();
-    }
-
-    public function tearDown()
-    {
-      parent::tearDown();
-    }
-
-    // tests
-    public function testMe()
-    {
-    }
-
-}
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\DevRestart"
 ```
 
-### generate:wpxmlrpc
-Generates a test case extending the `\Codeception\TestCase\WPXMLRPCTestCase` class using the
+This command is just a shortcut to run `dev:stop` and `dev:start` in sequence.
 
-```sh
-  codecept generate:wpxmlrpc suite SomeClass
+### `dev:info`
+
+Enable the command with:
+
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\DevInfo"
 ```
 
-The command will generate a skeleton test case like
+Provides information about the local testing stack managed by
+the [DockerComposeController](extensions.md#dockercomposecontroller), [BuiltInServerController](extensions.md#builtinservercontroller)
+and [ChromeDriverController](extensions.md#chromedrivercontroller) extensions.
 
+### `wp:db:import`
 
-```php
-<?php
+Enable the command with:
 
-class SomeClassTest extends \Codeception\TestCase\WPXMLRPCTestCase
-{
-    public function setUp()
-    {
-      parent::setUp();
-    }
-
-    public function tearDown()
-    {
-      parent::tearDown();
-    }
-
-    // tests
-    public function testMe()
-    {
-    }
-
-}
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\DbImport"
 ```
 
-### generate:wpcanonical
-Generates a test case extending the `\Codeception\TestCase\WPCanonicalTestCase` class using the
+You can use [WP CLI][1] to interact with your WordPress installation, but WP CLI does not support SQLite databases in
+the context of the `wp db import` command.
+This command fills that gap by providing a database dump file import command that will support MySQL and SQLite
+databases.
 
-```sh
-  codecept generate:wpcanonical suite SomeClass
+### `wp:db:export`
+
+Enable the command with:
+
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\DbExport"
 ```
 
-The command will generate a skeleton test case like
+You can use [WP CLI][1] to interact with your WordPress installation, but WP CLI does not support SQLite databases in
+the context of the `wp db export` command.
+This command fills that gap by providing a database dump file export command that will support MySQL and SQLite
+databases.
 
-```php
-<?php
+### `chromedriver:update`
 
-class SomeClassTest extends \Codeception\TestCase\WPCanonicalTestCase
-{
-    public function setUp()
-    {
-      parent::setUp();
-    }
+Enable the command with:
 
-    public function tearDown()
-    {
-      parent::tearDown();
-    }
-
-    // tests
-    public function testMe()
-    {
-    }
-
-}
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\ChromedriverUpdate"
 ```
 
+If you're using Chromedriver as a binary installed in the Composer vendor directory (`vendor/bin` by default), you can
+use this command to update it.
+This command will download the latest version of Chromedriver compatible with the Chrome version installed on your
+machine in the Composer vendor directory.
 
+### `generate:wpunit`
+
+Enable the command with:
+
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\GenerateWPUnit"
+```
+
+Generate a test case extending the `lucatume\WPBrowser\TestCase\WPTestCase` class.
+The class incorporates the WordPress test case from [the `wordpress-develop`][2] repository and adds some utility
+methods to make testing easier in the context of Codeception.
+
+The `lucatume\WPBrowser\TestCase\WPTestCase` class is the one that should be used when writing tests for WordPress
+code when using the `WPLoader` module.
+
+Together with the `WPLoader` module, the `WPTestCase` class provides a number of functionalities to clean up the
+database
+after each test method and to reset the global state of WordPress.
+
+#### Every test method runs in a transaction
+
+Database queries running in the context of test methods of a test case extending the `WPTestCase` class will run in a
+transaction that is rolled back after the test method is run. This means that any database change happening in the
+context of a test method will not appear in the database while the test is running and after the test is run.
+
+[1]: https://wp-cli.org/
+
+[2]: https://github.com/WordPress/wordpress-develop/tree/trunk/tests/phpunit

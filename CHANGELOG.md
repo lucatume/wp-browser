@@ -4,44 +4,76 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
-## [3.1.10] 2023-07-20;
-
 ### Changed
 
-- Removed the `lucatume\WPBrowser\Traits\WithForks` trait.
+- Update code to be compatible with Codeception v5, PHP 8.0+ and Composer API 2.2+.
+- Added support for the `WPLoader.stylesheet` configuration parameter to allow specifying a distinct `template` and `stylesheet`.
+- Changed name of the `WPLoader.theme` to `WPLoader.template`.
+- Added the following configuration keys to the `WPLoader` module:
+  - `dump` - allows specifying one or more dump files to be loaded after the installation and before the first test runs.
+  - `dbUrl` - allows providing the db name, user, password and host using a single URL, e.g. `mysql://user:password@host:port/db_name`.
+  - `AUTH_KEY` - `SECURE_AUTH_KEY` - `LOGGED_IN_KEY` - `NONCE_KEY` - `AUTH_SALT` - `SECURE_AUTH_SALT` - `LOGGED_IN_SALT` - `NONCE_SALT` - allows specifying the WordPress salts.
+  - Support configuring the module using the WordPress constant name directly according to the following map (keys are aliased):
+    - `ABSPATH` or `wpRootFolder`
+    - `DB_NAME` or `dbName`
+    - `DB_USER` or `dbUser`
+    - `DB_HOST` or `dbHost`
+    - `DB_PASSWORD` or `dbPassword`
+    - `DB_CHARSET` or `dbCharset`
+    - `DB_COLLATE` or `dbCollate`
+    - `WP_TESTS_MULTISITE` or `multisite`
+    - `WP_DEFAULT_THEME` or `theme`
+    - `WP_TESTS_DOMAIN` or `domain`
+    - `WP_TESTS_EMAIL` or `adminEmail`
+    - `WP_TESTS_TITLE` or `title`
+  - Added support for the `dbUrl` configuration parameter to the `WPDb` module; it allows providing the database username, password and DSN with a single URL; e.g. `mysql://user:password@host:port/db_name`.
+  - Added the `WPCLI::dontSeeShellOutputMatches` method
 
-### Fixed
+### Breaking changes
 
-- Correctly invoke the `after_switch_theme` action in the `WPLoader` module.
-
-## [3.1.9] 2023-04-11;
-
-### Fixed
-
-- If possible, load the `wpdb` class from the `wp-includes/class-wpdb.php` file on newer versions of WordPress.
-
-## [3.1.8] 2023-02-24;
-
-### Changed
-
-- Clean up and update the build and stack.
-- Update `.gitattributes` to remove more files.
-- Updated sponsors.
-
-## [3.1.7] 2023-02-14;
-
-### Fixed
-
-- Inheritance of current env if the `env` key is set in the configuration of the `WPCLI` module (thanks @calvinalkan).
-- Other environment inheritance and manipulation issues (thanks @calvinalkan).
-- Indirect modification notice in the `WPLoader::_swithchTheme` method.
-
-### Added
-
-- Control global and per-process environment variables in the `WPCLI::cli()` method. (thanks @calvinalkan).
-- Add the `haveInShellEnvironment` and `dontInheritShellEnvironment` methods to the `WPCLI` module. (thanks @calvinalkan).
-- `amEditingUserWithId` method to the `WPBrowser` and `WPWebDriver` modules. (thanks @johnbillion).
-
+- Move classes in the `tad\WPBrowser` namespace to the `lucatume\WPBrowser` one.
+- Move classes in the `Codeception` namespace to the `lucatume\WPBrowser` one.
+- Moved functions from the `lucatume\WPBrowser` namespace to dedicated classes in the `lucatume\WPBrowser\Utils`
+  namespace.
+- Removed support for Handlebars-like syntax from the `WPDb` module scaffolding functions.
+- Removed the `Dotenv/Dotenv` polyfill class.
+- Remove unused `tad\WPBrowser` functions related to Patchwork and PHPUnit.
+- Removed the `lucatume\WPBrowser` Composer-related functions.
+- Removed the `tad\WPBrowser\pregErrorMessage` function.
+- Removed support for the `WPLoader.isolatedInstall` configuration parameter; installation always happens in isolation.
+- Deprecated the `WPLoaer.activatePlugins` parameter: the `WPLoader.plugins` parameter should be used instead.
+- Removed the `tad\WPBrowser\processStatus`, `tad\WPBrowser\processReadPipe`, `tad\WPBrowser\process` and `tad\WPBrowser\buildCommandLine` functions.
+- Removed the `isolatedInstall` parameter from the `WPLoader` configuration: installation will always happen in isolation.
+- Removed the `mikey179/vfsStream` development dependency.
+- Removed the `vria/nodiacritic` dependency.
+- Removed the `wp-cli/wp-cli` dependency.
+- Removed the `antecedent/patchwork` dependency.
+- Removed the `dg/mysql-dump` dependency.
+- Removed the `mikehaertl/php-shellcommand` dependency.
+- Removed the `bordoni/phpass` dependency, internalized the `Hautelook\Phpass` portable password hashing library.
+- Removed the `mikemclin/laravel-wp-password` dependency.
+- Removed the `WordPress` module and related support classes.
+- Removed the `StubProphecy` and `FunctionProphecy` classes.
+- Removed the `WPHealthcheck` class in favor of reports provided by the `WordPress\Installation` class.
+- Removed the `tad\WPBrowser\Utils\Map` class
+- Deprecated the following `WPLoader` module configuration keys:
+  - `installationTableHandling` - no more required.
+  - `skipPluggables` - no more required.
+  - `wpDebug` - the `WP_DEBUG` constant is always set to `true` during tests.
+  - `activatePlugins` - plugins specified in the `plugins` configuration key will be always activated.
+- Removed support for PHPUnit's `@runInSeparateProcess` annotation.
+- Removed the `Copier` and `Symlinker` extensions.
+- Removed the `WithWordPressFilters` trait
+- Removed the `generate:wpajax` command and related support classes.
+- Removed the `generate:wpcanonical` command and related support classes.
+- Removed the `generate:wprest` command and related support classes.
+- Removed the `generate:wprestcontroller` command and related support classes.
+- Removed the `generate:wprestposttypecontroller` command and related support classes.
+- Removed the `generate:wpxmlrpc` command and related support classes.
+- Rewrite the `WPCLI` module to use the `Symfony\Component\Process\Process` class under the hood.
+- Temporarily remove the `preserveGlobalState` test method support to reimplement support later.
+- Update the `WPCLI` module to use supported configuration parameters as strict arguments by default
+    
 ## [3.1.6] 2022-04-28;
 
 ### Changed
@@ -336,7 +368,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ### Fixed
 
-- URL replacement function in `WPDb` module that would incorrectly handling the replacement of `locahost:port` URLs, fixes #430
+- URL replacement function in `WPDb` module that would incorrectly handling the replacement of `localhost:port` URLs, fixes #430
 
 ## [2.6.5] 2020-07-16;
 
@@ -407,7 +439,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ### Added
 
-- the `WPDb.letCron` configuration parameter to control whether `wp-cron` processes should be allowe to spawn during tests or not (new default).
+- the `WPDb.letCron` configuration parameter to control whether `wp-cron` processes should be allowed to spawn during tests or not (new default).
 
 ### Fixed
 
@@ -482,7 +514,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ### Fixed
 
-- suites configuration parameter handling in the `tad\WPBrowser\Extension\Events` extension.
+- suites configuration parameter handling in the `lucatume\WPBrowser\Extension\Events` extension.
 
 ## [2.4.2] 2020-04-11;
 
@@ -505,7 +537,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 ### Added
 
 - compatibility with Codeception 4.0
-- the `tad\WPBrowser\Extension\Events` extension to enable subscribing to Codeception 4.0 events
+- the `lucatume\WPBrowser\Extension\Events` extension to enable subscribing to Codeception 4.0 events
 
 ### Fixed
 
@@ -542,8 +574,8 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 ### Added
 
 - the `originalUrl` to the `WPDb` module configuration; this can help in some instances where `urlReplacement` is active but is not working correctly.
-- the `tad\WPBrowser\Traits\WithWordPressFilters` trait to provide methods, for test cases, to debug WordPress actions and filter initial and final values.
-- use the `tad\WPBrowser\Traits\WithWordPressFilters` trait in the `WPLoader` module to debug WordPress actions and filter initial and final values.
+- the `lucatume\WPBrowser\Traits\WithWordPressFilters` trait to provide methods, for test cases, to debug WordPress actions and filter initial and final values.
+- use the `lucatume\WPBrowser\Traits\WithWordPressFilters` trait in the `WPLoader` module to debug WordPress actions and filter initial and final values.
 
 ### Fixed
 
@@ -676,7 +708,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ## [2.2.16] 2019-07-23;
 ### Added
-- expose a `tad\WPBrowser\Module\WPLoader\FactoryStore` instance on the `$tester` property when loading the `WPLoader` module with `loadOnly: false`.
+- expose a `lucatume\WPBrowser\Module\WPLoader\FactoryStore` instance on the `$tester` property when loading the `WPLoader` module with `loadOnly: false`.
 
 ### Fixed
 - add explicit override of the `$tester` property when scaffolding the `WPTestCase` class (thanks @Luc45)
@@ -687,7 +719,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ## [2.2.14] 2019-06-14;
 ### Fixed
-- remove left-over `%WP_URL%` from generated configuration files when runnin `codecept init wpbrowser` and replace it with `%TEST_SITE_WP_URL%` (thanks @HendrikRoehm)
+- remove left-over `%WP_URL%` from generated configuration files when running `codecept init wpbrowser` and replace it with `%TEST_SITE_WP_URL%` (thanks @HendrikRoehm)
 
 ## [2.2.13] 2019-06-13;
 ### Fixed
@@ -706,7 +738,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 - when in debug mode the `WPLoader` module will now display a report about the bootstrapped WordPress installation
 
 ### Fixed
-- restored the `Codeception\Test\Unit` class as parent of the `\Codeception\TestCase\WPTestCase`; it was erroneously removed from the inheritance tree in 2.2.7
+- restored the `Codeception\Test\Unit` class as parent of the `\lucatume\WPBrowser\TestCase\WPTestCase`; it was erroneously removed from the inheritance tree in 2.2.7
 
 ## [2.2.9] 2019-05-24;
 ### Fixed
@@ -727,7 +759,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ## [2.2.7] 2019-05-08;
 ### Changed
-- replaced `wp-cli/wp-cli:1.1.*` dependecy with the `wp-cli/wp-cli-bundle:^2.0` one
+- replaced `wp-cli/wp-cli:1.1.*` dependency with the `wp-cli/wp-cli-bundle:^2.0` one
 
 ## [2.2.6] 2019-05-07;
 ### Added
@@ -748,7 +780,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ## [2.2.3] 2019-04-19;
 ### Added
-- first version of the documentaion
+- first version of the documentation
 - fixed an issue where the initialization template would not correctly set the placeholder names (thanks @Luc45)
 - methods `getQueries` and `countQueries` to the `WPQueries` module
 
@@ -781,7 +813,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 - compatibility with Codeception `2.5.0` updating the `WPDb` class
 - added a clear disclaimer about db wiping in the `init wpbrowser` command
 - an issue where the WpWebDriver module would not login correctly [#121](https://github.com/lucatume/wp-browser/pull/121)
-- code style compatibilty with PSR-2 standard
+- code style compatibility with PSR-2 standard
 - an issue in the `tad\WPBrowser\Tests\Support\importDump` function that would prevent the function from working if the database host specified a port
 - an issue with end-of-line chars in tests on Windows [#191](https://github.com/lucatume/wp-browser/pull/191) - thanks @Luc45
 
@@ -879,7 +911,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ## [1.22.7] 2018-02-27;
 ### Added
-- more PHPUnit 6+ aliases in the shims file to allow for use of older tests with newer PHPUnit versions not providing `PHPUnit_Framwork_` classes
+- more PHPUnit 6+ aliases in the shims file to allow for use of older tests with newer PHPUnit versions not providing `PHPUnit_Framework_` classes
 
 ## [1.22.6.1] 2018-02-14;
 ### Fixed
@@ -903,7 +935,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 ## [1.22.3] 2018-01-30;
 ### Fixed
 - removed the faulty `output` parameter from the `WPCLI::cli` method
-- fixed issues witht `WPCLI` module arguments escaping
+- fixed issues with `WPCLI` module arguments escaping
 
 ## [1.22.2] 2018-01-27;
 ### Changed
@@ -1165,7 +1197,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 - Travis configuration file `.travis.yml` to use [external Apache setuup script](https://github.com/lucatume/travis-apache-set)
 
 ## [1.15.3] 2016-08-19
-### Addded
+### Added
 - Travis CI integration
 
 ### Fixed
@@ -1257,11 +1289,11 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ## [1.10.11] 2016-05-05
 ### Added
-- environments based support in `tad\WPBrowser\Extension\Symlinker` extension
+- environments based support in `lucatume\WPBrowser\Extension\Symlinker` extension
 
 ## [1.10.10] 2016-05-04
 ### Added
-- the `tad\WPBrowser\Extension\Symlinker` extension
+- the `lucatume\WPBrowser\Extension\Symlinker` extension
 
 ### Changed
 - update check deactivation when bootstrapping WordPress using the `WPBootstrapper` module
@@ -1466,20 +1498,20 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ## [1.7.13] 2015-11-10
 ### Added
-- the `\Codeception\TestCase\WPTestCase`, an extension of the base Codeception test case and a copy of the core `WP_UnitTestCase` class
-- the `\Codeception\TestCase\WPCanonicalTestCase`, an extension of the base Codeception test case and a copy of the core `WP_Canonical_UnitTestCase` class
-- the `\Codeception\TestCase\WPAjaxTestCase`, an extension of the base Codeception test case and a copy of the core `WP_Ajax_UnitTestCase` class
-- the `\Codeception\TestCase\WPRestApiTestCase`, an extension of the base Codeception test case and a copy of the core `WP_Test_REST_TestCase` class
-- the `\Codeception\TestCase\WPXMLRPCTestCase`, an extension of the base Codeception test case and a copy of the core `WP_XMLRPC_UnitTestCase` class
-- the `wpcept generate:wpcanonical` command to generate test cases extending the `\Codeception\TestCase\WPCanonicalTestCase` class
-- the `wpcept generate:wpajax` command to generate test cases extending the `\Codeception\TestCase\WPAjaxTestCase` class
-- the `wpcept generate:wprest` command to generate test cases extending the `\Codeception\TestCase\WPRestApiTestCase` class
-- the `wpcept generate:wpxmlrpc` command to generate test cases extending the `\Codeception\TestCase\WPXMLRPCTestCase` class
+- the `\lucatume\WPBrowser\TestCase\WPTestCase`, an extension of the base Codeception test case and a copy of the core `WP_UnitTestCase` class
+- the `\lucatume\WPBrowser\TestCase\WPCanonicalTestCase`, an extension of the base Codeception test case and a copy of the core `WP_Canonical_UnitTestCase` class
+- the `\lucatume\WPBrowser\TestCase\WPAjaxTestCase`, an extension of the base Codeception test case and a copy of the core `WP_Ajax_UnitTestCase` class
+- the `\lucatume\WPBrowser\TestCase\WPRestApiTestCase`, an extension of the base Codeception test case and a copy of the core `WP_Test_REST_TestCase` class
+- the `\lucatume\WPBrowser\TestCase\WPXMLRPCTestCase`, an extension of the base Codeception test case and a copy of the core `WP_XMLRPC_UnitTestCase` class
+- the `wpcept generate:wpcanonical` command to generate test cases extending the `\lucatume\WPBrowser\TestCase\WPCanonicalTestCase` class
+- the `wpcept generate:wpajax` command to generate test cases extending the `\lucatume\WPBrowser\TestCase\WPAjaxTestCase` class
+- the `wpcept generate:wprest` command to generate test cases extending the `\lucatume\WPBrowser\TestCase\WPRestApiTestCase` class
+- the `wpcept generate:wpxmlrpc` command to generate test cases extending the `\lucatume\WPBrowser\TestCase\WPXMLRPCTestCase` class
 
 ### Changed
 - updated core unit tests suite code latest version
 - bundled test case classes names will now point to the vanilla WP test cases
-- the `wpcept generate:wpunit` command will now generate test cases extending the `\Codeception\TestCase\WPTestCase` class
+- the `wpcept generate:wpunit` command will now generate test cases extending the `\lucatume\WPBrowser\TestCase\WPTestCase` class
 
 ### Fixed
 - namespaced test class generation for `generate:wp*` commands will now properly generate the namespace string
@@ -1513,7 +1545,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 ## [1.7.6] 2015-10-21
 ### Fixed
-- call to deprecated `set_current_user` function replaced with call to `wp_set_curren_user`
+- call to deprecated `set_current_user` function replaced with call to `wp_set_current_user`
 
 ## [1.7.5] 2015-10-21
 ### Fixed
@@ -1836,10 +1868,4 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.1.3]: https://github.com/lucatume/wp-browser/compare/3.1.2...3.1.3
 [3.1.4]: https://github.com/lucatume/wp-browser/compare/3.1.3...3.1.4
 [3.1.5]: https://github.com/lucatume/wp-browser/compare/3.1.4...3.1.5
-[3.1.6]: https://github.com/lucatume/wp-browser/compare/3.1.5...3.1.6
-[3.1.7]: https://github.com/lucatume/wp-browser/compare/3.1.7...3.1.7
-[3.1.8]: https://github.com/lucatume/wp-browser/compare/3.1.7...3.1.8
-[3.1.9]: https://github.com/lucatume/wp-browser/compare/3.1.8...3.1.9
-[3.1.9]: https://github.com/lucatume/wp-browser/compare/3.1.9...3.1.9
-[3.1.10]: https://github.com/lucatume/wp-browser/compare/3.1.9...3.1.10
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.1.10...HEAD
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.1.5...HEAD

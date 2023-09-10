@@ -4,11 +4,11 @@
 class WPDbThemeCest
 {
 
-    public function _before(FunctionalTester $I)
+    public function _before(FunctionalTester $I): void
     {
     }
 
-    public function _after(FunctionalTester $I)
+    public function _after(FunctionalTester $I): void
     {
     }
 
@@ -16,7 +16,7 @@ class WPDbThemeCest
      * @test
      * it should set the current theme
      */
-    public function it_should_set_the_current_theme(FunctionalTester $I)
+    public function it_should_set_the_current_theme(FunctionalTester $I): void
     {
         $I->useTheme('foo', 'bar', 'Baz');
 
@@ -29,7 +29,7 @@ class WPDbThemeCest
      * @test
      * it should default the template to stylesheet
      */
-    public function it_should_default_the_template_to_stylesheet(FunctionalTester $I)
+    public function it_should_default_the_template_to_stylesheet(FunctionalTester $I): void
     {
         $I->useTheme('foo');
 
@@ -41,7 +41,7 @@ class WPDbThemeCest
      * @test
      * it should default the theme name to title version of stylesheet
      */
-    public function it_should_default_the_theme_name_to_title_version_of_stylesheet(FunctionalTester $I)
+    public function it_should_default_the_theme_name_to_title_version_of_stylesheet(FunctionalTester $I): void
     {
         $I->useTheme('foo');
 
@@ -53,7 +53,7 @@ class WPDbThemeCest
      * @test
      * it should properly set title versions of stylesheet as theme name
      */
-    public function it_should_properly_set_title_versions_of_stylesheet_as_theme_name(FunctionalTester $I)
+    public function it_should_properly_set_title_versions_of_stylesheet_as_theme_name(FunctionalTester $I): void
     {
         $I->useTheme('_s');
 

@@ -1,0 +1,4 @@
+#! /usr/bin/env sh
+
+echo 'Google Chrome 116.0.5845.96'
+exit 0

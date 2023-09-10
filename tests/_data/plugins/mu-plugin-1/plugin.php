@@ -11,7 +11,7 @@
  */
 class MUPlugin1
 {
-    public static function activate()
+    public static function activate(): void
     {
         if (is_multisite()) {
             update_network_option(null, 'muplugin1', 'mu-activated');

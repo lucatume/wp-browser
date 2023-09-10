@@ -1,6 +1,8 @@
 <?php
 
-class RequestTimeTest extends \Codeception\TestCase\WPTestCase
+use lucatume\WPBrowser\TestCase\WPTestCase;
+
+class RequestTimeTest extends WPTestCase
 {
     public function test_server_unset_time()
     {

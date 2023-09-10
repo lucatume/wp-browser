@@ -9,7 +9,7 @@ class WPDbOptionsbCest
      *
      * @test
      */
-    public function should_allow_seeing_an_option_in_the_database_using_name_and_value(Tester $I)
+    public function should_allow_seeing_an_option_in_the_database_using_name_and_value(Tester $I): void
     {
         $I->haveOptionInDatabase('test_option', 'test_value');
         $I->haveOptionInDatabase('test_array_option', ['one' => 23, 'two' => ['foo','bar','baz']]);
@@ -25,7 +25,7 @@ class WPDbOptionsbCest
      *
      * @test
      */
-    public function should_allow_seeing_an_option_using_array_criteria(Tester $I)
+    public function should_allow_seeing_an_option_using_array_criteria(Tester $I): void
     {
         $I->haveOptionInDatabase('test_option', 'test_value');
         $I->haveOptionInDatabase('test_array_option', ['one' => 23, 'two' => ['foo','bar','baz']]);
@@ -41,7 +41,7 @@ class WPDbOptionsbCest
      *
      * @test
      */
-    public function should_allow_not_seeing_an_option_using_name_and_value(Tester $I)
+    public function should_allow_not_seeing_an_option_using_name_and_value(Tester $I): void
     {
         $I->dontSeeOptionInDatabase('test_option', 'test_value');
         $I->dontSeeOptionInDatabase('test_option');
@@ -54,7 +54,7 @@ class WPDbOptionsbCest
      *
      * @test
      */
-    public function should_allow_not_seeing_and_option_using_array_criteria(Tester $I)
+    public function should_allow_not_seeing_and_option_using_array_criteria(Tester $I): void
     {
         $I->dontSeeOptionInDatabase(['option_name' => 'test_option', 'option_value' => 'test_value']);
         $I->dontSeeOptionInDatabase(['option_name' => 'test_option']);
@@ -67,7 +67,7 @@ class WPDbOptionsbCest
      *
      * @test
      */
-    public function should_allow_seeing_a_site_option_in_the_database_using_name_and_value(Tester $I)
+    public function should_allow_seeing_a_site_option_in_the_database_using_name_and_value(Tester $I): void
     {
         $I->haveSiteOptionInDatabase('test_option', 'test_value');
         $I->haveSiteOptionInDatabase('test_array_option', ['one' => 23, 'two' => ['foo','bar','baz']]);
@@ -79,11 +79,11 @@ class WPDbOptionsbCest
     }
 
     /**
-     * It should allo seeing a site option in database using array criteria
+     * It should allow seeing a site option in database using array criteria
      *
      * @test
      */
-    public function should_allo_seeing_a_site_option_in_database_using_array_criteria(Tester $I)
+    public function should_allow_seeing_a_site_option_in_database_using_array_criteria(Tester $I): void
     {
         $I->haveSiteOptionInDatabase('test_option', 'test_value');
         $I->haveSiteOptionInDatabase('test_array_option', ['one' => 23, 'two' => ['foo','bar','baz']]);
@@ -99,7 +99,7 @@ class WPDbOptionsbCest
      *
      * @test
      */
-    public function should_allow_not_seeing_a_site_option_using_name_and_value(Tester $I)
+    public function should_allow_not_seeing_a_site_option_using_name_and_value(Tester $I): void
     {
         $I->dontSeeSiteOptionInDatabase(['option_name' => 'test_option', 'option_value' => 'test_value']);
         $I->dontSeeSiteOptionInDatabase(['option_name' => 'test_option']);
@@ -112,7 +112,7 @@ class WPDbOptionsbCest
      *
      * @test
      */
-    public function should_allow_not_seeing_a_site_option_using_array_criteria()
+    public function should_allow_not_seeing_a_site_option_using_array_criteria(): void
     {
     }
 }

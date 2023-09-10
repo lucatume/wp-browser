@@ -4,11 +4,11 @@
 class WPDbTemplatingCest
 {
 
-    public function _before(FunctionalTester $I)
+    public function _before(FunctionalTester $I): void
     {
     }
 
-    public function _after(FunctionalTester $I)
+    public function _after(FunctionalTester $I): void
     {
     }
 
@@ -16,7 +16,7 @@ class WPDbTemplatingCest
      * @test
      * it should allow passing number placeholder strings
      */
-    public function it_should_allow_passing_number_placeholder_strings(FunctionalTester $I)
+    public function it_should_allow_passing_number_placeholder_strings(FunctionalTester $I): void
     {
         $ids = $I->haveManyPostsInDatabase(5, ['post_content' => 'Content of post {{n}}']);
 
@@ -29,22 +29,22 @@ class WPDbTemplatingCest
      * @test
      * it should pass n in the many templates
      */
-    public function it_should_pass_n_in_the_many_templates(FunctionalTester $I)
+    public function it_should_pass_n_in_the_many_templates(FunctionalTester $I): void
     {
         $ids = $I->haveManyPostsInDatabase(
             2,
-            ['post_content' => 'Lorem{{#if n}} ipsum dolor sit{{/if}}{{#unless n}} foo{{/unless}}']
+            ['post_content' => 'Test post {{n}}']
         );
 
-        $I->seePostInDatabase(['ID' => reset($ids), 'post_content' => "Lorem foo"]);
-        $I->seePostInDatabase(['ID' => last($ids), 'post_content' => "Lorem ipsum dolor sit"]);
+        $I->seePostInDatabase(['ID' => reset($ids), 'post_content' => "Test post 0"]);
+        $I->seePostInDatabase(['ID' => end($ids), 'post_content' => "Test post 1"]);
     }
 
     /**
      * @test
      * it should allow passing template data with many templates
      */
-    public function it_should_allow_passing_template_data_with_many_templates(FunctionalTester $I)
+    public function it_should_allow_passing_template_data_with_many_templates(FunctionalTester $I): void
     {
         $ids = $I->haveManyPostsInDatabase(2, [
             'post_content' => 'Content of post {{n}}: {{content}}',
@@ -52,14 +52,14 @@ class WPDbTemplatingCest
         ]);
 
         $I->seePostInDatabase(['ID' => reset($ids), 'post_content' => "Content of post 0: lorem ipsum."]);
-        $I->seePostInDatabase(['ID' => last($ids), 'post_content' => "Content of post 1: lorem ipsum."]);
+        $I->seePostInDatabase(['ID' => end($ids), 'post_content' => "Content of post 1: lorem ipsum."]);
     }
 
     /**
      * @test
      * it should allow passing closure template data
      */
-    public function it_should_allow_passing_closure_template_data(FunctionalTester $I)
+    public function it_should_allow_passing_closure_template_data(FunctionalTester $I): void
     {
         $templateData = [
             'content' => function ($n) {
@@ -81,38 +81,6 @@ class WPDbTemplatingCest
         $I->seePostInDatabase(['ID' => $ids[1], 'post_content' => "Content of post 1: second post content"]);
         $I->seePostInDatabase(['ID' => $ids[2], 'post_content' => "Content of post 2: third post content"]);
         $I->seePostInDatabase(['ID' => $ids[3], 'post_content' => "Content of post 3: some content"]);
-        $I->seePostInDatabase(['ID' => $ids[4], 'post_content' => "Content of post 4: some content"]);
-    }
-
-    /**
-     * @test
-     * it should allow for nested handlebar helpers
-     */
-    public function it_should_allow_for_nested_handlebar_helpers(FunctionalTester $I)
-    {
-        $templateData = [
-            'content' => function ($n) {
-                $map = [
-                    0 => 'first post content',
-                    1 => 'second post content',
-                    2 => 'third post content'
-                ];
-
-                return array_key_exists($n, $map) ? $map[$n] : 'some content';
-            },
-            'odd' => function ($n) {
-                return $n % 2;
-            }
-        ];
-        $ids = $I->haveManyPostsInDatabase(5, [
-            'post_content' => 'Content of post {{n}}: {{#if odd}}(odd) {{/if}}{{content}}',
-            'template_data' => $templateData
-        ]);
-
-        $I->seePostInDatabase(['ID' => $ids[0], 'post_content' => "Content of post 0: first post content"]);
-        $I->seePostInDatabase(['ID' => $ids[1], 'post_content' => "Content of post 1: (odd) second post content"]);
-        $I->seePostInDatabase(['ID' => $ids[2], 'post_content' => "Content of post 2: third post content"]);
-        $I->seePostInDatabase(['ID' => $ids[3], 'post_content' => "Content of post 3: (odd) some content"]);
         $I->seePostInDatabase(['ID' => $ids[4], 'post_content' => "Content of post 4: some content"]);
     }
 }

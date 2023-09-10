@@ -31,8 +31,8 @@
 
     <!--Exclude some adapters from the sniffing.-->
     <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
-       <exclude-pattern>src/tad/WPBrowser/Filesystem</exclude-pattern>
-        <exclude-pattern>src/tad/WPBrowser/Adapters</exclude-pattern>
-        <exclude-pattern>src/Streams/MonkeyPatcher.php</exclude-pattern>
+        <exclude-pattern>src/MonkeyPatch/FileStreamWrapper.php</exclude-pattern>
     </rule>
+
+    <exclude-pattern>./tests/*</exclude-pattern>
 </ruleset>

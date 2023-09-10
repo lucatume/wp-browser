@@ -1,6 +1,7 @@
 <?php
 
-use Codeception\Module\WPCLI;
+use Codeception\Actor;
+use Codeception\Lib\Friend;
 
 /**
  * Inherited Methods
@@ -13,11 +14,11 @@ use Codeception\Module\WPCLI;
  * @method void am($role)
  * @method void lookForwardTo($achieveValue)
  * @method void comment($description)
- * @method \Codeception\Lib\Friend haveFriend($name, $actorClass = null)
+ * @method Friend haveFriend($name, $actorClass = null)
  *
  * @SuppressWarnings(PHPMD)
  */
-class ClimoduleTester extends \Codeception\Actor
+class ClimoduleTester extends Actor
 {
     use _generated\ClimoduleTesterActions;
 }
