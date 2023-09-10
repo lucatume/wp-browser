@@ -7,6 +7,30 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Update code to be compatible with Codeception v5, PHP 8.0+ and Composer API 2.2+.
+- Added support for the `WPLoader.stylesheet` configuration parameter to allow specifying a distinct `template` and `stylesheet`.
+- Changed name of the `WPLoader.theme` to `WPLoader.template`.
+- Added the following configuration keys to the `WPLoader` module:
+  - `dump` - allows specifying one or more dump files to be loaded after the installation and before the first test runs.
+  - `dbUrl` - allows providing the db name, user, password and host using a single URL, e.g. `mysql://user:password@host:port/db_name`.
+  - `AUTH_KEY` - `SECURE_AUTH_KEY` - `LOGGED_IN_KEY` - `NONCE_KEY` - `AUTH_SALT` - `SECURE_AUTH_SALT` - `LOGGED_IN_SALT` - `NONCE_SALT` - allows specifying the WordPress salts.
+  - Support configuring the module using the WordPress constant name directly according to the following map (keys are aliased):
+    - `ABSPATH` or `wpRootFolder`
+    - `DB_NAME` or `dbName`
+    - `DB_USER` or `dbUser`
+    - `DB_HOST` or `dbHost`
+    - `DB_PASSWORD` or `dbPassword`
+    - `DB_CHARSET` or `dbCharset`
+    - `DB_COLLATE` or `dbCollate`
+    - `WP_TESTS_MULTISITE` or `multisite`
+    - `WP_DEFAULT_THEME` or `theme`
+    - `WP_TESTS_DOMAIN` or `domain`
+    - `WP_TESTS_EMAIL` or `adminEmail`
+    - `WP_TESTS_TITLE` or `title`
+  - Added support for the `dbUrl` configuration parameter to the `WPDb` module; it allows providing the database username, password and DSN with a single URL; e.g. `mysql://user:password@host:port/db_name`.
+  - Added the `WPCLI::dontSeeShellOutputMatches` method
+
+### Breaking changes
+
 - Move classes in the `tad\WPBrowser` namespace to the `lucatume\WPBrowser` one.
 - Move classes in the `Codeception` namespace to the `lucatume\WPBrowser` one.
 - Moved functions from the `lucatume\WPBrowser` namespace to dedicated classes in the `lucatume\WPBrowser\Utils`
@@ -17,8 +41,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Removed the `lucatume\WPBrowser` Composer-related functions.
 - Removed the `tad\WPBrowser\pregErrorMessage` function.
 - Removed support for the `WPLoader.isolatedInstall` configuration parameter; installation always happens in isolation.
-- Added support for the `WPLoader.stylesheet` configuration parameter to allow specifying a distinct `template` and `stylesheet`.
-- Changed name of the `WPLoader.theme` to `WPLoader.template`.
 - Deprecated the `WPLoaer.activatePlugins` parameter: the `WPLoader.plugins` parameter should be used instead.
 - Removed the `tad\WPBrowser\processStatus`, `tad\WPBrowser\processReadPipe`, `tad\WPBrowser\process` and `tad\WPBrowser\buildCommandLine` functions.
 - Removed the `isolatedInstall` parameter from the `WPLoader` configuration: installation will always happen in isolation.
@@ -39,37 +61,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   - `skipPluggables` - no more required.
   - `wpDebug` - the `WP_DEBUG` constant is always set to `true` during tests.
   - `activatePlugins` - plugins specified in the `plugins` configuration key will be always activated.
-- Added the following configuration keys to the `WPLoader` module:
-  - `dump` - allows specifying one or more dump files to be loaded after the installation and before the first test runs.
-  - `dbUrl` - allows providing the db name, user, password and host using a single URL, e.g. `mysql://user:password@host:port/db_name`.
-  - `AUTH_KEY` - `SECURE_AUTH_KEY` - `LOGGED_IN_KEY` - `NONCE_KEY` - `AUTH_SALT` - `SECURE_AUTH_SALT` - `LOGGED_IN_SALT` - `NONCE_SALT` - allows specifying the WordPress salts.
-  - Support configuring the module using the WordPress constant name directly according to the following map (keys are aliased):
-    - `ABSPATH` or `wpRootFolder`
-    - `DB_NAME` or `dbName`
-    - `DB_USER` or `dbUser`
-    - `DB_HOST` or `dbHost`
-    - `DB_PASSWORD` or `dbPassword`
-    - `DB_CHARSET` or `dbCharset`
-    - `DB_COLLATE` or `dbCollate`
-    - `WP_TESTS_MULTISITE` or `multisite`
-    - `WP_DEFAULT_THEME` or `theme`
-    - `WP_TESTS_DOMAIN` or `domain`
-    - `WP_TESTS_EMAIL` or `adminEmail`
-    - `WP_TESTS_TITLE` or `title`
-  - Added support for the `dbUrl` configuration parameter to the `WPDb` module; it allows providing the database username, password and DSN with a single URL; e.g. `mysql://user:password@host:port/db_name`.
-  - Rewrite the `WPCLI` module to use the `Symfony\Component\Process\Process` class under the hood.
-  - Added the `WPCLI::dontSeeShellOutputMatches` method
-  - Update the `WPCLI` module to use supported configuration parameters as strict arguments by default
-  - Removed the `WithWordPressFilters` trait
-  - Temporarily remove the `preserveGlobalState` test method support to reimplement support later.
-  - Removed the `generate:wpajax` command and related support classes.
-  - Removed the `generate:wpcanonical` command and related support classes.
-  - Removed the `generate:wprest` command and related support classes.
-  - Removed the `generate:wprestcontroller` command and related support classes.
-  - Removed the `generate:wprestposttypecontroller` command and related support classes.
-  - Removed the `generate:wpxmlrpc` command and related support classes.
-  - Removed the `Copier` and `Symlinker` extensions.
-  - Removed support for PHPUnit's `@runInSeparateProcess` annotation.
+- Removed support for PHPUnit's `@runInSeparateProcess` annotation.
+- Removed the `Copier` and `Symlinker` extensions.
+- Removed the `WithWordPressFilters` trait
+- Removed the `generate:wpajax` command and related support classes.
+- Removed the `generate:wpcanonical` command and related support classes.
+- Removed the `generate:wprest` command and related support classes.
+- Removed the `generate:wprestcontroller` command and related support classes.
+- Removed the `generate:wprestposttypecontroller` command and related support classes.
+- Removed the `generate:wpxmlrpc` command and related support classes.
+- Rewrite the `WPCLI` module to use the `Symfony\Component\Process\Process` class under the hood.
+- Temporarily remove the `preserveGlobalState` test method support to reimplement support later.
+- Update the `WPCLI` module to use supported configuration parameters as strict arguments by default
     
 ## [3.1.6] 2022-04-28;
 

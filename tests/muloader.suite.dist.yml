@@ -14,7 +14,7 @@ modules:
             wpDebug: true
             tablePrefix: '%WORDPRESS_TABLE_PREFIX%'
             domain: '%WORDPRESS_DOMAIN%'
-            adminEmail: 'admin@%WORDPRESS_DOMAIN%'
+            adminEmail: 'admin@wordpress.test'
             title: 'Test'
             theme: dummy
             plugins: ['mu-plugin-1/plugin.php']

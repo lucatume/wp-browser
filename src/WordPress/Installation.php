@@ -408,20 +408,13 @@ class Installation
      */
     public function runWpCliCommandOrThrow(array $command): Process
     {
-        if ($this->installationState instanceof Multisite) {
-            $hasUrlOption = false;
-            foreach ($command as $arg) {
-                if (str_starts_with($arg, '--url')) {
-                    $hasUrlOption = true;
-                    break;
-                }
-            }
-            $db = $this->installationState->getDb();
-            if (!$hasUrlOption && ($url = $db->getOption('home'))) {
-                array_unshift($command, '--url=' . $url);
-            }
+        $process = $this->runWpCliCommand($command);
+
+        if ($process->run() !== 0) {
+            throw new ProcessFailedException($process);
         }
-        return (new CliProcess($command, $this->getRootDir()))->mustRun();
+
+        return $process;
     }
 
     public function usesSqlite(): bool
@@ -477,5 +470,33 @@ class Installation
         fclose($file);
 
         return str_contains($contents, 'Plugin Name: SQLite integration (Drop-in)');
+    }
+
+    /**
+     * @param string[] $command
+     *
+     * @throws DbException
+     */
+    public function runWpCliCommand(array $command): Process
+    {
+        if ($this->installationState instanceof Multisite) {
+            $hasUrlOption = false;
+            foreach ($command as $arg) {
+                if (str_starts_with($arg, '--url')) {
+                    $hasUrlOption = true;
+                    break;
+                }
+            }
+            $db = $this->installationState->getDb();
+            if (!$hasUrlOption && ($url = $db->getOption('home'))) {
+                array_unshift($command, '--url=' . $url);
+            }
+        }
+
+        $process = new CliProcess($command, $this->getRootDir());
+
+        $process->run();
+
+        return $process;
     }
 }

@@ -18,14 +18,16 @@ class WPDbMultisiteSubdomainCest
         foreach ($blogIds as $blogId) {
             $I->useBlog($blogId);
             $I->haveManyPostsInDatabase(3, [
-                'post_title'    => 'Blog {{blog}} Post {{n}}',
+                'post_title' => 'Blog {{blog}} Post {{n}}',
                 'template_data' => ['blog' => $blogId],
             ]);
         }
 
+        codecept_debug($blogIds);
+
         for ($i = 0; $i < 3; $i++) {
             $blogId = $blogIds[$i];
-            $I->amOnSubdomain('blog' . $i);
+            $I->amOnUrl($I->grabBlogUrl($blogId));
             $I->useBlog($blogId);
             $I->haveOptionInDatabase('posts_per_page', 10);
             $I->amOnPage('/');

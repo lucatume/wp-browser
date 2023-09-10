@@ -22,8 +22,14 @@ modules:
             port: '%CHROMEDRIVER_PORT%'
             window_size: 1200x1000
             capabilities:
-                chromeOptions:
-                    args: ["--disable-gpu", "--proxy-server='direct://'", "--proxy-bypass-list=*"]
+              "goog:chromeOptions":
+                args:
+                  - "--headless"
+                  - "--disable-gpu"
+                  - "--disable-dev-shm-usage"
+                  - "--proxy-server='direct://'"
+                  - "--proxy-bypass-list=*"
+                  - "--no-sandbox"
         lucatume\WPBrowser\Module\WPDb:
             dbUrl: '%WORDPRESS_DB_URL%'
             dump: 'tests/Support/Data/dump.sql'
@@ -42,75 +48,6 @@ modules:
             domain: '%WORDPRESS_DOMAIN%'
             
 <<< /EndToEnd.suite.yml <<<
-
->>> /EndToEnd/ActivationCest.php >>>
-<?php
-
-namespace Tests\EndToEnd;
-
-use Tests\Support\EndToEndTester;
-
-class ActivationCest
-{
-    public function test_homepage_works(EndToEndTester $I): void
-    {
-        $I->amOnPage('/');
-        $I->seeElement('body');
-    }
-    
-    public function test_can_login_as_admin(EndToEndTester $I): void
-    {
-        $I->loginAsAdmin();
-        $I->amOnAdminPage('/');
-        $I->seeElement('body.wp-admin');
-    }
-}
-
-<<< /EndToEnd/ActivationCest.php <<<
-
->>> /EndToEnd/_bootstrap.php >>>
-<?php
-/*
- * EndToEnd suite bootstrap file.
- * 
- * This file is loaded AFTER the suite modules are initialized and WordPress has been loaded by the WPLoader module.
- * 
- * The initial state of the WordPress site is the one set up by the dump file(s) loaded by the WPDb module, look for the
- * "modules.config.WPDb.dump" setting in the suite configuration file. The database will be dropped after each test
- * and re-created from the dump file(s).
- * 
- * You can modify and create new dump files using the `vendor/bin/codecept wp:cli EndToEnd <wp-cli command>` command
- * to run WP-CLI commands on the WordPress site and database used by the EndToEnd suite.
- * E.g.:
- * `vendor/bin/codecept wp:cli EndToEnd db import tests/Support/Data/dump.sql` to load  dump file.
- * `vendor/bin/codecept wp:cli EndToEnd plugin activate woocommerce` to activate the WooCommerce plugin.
- * `vendor/bin/codecept wp:cli EndToEnd user create alice alice@example.com --role=administrator` to create a new user.
- * `vendor/bin/codecept wp:cli EndToEnd db export tests/Support/Data/dump.sql` to update the dump file.
- */
-<<< /EndToEnd/_bootstrap.php <<<
-
->>> /Integration.suite.yml >>>
-# Integration suite configuration
-#
-# Run integration and "WordPress unit" tests.
-
-actor: IntegrationTester
-bootstrap: _bootstrap.php
-modules:
-    enabled:
-        - lucatume\WPBrowser\Module\WPLoader
-    config:
-        lucatume\WPBrowser\Module\WPLoader:
-           wpRootFolder: "%WORDPRESS_ROOT_DIR%" 
-           dbUrl: '%WORDPRESS_DB_URL%'
-           wpDebug: true
-           tablePrefix: '%TEST_TABLE_PREFIX%'
-           domain: '%WORDPRESS_DOMAIN%'
-           adminEmail: 'admin@%WORDPRESS_DOMAIN%'
-           title: 'Integration Tests'
-           plugins: []
-           theme: ''
-<<< /Integration.suite.yml <<<
 
 >>> /Integration/SampleTest.php >>>
 <?php
@@ -172,72 +109,28 @@ class SampleTest extends WPTestCase
  */
 <<< /Integration/_bootstrap.php <<<
 
->>> /.env >>>
-# The path to the WordPress root directory, the one containing the wp-load.php file.
-# This can be a relative path from the directory that contains the codeception.yml file,
-# or an absolute path.
-WORDPRESS_ROOT_DIR=.
+>>> /Integration.suite.yml >>>
+# Integration suite configuration
+#
+# Run integration and "WordPress unit" tests.
 
-# Tests will require a MySQL database to run.
-# The database will be created if it does not exist.
-# Do not use a database that contains important data!
-WORDPRESS_DB_URL=sqlite://%codecept_root_dir%/tests/Support/Data/db.sqlite
-
-# The Integration suite will use this table prefix for the WordPress tables.
-TEST_TABLE_PREFIX=test_
-
-# This table prefix used by the WordPress site in end-to-end tests.
-WORDPRESS_TABLE_PREFIX=wp_
-
-# The URL and domain of the WordPress site used in end-to-end tests.
-WORDPRESS_URL=http://localhost:46363
-WORDPRESS_DOMAIN=localhost:46363
-
-# The username and password of the administrator user of the WordPress site used in end-to-end tests.
-WORDPRESS_ADMIN_USER=admin
-WORDPRESS_ADMIN_PASSWORD=password
-
-# The host and port of the ChromeDriver server that will be used in end-to-end tests.
-CHROMEDRIVER_HOST=localhost
-CHROMEDRIVER_PORT=41797
-
-# The port on which the PHP built-in server will serve the WordPress installation.
-BUILTIN_SERVER_PORT=46363
-
-<<< /.env <<<
-
->>> /Support/EndToEndTester.php >>>
-<?php
-
-declare(strict_types=1);
-
-namespace Tests\Support;
-
-/**
- * Inherited Methods
- * @method void wantTo($text)
- * @method void wantToTest($text)
- * @method void execute($callable)
- * @method void expectTo($prediction)
- * @method void expect($prediction)
- * @method void amGoingTo($argumentation)
- * @method void am($role)
- * @method void lookForwardTo($achieveValue)
- * @method void comment($description)
- * @method void pause($vars = [])
- *
- * @SuppressWarnings(PHPMD)
-*/
-class EndToEndTester extends \Codeception\Actor
-{
-    use _generated\EndToEndTesterActions;
-
-    /**
-     * Define custom actions here
-     */
-}
-
-<<< /Support/EndToEndTester.php <<<
+actor: IntegrationTester
+bootstrap: _bootstrap.php
+modules:
+    enabled:
+        - lucatume\WPBrowser\Module\WPLoader
+    config:
+        lucatume\WPBrowser\Module\WPLoader:
+           wpRootFolder: "%WORDPRESS_ROOT_DIR%" 
+           dbUrl: '%WORDPRESS_DB_URL%'
+           wpDebug: true
+           tablePrefix: '%TEST_TABLE_PREFIX%'
+           domain: '%WORDPRESS_DOMAIN%'
+           adminEmail: 'admin@%WORDPRESS_DOMAIN%'
+           title: 'Integration Tests'
+           plugins: []
+           theme: ''
+<<< /Integration.suite.yml <<<
 
 >>> /Support/IntegrationTester.php >>>
 <?php
@@ -272,8 +165,45 @@ class IntegrationTester extends \Codeception\Actor
 
 <<< /Support/IntegrationTester.php <<<
 
+>>> /Support/EndToEndTester.php >>>
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Support;
+
+/**
+ * Inherited Methods
+ * @method void wantTo($text)
+ * @method void wantToTest($text)
+ * @method void execute($callable)
+ * @method void expectTo($prediction)
+ * @method void expect($prediction)
+ * @method void amGoingTo($argumentation)
+ * @method void am($role)
+ * @method void lookForwardTo($achieveValue)
+ * @method void comment($description)
+ * @method void pause($vars = [])
+ *
+ * @SuppressWarnings(PHPMD)
+*/
+class EndToEndTester extends \Codeception\Actor
+{
+    use _generated\EndToEndTesterActions;
+
+    /**
+     * Define custom actions here
+     */
+}
+
+<<< /Support/EndToEndTester.php <<<
+
+>>> /Support/Data/.gitkeep >>>
+
+<<< /Support/Data/.gitkeep <<<
+
 >>> /Support/_generated/EndToEndTesterActions.php >>>
-<?php  //[STAMP] 101d4698e9e2bfddc493bae287dfb0b9
+<?php  //[STAMP] 62924d7b7207472fbe7fd16e5efa72b3
 // phpcs:ignoreFile
 namespace Tests\Support\_generated;
 
@@ -5477,19 +5407,45 @@ trait EndToEndTesterActions
      *
      * This has nothing to do with WordPress `switch_to_blog` function, this code will affect the table prefixes used.
      *
+     * @param int $blogId The ID of the blog to use.
+     * @throws ModuleException If the blog ID is not an integer greater than or equal to 0.
      * @example
      * ```php
      * // Switch to the blog with ID 23.
      * $I->useBlog(23);
      * // Switch back to the main blog.
      * $I->useMainBlog();
+     * // Switch to the main blog using this method.
+     * $I->useBlog(1);
      * ```
-     *
-     * @param int $blogId The ID of the blog to use.
      * @see \lucatume\WPBrowser\Module\WPDb::useBlog()
      */
-    public function useBlog(int $blogId = 0): void {
+    public function useBlog(int $blogId = 1): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('useBlog', func_get_args()));
+    }
+
+ 
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * Gets the blog URL from the Blog ID.
+     *
+     * @param int $blogId The ID of the blog to get the URL for.
+     *
+     * @return string The blog URL.
+     * @throws ModuleException If the blog ID is not found in the database.
+     *
+     * @example
+     * ```php
+     * // Get the URL for the main blog.
+     * $mainBlogUrl = $I->grabBlogUrl();
+     * // Get the URL for the blog with ID 23.
+     * $blog23Url = $I->grabBlogUrl(23);
+     * ```
+     * @see \lucatume\WPBrowser\Module\WPDb::grabBlogUrl()
+     */
+    public function grabBlogUrl(int $blogId = 1): string {
+        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabBlogUrl', func_get_args()));
     }
 
  
@@ -9899,16 +9855,16 @@ trait EndToEndTesterActions
      * The value will first look at the `WP_PLUGIN_DIR` constant, then the `pluginsFolder` configuration parameter
      * and will, finally, look in the default path from the WordPress root directory.
      *
+     * @param string $path A relative path to append to te plugins directory absolute path.
+     *
+     * @return string The absolute path to the `pluginsFolder` path or the same with a relative path appended if `$path`
+     *                is provided.
      * @example
      * ```php
      * $plugins = $this->getPluginsFolder();
      * $hello = $this->getPluginsFolder('hello.php');
      * ```
      *
-     * @param string $path A relative path to append to te plugins directory absolute path.
-     *
-     * @return string The absolute path to the `pluginsFolder` path or the same with a relative path appended if `$path`
-     *                is provided.
      * @see \lucatume\WPBrowser\Module\WPLoader::getPluginsFolder()
      */
     public function getPluginsFolder(string $path = ""): string {
@@ -9921,16 +9877,16 @@ trait EndToEndTesterActions
      *
      * Returns the absolute path to the themes directory.
      *
+     * @param string $path A relative path to append to te themes directory absolute path.
+     *
+     * @return string The absolute path to the `themesFolder` path or the same with a relative path appended if `$path`
+     *                is provided.
      * @example
      * ```php
      * $themes = $this->getThemesFolder();
      * $twentytwenty = $this->getThemesFolder('/twentytwenty');
      * ```
      *
-     * @param string $path A relative path to append to te themes directory absolute path.
-     *
-     * @return string The absolute path to the `themesFolder` path or the same with a relative path appended if `$path`
-     *                is provided.
      * @see \lucatume\WPBrowser\Module\WPLoader::getThemesFolder()
      */
     public function getThemesFolder(string $path = ""): string {
@@ -9945,14 +9901,14 @@ trait EndToEndTesterActions
      * This methods gives access to the same factories provided by the
      * [Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/).
      *
+     * @return FactoryStore A factory store, proxy to get hold of the Core suite object
+     *                                                     factories.
+     *
      * @example
      * ```php
      * $postId = $I->factory()->post->create();
      * $userId = $I->factory()->user->create(['role' => 'administrator']);
      * ```
-     *
-     * @return FactoryStore A factory store, proxy to get hold of the Core suite object
-     *                                                     factories.
      *
      * @link https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/
      * @see \lucatume\WPBrowser\Module\WPLoader::factory()
@@ -9967,6 +9923,9 @@ trait EndToEndTesterActions
      *
      * Returns the absolute path to the WordPress content directory.
      *
+     * @param string $path An optional path to append to the content directory absolute path.
+     *
+     * @return string The content directory absolute path, or a path in it.
      * @example
      * ```php
      * $content = $this->getContentFolder();
@@ -9974,9 +9933,6 @@ trait EndToEndTesterActions
      * $twentytwenty = $this->getContentFolder('themes/twentytwenty');
      * ```
      *
-     * @param string $path An optional path to append to the content directory absolute path.
-     *
-     * @return string The content directory absolute path, or a path in it.
      * @see \lucatume\WPBrowser\Module\WPLoader::getContentFolder()
      */
     public function getContentFolder(string $path = ""): string {
@@ -10036,16 +9992,16 @@ trait IntegrationTesterActions
      * The value will first look at the `WP_PLUGIN_DIR` constant, then the `pluginsFolder` configuration parameter
      * and will, finally, look in the default path from the WordPress root directory.
      *
+     * @param string $path A relative path to append to te plugins directory absolute path.
+     *
+     * @return string The absolute path to the `pluginsFolder` path or the same with a relative path appended if `$path`
+     *                is provided.
      * @example
      * ```php
      * $plugins = $this->getPluginsFolder();
      * $hello = $this->getPluginsFolder('hello.php');
      * ```
      *
-     * @param string $path A relative path to append to te plugins directory absolute path.
-     *
-     * @return string The absolute path to the `pluginsFolder` path or the same with a relative path appended if `$path`
-     *                is provided.
      * @see \lucatume\WPBrowser\Module\WPLoader::getPluginsFolder()
      */
     public function getPluginsFolder(string $path = ""): string {
@@ -10058,16 +10014,16 @@ trait IntegrationTesterActions
      *
      * Returns the absolute path to the themes directory.
      *
+     * @param string $path A relative path to append to te themes directory absolute path.
+     *
+     * @return string The absolute path to the `themesFolder` path or the same with a relative path appended if `$path`
+     *                is provided.
      * @example
      * ```php
      * $themes = $this->getThemesFolder();
      * $twentytwenty = $this->getThemesFolder('/twentytwenty');
      * ```
      *
-     * @param string $path A relative path to append to te themes directory absolute path.
-     *
-     * @return string The absolute path to the `themesFolder` path or the same with a relative path appended if `$path`
-     *                is provided.
      * @see \lucatume\WPBrowser\Module\WPLoader::getThemesFolder()
      */
     public function getThemesFolder(string $path = ""): string {
@@ -10082,14 +10038,14 @@ trait IntegrationTesterActions
      * This methods gives access to the same factories provided by the
      * [Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/).
      *
+     * @return FactoryStore A factory store, proxy to get hold of the Core suite object
+     *                                                     factories.
+     *
      * @example
      * ```php
      * $postId = $I->factory()->post->create();
      * $userId = $I->factory()->user->create(['role' => 'administrator']);
      * ```
-     *
-     * @return FactoryStore A factory store, proxy to get hold of the Core suite object
-     *                                                     factories.
      *
      * @link https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/
      * @see \lucatume\WPBrowser\Module\WPLoader::factory()
@@ -10104,6 +10060,9 @@ trait IntegrationTesterActions
      *
      * Returns the absolute path to the WordPress content directory.
      *
+     * @param string $path An optional path to append to the content directory absolute path.
+     *
+     * @return string The content directory absolute path, or a path in it.
      * @example
      * ```php
      * $content = $this->getContentFolder();
@@ -10111,9 +10070,6 @@ trait IntegrationTesterActions
      * $twentytwenty = $this->getContentFolder('themes/twentytwenty');
      * ```
      *
-     * @param string $path An optional path to append to the content directory absolute path.
-     *
-     * @return string The content directory absolute path, or a path in it.
      * @see \lucatume\WPBrowser\Module\WPLoader::getContentFolder()
      */
     public function getContentFolder(string $path = ""): string {
@@ -10140,9 +10096,85 @@ trait IntegrationTesterActions
 
 <<< /Support/_generated/.gitignore <<<
 
->>> /Support/Data/.gitkeep >>>
+>>> /EndToEnd/_bootstrap.php >>>
+<?php
+/*
+ * EndToEnd suite bootstrap file.
+ * 
+ * This file is loaded AFTER the suite modules are initialized and WordPress has been loaded by the WPLoader module.
+ * 
+ * The initial state of the WordPress site is the one set up by the dump file(s) loaded by the WPDb module, look for the
+ * "modules.config.WPDb.dump" setting in the suite configuration file. The database will be dropped after each test
+ * and re-created from the dump file(s).
+ * 
+ * You can modify and create new dump files using the `vendor/bin/codecept wp:cli EndToEnd <wp-cli command>` command
+ * to run WP-CLI commands on the WordPress site and database used by the EndToEnd suite.
+ * E.g.:
+ * `vendor/bin/codecept wp:cli EndToEnd db import tests/Support/Data/dump.sql` to load  dump file.
+ * `vendor/bin/codecept wp:cli EndToEnd plugin activate woocommerce` to activate the WooCommerce plugin.
+ * `vendor/bin/codecept wp:cli EndToEnd user create alice alice@example.com --role=administrator` to create a new user.
+ * `vendor/bin/codecept wp:cli EndToEnd db export tests/Support/Data/dump.sql` to update the dump file.
+ */
+<<< /EndToEnd/_bootstrap.php <<<
 
-<<< /Support/Data/.gitkeep <<<
+>>> /EndToEnd/ActivationCest.php >>>
+<?php
+
+namespace Tests\EndToEnd;
+
+use Tests\Support\EndToEndTester;
+
+class ActivationCest
+{
+    public function test_homepage_works(EndToEndTester $I): void
+    {
+        $I->amOnPage('/');
+        $I->seeElement('body');
+    }
+    
+    public function test_can_login_as_admin(EndToEndTester $I): void
+    {
+        $I->loginAsAdmin();
+        $I->amOnAdminPage('/');
+        $I->seeElement('body.wp-admin');
+    }
+}
+
+<<< /EndToEnd/ActivationCest.php <<<
+
+>>> /.env >>>
+# The path to the WordPress root directory, the one containing the wp-load.php file.
+# This can be a relative path from the directory that contains the codeception.yml file,
+# or an absolute path.
+WORDPRESS_ROOT_DIR=.
+
+# Tests will require a MySQL database to run.
+# The database will be created if it does not exist.
+# Do not use a database that contains important data!
+WORDPRESS_DB_URL=sqlite://%codecept_root_dir%/tests/Support/Data/db.sqlite
+
+# The Integration suite will use this table prefix for the WordPress tables.
+TEST_TABLE_PREFIX=test_
+
+# This table prefix used by the WordPress site in end-to-end tests.
+WORDPRESS_TABLE_PREFIX=wp_
+
+# The URL and domain of the WordPress site used in end-to-end tests.
+WORDPRESS_URL=http://localhost:64942
+WORDPRESS_DOMAIN=localhost:64942
+
+# The username and password of the administrator user of the WordPress site used in end-to-end tests.
+WORDPRESS_ADMIN_USER=admin
+WORDPRESS_ADMIN_PASSWORD=password
+
+# The host and port of the ChromeDriver server that will be used in end-to-end tests.
+CHROMEDRIVER_HOST=localhost
+CHROMEDRIVER_PORT=64954
+
+# The port on which the PHP built-in server will serve the WordPress installation.
+BUILTIN_SERVER_PORT=64942
+
+<<< /.env <<<
 
 >>> /_output/.gitignore >>>
 *

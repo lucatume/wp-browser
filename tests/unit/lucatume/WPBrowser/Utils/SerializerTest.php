@@ -18,16 +18,26 @@ class TestSerializableObject implements Serializable
     public string $foo = 'bar';
     public int $number = 23;
 
-    public function serialize(): ?string
+    public function __serialize(): array
     {
-        return serialize(['foo' => 'bar', 'number' => 23]);
+        return ['foo' => 'bar', 'number' => 23];
+    }
+
+    public function __unserialize(array $data): void
+    {
+        foreach ($data as $key => $value) {
+            $this->{$key} = $value;
+        }
+    }
+
+    public function serialize()
+    {
+        return serialize($this->__serialize());
     }
 
     public function unserialize(string $data)
     {
-        foreach (unserialize($data) as $key => $value) {
-            $this->{$key} = $value;
-        }
+        $this->__unserialize(unserialize($data));
     }
 }
 
@@ -206,17 +216,21 @@ class SerializerTest extends Unit
         yield 'Exception' => [new Exception('Exception message')];
         yield 'RuntimeException' => [new RuntimeException('Runtime exception message')];
         yield 'ExpectationFailedException' => [
-            new ExpectationFailedException('Expectation failed exception message',
-                new ComparisonFailure('foo', 'bar', 'foo', 'bar'))
+            new ExpectationFailedException(
+                'Expectation failed exception message',
+                new ComparisonFailure('foo', 'bar', 'foo', 'bar')
+            )
         ];
         yield 'AssertionFailedError' => [new AssertionFailedError('Assertion failed error message')];
         yield 'ExpectationFailedException w/o Comparison Failure' => [
             new ExpectationFailedException('Expectation failed exception message')
         ];
         yield 'ExpectationFailedException w/ previous' => [
-            new ExpectationFailedException('Expectation failed exception message',
+            new ExpectationFailedException(
+                'Expectation failed exception message',
                 new ComparisonFailure('foo', 'bar', 'foo', 'bar'),
-                new Exception('Previous'))
+                new Exception('Previous')
+            )
         ];
     }
 

@@ -82,12 +82,14 @@ modules:
             window_size: false
             wait: 5
             capabilities:
-                # Used in more recent releases of Selenium.
-                "goog:chromeOptions":
-                    args: ["--no-sandbox", "--headless", "--disable-gpu", "--user-agent=wp-browser"]
-                # Support the old format for back-compatibility purposes. 
-                "chromeOptions":
-                    args: ["--no-sandbox", "--headless", "--disable-gpu", "--user-agent=wp-browser"]
+              "goog:chromeOptions":
+                args:
+                  - "--headless"
+                  - "--disable-gpu"
+                  - "--disable-dev-shm-usage"
+                  - "--proxy-server='direct://'"
+                  - "--proxy-bypass-list=*"
+                  - "--no-sandbox"
 ```
 
 If you're using the [WPBrowser](WPBrowser.md) module send a specific header in the context of test requests: 

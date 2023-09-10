@@ -48,8 +48,14 @@ modules:
       port: 4444
       window_size: false #disabled for Chrome driver
       capabilities:
-        chromeOptions:
-          args: ["--headless", "--disable-gpu", "--proxy-server='direct://'", "--proxy-bypass-list=*"]
+        "goog:chromeOptions":
+          args:
+            - "--headless"
+            - "--disable-gpu"
+            - "--disable-dev-shm-usage"
+            - "--proxy-server='direct://'"
+            - "--proxy-bypass-list=*"
+            - "--no-sandbox"
 ```
 
 <!--doc-->

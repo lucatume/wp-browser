@@ -10,8 +10,8 @@ This extension will start and stop the PHP built-in web server before and after 
 The extension can be configured with the following parameters:
 
 * required
-    * `docRoot` - the document root to use for the PHP Built-in server; it can be either an absolute path or a path
-      relative to the Codeception root directory.
+    * `docroot` - the document root to use for the PHP Built-in server; it can be either an absolute path or a path
+      relative to the Codeception root directory. Note the lowercase `r` in the parameter name.
 * optional
     * `suites` - an array of Codeception suites to run the server for; if not set the server will be started for all the
       suites.
@@ -27,10 +27,10 @@ Example configuration starting the server for all suites:
 ```yaml
 extensions:
   enabled:
-    - lucatume\WPBrowser\Extension\BuiltInServerController
+    - "lucatume\\WPBrowser\\Extension\\BuiltInServerController"
   config:
-    lucatume\WPBrowser\Extension\BuiltInServerController:
-      docRoot: /var/www/html
+    "lucatume\\WPBrowser\\Extension\\BuiltInServerController":
+      docroot: /var/www/html
       workers: 5
 ```
 
@@ -39,13 +39,13 @@ The extension can access environment variables defined in the tests configuratio
 ```yaml
 extensions:
   enabled:
-    - lucatume\WPBrowser\Extension\BuiltInServerController
+    - "lucatume\\WPBrowser\\Extension\\BuiltInServerController"
   config:
-    lucatume\WPBrowser\Extension\BuiltInServerController:
+    "lucatume\\WPBrowser\\Extension\\BuiltInServerController":
       suites:
         - EndToEnd
         - WebApp
-      docRoot: '%WORDPRESS_ROOT_DIR%'
+      docroot: '%WORDPRESS_ROOT_DIR%'
       port: '%BUILT_IN_SERVER_PORT%'
       workers: '%BUILT_IN_SERVER_WORKERS%'
 ```
@@ -71,9 +71,9 @@ Example configuration starting the server for all suites:
 ```yaml
 extensions:
   enabled:
-    - lucatume\WPBrowser\Extension\ChromeDriverController
+    - "lucatume\\WPBrowser\\Extension\\ChromeDriverController"
   config:
-    lucatume\WPBrowser\Extension\ChromeDriverController:
+    "lucatume\\WPBrowser\\Extension\\ChromeDriverController":
       port: 4444
       binary: /usr/local/bin/chromedriver
 ```
@@ -83,12 +83,12 @@ The extension can access environment variables defined in the tests configuratio
 ```yaml
 extensions:
   enabled:
-    - lucatume\WPBrowser\Extension\ChromeDriverController
+    - "lucatume\\WPBrowser\\Extension\\ChromeDriverController"
   config:
     suites:
       - EndToEnd
       - WebApp
-    lucatume\WPBrowser\Extension\ChromeDriverController:
+    "lucatume\\WPBrowser\\Extension\\ChromeDriverController":
       port: '%CHROMEDRIVER_PORT%'
       binary: '%CHROMEDRIVER_BINARY%'
 ```
@@ -117,9 +117,9 @@ Example configuration starting the server for all suites:
 ```yaml
 extensions:
   enabled:
-    - lucatume\WPBrowser\Extension\DockerComposeController
+    - "lucatume\\WPBrowser\\Extension\\DockerComposeController"
   config:
-    lucatume\WPBrowser\Extension\DockerComposeController:
+    "lucatume\\WPBrowser\\Extension\\DockerComposeController":
       compose-file: /var/www/html/docker-compose.yml
       env-file: /var/www/html/.env
 ```
@@ -129,12 +129,12 @@ The extension can access environment variables defined in the tests configuratio
 ```yaml
 extensions:
   enabled:
-    - lucatume\WPBrowser\Extension\DockerComposeController
+    - "lucatume\\WPBrowser\\Extension\\DockerComposeController"
   config:
     suites:
       - EndToEnd
       - WebApp
-    lucatume\WPBrowser\Extension\DockerComposeController:
+    "lucatume\\WPBrowser\\Extension\\DockerComposeController":
       compose-file: '%DOCKER_COMPOSE_FILE%'
       env-file: '%DOCKER_COMPOSE_ENV_FILE%'
 ```

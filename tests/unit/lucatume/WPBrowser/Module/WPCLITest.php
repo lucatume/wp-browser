@@ -793,13 +793,15 @@ class WPCLITest extends Unit
      */
     public function should_inherit_env_from_current_session_when_env_not_specified(): void
     {
+        $_ENV['TEST_INHERIT_FROM_CURRENT_ENV'] = '123';
         $wpcli = $this->module([
             'path' => self::$installation->getWpRootDir(),
         ]);
 
-        $wpcli->cli(['eval', 'print_r($_ENV[\'HOME\']);', '--skip-wordpress']);
+        $wpcli->cli(['eval', 'print_r(getenv(\'TEST_INHERIT_FROM_CURRENT_ENV\'));', '--skip-wordpress']);
+        codecept_debug($wpcli->grabLastShellOutput());
 
-        $this->assertEquals($_ENV['HOME'], $wpcli->grabLastShellOutput());
+        $this->assertEquals('123', $wpcli->grabLastShellOutput());
     }
 
     /**
@@ -812,16 +814,16 @@ class WPCLITest extends Unit
         $wpcli = $this->module([
             'path' => self::$installation->getWpRootDir(),
             'env' => [
-                'HOME' => '/home/username',
+                'CLI_CONFIG_ENV' => '/home/username',
                 'WP_CLI_CONFIG_PATH' => '/home/username/.wp-cli/config.yml',
             ]
         ]);
 
-        $wpcli->cli(['eval', 'print_r($_ENV[\'HOME\']);', '--skip-wordpress']);
+        $wpcli->cli(['eval', 'print_r(getenv(\'CLI_CONFIG_ENV\'));', '--skip-wordpress']);
 
         $this->assertEquals('/home/username', $wpcli->grabLastShellOutput());
 
-        $wpcli->cli(['eval', 'print_r($_ENV[\'WP_CLI_CONFIG_PATH\']);', '--skip-wordpress']);
+        $wpcli->cli(['eval', 'print_r(getenv(\'WP_CLI_CONFIG_PATH\'));', '--skip-wordpress']);
 
         $this->assertEquals('/home/username/.wp-cli/config.yml', $wpcli->grabLastShellOutput());
     }
@@ -840,7 +842,7 @@ class WPCLITest extends Unit
             ]
         ]);
 
-        $wpcli->cli(['eval', 'print_r($_ENV[\'HOME\']);', '--skip-wordpress'], [
+        $wpcli->cli(['eval', 'print_r(getenv(\'HOME\'));', '--skip-wordpress'], [
             'HOME' => '/home/anotheruser'
         ]);
 

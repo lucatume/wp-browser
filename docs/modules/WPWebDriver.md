@@ -12,6 +12,9 @@ cases.
 ## Configuration
 
 * `browser` - the browser to use; e.g. 'chrome'
+* `host` - the host to use; e.g. 'localhost'. This is the host of the Selenium server or the Chromedriver server.
+* `port` - the port to use; e.g. '4444'. This is the port of the Selenium server or the Chromedriver server.
+* `path` - the path to use; e.g. '/wd/hub' or '/'. Use '/' for Chrome.
 * `url` - **required**; the start URL of your WordPress project.
 * `adminUsername` - **required**; the site administrator username to use in actions like `loginAsAdmin`.
 * `adminPassword` - **required**; the site administrator password to use in actions like `loginAsAdmin`.
@@ -32,10 +35,17 @@ modules:
       browser: chrome
       host: 'localhost'
       port: '4444'
+      path: '/'
       window_size: false
       capabilities:
-        chromeOptions:
-          args: [ "--headless", "--disable-gpu", "--proxy-server='direct://'", "--proxy-bypass-list=*", "--no-sandbox", "--disable-dev-shm-usage" ]
+        "goog:chromeOptions":
+          args:
+            - "--headless"
+            - "--disable-gpu"
+            - "--disable-dev-shm-usage"
+            - "--proxy-server='direct://'"
+            - "--proxy-bypass-list=*"
+            - "--no-sandbox"
 ```
 
 The following configuration uses [dynamic configuration parameters][3] to set the module configuration:
@@ -51,10 +61,17 @@ modules:
       browser: chrome
       host: '%CHROME_HOST%'
       port: '%CHROME_PORT%'
+      path: '/'
       window_size: `1920,1080`
       capabilities:
-        chromeOptions:
-          args: [ "--disable-gpu", "--proxy-server='direct://'", "--proxy-bypass-list=*", "--no-sandbox", "--disable-dev-shm-usage" ]
+        "goog:chromeOptions":
+          args:
+            - "--headless"
+            - "--disable-gpu"
+            - "--disable-dev-shm-usage"
+            - "--proxy-server='direct://'"
+            - "--proxy-bypass-list=*"
+            - "--no-sandbox"
 ```
 
 Furthermore, the above configuration will **not** run Chrome in headless mode: the browser window will be visible.

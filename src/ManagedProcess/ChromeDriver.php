@@ -13,7 +13,7 @@ class ChromeDriver implements ManagedProcessInterface
     public const PID_FILE_NAME = 'chromedriver.pid';
     public const PORT_DEFAULT = 9515;
 
-    private string $binary;
+    private string $chromeDriverBinary;
     private string $prettyName = 'ChromeDriver';
 
     /**
@@ -24,18 +24,18 @@ class ChromeDriver implements ManagedProcessInterface
     public function __construct(
         private int $port = self::PORT_DEFAULT,
         private array $arguments = ['--url-base=/wd/hub'],
-        ?string $binary = null
+        ?string $chromeDriverBinary = null
     ) {
-        $binary = $binary ?? Composer::binDir('/chromedriver');
+        $chromeDriverBinary = $chromeDriverBinary ?? Composer::binDir('/chromedriver');
 
-        if (!(file_exists($binary) && is_executable($binary))) {
+        if (!(file_exists($chromeDriverBinary) && is_executable($chromeDriverBinary))) {
             throw new RuntimeException(
-                "ChromeDriver binary $binary does not exist.",
+                "ChromeDriver binary $chromeDriverBinary does not exist.",
                 ManagedProcessInterface::ERR_BINARY_NOT_FOUND
             );
         }
 
-        $this->binary = $binary;
+        $this->chromeDriverBinary = $chromeDriverBinary;
     }
 
     /**
@@ -43,7 +43,7 @@ class ChromeDriver implements ManagedProcessInterface
      */
     public function doStart(): void
     {
-        $command = [$this->binary, '--port=' . $this->port, ...$this->arguments];
+        $command = [$this->chromeDriverBinary, '--port=' . $this->port, ...$this->arguments];
         $process = new Process($command);
         $process->setOptions(['create_new_console' => true]);
         $process->start();
