@@ -30,8 +30,6 @@
 
 namespace tad\WPBrowser;
 
-use lucatume\WPBrowser\Deprecated\Map;
-
 $root = dirname(__DIR__);
 
 require_once $root . '/vendor/autoload.php';
@@ -42,8 +40,11 @@ function args()
 {
     global $argv;
 
-    $options = getopt('q', ['not-interactive', 'no-diff-check', 'no-unpushed-check', 'dry-run', 'no-changelog-update'],
-        $optind);
+    $options = getopt(
+        'q',
+        ['not-interactive', 'no-diff-check', 'no-unpushed-check', 'dry-run', 'no-changelog-update'],
+        $optind
+    );
 
     $map = [
         'releaseType' => isset($argv[$optind]) ? $argv[$optind] : 'patch',
@@ -82,9 +83,9 @@ if (!$dryRun) {
  *
  * @param string $changelog The absolute path to the changelog file.
  *
- * @return Map The map of parsed values.
+ * @return array{notes: string, latestVersion: string}
  */
-function changelog($changelog)
+function changelog($changelog): array
 {
     $notes = '';
 
@@ -108,7 +109,7 @@ function changelog($changelog)
 
     fclose($f);
 
-    return new Map(['notes' => trim($notes), 'latestVersion' => $latestVersion]);
+    return ['notes' => trim($notes), 'latestVersion' => $latestVersion];
 }
 
 function updateChangelog($changelog, $version, callable $args, $date = null)
@@ -121,8 +122,13 @@ function updateChangelog($changelog, $version, callable $args, $date = null)
     $changelogContents = preg_replace_callback(
         '/\\[(?:[Uu])nreleased]:\\s+(?<repo>.*)\\/(?<previous_version>\\d+\\.\\d+\\.\\d+)...(HEAD|head)/ium',
         static function (array $matches) use ($version) {
-            return sprintf('[%1$s]: %2$s/%3$s...%1$s' . PHP_EOL . '[unreleased]: %2$s/%1$s...HEAD'
-                , $version, $matches['repo'], $matches['previous_version']);
+            return sprintf(
+                '[%1$s]: %2$s/%3$s...%1$s' . PHP_EOL . '[unreleased]: %2$s/%1$s...HEAD'
+                ,
+                $version,
+                $matches['repo'],
+                $matches['previous_version']
+            );
         },
         $changelogContents
     );
@@ -149,25 +155,28 @@ switch ($releaseType) {
     case 'major':
         $releaseVersion = preg_replace_callback('/(?<target>\\d+)\\.\\d\.\\d+/', static function ($m) {
             return (++$m['target']) . '.0.0';
-        }, $changelog('latestVersion'));
+        }, $changelog['latestVersion']);
         break;
     case 'minor':
         $releaseVersion = preg_replace_callback('/(?<major>\\d+)\\.(?<target>\\d)\.\\d+/', static function ($m) {
             return $m['major'] . '.' . (++$m['target']) . '.0';
-        }, $changelog('latestVersion'));
+        }, $changelog['latestVersion']);
         break;
     case 'patch':
-        $releaseVersion = preg_replace_callback('/(?<major>\\d+)\\.(?<minor>\\d)\.(?<target>\\d+)/',
+        $releaseVersion = preg_replace_callback(
+            '/(?<major>\\d+)\\.(?<minor>\\d)\.(?<target>\\d+)/',
             static function ($m) {
                 return $m['major'] . '.' . ($m['minor']) . '.' . (++$m['target']);
-            }, $changelog('latestVersion'));
+            },
+            $changelog['latestVersion']
+        );
         break;
 }
 
 $releaseNotesHeader = "{$releaseVersion}\n\n";
-$fullReleaseNotes = $releaseNotesHeader . $changelog('notes');
+$fullReleaseNotes = $releaseNotesHeader . $changelog['notes'];
 
-echo "Latest release: \e[32m" . $changelog('latestVersion') . "\e[0m\n";
+echo "Latest release: \e[32m" . $changelog['latestVersion'] . "\e[0m\n";
 echo "Release type: \e[32m" . $releaseType . "\e[0m\n";
 echo "Next release: \e[32m" . $releaseVersion . "\e[0m\n";
 echo "Release notes:\n\n---\n" . $fullReleaseNotes . "\n---\n";
