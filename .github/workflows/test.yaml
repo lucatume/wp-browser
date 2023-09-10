@@ -45,11 +45,18 @@ jobs:
           ini-values: post_max_size=256M, max_execution_time=180, uopz.exit=1
           tools: composer
 
-      - name: Cache Composer dependencies
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Restore Composer dependencies
         uses: actions/cache@v3
         with:
-          path: var/cache/composer
-          key: ${{ runner.os }}-${{ hashFiles('**/composer.json') }}
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ matrix.php_version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
 
       - name: Install dependencies
         run: composer update
