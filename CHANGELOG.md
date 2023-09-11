@@ -76,6 +76,44 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Temporarily remove the `preserveGlobalState` test method support to reimplement support later.
 - Update the `WPCLI` module to use supported configuration parameters as strict arguments by default
     
+## [3.1.l0] 2023-07-20;
+
+### Changed
+
+- Removed the `lucatume\WPBrowser\Traits\WithForks` trait.
+
+### Fixed
+
+- Correctly invoke the `after_switch_theme` action in the `WPLoader` module.
+
+## [3.1.9] 2023-04-11;
+
+### Fixed
+
+- If possible, load the `wpdb` class from the `wp-includes/class-wpdb.php` file on newer versions of WordPress.
+
+## [3.1.8] 2023-02-24;
+
+### Changed
+
+- Clean up and update the build and stack.
+- Update `.gitattributes` to remove more files.
+- Updated sponsors.
+
+## [3.1.7] 2023-02-14;
+
+### Fixed
+
+- Inheritance of current env if the `env` key is set in the configuration of the `WPCLI` module (thanks @calvinalkan).
+- Other environment inheritance and manipulation issues (thanks @calvinalkan).
+- Indirect modification notice in the `WPLoader::_swithchTheme` method.
+
+### Added
+
+- Control global and per-process environment variables in the `WPCLI::cli()` method. (thanks @calvinalkan).
+- Add the `haveInShellEnvironment` and `dontInheritShellEnvironment` methods to the `WPCLI` module. (thanks @calvinalkan).
+- `amEditingUserWithId` method to the `WPBrowser` and `WPWebDriver` modules. (thanks @johnbillion).
+
 ## [3.1.6] 2022-04-28;
 
 ### Changed
@@ -1870,5 +1908,10 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.1.3]: https://github.com/lucatume/wp-browser/compare/3.1.2...3.1.3
 [3.1.4]: https://github.com/lucatume/wp-browser/compare/3.1.3...3.1.4
 [3.1.5]: https://github.com/lucatume/wp-browser/compare/3.1.4...3.1.5
-[4.0.0]: https://github.com/lucatume/wp-browser/compare/3.1.5...4.0.0
+[3.1.6]: https://github.com/lucatume/wp-browser/compare/3.1.5...3.1.6
+[3.1.7]: https://github.com/lucatume/wp-browser/compare/3.1.6...3.1.7
+[3.1.8]: https://github.com/lucatume/wp-browser/compare/3.1.7...3.1.8
+[3.1.9]: https://github.com/lucatume/wp-browser/compare/3.1.8...3.1.9
+[3.1.10]: https://github.com/lucatume/wp-browser/compare/3.1.9...3.1.10
+[4.0.0]: https://github.com/lucatume/wp-browser/compare/3.1.10...4.0.0
 [unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.0...HEAD
