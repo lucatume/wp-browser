@@ -187,7 +187,7 @@ if (!$args('noChangelogUpdate', false)) {
 }
 
 if ($args('checkDiff', true) && !$dryRun) {
-    $gitDirty = trim(shell_exec('git diff HEAD'));
+    $gitDirty = trim((string)shell_exec('git diff HEAD'));
     if (!empty($gitDirty)) {
         echo "\e[31mYou have uncommitted work.\e[0m\n";
         exit(1);
@@ -201,7 +201,7 @@ function confirm($question)
 }
 
 if ($args('checkUnpushed', true) && !$dryRun) {
-    $gitDiff = trim(shell_exec('git log origin/master..HEAD'));
+    $gitDiff = trim((string)shell_exec('git log origin/master..HEAD'));
     if (!empty($gitDiff)) {
         echo "\e[31mYou have unpushed changes.\e[0m\n";
         if (confirm('Would you like to push them now?')) {
