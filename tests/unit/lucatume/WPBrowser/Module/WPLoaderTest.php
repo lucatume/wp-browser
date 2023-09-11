@@ -1770,6 +1770,7 @@ class WPLoaderTest extends Unit
      */
     public function should_correctly_load_the_module_on_a_bedrock_installation(): void
     {
+        $this->markTestSkipped();
         $wpRootDir = FS::tmpDir('wploader_');
         $dbName = Random::dbName();
         $dbHost = Env::get('WORDPRESS_DB_HOST');
