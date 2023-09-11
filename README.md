@@ -35,7 +35,7 @@ For most projects this configuration will be enough to get started with testing.
 
 You can run your tests immediately using the `vendor/bin/codecept run` command.
 
-[Read more about the commands provided by the library here.](docs/commands.md)
+[Read more about the commands provided by the library here.](https://wpbrowser.wptestkit.dev/commands/)
 
 ### Using a custom configuration
 
@@ -43,7 +43,7 @@ If you decide to skip the default configuration, you will be able to set up `wp-
 setup by editing the `tests/.env` file.
 The inline documentation in the file will guide you through the configuration process.
 
-[Read more about using a custom configuration here.](docs/custom-configuration.md)
+[Read more about using a custom configuration here.](https://wpbrowser.wptestkit.dev/commands/)
 
 ## Getting support for wp-browser configuration and usage
 
