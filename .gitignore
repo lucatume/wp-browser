@@ -1,6 +1,7 @@
 # PhpStorm and MacOS misc. files.
 .idea
 .DS_Store
+.cache
 
 _build/*.zip
 _build/*.gz
