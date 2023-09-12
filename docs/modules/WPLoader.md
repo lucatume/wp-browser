@@ -48,7 +48,7 @@ When used in this mode, the module supports the following configuration paramete
   `WP_PLUGIN_DIR` constant.
 * `plugins` - a list of plugins to activate and load in the WordPress installation. Each plugin must be specified in a
   format like `hello.php` or `my-plugin/my-plugin.php` format.
-* `bootstrapActions` - a list of actions or callbacks to call **after** WordPress is loaded and before the tests run.
+* `bootstrapActions` - a list of actions or callables to call **after** WordPress is loaded and before the tests run.
 * `theme` - the theme to activate and load in the WordPress installation. The theme must be specified in slug format
   like
   `twentytwentythree`.

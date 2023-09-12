@@ -39,12 +39,13 @@ When configured to only load WordPress (`loadOnly: true`) then any database oper
 * `pluginsFolder` - defaults to an empty string; the path, relative to the `wpRootFolder` or absolute, to the plugins folder from the `wpRootFolder` if different from the default one or the one defined by the `WP_PLUGIN_DIR` constant; if the `WP_PLUGIN_DIR` constant is defined in a config file (see the `configFile` parameter) this will be ignored.
 * `plugins` - defaults to an empty string; a list of plugins that should be loaded before any test case runs and after mu-plugins have been loaded; these should be defined in the `folder/plugin-file.php` format.
 * `activatePlugins` - defaults to an empty string, a list of plugins that will be activated before any test case runs and after WordPress is fully loaded and set up; these should be defined in the `folder/plugin-file.php` format; when the `multisite` option is set to `true` the plugins will be **network activated** during the installation.
-* `bootstrapActions` - defaults to an empty string, a list of actions or **static functions** that should be called after before any test case runs, after plugins have been loaded and activated; static functions should be defined in the YAML array format:
+* `bootstrapActions` - defaults to an empty string, a list of actions, **static functions** or functions that should be called after before any test case runs, after plugins have been loaded and activated; static functions should be defined in the YAML array format:
     ```yaml
     bootstrapActions:
         - action_one
         - action_two
         - [MyClass, myStaticMethod]
+        - my_function
     ```
 * `theme` - defaults to an empty string, the theme that should be activated for the tests; if a string is passed then both `template` and `stylesheet` options will be set to the passed value; if an array is passed then the `template` and `stylesheet` will be set in that order:
 
