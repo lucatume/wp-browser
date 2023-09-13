@@ -124,20 +124,31 @@ function ensure_test_databases() {
 }
 
 function ensure_wordpress_scaffolded() {
+  if [ -d "${PWD}/var/wordpress" ] && [ "${PHP_VERSION}" = "5.6" ] && [ "$(cat "${PWD}/var/wordpress/wp-includes/version.php" | grep "wp_version = '6.2")" ]; then
+    rm -rf "${PWD}/var/wordpress"
+  fi
+
   if [ ! -d "${PWD}/var/wordpress" ]; then
     mkdir -p "${PWD}/var/wordpress" || exit 1
   fi
 
-  if [ ! -f "${PWD}/var/wordpress-latest.tar.gz" ]; then
-    if ! curl -s -o "${PWD}/var/wordpress-latest.tar.gz" https://wordpress.org/latest.tar.gz; then
-      echo "Failed to download the latest WordPress version."
+  # If the PHP version is 5.6, then use the 6.2 WordPress version.
+  if [ "${PHP_VERSION}" = "5.6" ]; then
+    wp_version="wordpress-6.2"
+  else
+    wp_version="latest"
+  fi
+
+  if [ ! -f "${PWD}/var/wordpress-${wp_version}.tar.gz" ]; then
+    if ! curl -s -o "${PWD}/var/wordpress-${wp_version}.tar.gz" https://wordpress.org/${wp_version}.tar.gz; then
+      echo "Failed to download the ${wp_version} WordPress version."
       exit 1
     fi
   fi
 
   if [ ! -f "${PWD}/var/wordpress/wp-config-sample.php" ]; then
-    if ! tar -xzf "${PWD}/var/wordpress-latest.tar.gz" -C "${PWD}/var/wordpress" --strip-components=1; then
-      echo "Failed to unzip the latest WordPress version."
+    if ! tar -xzf "${PWD}/var/wordpress-${wp_version}.tar.gz" -C "${PWD}/var/wordpress" --strip-components=1; then
+      echo "Failed to unzip the ${wp_version} WordPress version."
       exit 1
     fi
   fi
@@ -153,7 +164,7 @@ function run_wp_cli_command() {
 }
 
 function ensure_wordpress_updated() {
-  if ! run_wp_cli_command core update; then
+  if ! run_wp_cli_command core update-db; then
     exit 1
   fi
 }
