@@ -82,6 +82,7 @@ The module provides the following methods:
 
 * `acceptPopup()` : `void`
 * `activatePlugin(array|string $pluginSlug)` : `void`
+* `activateTheme(string $slug)` : `void`
 * `amEditingPostWithId(int $id)` : `void`
 * `amOnAdminAjaxPage(array|string|null [$queryVars])` : `void`
 * `amOnAdminPage(string $page)` : `void`
@@ -90,6 +91,7 @@ The module provides the following methods:
 * `amOnPagesPage()` : `void`
 * `amOnPluginsPage()` : `void`
 * `amOnSubdomain(string $subdomain)` : `void`
+* `amOnThemesPage()` : `void`
 * `amOnUrl($url)` : `void`
 * `appendField($field, string $value)` : `void`
 * `attachFile($field, string $filename)` : `void`
@@ -126,7 +128,9 @@ The module provides the following methods:
 * `executeInSelenium(Closure $function)` : `void`
 * `executeJS(string $script, array [$arguments])` : `void`
 * `fillField($field, $value)` : `void`
+* `grabActiveTheme()` : `?string`
 * `grabAttributeFrom($cssOrXpath, $attribute)` : `?string`
+* `grabAvailableThemes(string [$classes])` : `array`
 * `grabCookie($cookie, array [$params])` : `mixed`
 * `grabCookiesWithPattern(string $cookiePattern)` : `?array`
 * `grabFromCurrentUrl([$uri])` : `mixed`
@@ -179,6 +183,7 @@ The module provides the following methods:
 * `seePluginActivated(string $pluginSlug)` : `void`
 * `seePluginDeactivated(string $pluginSlug)` : `void`
 * `seePluginInstalled(string $pluginSlug)` : `void`
+* `seeThemeActivated(string $slug)` : `void`
 * `seeWpDiePage()` : `void`
 * `selectOption($select, $option)` : `void`
 * `setCookie($name, $value, array [$params], [$showDebug])` : `void`

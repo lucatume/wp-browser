@@ -69,6 +69,7 @@ modules:
 The module provides the following methods:
 
 * `activatePlugin(array|string $pluginSlug)` : `void`
+* `activateTheme(string $slug)` : `void`
 * `amEditingPostWithId(int $id)` : `void`
 * `amHttpAuthenticated($username, $password)` : `void`
 * `amOnAdminAjaxPage(array|string|null [$queryVars])` : `void`
@@ -78,6 +79,7 @@ The module provides the following methods:
 * `amOnPagesPage()` : `void`
 * `amOnPluginsPage()` : `void`
 * `amOnSubdomain($subdomain)` : `void`
+* `amOnThemesPage()` : `void`
 * `amOnUrl($url)` : `void`
 * `attachFile($field, string $filename)` : `void`
 * `checkOption($option)` : `void`
@@ -102,7 +104,9 @@ The module provides the following methods:
 * `executeInGuzzle(Closure $function)` : `void`
 * `fillField($field, $value)` : `void`
 * `followRedirect()` : `void`
+* `grabActiveTheme()` : `?string`
 * `grabAttributeFrom($cssOrXpath, string $attribute)` : `mixed`
+* `grabAvailableThemes(string [$classes])` : `array`
 * `grabCookie(string $cookie, array [$params])` : `mixed`
 * `grabCookiesWithPattern(string $cookiePattern)` : `?array`
 * `grabFromCurrentUrl(?string [$uri])` : `mixed`
@@ -145,6 +149,7 @@ The module provides the following methods:
 * `seeResponseCodeIsRedirection()` : `void`
 * `seeResponseCodeIsServerError()` : `void`
 * `seeResponseCodeIsSuccessful()` : `void`
+* `seeThemeActivated(string $slug)` : `void`
 * `seeWpDiePage()` : `void`
 * `selectOption($select, $option)` : `void`
 * `sendAjaxGetRequest(string $uri, array [$params])` : `void`

@@ -20,6 +20,7 @@ use Symfony\Component\BrowserKit\Cookie;
 class WPWebDriver extends WebDriver
 {
     use WPBrowserMethods;
+    use ThemeMethods;
 
     /**
      * The module required fields, to be set in the suite .yml configuration file.

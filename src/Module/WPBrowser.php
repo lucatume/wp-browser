@@ -18,6 +18,7 @@ use Symfony\Component\BrowserKit\Cookie;
 class WPBrowser extends PhpBrowser
 {
     use WPBrowserMethods;
+    use ThemeMethods;
 
     /**
      * The module required fields, to be set in the suite .yml configuration file.

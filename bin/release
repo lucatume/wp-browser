@@ -42,17 +42,18 @@ function args()
 
     $options = getopt(
         'q',
-        ['not-interactive', 'no-diff-check', 'no-unpushed-check', 'dry-run', 'no-changelog-update'],
+        ['not-interactive', 'no-diff-check', 'no-unpushed-check', 'dry-run', 'no-changelog-update', 'release-branch'],
         $optind
     );
 
     $map = [
-        'releaseType' => isset($argv[$optind]) ? $argv[$optind] : 'patch',
+        'releaseType' => $argv[$optind] ?? 'patch',
         'notInteractive' => isset($options['q']) || isset($options['not-interactive']),
         'noChangelogUpdate' => isset($options['no-changelog-update']),
         'checkDiff' => empty($options['no-diff-check']),
         'checkUnpushed' => empty($options['no-unpushed-check']),
         'dryRun' => isset($options['dry-run']),
+        'releaseBranch' => $options['release-branch'] ?? 'master'
     ];
 
     return static function ($key, $default = null) use ($map) {
@@ -68,11 +69,12 @@ if (!in_array($args('releaseType'), ['major', 'minor', 'patch'], true)) {
 }
 
 $dryRun = $args('dryRun', false);
+$releaseBranch = $args('releaseBranch', 'master');
 
 if (!$dryRun) {
     $currentGitBranch = trim(shell_exec('git rev-parse --abbrev-ref HEAD'));
-    if ($currentGitBranch !== 'master') {
-        echo "\e[31mCan release only from master branch.\e[0m\n";
+    if ($currentGitBranch !== $releaseBranch) {
+        echo "\e[31mCan release only from $releaseBranch branch.\e[0m\n";
         exit(1);
     }
     echo "Current git branch: \e[32m" . $currentGitBranch . "\e[0m\n";
@@ -201,7 +203,7 @@ function confirm($question)
 }
 
 if ($args('checkUnpushed', true) && !$dryRun) {
-    $gitDiff = trim((string)shell_exec('git log origin/master..HEAD'));
+    $gitDiff = trim((string)shell_exec('git log origin/'. $releaseBranch .'..HEAD'));
     if (!empty($gitDiff)) {
         echo "\e[31mYou have unpushed changes.\e[0m\n";
         if (confirm('Would you like to push them now?')) {
