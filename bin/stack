@@ -101,9 +101,9 @@ export PWD="$(pwd)"
 
 # If the current architecture is arm64, use the arm64v8 images.
 if [ "$(arch)" = "arm64" ]; then
-  export DOCKER_CHROME_IMAGE="seleniarm/standalone-chromium:113.0-20230508"
+  export DOCKER_CHROME_IMAGE="seleniarm/standalone-chromium:116.0-20230828"
 else
-  export DOCKER_CHROME_IMAGE="selenium/standalone-chrome:113.0-20230508"
+  export DOCKER_CHROME_IMAGE="selenium/standalone-chrome:116.0-20230912"
 fi
 
 function ensure_twentytwenty_theme() {
@@ -114,6 +114,16 @@ function ensure_twentytwenty_theme() {
   # Download and install the twentytwenty theme.
   curl -sSL https://downloads.wordpress.org/theme/twentytwenty.2.1.zip -o "${PWD}/var/wordpress/wp-content/themes/twentytwenty.zip" || exit 1
   unzip -q "${PWD}/var/wordpress/wp-content/themes/twentytwenty.zip" -d "${PWD}/var/wordpress/wp-content/themes/" || exit 1
+}
+
+function ensure_twentytwentyone_theme() {
+  if [ -d "${PWD}/var/wordpress/wp-content/themes/twentytwentyone" ]; then
+    return
+  fi
+
+  # Download and install the twentytwentyone theme.
+  curl -sSL https://downloads.wordpress.org/theme/twentytwentyone.2.1.zip -o "${PWD}/var/wordpress/wp-content/themes/twentytwentyone.zip" || exit 1
+  unzip -q "${PWD}/var/wordpress/wp-content/themes/twentytwentyone.zip" -d "${PWD}/var/wordpress/wp-content/themes/" || exit 1
 }
 
 function ensure_test_databases() {
@@ -261,6 +271,7 @@ function build() {
   docker compose up -d --wait codecept
   ensure_test_databases
   ensure_twentytwenty_theme
+  ensure_twentytwentyone_theme
   ensure_test_plugins
   ensure_externals_blocked
 }

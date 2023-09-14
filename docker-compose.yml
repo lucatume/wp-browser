@@ -54,11 +54,13 @@ services:
     working_dir: /var/www/html
   chrome:
     container_name: wpbrowser_v3_php_${PHP_VERSION:-5.6}_chrome
-    image: selenium/standalone-chrome:3.141.59-20210105
+    image: ${DOCKER_CHROME_IMAGE:-selenium/standalone-chrome:116.0-20230912}
     networks:
       - test
     depends_on:
       - wordpress
+    ports:
+      - "8959:5900"
   codecept:
     container_name: wpbrowser_v3_php_${PHP_VERSION:-5.6}_codeception
     user: "${USER_UID}:${USER_GID}"
