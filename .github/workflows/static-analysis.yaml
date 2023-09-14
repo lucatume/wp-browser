@@ -21,17 +21,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Place Composer files
-        run: |
-          rm -f composer.json
-          rm -f composer.lock
-          mv config/composer/composer-7.4-codeception-4.json composer.json
-          mv config/composer/composer-7.4-codeception-4.lock composer.lock
       - name: Cache Composer dependencies
         uses: actions/cache@v3
         with:
           path: /tmp/composer-cache
-          key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-${{ hashFiles('**/composer.json') }}-${{ matrix.codeception_version }}
       - name: Install dependencies
         uses: php-actions/composer@v6
         with:

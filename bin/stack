@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 
-SUPPORTED_CODECEPTION_VERSIONS=(2 3 4)
 SUPPORTED_PHP_VERSIONS=(5.6 7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2)
 SKIP_BUILD=0
 
 function print_help() {
   echo "Usage: $0 [-p PHP_VERSION] [-drh] [--] [COMMAND]"
-  echo "  -c<CODECEPTION_VERSION> The Codeception version to use. Default: 4"
   echo "  -p<PHP_VERSION>         The PHP version to use. Default: 8.0"
   echo "  -d                      Enable debug mode."
   echo "  -r                      Access container as root."
@@ -38,11 +36,8 @@ function print_help() {
   echo "  xdebug-on             Activates XDebug in the WordPress and Codeception service."
 }
 
-while getopts "c:p:hdrs" opt; do
+while getopts "p:hdrs" opt; do
   case $opt in
-  c)
-    CODECEPTION_VERSION=$OPTARG
-    ;;
   p)
     PHP_VERSION=$OPTARG
     ;;
@@ -76,18 +71,11 @@ shift $((OPTIND - 1))
 
 [ "${1:-}" = "--" ] && shift
 
-CODECEPTION_VERSION=${CODECEPTION_VERSION:-4}
-PHP_VERSION=${PHP_VERSION:-8.0}
+PHP_VERSION=${PHP_VERSION:-5.6}
 
 if [[ ! " ${SUPPORTED_PHP_VERSIONS[@]} " =~ " ${PHP_VERSION} " ]]; then
   echo "PHP version ${PHP_VERSION} is not supported."
   echo "Supported PHP versions: ${SUPPORTED_PHP_VERSIONS[@]}"
-  exit 1
-fi
-
-if [[ ! " ${SUPPORTED_CODECEPTION_VERSIONS[@]} " =~ " ${CODECEPTION_VERSION} " ]]; then
-  echo "Codeception version ${CODECEPTION_VERSION} is not supported."
-  echo "Supported Codeception versions: ${SUPPORTED_CODECEPTION_VERSIONS[@]}"
   exit 1
 fi
 
@@ -311,30 +299,7 @@ function composer_run() {
 function composer_update() {
   rm -rf vendor composer.lock || exit 1
 
-  if [ "${CODECEPTION_VERSION}" != "4" ]; then
-    composer_run remove \
-      codeception/module-asserts \
-      codeception/module-phpbrowser \
-      codeception/module-webdriver \
-      codeception/module-db \
-      codeception/module-filesystem \
-      codeception/module-cli \
-      codeception/util-universalframework
-  fi
-
-  if [ "${CODECEPTION_VERSION}" = "4" ]; then
-    composer_run require -W -n \
-      codeception/codeception:^"${CODECEPTION_VERSION}" \
-      codeception/module-asserts:^1.0 \
-      codeception/module-phpbrowser:^1.0 \
-      codeception/module-webdriver:^1.0 \
-      codeception/module-db:^1.0 \
-      codeception/module-filesystem:^1.0 \
-      codeception/module-cli:^1.0 \
-      codeception/util-universalframework:^1.0 -W -n
-  else
-    composer_run require -W -n codeception/codeception:^"${CODECEPTION_VERSION}"
-  fi
+  composer_run update -W -n
 }
 
 function composer_install() {
