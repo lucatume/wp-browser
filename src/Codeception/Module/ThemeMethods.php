@@ -3,6 +3,7 @@
 namespace Codeception\Module;
 
 use DOMElement;
+use Facebook\WebDriver\Remote\RemoteWebElement;
 use Symfony\Component\DomCrawler\Crawler;
 
 trait ThemeMethods
@@ -40,10 +41,11 @@ trait ThemeMethods
             $this->waitForElement("//div[@class='theme']");
         }
 
+        /** @var RemoteWebElement[]|Crawler $found */
         $found = $this->_findElements(".theme$classes .theme-id-container .theme-name[id]");
 
         if (is_array($found)) {
-            /** @var Facebook\WebDriver\Remote\RemoteWebElement[] $found */
+            /** @var RemoteWebElement[] $found */
             $slugs = array_map(
                 function ($el) {
                     return preg_replace('/-name$/', '', $el->getAttribute('id'));
