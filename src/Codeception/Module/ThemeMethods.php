@@ -48,7 +48,9 @@ trait ThemeMethods
             /** @var RemoteWebElement[] $found */
             $slugs = array_map(
                 function ($el) {
-                    return preg_replace('/-name$/', '', $el->getAttribute('id'));
+                    return ($idAttr = $el->getAttribute('id')) && is_string($idAttr) ?
+                        preg_replace('/-name$/', '', $idAttr)
+                        : false;
                 },
                 $found
             );
@@ -59,19 +61,15 @@ trait ThemeMethods
         /** @var Crawler $found */
         $slugs = $found->each(
             function (Crawler $el) {
-                $node = $el->getNode(0);
-
-                if (!$node instanceof DOMElement) {
+                if(!(
+                    ($node = $el->getNode(0)) instanceof DOMElement
+                    && ($idAttr = $node->getAttribute('id'))
+                    && is_string($idAttr)
+                )){
                     return false;
                 }
 
-                $rawSlug = $node->getAttribute('id');
-
-                if (!$rawSlug) {
-                    return false;
-                }
-
-                return preg_replace('/-name$/', '', $rawSlug);
+                return preg_replace('/-name$/', '', $idAttr);
             }
         );
 
@@ -147,13 +145,16 @@ trait ThemeMethods
      */
     public function seeThemeActivated($slug)
     {
+        $selector = "//div[@class='theme active'][.//*[@class='theme-name' and @id='$slug-name']]";
+
         if (method_exists($this, 'waitForElement')) {
             $this->waitForElement("//div[contains(@class, 'theme')]");
-            $this->seeElementInDOM("//div[@class='theme active'][.//*[@class='theme-name' and @id='$slug-name']]");
+            // @phpstan-ignore-next-line The method exists in WebDriver.
+            $this->seeElementInDOM($selector);
 
             return;
         }
 
-        $this->seeElement("//div[@class='theme active'][.//*[@class='theme-name' and @id='$slug-name']]");
+        $this->seeElement($selector);
     }
 }
