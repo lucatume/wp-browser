@@ -19,6 +19,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=5.6
           build-args: |
             PHP_VERSION=5.6
+            WP_IMAGE_VERSION=5
             TARGET=wordpress
             USER_UID=33
             USER_GID=33
@@ -34,6 +35,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=5.6
           build-args: |
             PHP_VERSION=5.6
+            WP_IMAGE_VERSION=5
             TARGET=codeception
             USER_UID=33
             USER_GID=33
@@ -46,7 +48,7 @@ jobs:
           path: var/cache/composer
           key: ${{ runner.os }}-${{ hashFiles('**/composer.json') }}-5.6
       - name: Install dependencies
-        run: bin/stack -p5.6 -c4 composer_update
+        run: bin/stack -p5.6 composer_update
       - name: Test
         run: bin/stack -p5.6 test
   test_codeception_4:
@@ -70,6 +72,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.php_version }}
           build-args: |
             PHP_VERSION=${{ matrix.php_version }}
+            WP_IMAGE_VERSION=6
             TARGET=wordpress
             USER_UID=33
             USER_GID=33
@@ -85,6 +88,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.php_version }}
           build-args: |
             PHP_VERSION=${{ matrix.php_version }}
+            WP_IMAGE_VERSION=6
             TARGET=codeception
             USER_UID=33
             USER_GID=33
@@ -97,6 +101,6 @@ jobs:
           path: var/cache/composer
           key: ${{ runner.os }}-${{ hashFiles('**/composer.json') }}-${{ matrix.php_version }}
       - name: Install dependencies
-        run: bin/stack -p${{ matrix.php_version }} -c4 composer_update
+        run: bin/stack -p${{ matrix.php_version }} composer_update
       - name: Test
         run: bin/stack -p${{ matrix.php_version }} test
