@@ -61,11 +61,11 @@ trait ThemeMethods
         /** @var Crawler $found */
         $slugs = $found->each(
             function (Crawler $el) {
-                if(!(
+                if (!(
                     ($node = $el->getNode(0)) instanceof DOMElement
                     && ($idAttr = $node->getAttribute('id'))
                     && is_string($idAttr)
-                )){
+                )) {
                     return false;
                 }
 
