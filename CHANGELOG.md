@@ -75,6 +75,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Rewrite the `WPCLI` module to use the `Symfony\Component\Process\Process` class under the hood.
 - Temporarily remove the `preserveGlobalState` test method support to reimplement support later.
 - Update the `WPCLI` module to use supported configuration parameters as strict arguments by default
+
+## [3.2.0] 2023-09-15;
+
+### Breaking change
+
+- Drop support for Codeception version 2 and 3; starting from this version, the `v3` version of the project will only support Codeception version 4.
+
+### Added
+
+- Theme-related methods to the `WPBrowser` module.
+- Theme-related methods to the `WPWebDriver` module.
     
 ## [3.1.l0] 2023-07-20;
 
