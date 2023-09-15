@@ -178,7 +178,7 @@ if (!$args('noChangelogUpdate', false)) {
 }
 
 if ($args('checkDiff', true) && !$dryRun) {
-    $gitDirty = trim(shell_exec('git diff HEAD'));
+    $gitDirty = trim((string)shell_exec('git diff HEAD'));
     if (!empty($gitDirty)) {
         echo "\e[31mYou have uncommited work.\e[0m\n";
         exit(1);
