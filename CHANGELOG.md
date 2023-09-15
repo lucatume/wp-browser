@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- Theme-related methods to the `WPBrowser` module.
+- Theme-related methods to the `WPWebDriver` module.
+
 ## [4.0.0] 2023-09-11;
 
 ### Changed
@@ -1924,5 +1929,6 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.1.8]: https://github.com/lucatume/wp-browser/compare/3.1.7...3.1.8
 [3.1.9]: https://github.com/lucatume/wp-browser/compare/3.1.8...3.1.9
 [3.1.10]: https://github.com/lucatume/wp-browser/compare/3.1.9...3.1.10
+[3.2.0]: https://github.com/lucatume/wp-browser/compare/3.1.10...3.2.0
 [4.0.0]: https://github.com/lucatume/wp-browser/compare/3.1.10...4.0.0
 [unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.0...HEAD
