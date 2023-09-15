@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Breaking change
 
-- Drop support for Codeception version 2 and 3; from this version the project will only support Codeception version 4.
+- Drop support for Codeception version 2 and 3; starting from this version, the `v3` version of the project will only support Codeception version 4.
 
 ### Added
 
