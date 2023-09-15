@@ -1,4 +1,4 @@
-<?php  //[STAMP] 64efd6f53561ad79e167b070f51e391f
+<?php  //[STAMP] 2f8e127c7f8e4cc8ed68ceef48d7315b
 // phpcs:ignoreFile
 namespace _generated;
 
@@ -7722,6 +7722,139 @@ trait ClimoduleTesterActions
      */
     public function amEditingPostWithId(int $id): void {
         $this->getScenario()->runStep(new \Codeception\Step\Condition('amEditingPostWithId', func_get_args()));
+    }
+
+ 
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * Moves to the themes administration page.
+     *
+     * @return void The client moves to the themes administration page.
+     * @see \lucatume\WPBrowser\Module\WPBrowser::amOnThemesPage()
+     */
+    public function amOnThemesPage(): void {
+        $this->getScenario()->runStep(new \Codeception\Step\Condition('amOnThemesPage', func_get_args()));
+    }
+
+ 
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * Returns the list of available themes.
+     *
+     * The method will **not** handle authentication and navigation to the themes administration page.
+     *
+     * @param string $classes A list of classes to filter the themes by; these will be appended to the `.theme` one.
+     *
+     * @return string[] A list of available theme slugs.
+     *
+     * @example
+     * ```php
+     * $I->loginAsAdmin();
+     * $I->amOnThemesPage();
+     * $available = $I->grabAvailableThemes();
+     * $active = $I->grabAvailableThemes('.active');
+     * ```
+     * @see \lucatume\WPBrowser\Module\WPBrowser::grabAvailableThemes()
+     */
+    public function grabAvailableThemes(string $classes = ".theme"): array {
+        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabAvailableThemes', func_get_args()));
+    }
+
+ 
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * Returns the slug of the currently active themes.
+     *
+     * The method will **not** handle authentication and navigation to the themes administration page.
+     *
+     * @return string|null The slug of the currently active theme or `null` if no theme is active.
+     *
+     * @example
+     * ```php
+     * $I->loginAsAdmin();
+     * $I->amOnThemesPage();
+     * $active = $I->grabActiveTheme();
+     * ```
+     * @see \lucatume\WPBrowser\Module\WPBrowser::grabActiveTheme()
+     */
+    public function grabActiveTheme(): ?string {
+        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabActiveTheme', func_get_args()));
+    }
+
+ 
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * Activates a theme.
+     *
+     * The method will **not** handle authentication and navigation to the themes administration page.
+     *
+     * @param string $slug The theme slug.
+     *
+     * @return void The theme is activated.
+     *
+     * @example
+     * ```php
+     * $I->loginAsAdmin();
+     * $I->amOnThemesPage();
+     * $I->activateTheme('storefront');
+     * ```
+     * @see \lucatume\WPBrowser\Module\WPBrowser::activateTheme()
+     */
+    public function activateTheme(string $slug): void {
+        $this->getScenario()->runStep(new \Codeception\Step\Action('activateTheme', func_get_args()));
+    }
+
+ 
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * Verifies that a theme is active.
+     *
+     * The method will **not** handle authentication and navigation to the themes administration page.
+     *
+     * @param string $slug The theme slug.
+     *
+     * @return void Verifies that the theme is active.
+     *
+     * @example
+     * ```php
+     * $I->loginAsAdmin();
+     * $I->amOnThemesPage();
+     * $I->activateTheme('storefront');
+     * $I->seeThemeActivated('storefront');
+     * ```
+     * @see \lucatume\WPBrowser\Module\WPBrowser::seeThemeActivated()
+     */
+    public function seeThemeActivated(string $slug): void {
+        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeThemeActivated', func_get_args()));
+    }
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * [!] Conditional Assertion: Test won't be stopped on fail
+     * Verifies that a theme is active.
+     *
+     * The method will **not** handle authentication and navigation to the themes administration page.
+     *
+     * @param string $slug The theme slug.
+     *
+     * @return void Verifies that the theme is active.
+     *
+     * @example
+     * ```php
+     * $I->loginAsAdmin();
+     * $I->amOnThemesPage();
+     * $I->activateTheme('storefront');
+     * $I->seeThemeActivated('storefront');
+     * ```
+     * @see \lucatume\WPBrowser\Module\WPBrowser::seeThemeActivated()
+     */
+    public function canSeeThemeActivated(string $slug): void {
+        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeThemeActivated', func_get_args()));
     }
 
  

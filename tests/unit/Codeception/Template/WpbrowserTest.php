@@ -527,7 +527,7 @@ EOT;
         $this->assertFileExists($projectDir . '/site/codeception.yml');
 
         // Remove the generated files that are not needed for the snapshot.
-        FS::rrmdir($projectDir . '/theme_23/tests/Support/_generated');
+        FS::rrmdir($projectDir . '/site/tests/Support/_generated');
         // Remove the binary sqlite file and the dump file.
         unlink($projectDir . '/site/tests/Support/Data/db.sqlite');
         unlink($projectDir . '/site/tests/Support/Data/dump.sql');
@@ -606,7 +606,7 @@ EOT;
         $this->assertFileExists($projectDir . '/site/codeception.yml');
 
         // Remove the generated files that are not needed for the snapshot.
-        FS::rrmdir($projectDir . '/theme_23/tests/Support/_generated');
+        FS::rrmdir($projectDir . '/site/tests/Support/_generated');
         // Remove the binary sqlite file and the dump file.
         unlink($projectDir . '/site/tests/Support/Data/db.sqlite');
         unlink($projectDir . '/site/tests/Support/Data/dump.sql');

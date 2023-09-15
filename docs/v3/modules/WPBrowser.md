@@ -55,390 +55,502 @@ Since this module extends the `PHPBrowser` module provided by Codeception, pleas
 
 
 ## Public API
-<nav>
-	<ul>
-		<li>
-			<a href="#activateplugin">activatePlugin</a>
-		</li>
-		<li>
-			<a href="#ameditingpostwithid">amEditingPostWithId</a>
-		</li>
-		<li>
-			<a href="#amonadminajaxpage">amOnAdminAjaxPage</a>
-		</li>
-		<li>
-			<a href="#amonadminpage">amOnAdminPage</a>
-		</li>
-		<li>
-			<a href="#amoncronpage">amOnCronPage</a>
-		</li>
-		<li>
-			<a href="#amonpagespage">amOnPagesPage</a>
-		</li>
-		<li>
-			<a href="#amonpluginspage">amOnPluginsPage</a>
-		</li>
-		<li>
-			<a href="#deactivateplugin">deactivatePlugin</a>
-		</li>
-		<li>
-			<a href="#dontseeplugininstalled">dontSeePluginInstalled</a>
-		</li>
-		<li>
-			<a href="#grabcookieswithpattern">grabCookiesWithPattern</a>
-		</li>
-		<li>
-			<a href="#grabwordpresstestcookie">grabWordPressTestCookie</a>
-		</li>
-		<li>
-			<a href="#logout">logOut</a>
-		</li>
-		<li>
-			<a href="#loginas">loginAs</a>
-		</li>
-		<li>
-			<a href="#loginasadmin">loginAsAdmin</a>
-		</li>
-		<li>
-			<a href="#seeerrormessage">seeErrorMessage</a>
-		</li>
-		<li>
-			<a href="#seemessage">seeMessage</a>
-		</li>
-		<li>
-			<a href="#seepluginactivated">seePluginActivated</a>
-		</li>
-		<li>
-			<a href="#seeplugindeactivated">seePluginDeactivated</a>
-		</li>
-		<li>
-			<a href="#seeplugininstalled">seePluginInstalled</a>
-		</li>
-		<li>
-			<a href="#seewpdiepage">seeWpDiePage</a>
-		</li>
-	</ul>
-</nav>
+* `activatePlugin($pluginSlug)` : `void`  
+  In the plugin administration screen activates a plugin clicking the "Activate" link.
 
-<h3>activatePlugin</h3>
+  The method will **not** handle authentication to the admin area.
 
-<hr>
 
-<p>In the plugin administration screen activates a plugin clicking the &quot;Activate&quot; link. The method will <strong>not</strong> handle authentication to the admin area.</p>
-```php
-// Activate a plugin.
-  $I->loginAsAdmin();
-  $I->amOnPluginsPage();
-  $I->activatePlugin('hello-dolly');
-  // Activate a list of plugins.
-  $I->loginAsAdmin();
-  $I->amOnPluginsPage();
-  $I->activatePlugin(['hello-dolly','another-plugin']);
-```
+* `activateTheme($slug)` : `void`  
+  Activates a theme.
 
-<h4>Parameters</h4>
-<ul>
-<li><code>string/\Codeception\Module\array<string></code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot; or a list of plugin slugs.</li></ul>
+  The method will **not** handle authentication and navigation to the themes administration page.
+
+
+* `amEditingPostWithId($id)` : `void`  
+  Go to the admin page to edit the post with the specified ID.
+
+  The method will **not** handle authentication the admin area.
+
+
+* `amEditingUserWithId($id)` : `void`  
+  Go to the admin page to edit the user with the specified ID.
+
+  The method will **not** handle authentication the admin area.
+
+
+* `amHttpAuthenticated($username, $password)` : `void`
+
+
+* `amOnAdminAjaxPage([$queryVars])` : `void`  
+  Go to the `admin-ajax.php` page to start a synchronous, and blocking, `GET` AJAX request.
+
+  The method will **not** handle authentication, nonces or authorization.
+
+
+* `amOnAdminPage($page)` : `void`  
+  Go to a page in the admininstration area of the site.
+
+  This method will **not** handle authentication to the administration area.
+
+
+* `amOnCronPage([$queryVars])` : `void`  
+  Go to the cron page to start a synchronous, and blocking, `GET` request to the cron script.
+
+
+* `amOnPage($page)` : `void`
+
+
+* `amOnPagesPage()` : `void`  
+  Go the "Pages" administration screen.
+
+  The method will **not** handle authentication.
+
+
+* `amOnPluginsPage()` : `void`  
+  Go to the plugins administration screen.
+
+  The method will **not** handle authentication.
+
+
+* `amOnSubdomain($subdomain)` : `void`
+
+
+* `amOnThemesPage()` : `void`  
+  Moves to the themes administration page.
+
+
+* `amOnUrl($url)` : `void`
+
+
+* `attachFile($field, $filename)` : `void`
+
+
+* `checkOption($option)` : `void`
+
+
+* `click($link, [$context])` : `void`
+
+
+* `deactivatePlugin($pluginSlug)` : `void`  
+  In the plugin administration screen deactivate a plugin clicking the "Deactivate" link.
+
+  The method will **not** handle authentication and navigation to the plugins administration page.
+
+
+* `deleteHeader($name)` : `void`  
+  Deletes the header with the passed name.  Subsequent requests
+  will not have the deleted header in its request.
+
+  Example:
+  ```php
+  <?php
+  $I->haveHttpHeader('X-Requested-With', 'Codeception');
+  $I->amOnPage('test-headers.php');
+  // ...
+  $I->deleteHeader('X-Requested-With');
+  $I->amOnPage('some-other-page.php');
+  ```
+
+
+* `dontSee($text, [$selector])` : `void`
+
+
+* `dontSeeCheckboxIsChecked($checkbox)` : `void`
+
+
+* `dontSeeCookie($cookie, [array $params])` : `void`
+
+
+* `dontSeeCurrentUrlEquals($uri)` : `void`
+
+
+* `dontSeeCurrentUrlMatches($uri)` : `void`
+
+
+* `dontSeeElement($selector, [$attributes])` : `void`
+
+
+* `dontSeeInCurrentUrl($uri)` : `void`
+
+
+* `dontSeeInField($field, $value)` : `void`
+
+
+* `dontSeeInFormFields($formSelector, array $params)` : `void`
+
+
+* `dontSeeInSource($raw)` : `void`
+
+
+* `dontSeeInTitle($title)` : `void`
+
+
+* `dontSeeLink($text, [$url])` : `void`
+
+
+* `dontSeeOptionIsSelected($selector, $optionText)` : `void`
+
+
+* `dontSeePluginInstalled($pluginSlug)` : `void`  
+  Assert a plugin is not installed in the plugins administration screen.
+
+  The method will **not** handle authentication and navigation to the plugin administration screen.
+
+
+* `dontSeeResponseCodeIs($code)` : `void`  
+  Checks that response code is equal to value provided.
+
+  ```php
+  <?php
+  $I->dontSeeResponseCodeIs(200);
   
+  // recommended \Codeception\Util\HttpCode
+  $I->dontSeeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+  ```
 
-<h3>amEditingPostWithId</h3>
+* `executeInGuzzle(Closure $function)` : `void`  
+  Low-level API method.
+  If Codeception commands are not enough, use [Guzzle HTTP Client](http://guzzlephp.org/) methods directly
 
-<hr>
+  Example:
 
-<p>Go to the admin page to edit the post with the specified ID. The method will <strong>not</strong> handle authentication the admin area.</p>
-```php
-$I->loginAsAdmin();
-  $postId = $I->havePostInDatabase();
-  $I->amEditingPostWithId($postId);
-  $I->fillField('post_title', 'Post title');
-```
+  ``` php
+  <?php
+  $I->executeInGuzzle(function (\GuzzleHttp\Client $client) {
+       $client->get('/get', ['query' => ['foo' => 'bar']]);
+  });
+  ?>
+  ```
 
-<h4>Parameters</h4>
-<ul>
-<li><code>int</code> <strong>$id</strong> - The post ID.</li></ul>
+  It is not recommended to use this command on a regular basis.
+  If Codeception lacks important Guzzle Client methods, implement them and submit patches.
+
+
+* `fillField($field, $value)` : `void`
+
+
+* `followRedirect()` : `void`  
+  Follow pending redirect if there is one.
+
+  ```php
+  <?php
+  $I->followRedirect();
+  ```
+
+
+* `grabActiveTheme()` : `void`  
+  Returns the slug of the currently active themes.
+
+  The method will **not** handle authentication and navigation to the themes administration page.
+
+
+* `grabAttributeFrom($cssOrXpath, $attribute)` : `void`
+
+
+* `grabAvailableThemes([$classes])` : `void`  
+  Returns the list of available themes.
+
+  The method will **not** handle authentication and navigation to the themes administration page.
+
+
+* `grabCookie($cookie, [array $params])` : `void`
+
+
+* `grabCookiesWithPattern($cookiePattern)` : `void`  
+  Returns all the cookies whose name matches a regex pattern.
+
+
+* `grabFromCurrentUrl([$uri])` : `void`
+
+
+* `grabMultiple($cssOrXpath, [$attribute])` : `void`
+
+
+* `grabPageSource()` : `void`  
+  Grabs current page source code.
+
+
+* `grabTextFrom($cssOrXPathOrRegex)` : `void`
+
+
+* `grabValueFrom($field)` : `void`
+
+* `grabWordPressTestCookie([$name])` : `void`  
+  Returns WordPress default test cookie object if present.
+
+* `haveHttpHeader($name, $value)` : `void`  
+  Sets the HTTP header to the passed value - which is used on
+  subsequent HTTP requests through PhpBrowser.
+
+  Example:
+  ```php
+  <?php
+  $I->haveHttpHeader('X-Requested-With', 'Codeception');
+  $I->amOnPage('test-headers.php');
+  ```
+
+  To use special chars in Header Key use HTML Character Entities:
+  Example:
+  Header with underscore - 'Client_Id'
+  should be represented as - 'Client&#x0005F;Id' or 'Client&#95;Id'
+
+  ```php
+  <?php
+  $I->haveHttpHeader('Client&#95;Id', 'Codeception');
+  ```
+
+
+* `haveServerParameter($name, $value)` : `void`  
+  Sets SERVER parameter valid for all next requests.
+
+  ```php
+  $I->haveServerParameter('name', 'value');
+  ```
+
+* `logOut([$redirectTo])` : `void`  
+  Navigate to the default WordPress logout page and click the logout link.
+
+
+* `loginAs($username, $password)` : `void`  
+  Login as the specified user.
+
+  The method will **not** follow redirection, after the login, to any page.
+
+
+* `loginAsAdmin()` : `void`  
+  Login as the administrator user using the credentials specified in the module configuration.
+
+  The method will **not** follow redirection, after the login, to any page.
+
+
+* `makeHtmlSnapshot([$name])` : `void`
+
+
+* `moveBack([$numberOfSteps])` : `void`  
+  Moves back in history.
+
+
+* `resetCookie($cookie, [array $params])` : `void`
+
+
+* `see($text, [$selector])` : `void`
+
+
+* `seeCheckboxIsChecked($checkbox)` : `void`
+
+
+* `seeCookie($cookie, [array $params])` : `void`
+
+
+* `seeCurrentUrlEquals($uri)` : `void`
+
+
+* `seeCurrentUrlMatches($uri)` : `void`
+
+
+* `seeElement($selector, [$attributes])` : `void`
+
+
+* `seeErrorMessage([$classes])` : `void`  
+  In an administration screen look for an error admin notice.
+
+  The check is class-based to decouple from internationalization.
+  The method will **not** handle authentication and navigation the administration area.
+
+
+* `seeInCurrentUrl($uri)` : `void`
+
+
+* `seeInField($field, $value)` : `void`
+
+
+* `seeInFormFields($formSelector, array $params)` : `void`
+
+
+* `seeInSource($raw)` : `void`
+
+
+* `seeInTitle($title)` : `void`
+
+
+* `seeLink($text, [$url])` : `void`
+
+
+* `seeMessage([$classes])` : `void`  
+  In an administration screen look for an admin notice.
+
+  The check is class-based to decouple from internationalization.
+  The method will **not** handle authentication and navigation the administration area.
+
+
+* `seeNumberOfElements($selector, $expected)` : `void`
+
+
+* `seeOptionIsSelected($selector, $optionText)` : `void`
+
+
+* `seePageNotFound()` : `void`  
+  Asserts that current page has 404 response status code.
+
+* `seePluginActivated($pluginSlug)` : `void`  
+  Assert a plugin is activated in the plugin administration screen.
+
+  The method will **not** handle authentication and navigation to the plugin administration screen.
+
+
+* `seePluginDeactivated($pluginSlug)` : `void`  
+  Assert a plugin is not activated in the plugins administration screen.
+
+  The method will **not** handle authentication and navigation to the plugin administration screen.
+
+
+* `seePluginInstalled($pluginSlug)` : `void`  
+  Assert a plugin is installed, no matter its activation status, in the plugin adminstration screen.
+
+  The method will **not** handle authentication and navigation to the plugin administration screen.
+
+
+* `seeResponseCodeIs($code)` : `void`  
+  Checks that response code is equal to value provided.
+
+  ```php
+  <?php
+  $I->seeResponseCodeIs(200);
   
+  // recommended \Codeception\Util\HttpCode
+  $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+  ```
 
-<h3>amOnAdminAjaxPage</h3>
 
-<hr>
+* `seeResponseCodeIsBetween($from, $to)` : `void`  
+  Checks that response code is between a certain range. Between actually means [from <= CODE <= to]
 
-<p>Go to the <code>admin-ajax.php</code> page to start a synchronous, and blocking, <code>GET</code> AJAX request. The method will <strong>not</strong> handle authentication, nonces or authorization.</p>
-```php
-$I->amOnAdminAjaxPage(['action' => 'my-action', 'data' => ['id' => 23], 'nonce' => $nonce]);
-```
 
-<h4>Parameters</h4>
-<ul>
-<li><code>string/\Codeception\Module\array<string,mixed></code> <strong>$queryVars</strong> - A string or array of query variables to append to the AJAX path.</li></ul>
-  
+* `seeResponseCodeIsClientError()` : `void`  
+  Checks that the response code is 4xx
 
-<h3>amOnAdminPage</h3>
+* `seeResponseCodeIsRedirection()` : `void`  
+  Checks that the response code 3xx
 
-<hr>
+* `seeResponseCodeIsServerError()` : `void`  
+  Checks that the response code is 5xx
 
-<p>Go to a page in the admininstration area of the site. This method will <strong>not</strong> handle authentication to the administration area.</p>
-```php
-$I->loginAs('user', 'password');
-  // Go to the plugins management screen.
-  $I->amOnAdminPage('/plugins.php');
-```
+* `seeResponseCodeIsSuccessful()` : `void`  
+  Checks that the response code 2xx
 
-<h4>Parameters</h4>
-<ul>
-<li><code>string</code> <strong>$page</strong> - The path, relative to the admin area URL, to the page.</li></ul>
-  
+* `seeThemeActivated($slug)` : `void`  
+  Verifies that a theme is active.
 
-<h3>amOnCronPage</h3>
+  The method will **not** handle authentication and navigation to the themes administration page.
 
-<hr>
 
-<p>Go to the cron page to start a synchronous, and blocking, <code>GET</code> request to the cron script.</p>
-```php
-// Triggers the cron job with an optional query argument.
-  $I->amOnCronPage('/?some-query-var=some-value');
-```
+* `seeWpDiePage()` : `void`  
+  Checks that the current page is one generated by the `wp_die` function.
 
-<h4>Parameters</h4>
-<ul>
-<li><code>string/\Codeception\Module\array<string,mixed></code> <strong>$queryVars</strong> - A string or array of query variables to append to the AJAX path.</li></ul>
-  
+  The method will try to identify the page based on the default WordPress die page HTML attributes.
 
-<h3>amOnPagesPage</h3>
 
-<hr>
+* `selectOption($select, $option)` : `void`
 
-<p>Go the &quot;Pages&quot; administration screen. The method will <strong>not</strong> handle authentication.</p>
-```php
-$I->loginAsAdmin();
-  $I->amOnPagesPage();
-  $I->see('Add New');
-```
 
-  
+* `sendAjaxGetRequest($uri, [$params])` : `void`  
+  Sends an ajax GET request with the passed parameters.
+  See `sendAjaxPostRequest()`
 
-<h3>amOnPluginsPage</h3>
 
-<hr>
+* `sendAjaxPostRequest($uri, [$params])` : `void`  
+  Sends an ajax POST request with the passed parameters.
+  The appropriate HTTP header is added automatically:
+  `X-Requested-With: XMLHttpRequest`
+  Example:
+  ``` php
+  <?php
+  $I->sendAjaxPostRequest('/add-task', ['task' => 'lorem ipsum']);
+  ```
+  Some frameworks (e.g. Symfony) create field names in the form of an "array":
+  `<input type="text" name="form[task]">`
+  In this case you need to pass the fields like this:
+  ``` php
+  <?php
+  $I->sendAjaxPostRequest('/add-task', ['form' => [
+      'task' => 'lorem ipsum',
+      'category' => 'miscellaneous',
+  ]]);
+  ```
 
-<p>Go to the plugins administration screen. The method will <strong>not</strong> handle authentication.</p>
-```php
-$I->loginAsAdmin();
-  $I->amOnPluginsPage();
-  $I->activatePlugin('hello-dolly');
-```
 
-  
+* `sendAjaxRequest($method, $uri, [$params])` : `void`  
+  Sends an ajax request, using the passed HTTP method.
+  See `sendAjaxPostRequest()`
+  Example:
+  ``` php
+  <?php
+  $I->sendAjaxRequest('PUT', '/posts/7', ['title' => 'new title']);
+  ```
 
-<h3>deactivatePlugin</h3>
 
-<hr>
+* `setCookie($name, $val, [array $params])` : `void`
 
-<p>In the plugin administration screen deactivate a plugin clicking the &quot;Deactivate&quot; link. The method will <strong>not</strong> handle authentication and navigation to the plugins administration page.</p>
-```php
-// Deactivate one plugin.
-  $I->loginAsAdmin();
-  $I->amOnPluginsPage();
-  $I->deactivatePlugin('hello-dolly');
-  // Deactivate a list of plugins.
-  $I->loginAsAdmin();
-  $I->amOnPluginsPage();
-  $I->deactivatePlugin(['hello-dolly', 'my-plugin']);
-```
 
-<h4>Parameters</h4>
-<ul>
-<li><code>string/\Codeception\Module\array<string></code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;, or a list of plugin slugs.</li></ul>
-  
+* `setHeader($name, $value)` : `void`  
+  Alias to `haveHttpHeader`
 
-<h3>dontSeePluginInstalled</h3>
 
-<hr>
+* `setMaxRedirects($maxRedirects)` : `void`  
+  Sets the maximum number of redirects that the Client can follow.
 
-<p>Assert a plugin is not installed in the plugins administration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
-```php
-$I->loginAsAdmin();
-  $I->amOnPluginsPage();
-  $I->dontSeePluginInstalled('my-plugin');
-```
-
-<h4>Parameters</h4>
-<ul>
-<li><code>string</code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
-  
-
-<h3>grabCookiesWithPattern</h3>
-
-<hr>
+  ```php
+  <?php
+  $I->setMaxRedirects(2);
+  ```
 
-<p>Returns all the cookies whose name matches a regex pattern.</p>
-```php
-$I->loginAs('customer','password');
-  $I->amOnPage('/shop');
-  $cartCookies = $I->grabCookiesWithPattern("#^shop_cart\\.*#");
-```
-
-<h4>Parameters</h4>
-<ul>
-<li><code>string</code> <strong>$cookiePattern</strong> - The regular expression pattern to use for the matching.</li></ul>
-  
-
-<h3>grabWordPressTestCookie</h3>
-
-<hr>
 
-<p>Returns WordPress default test cookie object if present.</p>
-```php
-// Grab the default WordPress test cookie.
-  $wpTestCookie = $I->grabWordPressTestCookie();
-  // Grab a customized version of the test cookie.
-  $myTestCookie = $I->grabWordPressTestCookie('my_test_cookie');
-```
-
-<h4>Parameters</h4>
-<ul>
-<li><code>string</code> <strong>$name</strong> - Optional, overrides the default cookie name.</li></ul>
-  
-
-<h3>logOut</h3>
+* `setServerParameters(array $params)` : `void`  
+  Sets SERVER parameters valid for all next requests.
+  this will remove old ones.
 
-<hr>
-
-<p>Navigate to the default WordPress logout page and click the logout link.</p>
-```php
-// Log out using the `wp-login.php` form and return to the current page.
-  $I->logOut(true);
-  // Log out using the `wp-login.php` form and remain there.
-  $I->logOut(false);
-  // Log out using the `wp-login.php` form and move to another page.
-  $I->logOut('/some-other-page');
-```
-
-<h4>Parameters</h4>
-<ul>
-<li><code>bool/bool/string</code> <strong>$redirectTo</strong> - Whether to redirect to another (optionally specified) page after the logout.</li></ul>
-  
+  ```php
+  $I->setServerParameters([]);
+  ```
 
-<h3>loginAs</h3>
-
-<hr>
-
-<p>Login as the specified user. The method will <strong>not</strong> follow redirection, after the login, to any page.</p>
-```php
-$I->loginAs('user', 'password');
-  $I->amOnAdminPage('/');
-  $I->see('Dashboard');
-```
-
-<h4>Parameters</h4>
-<ul>
-<li><code>string</code> <strong>$username</strong> - The user login name.</li>
-<li><code>string</code> <strong>$password</strong> - The user password in plain text.</li></ul>
-  
-
-<h3>loginAsAdmin</h3>
-
-<hr>
-
-<p>Login as the administrator user using the credentials specified in the module configuration. The method will <strong>not</strong> follow redirection, after the login, to any page.</p>
-```php
-$I->loginAsAdmin();
-  $I->amOnAdminPage('/');
-  $I->see('Dashboard');
-```
-
-  
-
-<h3>seeErrorMessage</h3>
-
-<hr>
-
-<p>In an administration screen look for an error admin notice. The check is class-based to decouple from internationalization. The method will <strong>not</strong> handle authentication and navigation the administration area. <code>.notice.notice-error</code> ones.</p>
-```php
-$I->loginAsAdmin()
-  $I->amOnAdminPage('/');
-  $I->seeErrorMessage('.my-plugin');
-```
-
-<h4>Parameters</h4>
-<ul>
-<li><code>string/string/\Codeception\Module\array<string></code> <strong>$classes</strong> - A list of classes the notice should have other than the</li></ul>
-  
-
-<h3>seeMessage</h3>
-
-<hr>
-
-<p>In an administration screen look for an admin notice. The check is class-based to decouple from internationalization. The method will <strong>not</strong> handle authentication and navigation the administration area.</p>
-```php
-$I->loginAsAdmin()
-  $I->amOnAdminPage('/');
-  $I->seeMessage('.missing-api-token.my-plugin');
-```
-
-<h4>Parameters</h4>
-<ul>
-<li><code>string/\Codeception\Module\array<string>/string</code> <strong>$classes</strong> - A list of classes the message should have in addition to the <code>.notice</code> one.</li></ul>
-  
-
-<h3>seePluginActivated</h3>
-
-<hr>
-
-<p>Assert a plugin is activated in the plugin administration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
-```php
-$I->loginAsAdmin();
-  $I->amOnPluginsPage();
-  $I->seePluginActivated('my-plugin');
-```
-
-<h4>Parameters</h4>
-<ul>
-<li><code>string</code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
-  
-
-<h3>seePluginDeactivated</h3>
-
-<hr>
-
-<p>Assert a plugin is not activated in the plugins administration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
-```php
-$I->loginAsAdmin();
-  $I->amOnPluginsPage();
-  $I->seePluginDeactivated('my-plugin');
-```
-
-<h4>Parameters</h4>
-<ul>
-<li><code>string</code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
-  
-
-<h3>seePluginInstalled</h3>
-
-<hr>
-
-<p>Assert a plugin is installed, no matter its activation status, in the plugin administration screen. The method will <strong>not</strong> handle authentication and navigation to the plugin administration screen.</p>
-```php
-$I->loginAsAdmin();
-  $I->amOnPluginsPage();
-  $I->seePluginInstalled('my-plugin');
-```
-
-<h4>Parameters</h4>
-<ul>
-<li><code>string</code> <strong>$pluginSlug</strong> - The plugin slug, like &quot;hello-dolly&quot;.</li></ul>
-  
-
-<h3>seeWpDiePage</h3>
-
-<hr>
-
-<p>Checks that the current page is one generated by the <code>wp_die</code> function. The method will try to identify the page based on the default WordPress die page HTML attributes.</p>
-```php
-$I->loginAs('user', 'password');
-  $I->amOnAdminPage('/forbidden');
-  $I->seeWpDiePage();
-```
+* `startFollowingRedirects()` : `void`  
+  Enables automatic redirects to be followed by the client.
 
+  ```php
+  <?php
+  $I->startFollowingRedirects();
+  ```
+
+
+* `stopFollowingRedirects()` : `void`  
+  Prevents automatic redirects to be followed by the client.
+
+  ```php
+  <?php
+  $I->stopFollowingRedirects();
+  ```
+
+
+* `submitForm($selector, array $params, [$button])` : `void`
+
+
+* `switchToIframe($name)` : `void`  
+  Switch to iframe or frame on the page.
+
+  Example:
+  ``` html
+  <iframe name="another_frame" src="http://example.com">
+  ```
+
+  ``` php
+  <?php
+  # switch to iframe
+  $I->switchToIframe("another_frame");
+  ```
+
+
+* `uncheckOption($option)` : `void`
 
 *This class extends \Codeception\Module\PhpBrowser*
 
