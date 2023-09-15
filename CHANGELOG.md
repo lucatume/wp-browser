@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Breaking change
+
+- Drop support for Codeception version 2 and 3; from this version the project will only support Codeception version 4.
+
 ### Added
 
 - Theme-related methods to the `WPBrowser` module.
