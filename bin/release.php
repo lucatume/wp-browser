@@ -70,8 +70,8 @@ $dryRun = $args('dryRun', false);
 
 if (!$dryRun) {
     $currentGitBranch = trim(shell_exec('git rev-parse --abbrev-ref HEAD'));
-    if ($currentGitBranch !== 'master') {
-        echo "\e[31mCan release only from master branch.\e[0m\n";
+    if ($currentGitBranch !== 'v3') {
+        echo "\e[31mCan release only from v3 branch.\e[0m\n";
         exit(1);
     }
     echo "Current git branch: \e[32m" . $currentGitBranch . "\e[0m\n";
@@ -192,7 +192,7 @@ function confirm($question)
 }
 
 if ($args('checkUnpushed', true) && !$dryRun) {
-    $gitDiff = trim(shell_exec('git log origin/master..HEAD'));
+    $gitDiff = trim(shell_exec('git log origin/v3..HEAD'));
     if (!empty($gitDiff)) {
         echo "\e[31mYou have unpushed changes.\e[0m\n";
         if (confirm('Would you like to push them now?')) {
