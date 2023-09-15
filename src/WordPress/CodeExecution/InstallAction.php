@@ -56,7 +56,14 @@ class InstallAction implements CodeExecutionActionInterface
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         require_once ABSPATH . 'wp-admin/includes/translation-install.php';
         require_once ABSPATH . '/wp-includes/class-wpdb.php';
+        // Set the permalink structure to a default one to avoid the `wp_install_maybe_enable_pretty_permalinks` time.
+        update_option('permalink_structure', '/%year%/%monthnum%/%day%/%postname%/');
+        $fixPermalinkStructure = fn() => '/%year%/%monthnum%/%day%/%postname%/';
+        add_filter('pre_option_permalink_structure', $fixPermalinkStructure);
         $installed = wp_install($title, $adminUser, $adminEmail, true, '', wp_slash($adminPassword));
+        // Update again as it might have been reset during the installation
+        remove_filter('pre_option_permalink_structure', $fixPermalinkStructure);
+        update_option('permalink_structure', '/%year%/%monthnum%/%day%/%postname%/');
     }
 
     public function getClosure(): Closure
