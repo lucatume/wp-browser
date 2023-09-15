@@ -664,7 +664,7 @@ modules:
 
 
 * `seePluginInstalled($pluginSlug)` : `void`  
-  Assert a plugin is installed, no matter its activation status, in the plugin adminstration screen.
+  Assert a plugin is installed, no matter its activation status, in the plugin administration screen.
 
   The method will **not** handle authentication and navigation to the plugin administration screen.
 
