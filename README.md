@@ -1,11 +1,13 @@
-[![test](https://github.com/lucatume/wp-browser/actions/workflows/test.yaml/badge.svg)](https://github.com/lucatume/wp-browser/actions/workflows/test.yaml)
-
 # wp-browser
+
+> You're looking at version 3 of the project; compatible with PHP 5.6+ and Codeception 4.
+> Version 3 of the project is compatible with PHP 8.0+ and the latest version of Codeception, version 5.
+> This branch is maintained for back-compatibility purposes; if you're starting new project, you should use the latest version.
 
 wp-browser provides easy acceptance, functional, integration and unit testing for WordPress plugins, themes and
 whole sites using [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.").
 
-Find out more in [the documentation](https://wpbrowser.wptestkit.dev).
+Find out more in [the documentation](https://wpbrowser.wptestkit.dev/v3).
 
 ## Installation and setup - the really fast version
 
@@ -19,28 +21,6 @@ vendor/bin/codecept init wpbrowser
 
 Answer the questions and you will be ready to test your project. Find out more about the setup in [the project 
 documentation][1].
-
-## Using wp-browser with Codeception 4.0
-
-Codeception version `4.0`, while still being compatible with PHP `5.6` and wp-browser, did break its structure into discrete modules.  
-
-If you want to use wp-browser with Codeception version `4.0+` you will need to make sure you've got all the required packages.  
-Add the following requirements in your `composer.json` file, in the `require-dev` section:
-
-```json
-{
-  "require-dev": {
-    "lucatume/wp-browser": "^3.0",
-    "codeception/module-asserts": "^1.0",
-    "codeception/module-phpbrowser": "^1.0",
-    "codeception/module-webdriver": "^1.0",
-    "codeception/module-db": "^1.0",
-    "codeception/module-filesystem": "^1.0",
-    "codeception/module-cli": "^1.0",
-    "codeception/util-universalframework": "^1.0"
-  }
-}
-```
 
 You might not need all of them depending on the modules you use in your suites, but this will cover all the modules for this project. 
 
@@ -68,26 +48,6 @@ $I->see('Test post 2');
 
 This is just a bite though, find out more in [the documentation][1].
 
-## Current Sponsors
-
-My sincere thanks to my sponsors: you make maintaining this project easier.
-
-* [@BenBornschein](https://github.com/BenBornschein)
-* [@Borlabs](https://github.com/Borlabs)
-* [@TimothyBJacobs](https://github.com/TimothyBJacobs)
-* [@bordoni](https://github.com/bordoni)
-* [@borkweb](https://github.com/borkweb)
-* [@dingo-d](https://github.com/dingo)
-* [@francescamarano](https://github.com/francescamarano)
-* [@jerclarke](https://github.com/jerclarke)
-* [@johnbillion](https://github.com/johnbillion)
-* [@joppuyo](https://github.com/joppuyo)
-* [@kkarpieszuk](https://github.com/kkarpieszuk)
-* [@pods-framework](https://github.com/pods)
-* [@roborourke](https://github.com/roborourke)
-* [@wp-staging](https://github.com/wp-staging)
-* [@zackkatz](https://github.com/zackkatz)
-
-[1]: https://wpbrowser.wptestkit.dev/
-[2]: https://wpbrowser.wptestkit.dev/levels-of-testing
-[3]: https://wpbrowser.wptestkit.dev/modules
+[1]: https://wpbrowser.wptestkit.dev/v3
+[2]: https://wpbrowser.wptestkit.dev/v3/levels-of-testing
+[3]: https://wpbrowser.wptestkit.dev/v3/modules
