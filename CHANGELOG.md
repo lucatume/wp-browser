@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.2.0] 2023-09-15;
+
 ### Breaking change
 
 - Drop support for Codeception version 2 and 3; starting from this version, the `v3` version of the project will only support Codeception version 4.
@@ -1851,4 +1853,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.1.9]: https://github.com/lucatume/wp-browser/compare/3.1.8...3.1.9
 [3.1.9]: https://github.com/lucatume/wp-browser/compare/3.1.9...3.1.9
 [3.1.10]: https://github.com/lucatume/wp-browser/compare/3.1.9...3.1.10
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.1.10...HEAD
+[3.2.0]: https://github.com/lucatume/wp-browser/compare/3.1.10...3.2.0
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.2.0...HEAD
