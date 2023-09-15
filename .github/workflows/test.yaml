@@ -1,5 +1,10 @@
 name: Test
-on: [ push ]
+on:
+  push:
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "composer.json"
 jobs:
   test_codeception_4_php_56:
     name: PHP 5.6, Codeception 4

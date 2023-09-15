@@ -1,5 +1,10 @@
 name: Static Analysis
-on: [ push ]
+on:
+  push:
+    paths:
+        - "src/**"
+        - "tests/**"
+        - "composer.json"
 jobs:
   lint-on-56:
     name: PHP 5.6 lint
