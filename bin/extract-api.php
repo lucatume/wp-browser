@@ -26,22 +26,49 @@ $methods = array_map(function (ReflectionMethod $m): string {
         ', ',
         array_map(
             fn(ReflectionParameter $p): string => sprintf(
-                '%s%s%s%s$%s',
+                '%s%s%s%s$%s%s',
+                $p->isOptional() ? '[' : '',
                 $p->isPassedByReference() ? '&' : '',
                 $p->hasType() ? $p->getType() . ' ' : '',
                 $p->isVariadic() ? '...' : '',
-                $p->isOptional() ? '[' : '',
-                $p->getName() . ($p->isOptional() ? ']' : '')
+                $p->getName(),
+                $p->isOptional() ? ']' : ''
             ),
             $parameters
         )
     );
     $returnType = $m->hasReturnType() ? (string)$m->getReturnType() : 'void';
+    $docBlock = $m->getDocComment();
+    $textLines = array_filter(
+        array_map(
+            fn(string $line) => preg_replace('~^\\s*\\*~', '', $line),
+            explode(PHP_EOL, $docBlock),
+        ),
+        fn(string $line) => !in_array($line, ['/**', '*/', '/'], true)
+    );
+
+    $descriptionLines = [];
+
+    foreach ($textLines as $line) {
+        $line = str_starts_with($line,' ') ? substr($line, 1) : $line;
+
+        if (str_starts_with($line, '@example') || str_starts_with($line, '@see') || str_starts_with($line, '@link')) {
+            break;
+        }
+
+        if (str_starts_with($line, '@')) {
+            break;
+        }
+
+        $descriptionLines[] = $line;
+    }
+
     return sprintf(
-        '* `%s(%s)` : `%s`',
+        '* `%s(%s)` : `%s`%s' . PHP_EOL,
         $m->getName(),
         $parametersString,
-        $returnType
+        $returnType,
+        count($descriptionLines) ? "  \n\t" . implode("\n\t", $descriptionLines) : ''
     );
 }, $apiClassMethods);
 
