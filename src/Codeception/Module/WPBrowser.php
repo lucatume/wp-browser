@@ -7,12 +7,18 @@
 
 namespace Codeception\Module;
 
+use Codeception\Exception\ModuleConfigException;
+use Codeception\Exception\ModuleException;
+use DOMElement;
 use Facebook\WebDriver\Cookie as FacebookWebdriverCookie;
 use Symfony\Component\BrowserKit\Cookie;
+
+use Symfony\Component\DomCrawler\Crawler;
+
 use function tad\WPBrowser\requireCodeceptionModules;
 
 //phpcs:disable
-requireCodeceptionModules('WPBrowser', [ 'PhpBrowser' ]);
+requireCodeceptionModules('WPBrowser', ['PhpBrowser']);
 //phpcs:enable
 
 /**
@@ -23,6 +29,7 @@ requireCodeceptionModules('WPBrowser', [ 'PhpBrowser' ]);
 class WPBrowser extends PhpBrowser
 {
     use WPBrowserMethods;
+    use ThemeMethods;
 
     /**
      * The module required fields, to be set in the suite .yml configuration file.
@@ -34,6 +41,9 @@ class WPBrowser extends PhpBrowser
     /**
      * Returns all the cookies whose name matches a regex pattern.
      *
+     * @param string $cookiePattern The regular expression pattern to use for the matching.
+     *
+     * @return array<FacebookWebdriverCookie|Cookie>|null An array of cookies matching the pattern.
      * @example
      * ```php
      * $I->loginAs('customer','password');
@@ -41,9 +51,6 @@ class WPBrowser extends PhpBrowser
      * $cartCookies = $I->grabCookiesWithPattern("#^shop_cart\\.*#");
      * ```
      *
-     * @param string $cookiePattern The regular expression pattern to use for the matching.
-     *
-     * @return array<FacebookWebdriverCookie|Cookie>|null An array of cookies matching the pattern.
      */
     public function grabCookiesWithPattern($cookiePattern)
     {
@@ -72,6 +79,9 @@ class WPBrowser extends PhpBrowser
      *
      * The method will **not** handle authentication to the admin area.
      *
+     * @param string|array<string> $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
+     *
+     * @return void
      * @example
      * ```php
      * // Activate a plugin.
@@ -84,9 +94,6 @@ class WPBrowser extends PhpBrowser
      * $I->activatePlugin(['hello-dolly','another-plugin']);
      * ```
      *
-     * @param  string|array<string> $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
-     *
-     * @return void
      */
     public function activatePlugin($pluginSlug)
     {
@@ -102,6 +109,9 @@ class WPBrowser extends PhpBrowser
      *
      * The method will **not** handle authentication and navigation to the plugins administration page.
      *
+     * @param string|array<string> $pluginSlug The plugin slug, like "hello-dolly", or a list of plugin slugs.
+     *
+     * @return void
      * @example
      * ```php
      * // Deactivate one plugin.
@@ -114,13 +124,10 @@ class WPBrowser extends PhpBrowser
      * $I->deactivatePlugin(['hello-dolly', 'my-plugin']);
      * ```
      *
-     * @param  string|array<string> $pluginSlug The plugin slug, like "hello-dolly", or a list of plugin slugs.
-     *
-     * @return void
      */
     public function deactivatePlugin($pluginSlug)
     {
-        foreach ((array) $pluginSlug as $plugin) {
+        foreach ((array)$pluginSlug as $plugin) {
             $this->checkOption('//*[@data-slug="' . $plugin . '"]/th/input');
         }
         $this->selectOption('action', 'deactivate-selected');
@@ -132,7 +139,7 @@ class WPBrowser extends PhpBrowser
      *
      * @return void
      *
-     * @throws \Codeception\Exception\ModuleConfigException|\Codeception\Exception\ModuleException If there's any issue.
+     * @throws ModuleConfigException|ModuleException If there's any issue.
      */
     protected function validateConfig()
     {

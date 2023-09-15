@@ -14,10 +14,16 @@ modules:
       browser: chrome
       host: '%CHROMEDRIVER_HOST%'
       port: '%CHROMEDRIVER_PORT%'
-      window_size: false
+      window_size: 1200x1000
       capabilities:
-        chromeOptions:
-          args: ["--headless", "--disable-gpu", "--proxy-server='direct://'", "--proxy-bypass-list=*"]
+        goog:chromeOptions:
+          args:
+            - "--headless"
+            - "--disable-gpu"
+            - "--disable-dev-shm-usage"
+            - "--proxy-server='direct://'"
+            - "--proxy-bypass-list=*"
+            - "--no-sandbox"
     WPDb:
       dsn: 'mysql:host=%WORDPRESS_DB_HOST%;dbname=%WORDPRESS_DB_NAME%'
       user: '%WORDPRESS_DB_USER%'
