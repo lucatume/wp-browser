@@ -13,7 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Theme-related methods to the `WPBrowser` module.
-- Theme-related methods to the `WpWebDriver` module.
+- Theme-related methods to the `WPWebDriver` module.
 
 ## [3.1.10] 2023-07-20;
 
