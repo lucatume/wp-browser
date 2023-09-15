@@ -1,26 +1,18 @@
-SHELL := /bin/bash
-PHP_VERSIONS := 8.0 8.1 8.2
-
 build:
-	for php_version in $(PHP_VERSIONS); do \
-		bin/stack -p$$php_version build || exit 1; \
-	done
+	composer install
 .PHONY: build
 
 test:
-	for php_version in $(PHP_VERSIONS); do \
-		bin/stack -p$$php_version composer_update &&\
-		bin/stack -p$$php_version phpstan || exit 1; \
-		bin/stack -p$$php_version test || exit 1; \
-	done
+	vendor/bin/codecept run
 .PHONY: test
 
 clean:
-	bin/stack deep_clean
+	rm -rf vendor composer.lock var
+	mkdir -p var
 .PHONY: clean
 
 clean_tmp:
-	bin/stack clean_tmp
+	rm -rf var/_output var/_tmp
 .PHONY: clean_tmp
 
 update_core_phpunit_includes:
