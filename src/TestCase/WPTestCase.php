@@ -35,11 +35,21 @@ class WPTestCase extends Unit
         'wp_current_filter',
         'wp_filter',
         'wp_object_cache',
-        'wp_meta_keys'
+        'wp_meta_keys',
+        // WooCommerce.
+        'woocommerce',
     ];
 
     // Backup, and reset, static class attributes between tests.
     protected $backupStaticAttributes = true;
+
+    // A list of static attributes that should not be backed up as they are wired to explode when doing so.
+    protected $backupStaticAttributesExcludeList = [
+        // WooCommerce.
+        'WooCommerce' => ['_instance'],
+        'Automattic\WooCommerce\Internal\Admin\FeaturePlugin' => ['instance'],
+        'Automattic\WooCommerce\RestApi\Server' => ['instance']
+    ];
 
     /**
      * @var array<string,WP_UnitTestCase>

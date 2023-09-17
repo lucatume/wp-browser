@@ -19,7 +19,8 @@ modules:
             title: Test
             configFile: ''
             theme: dummy
-            plugins: ['mu-plugin-1/plugin.php']
-            activatePlugins: ['mu-plugin-1/plugin.php']
+            plugins:
+              - 'mu-plugin-1/plugin.php'
+              - 'woocommerce/woocommerce.php'
             installationTableHandling: drop
             booststrapActions: []
