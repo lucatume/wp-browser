@@ -1,7 +1,5 @@
-actor: MuloaderTester
 modules:
     enabled:
-        - \Helper\Muloader
         - WPLoader
     config:
         WPLoader:

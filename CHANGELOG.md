@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Exclude some WooCommerce global values and static attributes from backup to avoid fatals.
+
 ## [4.0.1] 2023-09-15;
 
 ### Added
