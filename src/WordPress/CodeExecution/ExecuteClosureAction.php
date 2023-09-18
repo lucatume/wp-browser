@@ -12,6 +12,7 @@ class ExecuteClosureAction implements CodeExecutionActionInterface
     public function __construct(FileRequest $request, string $wpRootDir, Closure $closure)
     {
         $request
+            ->runInFastMode($wpRootDir)
             ->setTargetFile($wpRootDir . '/wp-load.php')
             ->addAfterLoadClosure($closure);
         $this->request = $request;

@@ -71,18 +71,152 @@ modules:
 
 The module provides the following methods:
 
-* `cli(array|string [$command], ?array [$env], mixed [$input])` : `int`
-* `cliToArray(array $command, ?callable [$splitCallback], ?array [$env], mixed [$input])` : `array`
-* `cliToString(array $command, ?array [$env], mixed [$input])` : `string`
-* `dontSeeInShellOutput(string $text)` : `void`
-* `dontSeeShellOutputMatches(string $regex)` : `void`
-* `grabLastCliProcess()` : `lucatume\WPBrowser\WordPress\CliProcess`
-* `grabLastShellErrorOutput()` : `string`
-* `grabLastShellOutput()` : `string`
-* `seeInShellOutput(string $text)` : `void`
-* `seeResultCodeIs(int $code)` : `void`
-* `seeResultCodeIsNot(int $code)` : `void`
-* `seeShellOutputMatches(string $regex)` : `void`
+<!-- methods -->
+
+#### changeWpcliPath
+Signature: `changeWpcliPath(string $path)` : `void`  
+
+Changes the path to the WordPress installation that WPCLI should use.
+
+This is the equivalent of the `--path` option.
+
+```php
+<?php
+// Operate on the installation specified in the `path` config parameter.
+$I->cli(['core','version']);
+// Change to another installation and run a command there.
+$I->changeWpcliPath('var/wordpress-installation-two');
+$I->cli(['core','version']);
+```
+
+#### cli
+Signature: `cli([array|string $command], [?array $env], [mixed $input])` : `int`  
+
+Executes a wp-cli command targeting the test WordPress installation.
+
+```php
+<?php
+// Activate a plugin via wp-cli in the test WordPress site.
+$I->cli(['plugin', 'activate', 'my-plugin']);
+// Change a user password.
+$I->cli(['user', 'update', 'luca', '--user_pass=newpassword']);
+```
+
+#### cliToArray
+Signature: `cliToArray(array $command, [?callable $splitCallback], [?array $env], [mixed $input])` : `array`  
+
+Returns the output of a wp-cli command as an array optionally allowing a callback to process the output.
+
+```php
+<?php
+// Return a list of inactive themes, like ['twentyfourteen', 'twentyfifteen'].
+$inactiveThemes = $I->cliToArray(['theme', 'list', '--status=inactive', '--field=name']);
+// Get the list of installed plugins and only keep the ones starting with "foo".
+$fooPlugins = $I->cliToArray(['plugin', 'list', '--field=name'], function($output){
+     return array_filter(explode(PHP_EOL, $output), function($name){
+             return strpos(trim($name), 'foo') === 0;
+     });
+});
+```
+
+#### cliToString
+Signature: `cliToString(array $command, [?array $env], [mixed $input])` : `string`  
+
+Returns the output of a wp-cli command as a string.
+
+```php
+<?php
+// Return the current site administrator email, using string command format.
+$adminEmail = $I->cliToString('option get admin_email');
+// Get the list of active plugins in JSON format, two ways.
+$activePlugins = $I->cliToString(['plugin', 'list','--status=active', '--format=json']);
+$activePlugins = $I->cliToString(['option', 'get', 'active_plugins' ,'--format=json']);
+```
+
+#### dontSeeInShellOutput
+Signature: `dontSeeInShellOutput(string $text)` : `void`  
+
+Checks that output from last command doesn't contain text.
+
+```php
+<?php
+// Return the current site administrator email, using string command format.
+$I->cli('plugin list --status=active');
+$I->dontSeeInShellOutput('my-inactive/plugin.php');
+```
+
+#### dontSeeShellOutputMatches
+Signature: `dontSeeShellOutputMatches(string $regex)` : `void`  
+
+Checks that output from the last command doesn't match a given regular expression.
+
+```php
+<?php
+// Return the current site administrator email, using string command format.
+$I->cli('option get siteurl');
+$I->dontSeeShellOutputMatches('/^http/');
+```
+
+#### grabLastCliProcess
+Signature: `grabLastCliProcess()` : `lucatume\WPBrowser\WordPress\CliProcess`
+#### grabLastShellErrorOutput
+Signature: `grabLastShellErrorOutput()` : `string`  
+
+Returns the shell error output of the last command.
+
+#### grabLastShellOutput
+Signature: `grabLastShellOutput()` : `string`  
+
+Returns the shell output of the last command.
+
+#### seeInShellOutput
+Signature: `seeInShellOutput(string $text)` : `void`  
+
+Checks that output from last command contains text.
+
+```php
+<?php
+// Return the current site administrator email, using string command format.
+$I->cli('option get admin_email');
+$I->seeInShellOutput('admin@example.org');
+```
+
+#### seeResultCodeIs
+Signature: `seeResultCodeIs(int $code)` : `void`  
+
+Checks the result code from the last command.
+
+```php
+<?php
+// Return the current site administrator email, using string command format.
+$I->cli('option get admin_email');
+$I->seeResultCodeIs(0);
+```
+
+#### seeResultCodeIsNot
+Signature: `seeResultCodeIsNot(int $code)` : `void`  
+
+Checks the result code from the last command.
+
+```php
+<?php
+// Return the current site administrator email, using string command format.
+$I->cli('invalid command');
+$I->seeResultCodeIsNot(0);
+```
+
+#### seeShellOutputMatches
+Signature: `seeShellOutputMatches(string $regex)` : `void`  
+
+Checks that output from the last command matches a given regular expression.
+
+```php
+<?php
+// Return the current site administrator email, using string command format.
+$I->cli('option get admin_email');
+$I->seeShellOutputMatches('/^\S+@\S+$/');
+```
+<!-- /methods -->
 
 Explore the [WP-CLI documentation][1] for more information on the available commands.
 

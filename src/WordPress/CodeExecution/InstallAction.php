@@ -20,6 +20,7 @@ class InstallAction implements CodeExecutionActionInterface
         string $url
     ) {
         $request
+            ->runInFastMode($wpRootDir)
             ->setTargetFile($wpRootDir . '/wp-load.php')
             ->defineConstant('WP_INSTALLING', true)
             ->defineConstant('MULTISITE', false)
