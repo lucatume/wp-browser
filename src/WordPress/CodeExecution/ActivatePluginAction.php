@@ -20,6 +20,7 @@ class ActivatePluginAction implements CodeExecutionActionInterface
         bool $multisite
     ) {
         $request->setTargetFile($wpRootDir . '/wp-load.php')
+            ->runInFastMode($wpRootDir)
             ->defineConstant('MULTISITE', $multisite)
             ->addAfterLoadClosure(fn() => $this->activatePlugin($plugin, $multisite));
         $this->request = $request;

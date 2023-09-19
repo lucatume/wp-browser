@@ -29,6 +29,7 @@ class CodeExecutionFactory
     public function toCheckIfWpIsInstalled(bool $multisite): Closure
     {
         $request = $this->requestFactory->buildGetRequest()
+            ->runInFastMode($this->wpRootDir)
             ->blockHttpRequests()
             ->setRedirectFiles($this->redirectFiles)
             ->addPresetGlobalVars($this->presetGlobalVars);

@@ -3934,8 +3934,8 @@ class WPDb extends Db
      * Removes an attachment from the posts table.
      *
      * @example
-     *      ```
-     *      $postmeta = $I->grabpostmetatablename();
+     * ``` php
+     * $postmeta = $I->grabpostmetatablename();
      * $thumbnailId = $I->grabFromDatabase($postmeta, 'meta_value', [
      *      'post_id' => $id,
      *      'meta_key'=>'thumbnail_id'

@@ -6,9 +6,13 @@ use Closure;
 use ErrorException;
 use lucatume\WPBrowser\Utils\MonkeyPatch;
 use lucatume\WPBrowser\WordPress\PreloadFilters;
+use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
+use lucatume\WPBrowser\WordPress\WPConfigFile;
 
 abstract class FileRequest
 {
+    use WordPressChecks;
+
     /**
      * @var array<string,mixed>
      */
@@ -73,10 +77,12 @@ abstract class FileRequest
             $query = parse_url($this->requestUri, PHP_URL_QUERY);
 
             if ($query === false) {
-                throw new FileRequestException(sprintf(
-                    'Unable to parse query string from request URI: %s',
-                    $this->requestUri
-                ));
+                throw new FileRequestException(
+                    sprintf(
+                        'Unable to parse query string from request URI: %s',
+                        $this->requestUri
+                    )
+                );
             }
 
             parse_str((string)$query, $queryArgs);
@@ -206,7 +212,7 @@ abstract class FileRequest
      *
      * @throws FileRequestException
      */
-    public function __unserialize(array $data):void
+    public function __unserialize(array $data): void
     {
         $this->afterLoadClosures = $data['afterLoadClosures'] ?? [];
         $this->constants = $data['constants'] ?? [];
@@ -306,6 +312,38 @@ abstract class FileRequest
     public function addPresetGlobalVars(array $presetGlobalVars): FileRequest
     {
         $this->presetGlobalVars = array_replace($this->presetGlobalVars, $presetGlobalVars);
+
+        return $this;
+    }
+
+    public function runInFastMode(string $wpRootDir): FileRequest
+    {
+        $wpConfigFilePath = $this->findWpConfigFilePath($wpRootDir);
+
+        if (!$wpConfigFilePath) {
+            return $this;
+        }
+
+        $wpConfigFile = new WPConfigFile($wpRootDir, $wpConfigFilePath);
+        $preloadConstants = [];
+
+        if (!($wpConfigFile->getConstant('WP_HTTP_BLOCK_EXTERNAL') !== null)) {
+            $preloadConstants['WP_HTTP_BLOCK_EXTERNAL'] = true;
+        }
+
+        if (!($wpConfigFile->getConstant('DISABLE_WP_CRON') !== null)) {
+            $preloadConstants['DISABLE_WP_CRON'] = true;
+        }
+
+        if (!count($preloadConstants)) {
+            return $this;
+        }
+
+        $this->addPreloadClosure(static function () use ($preloadConstants) {
+            foreach ($preloadConstants as $key => $value) {
+                defined($key) || define($key, $value);
+            }
+        });
 
         return $this;
     }

@@ -26,6 +26,7 @@ class WPCLITest extends Unit
     protected $backupGlobals = false;
     private static ?Installation $installation = null;
     protected bool $cleanupTmpAfterTest = false;
+    private array $cleanupAfter = [];
 
     public function _before(): void
     {
@@ -49,6 +50,23 @@ class WPCLITest extends Unit
                 'admin@admin',
                 'WPCLI Module Test Site'
             );
+    }
+
+    public function _after()
+    {
+        parent::_after();
+        foreach ($this->cleanupAfter as $path) {
+            FS::rrmdir($path);
+        }
+        $this->cleanupAfter = [];
+    }
+
+    /**
+     * @afterClass
+     */
+    public static function removeInstallation(): void
+    {
+        FS::rrmdir(self::$installation->getWpRootDir());
     }
 
     private function module(array $config): WPCLI
@@ -323,12 +341,14 @@ class WPCLITest extends Unit
 
         $processEnv = $wpcli->grabLastCliProcess()->getEnv();
 
-        foreach ([
-                     'WP_CLI_CACHE_DIR' => $tmpDir . '/cache',
-                     'WP_CLI_CONFIG_PATH' => $tmpDir . '/wp-cli-config.yml',
-                     'WP_CLI_CUSTOM_SHELL' => '/bin/sh',
-                     'WP_CLI_PACKAGES_DIR' => __DIR__,
-                 ] as $envVar => $expectedValue) {
+        foreach (
+            [
+                'WP_CLI_CACHE_DIR' => $tmpDir . '/cache',
+                'WP_CLI_CONFIG_PATH' => $tmpDir . '/wp-cli-config.yml',
+                'WP_CLI_CUSTOM_SHELL' => '/bin/sh',
+                'WP_CLI_PACKAGES_DIR' => __DIR__,
+            ] as $envVar => $expectedValue
+        ) {
             $this->assertEquals($expectedValue, $processEnv[$envVar]);
         }
     }
@@ -350,14 +370,16 @@ class WPCLITest extends Unit
         $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
         $wpCliPhar = CliProcess::getWpCliPharPathname();
 
-        $expected = implode(' ',
+        $expected = implode(
+            ' ',
             array_map('escapeshellarg', [
                 PHP_BINARY,
                 $wpCliPhar,
                 '--user=23',
                 'core',
                 'version'
-            ]));
+            ])
+        );
         $this->assertEquals($expected, $commandLine);
     }
 
@@ -403,14 +425,16 @@ class WPCLITest extends Unit
         $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
         $wpCliPhar = CliProcess::getWpCliPharPathname();
 
-        $expected = implode(' ',
+        $expected = implode(
+            ' ',
             array_map('escapeshellarg', [
                 PHP_BINARY,
                 $wpCliPhar,
                 $inlineValue,
                 'core',
                 'version'
-            ]));
+            ])
+        );
         $this->assertEquals($expected, $commandLine);
     }
 
@@ -431,14 +455,16 @@ class WPCLITest extends Unit
         $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
         $wpCliPhar = CliProcess::getWpCliPharPathname();
 
-        $expected = implode(' ',
+        $expected = implode(
+            ' ',
             array_map('escapeshellarg', [
                 PHP_BINARY,
                 $wpCliPhar,
                 '--skip-plugins',
                 'core',
                 'version'
-            ]));
+            ])
+        );
         $this->assertEquals($expected, $commandLine);
     }
 
@@ -459,14 +485,16 @@ class WPCLITest extends Unit
         $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
         $wpCliPhar = CliProcess::getWpCliPharPathname();
 
-        $expected = implode(' ',
+        $expected = implode(
+            ' ',
             array_map('escapeshellarg', [
                 PHP_BINARY,
                 $wpCliPhar,
                 '--skip-themes',
                 'core',
                 'version'
-            ]));
+            ])
+        );
         $this->assertEquals($expected, $commandLine);
     }
 
@@ -487,14 +515,16 @@ class WPCLITest extends Unit
         $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
         $wpCliPhar = CliProcess::getWpCliPharPathname();
 
-        $expected = implode(' ',
+        $expected = implode(
+            ' ',
             array_map('escapeshellarg', [
                 PHP_BINARY,
                 $wpCliPhar,
                 '--skip-packages',
                 'core',
                 'version'
-            ]));
+            ])
+        );
         $this->assertEquals($expected, $commandLine);
     }
 
@@ -578,14 +608,16 @@ class WPCLITest extends Unit
         $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
         $wpCliPhar = CliProcess::getWpCliPharPathname();
 
-        $expected = implode(' ',
+        $expected = implode(
+            ' ',
             array_map('escapeshellarg', [
                 PHP_BINARY,
                 $wpCliPhar,
                 '--require=' . $tmpDir . '/php-file-1.php',
                 'core',
                 'version'
-            ]));
+            ])
+        );
         $this->assertEquals($expected, $commandLine);
     }
 
@@ -613,7 +645,8 @@ class WPCLITest extends Unit
         $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
         $wpCliPhar = CliProcess::getWpCliPharPathname();
 
-        $expected = implode(' ',
+        $expected = implode(
+            ' ',
             array_map('escapeshellarg', [
                 PHP_BINARY,
                 $wpCliPhar,
@@ -621,7 +654,8 @@ class WPCLITest extends Unit
                 '--require=' . $tmpDir . '/php-file-2.php',
                 'core',
                 'version'
-            ]));
+            ])
+        );
         $this->assertEquals($expected, $commandLine);
     }
 
@@ -642,14 +676,16 @@ class WPCLITest extends Unit
         $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
         $wpCliPhar = CliProcess::getWpCliPharPathname();
 
-        $expected = implode(' ',
+        $expected = implode(
+            ' ',
             array_map('escapeshellarg', [
                 PHP_BINARY,
                 $wpCliPhar,
                 '--exec=echo "Hello World!";',
                 'core',
                 'version'
-            ]));
+            ])
+        );
         $this->assertEquals($expected, $commandLine);
     }
 
@@ -673,7 +709,8 @@ class WPCLITest extends Unit
         $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
         $wpCliPhar = CliProcess::getWpCliPharPathname();
 
-        $expected = implode(' ',
+        $expected = implode(
+            ' ',
             array_map('escapeshellarg', [
                 PHP_BINARY,
                 $wpCliPhar,
@@ -681,7 +718,8 @@ class WPCLITest extends Unit
                 '--exec=echo "Hello there!";',
                 'core',
                 'version'
-            ]));
+            ])
+        );
         $this->assertEquals($expected, $commandLine);
     }
 
@@ -718,7 +756,8 @@ class WPCLITest extends Unit
         $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
         $wpCliPhar = CliProcess::getWpCliPharPathname();
 
-        $expected = implode(' ',
+        $expected = implode(
+            ' ',
             array_map('escapeshellarg', [
                 PHP_BINARY,
                 $wpCliPhar,
@@ -726,7 +765,8 @@ class WPCLITest extends Unit
                 '--quiet',
                 'core',
                 'version'
-            ]));
+            ])
+        );
         $this->assertEquals($expected, $commandLine);
     }
 
@@ -747,14 +787,16 @@ class WPCLITest extends Unit
         $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
         $wpCliPhar = CliProcess::getWpCliPharPathname();
 
-        $expected = implode(' ',
+        $expected = implode(
+            ' ',
             array_map('escapeshellarg', [
                 PHP_BINARY,
                 $wpCliPhar,
                 '--color',
                 'core',
                 'version'
-            ]));
+            ])
+        );
         $this->assertEquals($expected, $commandLine);
     }
 
@@ -775,14 +817,16 @@ class WPCLITest extends Unit
         $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
         $wpCliPhar = CliProcess::getWpCliPharPathname();
 
-        $expected = implode(' ',
+        $expected = implode(
+            ' ',
             array_map('escapeshellarg', [
                 PHP_BINARY,
                 $wpCliPhar,
                 '--no-color',
                 'core',
                 'version'
-            ]));
+            ])
+        );
         $this->assertEquals($expected, $commandLine);
     }
 
@@ -1006,5 +1050,85 @@ class WPCLITest extends Unit
         $wpcli->seeShellOutputMatches('/World$/');
         $wpcli->dontSeeShellOutputMatches('/^Hello World$/');
         $wpcli->dontSeeShellOutputMatches('/There/');
+    }
+
+    /**
+     * It should allow changing the path used by WPCLI
+     *
+     * @test
+     */
+    public function should_allow_changing_the_path_used_by_wpcli(): void
+    {
+        // Scaffold a first installation providing the `one` command.
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $firstInstallation = Installation::scaffold(FS::tmpDir('wpcli_'), '6.1.1')
+            ->configure($db)
+            ->install(
+                'http://wp.local',
+                'admin',
+                'secret',
+                'admin@admin',
+                'WPCLI Module Test Site'
+            );
+
+        $this->cleanupAfter[] = $firstInstallation->getWpRootDir();
+
+        if (!mkdir($firstInstallation->getMuPluginsDir())) {
+            throw new \RuntimeException('Could not create mu-plugins dir in first installation.');
+        }
+        $commandOneCode = <<<PHP
+<?php
+/**
+ * Plugin Name: WPCLI Command One
+ */
+
+WP_CLI::add_command('ping-one', function(){
+    WP_CLI::success('pong-one');
+});
+PHP;
+        file_put_contents($firstInstallation->getMuPluginsDir() . '/command-one.php', $commandOneCode, LOCK_EX);
+
+        $secondInstallation = Installation::scaffold(FS::tmpDir('wpcli_'), '6.1.1')
+            ->configure($db)
+            ->install(
+                'http://wp.local',
+                'admin',
+                'secret',
+                'admin@admin',
+                'WPCLI Module Test Site'
+            );
+
+        $this->cleanupAfter[] = $secondInstallation->getWpRootDir();
+
+        if (!mkdir($secondInstallation->getMuPluginsDir())) {
+            throw new \RuntimeException('Could not create mu-plugins dir in second installation.');
+        }
+        $commandTwoCode = <<<PHP
+<?php
+/**
+ * Plugin Name: WPCLI Command Two
+ */
+
+WP_CLI::add_command('ping-two', function(){
+    WP_CLI::success('pong-two');
+});
+PHP;
+        file_put_contents($secondInstallation->getMuPluginsDir() . '/command-two.php', $commandTwoCode, LOCK_EX);
+
+        $wpcli = $this->module([
+            'path' => $firstInstallation->getWpRootDir(),
+        ]);
+
+        $wpcli->cli(['ping-one']);
+        $wpcli->seeInShellOutput('pong-one');
+
+        $wpcli->changeWpcliPath($secondInstallation->getWpRootDir());
+
+        $wpcli->cli(['ping-two']);
+        $wpcli->seeInShellOutput('pong-two');
     }
 }

@@ -1,7 +1,23 @@
 <?php
 
+use lucatume\WPBrowser\Utils\Env;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
+use lucatume\WPBrowser\Utils\Random;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
+use lucatume\WPBrowser\WordPress\Installation;
+
 class BasicOperationsCest
 {
+    private array $tmpCleanup = [];
+
+    public function _after(): void
+    {
+        foreach ($this->tmpCleanup as $dir) {
+            FS::rrmdir($dir);
+        }
+        $this->tmpCleanup = [];
+    }
+
     /**
      * @test
      * it should allow using the cli method in a test
@@ -48,5 +64,49 @@ class BasicOperationsCest
         $I->cli('post delete ' . $id . ' --force');
 
         $I->dontSeePostInDatabase(['ID' => $id]);
+    }
+
+    /**
+     * It should allow changing the path
+     *
+     * @test
+     */
+    public function should_allow_changing_the_path(ClimoduleTester $I): void
+    {
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $otherInstallation = Installation::scaffold(FS::tmpDir('wpcli_'), '6.1.1')
+            ->configure($db)
+            ->install(
+                'http://wp.local',
+                'admin',
+                'secret',
+                'admin@admin',
+                'WPCLI Module Test Site'
+            );
+        $this->tmpCleanup[] = $otherInstallation->getWpRootDir();
+        if (!mkdir($otherInstallation->getMuPluginsDir())) {
+            throw new \RuntimeException('Could not create mu-plugins dir in first installation.');
+        }
+        $commandOneCode = <<<PHP
+<?php
+/**
+ * Plugin Name: WPCLI Command One
+ */
+
+WP_CLI::add_command('ping-one', function(){
+    WP_CLI::success('pong-one');
+});
+PHP;
+        file_put_contents($otherInstallation->getMuPluginsDir() . '/command-one.php', $commandOneCode, LOCK_EX);
+
+        $I->changeWpcliPath($otherInstallation->getWpRootDir());
+
+        $I->cli(['ping-one']);
+
+        $I->seeInShellOutput('pong-one');
     }
 }

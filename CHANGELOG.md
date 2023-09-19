@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- Allow changing path in the WPCLI module using the `changeWpcliPath` method.
+
+## [4.0.2] 2023-09-18;
+
 ### Fixed
 
 - Exclude some WooCommerce global values and static attributes from backup to avoid fatals.

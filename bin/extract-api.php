@@ -3,6 +3,7 @@
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 $class = $argv[1];
+$destFile = $argv[2];
 
 if (!class_exists($class)) {
     throw new \InvalidArgumentException("Class $class does not exist.");
@@ -49,27 +50,58 @@ $methods = array_map(function (ReflectionMethod $m): string {
 
     $descriptionLines = [];
 
-    foreach ($textLines as $line) {
-        $line = str_starts_with($line,' ') ? substr($line, 1) : $line;
+    foreach ($textLines as $k => $line) {
+        $line = str_starts_with($line, ' ') ? substr($line, 1) : $line;
 
         if (str_starts_with($line, '@example') || str_starts_with($line, '@see') || str_starts_with($line, '@link')) {
-            break;
+            continue;
         }
 
         if (str_starts_with($line, '@')) {
             break;
         }
 
+        if (str_contains($line, '```')) {
+            $line = trim($line);
+        }
+
         $descriptionLines[] = $line;
+
+        if (str_contains($line, '```php')) {
+            if (isset($textLines[$k + 1]) && !str_contains($textLines[$k + 1], '<?php')) {
+                $descriptionLines[] = '<?php';
+            }
+        }
     }
 
     return sprintf(
-        '* `%s(%s)` : `%s`%s' . PHP_EOL,
+        "#### %s\nSignature: `%s(%s)` : `%s`%s",
+        $m->getName(),
         $m->getName(),
         $parametersString,
         $returnType,
-        count($descriptionLines) ? "  \n\t" . implode("\n\t", $descriptionLines) : ''
+        count($descriptionLines) ? "  \n\n" . implode("\n", $descriptionLines) : ''
     );
 }, $apiClassMethods);
 
-array_map(fn(string $m) => print($m . PHP_EOL), $methods);
+$methodsMarkdown = array_map(fn(string $m) => PHP_EOL . $m, $methods);
+
+$destFileLines = file($destFile);
+
+// Remove any content between the `<!-- methods -->` and `<!-- /methods -->` markers.
+$methodsStart = array_search('<!-- methods -->' . PHP_EOL, $destFileLines, true);
+$methodsEnd = array_search('<!-- /methods -->' . PHP_EOL, $destFileLines, true);
+$methodsLines = array_merge(
+    array_slice($destFileLines, 0, $methodsStart + 1),
+    array_slice($destFileLines, $methodsEnd)
+);
+
+// Insert the methods markdown between the `<!-- methods -->` and `<!-- /methods -->` markers.
+$methodsStart = array_search('<!-- methods -->' . PHP_EOL, $destFileLines, true);
+$methodsEnd = array_search('<!-- /methods -->' . PHP_EOL, $destFileLines, true);
+$methodsLines = array_merge(
+    array_slice($destFileLines, 0, $methodsStart + 1),
+    $methodsMarkdown,
+    array_slice($destFileLines, $methodsEnd)
+);
+file_put_contents($destFile, implode('', $methodsLines));

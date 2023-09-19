@@ -663,4 +663,29 @@ class WPCLI extends Module
 
         return $command;
     }
+
+    /**
+     * Changes the path to the WordPress installation that WPCLI should use.
+     *
+     * This is the equivalent of the `--path` option.
+     *
+     * @example
+     * ```php
+     * // Operate on the installation specified in the `path` config parameter.
+     * $I->cli(['core','version']);
+     * // Change to another installation and run a command there.
+     * $I->changeWpcliPath('var/wordpress-installation-two');
+     * $I->cli(['core','version']);
+     * ```
+     *
+     * @param string $path The new path to use.
+     *
+     * @throws ModuleConfigException|ModuleConfigException
+     *
+     */
+    public function changeWpcliPath(string $path): void
+    {
+        $this->config['path'] = $path;
+        $this->_reconfigure($this->config);
+    }
 }

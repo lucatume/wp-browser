@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\WordPress\CodeExecution;
 
 use Closure;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequest;
+use lucatume\WPBrowser\WordPress\WPConfigFile;
 
 class CheckWordPressInstalledAction implements CodeExecutionActionInterface
 {
@@ -12,6 +13,7 @@ class CheckWordPressInstalledAction implements CodeExecutionActionInterface
     public function __construct(FileRequest $request, string $wpRootDir, bool $multisite)
     {
         $request->setTargetFile($wpRootDir . '/wp-load.php')
+            ->runInFastMode($wpRootDir)
             ->addAfterLoadClosure(fn(): bool => $this->isBlogInstalled($multisite));
         $this->request = $request;
     }

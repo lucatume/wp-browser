@@ -21,6 +21,7 @@ class InstallNetworkAction implements CodeExecutionActionInterface
         bool $subdomain
     ) {
         $request
+            ->runInFastMode($wpRootDir)
             ->setTargetFile($wpRootDir . '/wp-admin/admin.php')
             ->defineConstant('MULTISITE', false)
             ->defineConstant('WP_INSTALLING_NETWORK', true)

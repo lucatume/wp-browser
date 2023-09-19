@@ -257,12 +257,42 @@ modules:
 
 The module provides the following methods:
 
-* `factory()` : `lucatume\WPBrowser\Module\WPLoader\FactoryStore`
-* `getContentFolder(string [$path])` : `string`
-* `getInstallation()` : `lucatume\WPBrowser\WordPress\Installation`
-* `getPluginsFolder(string [$path])` : `string`
-* `getThemesFolder(string [$path])` : `string`
-* `getWpRootFolder(?string [$path])` : `string`
+<!-- methods -->
+
+#### factory
+Signature: `factory()` : `lucatume\WPBrowser\Module\WPLoader\FactoryStore`  
+
+Accessor method to get the object storing the factories for things.
+This method gives access to the same factories provided by the
+[Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/).
+
+#### getContentFolder
+Signature: `getContentFolder([string $path])` : `string`  
+
+Returns the absolute path to the WordPress content directory.
+
+#### getInstallation
+Signature: `getInstallation()` : `lucatume\WPBrowser\WordPress\Installation`  
+
+
+#### getPluginsFolder
+Signature: `getPluginsFolder([string $path])` : `string`  
+
+Returns the absolute path to the plugins directory.
+
+The value will first look at the `WP_PLUGIN_DIR` constant, then the `pluginsFolder` configuration parameter
+and will, finally, look in the default path from the WordPress root directory.
+
+#### getThemesFolder
+Signature: `getThemesFolder([string $path])` : `string`  
+
+Returns the absolute path to the themes directory.
+
+#### getWpRootFolder
+Signature: `getWpRootFolder([?string $path])` : `string`  
+
+Returns the absolute path to the WordPress root folder or a path within it..
+<!-- /methods -->
 
 [1]: https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/
 

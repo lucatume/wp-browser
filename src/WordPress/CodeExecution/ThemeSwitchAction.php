@@ -21,6 +21,7 @@ class ThemeSwitchAction implements CodeExecutionActionInterface
         bool $multisite
     ) {
         $request->setTargetFile($wpRootDir . '/wp-load.php')
+            ->runInFastMode($wpRootDir)
             ->defineConstant('MULTISITE', $multisite)
             ->addAfterLoadClosure(fn() => $this->switchTheme($stylesheet, $multisite));
         $this->request = $request;

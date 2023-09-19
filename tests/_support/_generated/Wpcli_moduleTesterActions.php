@@ -1,4 +1,4 @@
-<?php  //[STAMP] ae2fdef755184fcbfdf48d526998d176
+<?php  //[STAMP] 4dcf0bf9b887e2e700685530f8808804
 // phpcs:ignoreFile
 namespace _generated;
 
@@ -4865,6 +4865,33 @@ trait Wpcli_moduleTesterActions
      */
     public function canSeeResultCodeIsNot(int $code): void {
         $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeResultCodeIsNot', func_get_args()));
+    }
+
+ 
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * Changes the path to the WordPress installation that WPCLI should use.
+     *
+     * This is the equivalent of the `--path` option.
+     *
+     * @example
+     * ```php
+     * // Operate on the installation specified in the `path` config parameter.
+     * $I->cli(['core','version']);
+     * // Change to another installation and run a command there.
+     * $I->changeWpcliPath('var/wordpress-installation-two');
+     * $I->cli(['core','version']);
+     * ```
+     *
+     * @param string $path The new path to use.
+     *
+     * @throws ModuleConfigException|ModuleConfigException
+     *
+     * @see \lucatume\WPBrowser\Module\WPCLI::changeWpcliPath()
+     */
+    public function changeWpcliPath(string $path): void {
+        $this->getScenario()->runStep(new \Codeception\Step\Action('changeWpcliPath', func_get_args()));
     }
 
  
