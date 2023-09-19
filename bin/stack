@@ -237,10 +237,10 @@ function build_images() {
     export DOCKERFILE_SUFFIX="-PHP-5.6"
   fi
 
-if [ "${PHP_VERSION}" = "5.6" ]; then
-    export WP_IMAGE_VERSION="5"
+  if [[ "${PHP_VERSION}" =~ ^(5.6|7.0|7.1|7.2|7.3)$ ]]; then
+    export WP_IMAGE_VERSION=5
   else
-    export WP_IMAGE_VERSION="6"
+    export WP_IMAGE_VERSION=6
   fi
 
   docker compose build --build-arg "WP_IMAGE_VERSION=${WP_IMAGE_VERSION}" --progress plain wordpress || exit 1
@@ -282,11 +282,7 @@ function clean() {
 }
 
 function clean_tmp() {
-  if [[ "$OSTYPE" == "darwin"* ]] && [ -f docker-compose.override.yml ] && [ -d /Volumes/WP-Browser-Ram-Disk/ ]; then
-    rm -rf /Volumes/WP-Browser-Ram-Disk/*
-  else
-    rm -rf "$(pwd)/var/tmp"
-  fi
+  rm -rf "$(pwd)/var/tmp"
 }
 
 function config() {
