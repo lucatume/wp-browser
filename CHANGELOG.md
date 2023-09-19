@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.0.3] 2023-09-19;
+
 ### Added
 
 - Allow changing path in the WPCLI module using the `changeWpcliPath` method.
@@ -1945,4 +1947,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.0]: https://github.com/lucatume/wp-browser/compare/3.1.10...4.0.0
 [4.0.1]: https://github.com/lucatume/wp-browser/compare/4.0.0...4.0.1
 [4.0.2]: https://github.com/lucatume/wp-browser/compare/4.0.1...4.0.2
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.1...HEAD
+[4.0.3]: https://github.com/lucatume/wp-browser/compare/4.0.2...4.0.3
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.3...HEAD
