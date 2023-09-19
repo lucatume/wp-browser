@@ -512,6 +512,11 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         $this->_restore_hooks();
         wp_set_current_user(0);
         $this->requestTimeTearDown();
+
+        $unitTearDownMethod = Compatibility::tearDownMethodFor(Unit::class);
+        if (method_exists(Unit::class, $unitTearDownMethod)) {
+            Unit::{$unitTearDownMethod}();
+        }
     }
 
     /**

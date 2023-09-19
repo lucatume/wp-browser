@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Ensure `_before` and `_after` methods are called correctly by `WPTestCase`.
+
 ## [3.2.0] 2023-09-15;
 
 ### Breaking change
