@@ -1944,4 +1944,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.2.0]: https://github.com/lucatume/wp-browser/compare/3.1.10...3.2.0
 [4.0.0]: https://github.com/lucatume/wp-browser/compare/3.1.10...4.0.0
 [4.0.1]: https://github.com/lucatume/wp-browser/compare/4.0.0...4.0.1
+[4.0.2]: https://github.com/lucatume/wp-browser/compare/4.0.1...4.0.2
 [unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.1...HEAD
