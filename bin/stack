@@ -87,6 +87,12 @@ export USER_GID=$(id -g)
 export USER_NAME=$(id -un)
 export PWD="$(pwd)"
 
+if [[ "${PHP_VERSION}" =~ ^(5.6|7.0|7.1|7.2|7.3)$ ]]; then
+  export WORDPRESS_VERSION=5
+else
+  export WORDPRESS_VERSION=6
+fi
+
 # If the current architecture is arm64, use the arm64v8 images.
 if [ "$(arch)" = "arm64" ]; then
   export DOCKER_CHROME_IMAGE="seleniarm/standalone-chromium:116.0-20230828"
@@ -154,10 +160,10 @@ function ensure_wordpress_scaffolded() {
 
 function run_wp_cli_command() {
   docker run --rm -v "${PWD}/var/wordpress:/var/www/html" \
-    --network "wpbrowser_php_${PHP_VERSION}" \
+    --network "wpbrowser_v3" \
     -w /var/www/html \
     -u "${USER_UID}:${USER_GID}" \
-    "lucatume/wp-browser-v3-build:php${PHP_VERSION}-apache" \
+    "lucatume/wp-browser-v3-wordpress:php5.6-apache" \
     wp --allow-root --url=http://wordpress.test --path=/var/www/html "$@"
 }
 
@@ -175,10 +181,10 @@ function ensure_wordpress_configured() {
   # If the var/wordpress/wp-config.php file is not found, configure WordPress using wp-cli.
   # Configure WordPress using wp-cli.
   if ! docker run --rm -v "${PWD}/var/wordpress:/var/www/html" \
-    --network "wpbrowser_php_${PHP_VERSION}" \
+    --network "wpbrowser_v3" \
     -w /var/www/html \
     -u "${USER_UID}:${USER_GID}" \
-    "lucatume/wp-browser-v3-build:php${PHP_VERSION}-apache" \
+    "lucatume/wp-browser-v3-wordpress:php5.6-apache" \
     bash -c "wp --allow-root core config --dbname=wordpress --dbuser=root --dbpass=password --dbhost=database --dbprefix=wp_ --extra-php <<PHP
 define( 'WP_DEBUG', true );
 define( 'WP_DEBUG_LOG', true );
@@ -233,27 +239,12 @@ function ensure_externals_unblocked() {
 }
 
 function build_images() {
-  if [ "${PHP_VERSION}" = "5.6" ]; then
-    export DOCKERFILE_SUFFIX="-PHP-5.6"
-  fi
-
-  if [[ "${PHP_VERSION}" =~ ^(5.6|7.0|7.1|7.2|7.3)$ ]]; then
-    export WP_IMAGE_VERSION=5
-  else
-    export WP_IMAGE_VERSION=6
-  fi
-
-  docker compose build --build-arg "WP_IMAGE_VERSION=${WP_IMAGE_VERSION}" --progress plain wordpress || exit 1
-  docker compose build --build-arg "WP_IMAGE_VERSION=${WP_IMAGE_VERSION}" --progress plain codecept || exit 1
+  docker compose build || exit 1
 }
 
 function build() {
   [ ! -d "${PWD}/var/cache/composer" ] && mkdir -p "${PWD}/var/cache/composer"
   docker compose pull --ignore-buildable || exit 1
-  # Skip building the images if SKIP_BUILD is 1.
-  if [ "${SKIP_BUILD}" = "0" ]; then
-    build_images
-  fi
   docker compose up -d --force-recreate --wait database || exit 1
   ensure_wordpress_scaffolded
   ensure_wordpress_configured
@@ -262,7 +253,12 @@ function build() {
   ensure_wordpress_updated
   docker compose up -d --wait wordpress
   docker compose up -d --wait chrome
-  docker compose up -d --wait codecept
+
+  # Up all the Codecept versions.
+  for version in "${SUPPORTED_PHP_VERSIONS[@]}"; do
+    docker compose up -d --wait codecept_${version}
+  done
+
   ensure_test_databases
   ensure_twentytwenty_theme
   ensure_twentytwentyone_theme
@@ -271,14 +267,12 @@ function build() {
 }
 
 function clean() {
-  for version in "${SUPPORTED_PHP_VERSIONS[@]}"; do
-    PHP_VERSION=$version docker compose down -v
-    PHP_VERSION=$version docker compose rm -f
-    docker rmi "lucatume/wp-browser-v3-build:php${version}-apache"
-    docker rmi "lucatume/wp-browser-v3-build:php${version}-codeception"
-  done
+  docker compose down -v || true
+  docker compose rm -f || true
+  docker rmi $(docker image ls -q lucatume/wp-browser-v3-wordpress) || true
+  docker rmi $(docker image ls -q lucatume/wp-browser-v3-codecept) || true
 
-  rm -rf var/wordpress
+  rm -rf var && mkdir -p var
 }
 
 function clean_tmp() {
@@ -295,7 +289,7 @@ function composer_run() {
     -w "$(pwd)" \
     --no-deps \
     --entrypoint=bash \
-    codecept -c "composer $*" || exit 1
+    codecept_${PHP_VERSION} -c "composer $*" || exit 1
 }
 
 function composer_update() {
@@ -316,18 +310,18 @@ function run_tests() {
     echo "Running tests for suite $suite ... "
     echo "=============================================================================="
     docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" \
-      codecept bash -c "php vendor/bin/codecept run $suite --ext DotReporter" || exit 1
+      codecept_${PHP_VERSION} bash -c "php vendor/bin/codecept run $suite --ext DotReporter" || exit 1
   done
 }
 
 function xdebug_off() {
   docker compose exec -u "$(id -u):$(id -g)" -w "/var/www/html" wordpress bash xdebug-off || exit 1
-  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" codecept bash xdebug-off || exit 1
+  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" codecept_${PHP_VERSION} bash xdebug-off || exit 1
 }
 
 function xdebug_on() {
   docker compose exec -u "$(id -u):$(id -g)" -w "/var/www/html" wordpress bash xdebug-on || exit 1
-  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)}" codecept bash xdebug-on || exit 1
+  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)}" codecept_${PHP_VERSION} bash xdebug-on || exit 1
 }
 
 COMMAND=${1:-help}
@@ -372,6 +366,9 @@ down)
   ;;
 exec)
   service=${2:-codecept}
+  if [ $service = 'codecept' ]; then
+    service="codecept_${PHP_VERSION}"
+  fi
   docker compose exec -u "$(id -u):$(id -g)" -it -w "$(pwd)" "$service" "${@:2}"
   ;;
 help)
@@ -384,19 +381,22 @@ mysql)
   docker compose exec database mysql -u root -ppassword
   ;;
 phpcs)
-  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" codecept bash -c "composer run cs"
+  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" codecept_${PHP_VERSION} bash -c "composer run cs"
   ;;
 phpcbf)
-  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" codecept bash -c "composer run cs-fix"
+  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" codecept_${PHP_VERSION} bash -c "composer run cs-fix"
   ;;
 phpstan)
-  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" codecept bash -c "composer run stan"
+  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" codecept_${PHP_VERSION} bash -c "composer run stan"
   ;;
 ps)
   docker compose ps
   ;;
 ssh)
   service=${2:-codecept}
+  if [ $service = "codecept" ]; then
+    service="codecept_${PHP_VERSION}"
+  fi
   # If ROOT is set, set the user to "0:0", else set the user to the current user.
   if [ "${ROOT}" ]; then
     docker_user="0:0"
@@ -407,7 +407,7 @@ ssh)
   ;;
 run)
   shift
-  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" codecept php vendor/bin/codecept run $@
+  docker compose exec -u "$(id -u):$(id -g)" -w "$(pwd)" codecept_${PHP_VERSION} php vendor/bin/codecept run $@
   ;;
 test)
   run_tests

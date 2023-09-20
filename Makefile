@@ -1,23 +1,7 @@
 build:
+	bin/stack build_images
 	bin/stack -p5.6 build
-	bin/stack -p7.0 build
-	bin/stack -p7.1 build
-	bin/stack -p7.2 build
-	bin/stack -p7.3 build
-	bin/stack -p7.4 build
-	bin/stack -p8.0 build
-	bin/stack -p8.1 build
 .PHONY: build
-
-build_images:
-	bin/stack -p5.6 build_images
-	bin/stack -p7.0 build_images
-	bin/stack -p7.1 build_images
-	bin/stack -p7.2 build_images
-	bin/stack -p7.3 build_images
-	bin/stack -p7.4 build_images
-	bin/stack -p8.0 build_images
-	bin/stack -p8.1 build_images
 
 build_56_lock_files:
 	[ -d config/composer ] || mkdir config/composer
@@ -37,46 +21,6 @@ build_56_lock_files:
 	bin/stack -p5.6 -c4 composer_update
 	mv composer.json config/composer/composer-5.6-codeception-4.json
 	mv composer.lock config/composer/composer-5.6-codeception-4.lock
-
-	mv config/composer/composer.json.bak composer.json
-
-build_74_lock_files:
-	[ -d config/composer ] || mkdir config/composer
-	cp composer.json config/composer/composer.json.bak
-
-	bin/stack -p7.4 -d -c2 composer_update
-	mv composer.json config/composer/composer-7.4-codeception-2.json
-	mv composer.lock config/composer/composer-7.4-codeception-2.lock
-	cp config/composer/composer.json.bak composer.json
-
-	bin/stack -p7.4 -d -c3 composer_update
-	mv composer.json config/composer/composer-7.4-codeception-3.json
-	mv composer.lock config/composer/composer-7.4-codeception-3.lock
-	cp config/composer/composer.json.bak composer.json
-
-	bin/stack -p7.4 -d -c4 composer_update
-	mv composer.json config/composer/composer-7.4-codeception-4.json
-	mv composer.lock config/composer/composer-7.4-codeception-4.lock
-
-	mv config/composer/composer.json.bak composer.json
-
-build_80_lock_files:
-	[ -d config/composer ] || mkdir config/composer
-	cp composer.json config/composer/composer.json.bak
-
-	bin/stack -p8.0 -d -c4 composer_update
-	mv composer.json config/composer/composer-8.0-codeception-4.json
-	mv composer.lock config/composer/composer-8.0-codeception-4.lock
-
-	mv config/composer/composer.json.bak composer.json
-
-build_81_lock_files:
-	[ -d config/composer ] || mkdir config/composer
-	cp composer.json config/composer/composer.json.bak
-
-	bin/stack -p8.1 -d -c4 composer_update
-	mv composer.json config/composer/composer-8.1-codeception-4.json
-	mv composer.lock config/composer/composer-8.1-codeception-4.lock
 
 	mv config/composer/composer.json.bak composer.json
 
@@ -140,14 +84,11 @@ static_analysis: lint phpcs phpstan
 .PHONE: static_analysis
 
 test: static_analysis
-	bin/stack -p5.6 xdebug-off && bin/stack -c2 composer_update && bin/stack -p5.6 test
-	bin/stack -p5.6 xdebug-off && bin/stack -c3 composer_update && bin/stack -p5.6 test
-	bin/stack -p5.6 xdebug-off && bin/stack -c4 composer_update && bin/stack -p5.6 test
-	bin/stack -p7.4 xdebug-off && bin/stack -c2 composer_update && bin/stack -p7.4 test
-	bin/stack -p7.4 xdebug-off && bin/stack -c3 composer_update && bin/stack -p7.4 test
-	bin/stack -p7.4 xdebug-off && bin/stack -c4 composer_update && bin/stack -p7.4 test
-	bin/stack -p8.0 xdebug-off && bin/stack -c4 composer_update && bin/stack -p8.0 test
-	bin/stack -p8.1 xdebug-off && bin/stack -c4 composer_update && bin/stack -p8.1 test
+	bin/stack -p5.6 xdebug-off && bin/stack composer_update && bin/stack -p5.6 test
+	bin/stack -p7.4 xdebug-off && bin/stack composer_update && bin/stack -p7.4 test
+	bin/stack -p8.0 xdebug-off && bin/stack composer_update && bin/stack -p8.0 test
+	bin/stack -p8.1 xdebug-off && bin/stack composer_update && bin/stack -p8.1 test
+	bin/stack -p8.2 xdebug-off && bin/stack composer_update && bin/stack -p8.2 test
 .PHONY: test
 
 clean:

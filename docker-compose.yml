@@ -1,10 +1,10 @@
 version: "3.8"
 networks:
   test:
-    name: wpbrowser_php_${PHP_VERSION:-5.6}
+    name: wpbrowser_v3
 services:
   database:
-    container_name: wpbrowser_v3_php_${PHP_VERSION:-5.6}_database
+    container_name: wpbrowser_v3_database
     image: mariadb:10.8
     environment:
       MYSQL_ROOT_PASSWORD: password
@@ -21,16 +21,17 @@ services:
     tmpfs:
       - /var/lib/mysql
   wordpress:
-    container_name: wpbrowser_v3_php_${PHP_VERSION:-5.6}_wordpress
+    container_name: wpbrowser_v3_wordpress
     user: "${USER_UID}:${USER_GID}"
     sysctls:
       - net.ipv4.ip_unprivileged_port_start=0
-    image: lucatume/wp-browser-v3-build:php${PHP_VERSION:-5.6}-apache
+    image: lucatume/wp-browser-v3-wordpress:php5.6-apache
     build:
       context: ./containers/php
-      dockerfile: "Dockerfile${DOCKERFILE_SUFFIX:-}"
+      dockerfile: "Dockerfile-PHP-5.6"
       args:
-        PHP_VERSION: "${PHP_VERSION:-5.6}"
+        PHP_VERSION: "5.6"
+        WP_IMAGE_VERSION: "5"
         USER_UID: "${USER_UID:-33}"
         USER_GID: "${USER_GID:-33}"
         USER_NAME: "${USER_NAME:-www-data}"
@@ -53,7 +54,7 @@ services:
       - ./var/wordpress:/var/www/html
     working_dir: /var/www/html
   chrome:
-    container_name: wpbrowser_v3_php_${PHP_VERSION:-5.6}_chrome
+    container_name: wpbrowser_v3_chrome
     image: ${DOCKER_CHROME_IMAGE:-selenium/standalone-chrome:116.0-20230912}
     networks:
       - test
@@ -61,15 +62,224 @@ services:
       - wordpress
     ports:
       - "8959:5900"
-  codecept:
-    container_name: wpbrowser_v3_php_${PHP_VERSION:-5.6}_codeception
+  codecept_5.6:
+    container_name: wpbrowser_v3_codecept_php5.6
     user: "${USER_UID}:${USER_GID}"
-    image: lucatume/wp-browser-v3-build:php${PHP_VERSION:-5.6}-codeception
+    image: lucatume/wp-browser-v3-codecept:php5.6
     build:
       context: ./containers/php
-      dockerfile: "Dockerfile${DOCKERFILE_SUFFIX:-}"
+      dockerfile: "Dockerfile-PHP-5.6"
       args:
-        PHP_VERSION: "${PHP_VERSION:-5.6}"
+        PHP_VERSION: "5.6"
+        WP_IMAGE_VERSION: "5"
+        USER_UID: "${USER_UID:-33}"
+        USER_GID: "${USER_GID:-33}"
+        USER_NAME: "${USER_NAME:-www-data}"
+        TARGET: "codeception"
+    depends_on:
+      - database
+      - wordpress
+      - chrome
+    environment:
+      COMPOSER_CACHE_DIR: "${PWD}/var/cache/composer"
+    networks:
+      - test
+    volumes:
+      - "${PWD}:${PWD}"
+    working_dir: "${PWD}"
+    entrypoint: tail -f /dev/null
+  codecept_7.0:
+    container_name: wpbrowser_v3_codecept_php7.0
+    user: "${USER_UID}:${USER_GID}"
+    image: lucatume/wp-browser-v3-codecept:php7.0
+    build:
+      context: ./containers/php
+      dockerfile: "Dockerfile"
+      args:
+        PHP_VERSION: "7.0"
+        WP_IMAGE_VERSION: "5"
+        USER_UID: "${USER_UID:-33}"
+        USER_GID: "${USER_GID:-33}"
+        USER_NAME: "${USER_NAME:-www-data}"
+        TARGET: "codeception"
+    depends_on:
+      - database
+      - wordpress
+      - chrome
+    environment:
+      COMPOSER_CACHE_DIR: "${PWD}/var/cache/composer"
+    networks:
+      - test
+    volumes:
+      - "${PWD}:${PWD}"
+    working_dir: "${PWD}"
+    entrypoint: tail -f /dev/null
+  codecept_7.1:
+    container_name: wpbrowser_v3_codecept_php7.1
+    user: "${USER_UID}:${USER_GID}"
+    image: lucatume/wp-browser-v3-codecept:php7.1
+    build:
+      context: ./containers/php
+      dockerfile: "Dockerfile"
+      args:
+        PHP_VERSION: "7.1"
+        WP_IMAGE_VERSION: "5"
+        USER_UID: "${USER_UID:-33}"
+        USER_GID: "${USER_GID:-33}"
+        USER_NAME: "${USER_NAME:-www-data}"
+        TARGET: "codeception"
+    depends_on:
+      - database
+      - wordpress
+      - chrome
+    environment:
+      COMPOSER_CACHE_DIR: "${PWD}/var/cache/composer"
+    networks:
+      - test
+    volumes:
+      - "${PWD}:${PWD}"
+    working_dir: "${PWD}"
+    entrypoint: tail -f /dev/null
+  codecept_7.2:
+    container_name: wpbrowser_v3_codecept_php7.2
+    user: "${USER_UID}:${USER_GID}"
+    image: lucatume/wp-browser-v3-codecept:php7.2
+    build:
+      context: ./containers/php
+      dockerfile: "Dockerfile"
+      args:
+        PHP_VERSION: "7.2"
+        WP_IMAGE_VERSION: "5"
+        USER_UID: "${USER_UID:-33}"
+        USER_GID: "${USER_GID:-33}"
+        USER_NAME: "${USER_NAME:-www-data}"
+        TARGET: "codeception"
+    depends_on:
+      - database
+      - wordpress
+      - chrome
+    environment:
+      COMPOSER_CACHE_DIR: "${PWD}/var/cache/composer"
+    networks:
+      - test
+    volumes:
+      - "${PWD}:${PWD}"
+    working_dir: "${PWD}"
+    entrypoint: tail -f /dev/null
+  codecept_7.3:
+    container_name: wpbrowser_v3_codecept_php7.3
+    user: "${USER_UID}:${USER_GID}"
+    image: lucatume/wp-browser-v3-codecept:php7.3
+    build:
+      context: ./containers/php
+      dockerfile: "Dockerfile"
+      args:
+        PHP_VERSION: "7.3"
+        WP_IMAGE_VERSION: "5"
+        USER_UID: "${USER_UID:-33}"
+        USER_GID: "${USER_GID:-33}"
+        USER_NAME: "${USER_NAME:-www-data}"
+        TARGET: "codeception"
+    depends_on:
+      - database
+      - wordpress
+      - chrome
+    environment:
+      COMPOSER_CACHE_DIR: "${PWD}/var/cache/composer"
+    networks:
+      - test
+    volumes:
+      - "${PWD}:${PWD}"
+    working_dir: "${PWD}"
+    entrypoint: tail -f /dev/null
+  codecept_7.4:
+    container_name: wpbrowser_v3_codecept_php7.4
+    user: "${USER_UID}:${USER_GID}"
+    image: lucatume/wp-browser-v3-codecept:php7.4
+    build:
+      context: ./containers/php
+      dockerfile: "Dockerfile"
+      args:
+        PHP_VERSION: "7.4"
+        WP_IMAGE_VERSION: "6"
+        USER_UID: "${USER_UID:-33}"
+        USER_GID: "${USER_GID:-33}"
+        USER_NAME: "${USER_NAME:-www-data}"
+        TARGET: "codeception"
+    depends_on:
+      - database
+      - wordpress
+      - chrome
+    environment:
+      COMPOSER_CACHE_DIR: "${PWD}/var/cache/composer"
+    networks:
+      - test
+    volumes:
+      - "${PWD}:${PWD}"
+    working_dir: "${PWD}"
+    entrypoint: tail -f /dev/null
+  codecept_8.0:
+    container_name: wpbrowser_v3_codecept_php8.0
+    user: "${USER_UID}:${USER_GID}"
+    image: lucatume/wp-browser-v3-codecept:php8.0
+    build:
+      context: ./containers/php
+      dockerfile: "Dockerfile"
+      args:
+        PHP_VERSION: "8.0"
+        WP_IMAGE_VERSION: "6"
+        USER_UID: "${USER_UID:-33}"
+        USER_GID: "${USER_GID:-33}"
+        USER_NAME: "${USER_NAME:-www-data}"
+        TARGET: "codeception"
+    depends_on:
+      - database
+      - wordpress
+      - chrome
+    environment:
+      COMPOSER_CACHE_DIR: "${PWD}/var/cache/composer"
+    networks:
+      - test
+    volumes:
+      - "${PWD}:${PWD}"
+    working_dir: "${PWD}"
+    entrypoint: tail -f /dev/null
+  codecept_8.1:
+    container_name: wpbrowser_v3_codecept_php8.1
+    user: "${USER_UID}:${USER_GID}"
+    image: lucatume/wp-browser-v3-codecept:php8.1
+    build:
+      context: ./containers/php
+      dockerfile: "Dockerfile"
+      args:
+        PHP_VERSION: "8.1"
+        WP_IMAGE_VERSION: "6"
+        USER_UID: "${USER_UID:-33}"
+        USER_GID: "${USER_GID:-33}"
+        USER_NAME: "${USER_NAME:-www-data}"
+        TARGET: "codeception"
+    depends_on:
+      - database
+      - wordpress
+      - chrome
+    environment:
+      COMPOSER_CACHE_DIR: "${PWD}/var/cache/composer"
+    networks:
+      - test
+    volumes:
+      - "${PWD}:${PWD}"
+    working_dir: "${PWD}"
+    entrypoint: tail -f /dev/null
+  codecept_8.2:
+    container_name: wpbrowser_v3_codecept_php8.2
+    user: "${USER_UID}:${USER_GID}"
+    image: lucatume/wp-browser-v3-codecept:php8.2
+    build:
+      context: ./containers/php
+      dockerfile: "Dockerfile"
+      args:
+        PHP_VERSION: "8.2"
+        WP_IMAGE_VERSION: "6"
         USER_UID: "${USER_UID:-33}"
         USER_GID: "${USER_GID:-33}"
         USER_NAME: "${USER_NAME:-www-data}"
