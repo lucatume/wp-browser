@@ -11,6 +11,7 @@ use Codeception\Configuration;
 use Codeception\Lib\Generator\Shared\Classname;
 use Codeception\Util\Shared\Namespaces;
 use Codeception\Util\Template;
+use PHPUnit\Runner\Version;
 use tad\WPBrowser\Compat\Compatibility;
 
 /**
@@ -75,13 +76,6 @@ class {{name}}Test extends {{baseClass}}
 EOF;
 
     /**
-     * The injectable compatibility layer.
-     *
-     * @var Compatibility
-     */
-    protected $compatibilityLayer;
-
-    /**
      * WPUnit constructor.
      *
      * @param array<string,mixed> $settings The template settings.
@@ -94,7 +88,6 @@ EOF;
         $this->settings = $settings;
         $this->name = $this->removeSuffix($name, 'Test');
         $this->baseClass = $baseClass;
-        $this->compatibilityLayer = new Compatibility();
     }
 
     /**
@@ -106,7 +99,7 @@ EOF;
     {
         $ns = $this->getNamespaceHeader($this->settings['namespace'] . '\\' . $this->name);
 
-        $phpunitSeries = $this->compatibilityLayer->phpunitVersion();
+        $phpunitSeries = Version::series();
 
         /** @var string $phpunitSeries */
         $voidReturnType = is_string($phpunitSeries) && version_compare($phpunitSeries, '8.0', '<') ?
@@ -154,17 +147,5 @@ EOF;
 EOF;
 
         return ltrim($testerFrag);
-    }
-
-    /**
-     * Injects the compatibility layer object.
-     *
-     * @param Compatibility $compatibility An instance of the compatibility layer.
-     *
-     * @return void
-     */
-    public function setCompatibilityLayer(Compatibility $compatibility)
-    {
-        $this->compatibilityLayer = $compatibility;
     }
 }
