@@ -205,7 +205,7 @@ if ($args('checkUnpushed', true) && !$dryRun) {
 
 file_put_contents($root . '/.rel', $fullReleaseNotes);
 
-$releaseCommand = 'gh release create -F .rel ' . $releaseVersion;
+$releaseCommand = 'gh release --target v3 create -F .rel ' . $releaseVersion;
 
 echo "Releasing with command: \e[32m" . $releaseCommand . "\e[0m\n\n";
 
