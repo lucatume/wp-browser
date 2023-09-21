@@ -94,6 +94,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Rewrite the `WPCLI` module to use the `Symfony\Component\Process\Process` class under the hood.
 - Temporarily remove the `preserveGlobalState` test method support to reimplement support later.
 - Update the `WPCLI` module to use supported configuration parameters as strict arguments by default
+ 
+## [3.2.1] 2023-09-21;
+
+### Fixed
+
+- Ensure `_before` and `_after` methods are called correctly by `WPTestCase`.
 
 ## [3.2.0] 2023-09-15;
 
