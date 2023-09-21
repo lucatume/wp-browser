@@ -185,13 +185,6 @@ class WPDb extends Db
     protected Driver $driver;
 
     /**
-     * A map from the database keys to the drivers for them.
-     *
-     * @var array<string,Driver>
-     */
-    public array $drivers = [];
-
-    /**
      * Whether the database has been previously populated or not.
      *
      * @var bool

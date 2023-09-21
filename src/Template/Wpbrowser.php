@@ -85,7 +85,7 @@ class Wpbrowser extends Bootstrap
         /** @var TestEnvironment $testEnv */
         $testEnv = $this->testEnvironment;
         $basicConfig = [
-            'support_namespace' => $this->supportNamespace,
+            'support_namespace' => $this->supportNamespace ?? 'Support',
             'paths' => [
                 'tests' => 'tests',
                 'output' => $this->outputDir,

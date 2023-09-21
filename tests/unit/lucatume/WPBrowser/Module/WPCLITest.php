@@ -66,6 +66,10 @@ class WPCLITest extends Unit
      */
     public static function removeInstallation(): void
     {
+	    if (!self::$installation instanceof Installation) {
+		    return;
+	    }
+
         FS::rrmdir(self::$installation->getWpRootDir());
     }
 
