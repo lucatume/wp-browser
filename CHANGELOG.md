@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.2.1] 2023-09-21;
+
 ### Fixed
 
 - Ensure `_before` and `_after` methods are called correctly by `WPTestCase`.
@@ -1858,4 +1860,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.1.9]: https://github.com/lucatume/wp-browser/compare/3.1.9...3.1.9
 [3.1.10]: https://github.com/lucatume/wp-browser/compare/3.1.9...3.1.10
 [3.2.0]: https://github.com/lucatume/wp-browser/compare/3.1.10...3.2.0
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.2.0...HEAD
+[3.2.1]: https://github.com/lucatume/wp-browser/compare/3.2.0...3.2.1
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.2.1...HEAD
