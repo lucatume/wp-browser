@@ -2,13 +2,13 @@ ARG PHP_VERSION=5.6
 ARG COMPOSER_VERSION=2.2
 
 FROM composer:${COMPOSER_VERSION} AS composer
-FROM lucatume/codeception-php-5.6:cc3.1.0-v1.1.1 as php_56_sos
-FROM wordpress:php${PHP_VERSION}-apache
+FROM wordpress:php5.6-apache
 
 ARG USER_UID=33
 ARG USER_GID=33
 ARG USER_NAME=www-data
 ARG TARGET=wordpress
+ARG CI
 
 # Install wp-cli
 ADD https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar /usr/local/bin/wp
@@ -20,19 +20,27 @@ RUN chmod a+x /usr/local/bin/install-php-extensions && \
     chmod -R a+rwx /usr/local/etc/php/conf.d && \
     install-php-extensions gd pdo pdo_mysql mysqli zip
 
-# Build XDebug and Uopz for PHP 5.6 from source.
-COPY --chmod=0777 php_56_sos/xdebug-2.5.5.tgz /tmp/xdebug-2.5.5.tgz
-COPY --chmod=0777 php_56_sos/uopz-2.0.7.tar.gz /tmp/uopz-2.0.7.tar.gz
-RUN tar xzf /tmp/xdebug-2.5.5.tgz -C /tmp \
-    && mv /tmp/package.xml /tmp/xdebug-2.5.5/package.xml \
-    && ls -la /tmp/xdebug-2.5.5 \
-    && install-php-extensions /tmp/xdebug-2.5.5 \
-    && rm -rf /tmp/xdebug-2.5.5.tgz /tmp/xdebug-2.5.5 \
-    && tar xzf /tmp/uopz-2.0.7.tar.gz -C /tmp \
-    && install-php-extensions /tmp/uopz-2.0.7 \
-    && rm -rf /tmp/uopz-2.0.7.tar.gz /tmp/uopz-2.0.7 \
-    && docker-php-ext-enable xdebug \
-    && if [ "${TARGET}" = "codeception" ]; then docker-php-ext-enable uopz; fi
+# Build XDebug from source if the CI env var is not set.
+RUN if [ -z "${CI}" ]; then \
+        curl -k -o /tmp/xdebug.tgz "https://pecl.php.net/get/xdebug-2.5.5.tgz" && \
+        tar xzf /tmp/xdebug.tgz -C /tmp && \
+        mv /tmp/package.xml /tmp/xdebug-2.5.5 && \
+        rm /tmp/xdebug.tgz && \
+        install-php-extensions /tmp/xdebug-2.5.5 && \
+        rm -rf /tmp/xdebug-2.5.5 && \
+        docker-php-ext-enable xdebug; \
+    fi
+
+# Build Uopz from source if the target is not "wordpress".
+RUN if [ "${TARGET}" != "wordpress" ]; then \
+        curl -k -o /tmp/uopz.tgz "https://pecl.php.net/get/uopz-2.0.7.tgz" && \
+        tar xzf /tmp/uopz.tgz -C /tmp && \
+        mv /tmp/package.xml /tmp/uopz-2.0.7 && \
+        rm /tmp/uopz.tgz && \
+        install-php-extensions /tmp/uopz-2.0.7 && \
+        rm -rf /tmp/uopz-2.0.7 && \
+        docker-php-ext-enable uopz; \
+    fi
 
 # Install required utils
 RUN apt-get update && apt-get install -y \

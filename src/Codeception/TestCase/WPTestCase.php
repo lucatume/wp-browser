@@ -28,10 +28,10 @@ use function tad\WPBrowser\setupPhpunitBootstrapGlobal;
 use function version_compare;
 
 if (!class_exists('WP_UnitTest_Factory')) {
-    require_once dirname(dirname(dirname(__FILE__))) . '/includes/factory.php';
+    require_once dirname(dirname( __DIR__ )) . '/includes/factory.php';
 }
 if (!class_exists('TracTickets')) {
-    require_once dirname(dirname(dirname(__FILE__))) . '/includes/trac.php';
+    require_once dirname(dirname( __DIR__ )) . '/includes/trac.php';
 }
 
 /*
@@ -49,22 +49,6 @@ if ($runningInSeparateProcess && ! WPLoader::$didInit) {
     setupPhpunitBootstrapGlobal();
 }
 
-// Load the PHPUnit compatibility layer.
-// @phpstan-ignore-next-line
-if (version_compare(Codecept::VERSION, '3.0.0', '<')) {
-    class_alias(
-        '\\tad\WPBrowser\\Compat\\Codeception\\Version2\\Unit',
-        '\\tad\\WPBrowser\\Compat\\Codeception\\Unit'
-    );
-} else {
-    class_alias(
-        '\\Codeception\\Test\\Unit',
-        '\\tad\\WPBrowser\\Compat\\Codeception\\Unit'
-    );
-}
-// phpcs:enable
-
-
 /**
  * Defines a basic fixture to run multiple tests.
  *
@@ -74,7 +58,7 @@ if (version_compare(Codecept::VERSION, '3.0.0', '<')) {
  *
  * All WordPress unit/integrations tests should inherit from this class.
  */
-class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
+class WPTestCase extends Unit
 {
 
     use WithCodeceptionTestCaseEnhancements;
@@ -277,15 +261,7 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
 
         $this->maybeEnhanceTestCaseIfWoDiService();
 
-        /**
-         * After WordPress has been initialized in the test context initialize the Codeception Unit test case.
-         * Check on what methods `\Codeception\Test\Unit` provides to call the correct one depending on the PHPUnit and
-         * Codeception versions.
-         */
-        $unitSetupMethod = Compatibility::setupMethodFor(Unit::class);
-        if (method_exists(Unit::class, $unitSetupMethod)) {
-            Unit::{$unitSetupMethod}();
-        }
+		Unit::_setUp();
     }
 
     public function scan_user_uploads()
@@ -512,6 +488,8 @@ class WPTestCase extends \tad\WPBrowser\Compat\Codeception\Unit
         $this->_restore_hooks();
         wp_set_current_user(0);
         $this->requestTimeTearDown();
+
+		Unit::_tearDown();
     }
 
     /**
