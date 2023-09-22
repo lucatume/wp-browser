@@ -1,7 +1,9 @@
-<?php namespace Codeception\Template;
+<?php
+namespace Codeception\Template;
 
 use lucatume\WPBrowser\Tests\FSTemplates\BedrockProject;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
+use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
@@ -39,12 +41,14 @@ EOT;
             return [$expected, $actual];
         }
 
-        $expected = explode("\n",
+        $expected = explode(
+            "\n",
             preg_replace('/\\d{3,}$/um', '{port}', implode("\n", $expected))
         );
 
 
-        $actual = explode("\n",
+        $actual = explode(
+            "\n",
             preg_replace('/\\d{3,}$/um', '{port}', implode("\n", $actual))
         );
 
@@ -96,21 +100,23 @@ EOT;
         $process->mustRun();
 
         // Remove the generated files that are not needed for the snapshot.
-        FS::rrmdir($projectDir . '/plugin_89/tests/Support/_generated');
+        FS::rrmdir($projectDir . '/plugin_89/' . Codeception::supportDir() . '/_generated');
 
         $this->assertFileExists($projectDir . '/plugin_89/vendor/bin/chromedriver');
         $this->assertFileExists($projectDir . '/plugin_89/tests/_wordpress/wp-config.php');
-        $this->assertFileExists($projectDir . '/plugin_89/tests/Support/Data/dump.sql');
+        $this->assertFileExists($projectDir . '/plugin_89/' . Codeception::dataDir() . '/dump.sql');
 
         // Remove generated or downloaded files that are not needed for the snapshot.
         FS::rrmdir($projectDir . '/plugin_89/tests/_wordpress');
         FS::rrmdir($projectDir . '/plugin_89/vendor');
-        unlink($projectDir . '/plugin_89/tests/Support/Data/dump.sql');
+        unlink($projectDir . '/plugin_89/' . Codeception::dataDir() . '/dump.sql');
         unlink($projectDir . '/plugin_89/composer');
 
         // Random ports will change: visit the data to replace the random ports with a placeholder.
-        $this->assertMatchesDirectorySnapshot($projectDir . '/plugin_89',
-            fn() => $this->replaceRandomPorts(...func_get_args()));
+        $this->assertMatchesDirectorySnapshot(
+            $projectDir . '/plugin_89',
+            fn() => $this->replaceRandomPorts(...func_get_args())
+        );
     }
 
     /**
@@ -158,22 +164,24 @@ EOT;
         $process->mustRun();
 
         // Remove the generated files that are not needed for the snapshot.
-        FS::rrmdir($projectDir . '/plugin_89/tests/Support/_generated');
+        FS::rrmdir($projectDir . '/plugin_89/' . Codeception::supportDir() . '/_generated');
 
         $this->assertFileExists($projectDir . '/plugin_89/vendor/bin/chromedriver');
         $this->assertFileExists($projectDir . '/plugin_89/tests/_wordpress/wp-config.php');
-        $this->assertFileExists($projectDir . '/plugin_89/tests/Support/Data/dump.sql');
+        $this->assertFileExists($projectDir . '/plugin_89/' . Codeception::dataDir() . '/dump.sql');
 
         // Remove generated or downloaded files that are not needed for the snapshot.
         FS::rrmdir($projectDir . '/plugin_89/tests/_wordpress');
         FS::rrmdir($projectDir . '/plugin_89/vendor');
         FS::rrmdir($projectDir . '/plugin_89/var');
-        unlink($projectDir . '/plugin_89/tests/Support/Data/dump.sql');
+        unlink($projectDir . '/plugin_89/' . Codeception::dataDir() . '/dump.sql');
         unlink($projectDir . '/plugin_89/composer');
 
         // Random ports will change: visit the data to replace the random ports with a placeholder.
-        $this->assertMatchesDirectorySnapshot($projectDir . '/plugin_89',
-            fn() => $this->replaceRandomPorts(...func_get_args()));
+        $this->assertMatchesDirectorySnapshot(
+            $projectDir . '/plugin_89',
+            fn() => $this->replaceRandomPorts(...func_get_args())
+        );
     }
 
     /**
@@ -219,11 +227,13 @@ EOT;
         $process->mustRun();
 
         // Remove the generated files that are not needed for the snapshot.
-        FS::rrmdir($projectDir . '/plugin_89/tests/Support/_generated');
+        FS::rrmdir($projectDir . '/plugin_89/' . Codeception::supportDir() . '/_generated');
 
         // Random ports will change: visit the data to replace the random ports with a placeholder.
-        $this->assertMatchesDirectorySnapshot($projectDir . '/plugin_89',
-            fn() => $this->replaceRandomPorts(...func_get_args()));
+        $this->assertMatchesDirectorySnapshot(
+            $projectDir . '/plugin_89',
+            fn() => $this->replaceRandomPorts(...func_get_args())
+        );
     }
 
     /**
@@ -269,11 +279,13 @@ EOT;
         $process->mustRun();
 
         // Remove the generated files that are not needed for the snapshot.
-        FS::rrmdir($projectDir . '/plugin_89/tests/Support/_generated');
+        FS::rrmdir($projectDir . '/plugin_89/' . Codeception::supportDir() . '/_generated');
 
         // Random ports will change: visit the data to replace the random ports with a placeholder.
-        $this->assertMatchesDirectorySnapshot($projectDir . '/plugin_89',
-            fn() => $this->replaceRandomPorts(...func_get_args()));
+        $this->assertMatchesDirectorySnapshot(
+            $projectDir . '/plugin_89',
+            fn() => $this->replaceRandomPorts(...func_get_args())
+        );
     }
 
     /**
@@ -321,21 +333,23 @@ EOT;
         $process->mustRun();
 
         // Remove the generated files that are not needed for the snapshot.
-        FS::rrmdir($projectDir . '/theme_23/tests/Support/_generated');
+        FS::rrmdir($projectDir . '/theme_23/' . Codeception::supportDir() . '/_generated');
 
         $this->assertFileExists($projectDir . '/theme_23/vendor/bin/chromedriver');
         $this->assertFileExists($projectDir . '/theme_23/tests/_wordpress/wp-config.php');
-        $this->assertFileExists($projectDir . '/theme_23/tests/Support/Data/dump.sql');
+        $this->assertFileExists($projectDir . '/theme_23/' . Codeception::dataDir() . '/dump.sql');
 
         // Remove generated or downloaded files that are not needed for the snapshot.
         FS::rrmdir($projectDir . '/theme_23/tests/_wordpress');
         FS::rrmdir($projectDir . '/theme_23/vendor');
-        unlink($projectDir . '/theme_23/tests/Support/Data/dump.sql');
+        unlink($projectDir . '/theme_23/' . Codeception::dataDir() . '/dump.sql');
         unlink($projectDir . '/theme_23/composer');
 
         // Random ports will change: visit the data to replace the random ports with a placeholder.
-        $this->assertMatchesDirectorySnapshot($projectDir . '/theme_23',
-            fn() => $this->replaceRandomPorts(...func_get_args()));
+        $this->assertMatchesDirectorySnapshot(
+            $projectDir . '/theme_23',
+            fn() => $this->replaceRandomPorts(...func_get_args())
+        );
     }
 
     /**
@@ -388,21 +402,23 @@ EOT,
         $process->mustRun();
 
         // Remove the generated files that are not needed for the snapshot.
-        FS::rrmdir($projectDir . '/theme_23/tests/Support/_generated');
+        FS::rrmdir($projectDir . '/theme_23/' . Codeception::supportDir() . '/_generated');
 
         $this->assertFileExists($projectDir . '/theme_23/vendor/bin/chromedriver');
         $this->assertFileExists($projectDir . '/theme_23/tests/_wordpress/wp-config.php');
-        $this->assertFileExists($projectDir . '/theme_23/tests/Support/Data/dump.sql');
+        $this->assertFileExists($projectDir . '/theme_23/' . Codeception::dataDir() . '/dump.sql');
 
         // Remove generated or downloaded files that are not needed for the snapshot.
         FS::rrmdir($projectDir . '/theme_23/tests/_wordpress');
         FS::rrmdir($projectDir . '/theme_23/vendor');
-        unlink($projectDir . '/theme_23/tests/Support/Data/dump.sql');
+        unlink($projectDir . '/theme_23/' . Codeception::dataDir() . '/dump.sql');
         unlink($projectDir . '/theme_23/composer');
 
         // Random ports will change: visit the data to replace the random ports with a placeholder.
-        $this->assertMatchesDirectorySnapshot($projectDir . '/theme_23',
-            fn() => $this->replaceRandomPorts(...func_get_args()));
+        $this->assertMatchesDirectorySnapshot(
+            $projectDir . '/theme_23',
+            fn() => $this->replaceRandomPorts(...func_get_args())
+        );
     }
 
     /**
@@ -454,11 +470,13 @@ EOT,
         $process->mustRun();
 
         // Remove the generated files that are not needed for the snapshot.
-        FS::rrmdir($projectDir . '/theme_23/tests/Support/_generated');
+        FS::rrmdir($projectDir . '/theme_23/' . Codeception::supportDir() . '/_generated');
 
         // Random ports will change: visit the data to replace the random ports with a placeholder.
-        $this->assertMatchesDirectorySnapshot($projectDir . '/theme_23',
-            fn() => $this->replaceRandomPorts(...func_get_args()));
+        $this->assertMatchesDirectorySnapshot(
+            $projectDir . '/theme_23',
+            fn() => $this->replaceRandomPorts(...func_get_args())
+        );
     }
 
     /**
@@ -520,24 +538,26 @@ EOT;
 
         $this->assertDirectoryExists($projectDir . '/site/wp-content/mu-plugins/sqlite-database-integration');
         $this->assertFileExists($projectDir . '/site/wp-content/db.php');
-        $this->assertFileExists($projectDir . '/site/tests/Support/Data/dump.sql');
-        $this->assertFileExists($projectDir . '/site/tests/Support/Data/db.sqlite');
+        $this->assertFileExists($projectDir . '/site/' . Codeception::dataDir() . '/dump.sql');
+        $this->assertFileExists($projectDir . '/site/' . Codeception::dataDir() . '/db.sqlite');
         $this->assertFileExists($projectDir . '/site/tests/EndToEnd/ActivationCest.php');
         $this->assertFileExists($projectDir . '/site/tests/Integration/SampleTest.php');
         $this->assertFileExists($projectDir . '/site/codeception.yml');
 
         // Remove the generated files that are not needed for the snapshot.
-        FS::rrmdir($projectDir . '/site/tests/Support/_generated');
+        FS::rrmdir($projectDir . '/site/' . Codeception::supportDir() . '/_generated');
         // Remove the binary sqlite file and the dump file.
-        unlink($projectDir . '/site/tests/Support/Data/db.sqlite');
-        unlink($projectDir . '/site/tests/Support/Data/dump.sql');
+        unlink($projectDir . '/site/' . Codeception::dataDir() . '/db.sqlite');
+        unlink($projectDir . '/site/' . Codeception::dataDir() . '/dump.sql');
 
         $this->assertMatchesStringSnapshot(file_get_contents($projectDir . '/site/codeception.yml'));
         // Random ports will change: visit the data to replace the random ports with a placeholder.
-        $this->assertMatchesDirectorySnapshot($projectDir . '/site/tests',
+        $this->assertMatchesDirectorySnapshot(
+            $projectDir . '/site/tests',
             function (array $expected, array $actual, string $file) {
                 return $this->replaceRandomPorts($expected, $actual, $file);
-            });
+            }
+        );
     }
 
     /**
@@ -599,24 +619,26 @@ EOT;
 
         $this->assertDirectoryExists($projectDir . '/site/wp-content/mu-plugins/sqlite-database-integration');
         $this->assertFileExists($projectDir . '/site/wp-content/db.php');
-        $this->assertFileExists($projectDir . '/site/tests/Support/Data/dump.sql');
-        $this->assertFileExists($projectDir . '/site/tests/Support/Data/db.sqlite');
+        $this->assertFileExists($projectDir . '/site/' . Codeception::dataDir() . '/dump.sql');
+        $this->assertFileExists($projectDir . '/site/' . Codeception::dataDir() . '/db.sqlite');
         $this->assertFileExists($projectDir . '/site/tests/EndToEnd/ActivationCest.php');
         $this->assertFileExists($projectDir . '/site/tests/Integration/SampleTest.php');
         $this->assertFileExists($projectDir . '/site/codeception.yml');
 
         // Remove the generated files that are not needed for the snapshot.
-        FS::rrmdir($projectDir . '/site/tests/Support/_generated');
+        FS::rrmdir($projectDir . '/site/' . Codeception::supportDir() . '/_generated');
         // Remove the binary sqlite file and the dump file.
-        unlink($projectDir . '/site/tests/Support/Data/db.sqlite');
-        unlink($projectDir . '/site/tests/Support/Data/dump.sql');
+        unlink($projectDir . '/site/' . Codeception::dataDir() . '/db.sqlite');
+        unlink($projectDir . '/site/' . Codeception::dataDir() . '/dump.sql');
 
         $this->assertMatchesStringSnapshot(file_get_contents($projectDir . '/site/codeception.yml'));
         // Random ports will change: visit the data to replace the random ports with a placeholder.
-        $this->assertMatchesDirectorySnapshot($projectDir . '/site/tests',
+        $this->assertMatchesDirectorySnapshot(
+            $projectDir . '/site/tests',
             function (array $expected, array $actual, string $file) {
                 return $this->replaceRandomPorts($expected, $actual, $file);
-            });
+            }
+        );
     }
 
     /**
@@ -661,10 +683,12 @@ EOT;
         $process->mustRun();
 
         // Remove some hashed files.
-        FS::rrmdir($projectDir . '/tests/Support/_generated');
+        FS::rrmdir($projectDir . '/' . Codeception::supportDir() . '/_generated');
 
         // Random ports will change: visit the data to replace the random ports with a placeholder.
-        $this->assertMatchesDirectorySnapshot($projectDir . '/tests',
-            fn() => $this->replaceRandomPorts(...func_get_args()));
+        $this->assertMatchesDirectorySnapshot(
+            $projectDir . '/tests',
+            fn() => $this->replaceRandomPorts(...func_get_args())
+        );
     }
 }

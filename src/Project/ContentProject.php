@@ -13,6 +13,7 @@ use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Extension\BuiltInServerController;
 use lucatume\WPBrowser\Extension\ChromeDriverController;
 use lucatume\WPBrowser\Utils\ChromedriverInstaller;
+use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
@@ -56,11 +57,15 @@ abstract class ContentProject extends InitTemplate implements ProjectInterface
                 $this->scaffoldEndToEndActivationCest();
                 $this->scaffoldIntegrationActivationTest();
             }
-            $this->say("The {$this->getProjectType()} has been linked into the " .
-                "<info>tests/_wordpress/wp-content/{$this->getProjectType()}s/$basename</info> directory.");
-            $this->say("If your {$this->getProjectType()} requires additional plugins and themes, place them in the " .
+            $this->say(
+                "The {$this->getProjectType()} has been linked into the " .
+                "<info>tests/_wordpress/wp-content/{$this->getProjectType()}s/$basename</info> directory."
+            );
+            $this->say(
+                "If your {$this->getProjectType()} requires additional plugins and themes, place them in the " .
                 '<info>tests/_wordpress/wp-content/plugins</info> and ' .
-                '<info>tests/_wordpress/wp-content/themes</info> directories.');
+                '<info>tests/_wordpress/wp-content/themes</info> directories.'
+            );
         };
     }
 
@@ -69,8 +74,10 @@ abstract class ContentProject extends InitTemplate implements ProjectInterface
      */
     public function setup(): void
     {
-        $this->say('You can use a portable configuration based on PHP built-in server, Chromedriver ' .
-            'and SQLite.');
+        $this->say(
+            'You can use a portable configuration based on PHP built-in server, Chromedriver ' .
+            'and SQLite.'
+        );
         $useDefaultConfiguration = $this->ask('Do you want to use this configuration?', true);
 
         if (!$useDefaultConfiguration) {
@@ -80,7 +87,8 @@ abstract class ContentProject extends InitTemplate implements ProjectInterface
         }
 
         $wpRootDir = $this->workDir . '/tests/_wordpress';
-        $dataDir = $this->workDir . '/tests/_wordpress/data';
+        $dataDir = Codeception::dataDir($this->workDir);
+        $dataDirRelativePath = Codeception::dataDir();
 
         if (!is_dir($dataDir) && !(mkdir($dataDir, 0777, true) && is_dir($dataDir))) {
             throw new RuntimeException("Could not create WordPress data directory $dataDir.");
@@ -115,13 +123,13 @@ abstract class ContentProject extends InitTemplate implements ProjectInterface
         }
 
         $db->dump($tmpDumpFile);
-        FS::mkdirp($this->workDir . '/tests/Support/Data');
-        if (!rename($tmpDumpFile, $this->workDir . '/tests/Support/Data/dump.sql')) {
+        FS::mkdirp($this->workDir . '/' . $dataDirRelativePath);
+        if (!rename($tmpDumpFile, $this->workDir . '/' . $dataDirRelativePath . '/dump.sql')) {
             throw new RuntimeException(
-                "Could not move database dump from $tmpDumpFile to tests/Support/Data/dump.sql."
+                "Could not move database dump from $tmpDumpFile to '.$dataDirRelativePath.'/dump.sql."
             );
         }
-        $this->sayInfo('Created database dump in <info>tests/Support/Data/dump.sql</info>.');
+        $this->sayInfo('Created database dump in <info>' . $dataDirRelativePath . '/dump.sql</info>.');
 
         $this->sayInfo('Installing Chromedriver ...');
         $chromedriverPath = (new ChromedriverInstaller())->install();
@@ -150,7 +158,7 @@ EOT;
                 'env' => [
                     'DATABASE_TYPE' => 'sqlite',
                     'DB_ENGINE' => 'sqlite',
-                    'DB_DIR' => '%codecept_root_dir%/tests/Support/Data',
+                    'DB_DIR' => '%codecept_root_dir%/' . $dataDirRelativePath,
                     'DB_FILE' => 'db.sqlite'
                 ]
             ]

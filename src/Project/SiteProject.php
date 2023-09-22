@@ -12,6 +12,7 @@ use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Extension\BuiltInServerController;
 use lucatume\WPBrowser\Extension\ChromeDriverController;
 use lucatume\WPBrowser\Utils\ChromedriverInstaller;
+use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
@@ -70,8 +71,10 @@ class SiteProject extends InitTemplate implements ProjectInterface
      */
     public function setup(): void
     {
-        $this->say('You can use a portable configuration based on PHP built-in server, Chromedriver ' .
-            'and SQLite.');
+        $this->say(
+            'You can use a portable configuration based on PHP built-in server, Chromedriver ' .
+            'and SQLite.'
+        );
         $useDefaultConfiguration = $this->ask('Do you want to use this configuration?', true);
 
         if (!$useDefaultConfiguration) {
@@ -80,7 +83,8 @@ class SiteProject extends InitTemplate implements ProjectInterface
             return;
         }
 
-        $dataDir = $this->workDir . '/tests/Support/Data';
+        $dataDir = Codeception::dataDir($this->workDir);
+        $dataDirRelativePath = Codeception::dataDir();
 
         if (!is_dir($dataDir) && !(mkdir($dataDir, 0777, true) && is_dir($dataDir))) {
             throw new RuntimeException("Could not create WordPress data directory $dataDir.");
@@ -109,13 +113,13 @@ class SiteProject extends InitTemplate implements ProjectInterface
         }
 
         $db->dump($tmpDumpFile);
-        FS::mkdirp($this->workDir . '/tests/Support/Data');
-        if (!rename($tmpDumpFile, $this->workDir . '/tests/Support/Data/dump.sql')) {
+        FS::mkdirp($this->workDir . '/' . $dataDirRelativePath);
+        if (!rename($tmpDumpFile, $this->workDir . '/' . $dataDirRelativePath . '/dump.sql')) {
             throw new RuntimeException(
-                "Could not move database dump from $tmpDumpFile to tests/Support/Data/dump.sql."
+                "Could not move database dump from $tmpDumpFile to '.$dataDirRelativePath.'/dump.sql."
             );
         }
-        $this->sayInfo('Created database dump in <info>tests/Support/Data/dump.sql</info>.');
+        $this->sayInfo('Created database dump in <info>' . $dataDirRelativePath . '/dump.sql</info>.');
 
         $this->sayInfo('Installing Chromedriver ...');
         $chromedriverPath = (new ChromedriverInstaller())->install();
@@ -144,7 +148,7 @@ EOT;
                 'env' => [
                     'DATABASE_TYPE' => 'sqlite',
                     'DB_ENGINE' => 'sqlite',
-                    'DB_DIR' => '%codecept_root_dir%/tests/Support/Data',
+                    'DB_DIR' => '%codecept_root_dir%/' . $dataDirRelativePath,
                     'DB_FILE' => 'db.sqlite'
                 ]
             ]
@@ -156,7 +160,7 @@ EOT;
         $this->testEnvironment->customCommands[] = DevRestart::class;
         $this->testEnvironment->customCommands[] = ChromedriverUpdate::class;
         $this->testEnvironment->wpRootDir = '.';
-        $this->testEnvironment->dbUrl = 'sqlite://%codecept_root_dir%/tests/Support/Data/db.sqlite';
+        $this->testEnvironment->dbUrl = 'sqlite://%codecept_root_dir%/' . $dataDirRelativePath . '/db.sqlite';
 
         $this->testEnvironment->afterSuccess = function (): void {
             $this->scaffoldEndToEndActivationCest();
