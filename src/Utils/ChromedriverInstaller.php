@@ -8,6 +8,8 @@ use lucatume\WPBrowser\Exceptions\RuntimeException;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function React\Promise\map;
+
 class ChromedriverInstaller
 {
 
@@ -129,15 +131,25 @@ class ChromedriverInstaller
      */
     private function detectVersion(): string
     {
-        $chromeVersion = exec($this->binary . ' --version');
-        if (! ( $chromeVersion && is_string($chromeVersion) )) {
+        $command = match ($this->platform) {
+            'linux64', 'mac-x64', 'mac-arm64' => escapeshellarg($this->binary) . ' --version',
+            'win32', 'win64' => 'reg query "HKEY_CURRENT_USER\Software\Google\Chrome\BLBeacon" /v version'
+        };
+
+        $chromeVersion = shell_exec($command);
+
+        if (!(
+            $chromeVersion
+            && is_string($chromeVersion)
+            && preg_match('/\s*\d+\.\d+\.\d+\.\d+\s*/', $chromeVersion, $matches))
+        ) {
             throw new RuntimeException(
                 "Could not detect Chrome version from $this->binary",
                 self::ERR_VERSION_NOT_STRING
             );
         }
 
-        return $chromeVersion;
+        return trim($matches[0]);
     }
 
     /**
@@ -164,6 +176,10 @@ class ChromedriverInstaller
         if ($system === 'Windows NT') {
             if ($arch === 'x86_64') {
                 return 'win64';
+            }
+
+            if ($arch === 'AMD64') {
+                throw new RuntimeException('Chrome on Windows AMD64 is not supported.');
             }
 
             return 'win32';
