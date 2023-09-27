@@ -151,7 +151,6 @@ class ChromedriverInstaller
 
         return trim($matches[0]);
     }
-
     /**
      * @throws RuntimeException
      */
@@ -174,12 +173,8 @@ class ChromedriverInstaller
         }
 
         if ($system === 'Windows NT') {
-            if ($arch === 'x86_64') {
+            if (str_contains($arch, '64')) {
                 return 'win64';
-            }
-
-            if ($arch === 'AMD64') {
-                throw new RuntimeException('Chrome on Windows AMD64 is not supported.');
             }
 
             return 'win32';
@@ -212,6 +207,23 @@ class ChromedriverInstaller
         return $platform;
     }
 
+    private function detectWindowsBinaryPath():string
+    {
+        $candidates = [
+            getenv('ProgramFiles')    . '\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe',
+            getenv('ProgramFiles(x86)') . '\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe',
+            getenv('LOCALAPPDATA') . '\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe'
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (is_file($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return $candidate;
+    }
+
     /**
      * @throws RuntimeException
      */
@@ -220,7 +232,7 @@ class ChromedriverInstaller
         return match ($this->platform) {
             'linux64' => '/usr/bin/google-chrome',
             'mac-x64', 'mac-arm64' => '/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome',
-            'win32', 'win64' => 'C:\\\\Program Files (x86)\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe'
+            'win32', 'win64' => $this->detectWindowsBinaryPath()
         };
     }
 
