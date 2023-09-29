@@ -38,7 +38,6 @@ class Loop
      * @var array<string,Worker>
      */
     private array $workers = [];
-    private bool $debugMode = false;
 
     private bool $fastFailureFlagRaised = false;
 
@@ -105,14 +104,6 @@ class Loop
     ): Result {
         $options['rethrow'] = true;
         return self::executeClosure($toInstallWordPressNetwork, $timeout, $options);
-    }
-
-    /**
-     * @return array<Worker>
-     */
-    public function getWorkers(): array
-    {
-        return $this->workers;
     }
 
     /**
@@ -193,7 +184,6 @@ class Loop
             $w = Running::fromWorker($runnableWorker);
             $this->started[$w->getId()] = $w;
             $this->running[$w->getId()] = $w;
-            $this->debugLine("Worker {$w->getId()} started.");
             $this->peakParallelism = max((int)$this->peakParallelism, count($this->running));
         } catch (Throwable $t) {
             $this->terminateAllRunningWorkers();
@@ -229,7 +219,6 @@ class Loop
         $read = array_reduce(
             $this->running,
             function (array $streams, Running $w) use (&$readIndexToWorkerMap): array {
-                $this->debugLine("Collecting output of worker {$w->getId()}.");
                 $streams[] = $w->getStdoutStream();
                 $streams[] = $w->getStdErrStream();
                 $readIndexToWorkerMap[count($streams) - 2] = $w;
@@ -305,7 +294,6 @@ class Loop
 
                 if ($fastFailureFlagRaised) {
                     $this->fastFailureFlagRaised = true;
-                    $this->debugLine('Fast failure flag raised, terminating all workers.');
                     $this->terminateAllRunningWorkers();
                     break 2;
                 }
@@ -314,7 +302,6 @@ class Loop
                     $exitedWorker = Exited::fromRunningWorker($w);
                     $this->exited[$w->getId()] = $exitedWorker;
                     unset($this->running[$w->getId()]);
-                    $this->debugLine("Worker {$w->getId()} exited with status {$w->getExitCode()}.");
                     $this->startWorker();
                     continue;
                 }
@@ -323,7 +310,6 @@ class Loop
                     $exitedWorker = $w->terminate();
                     $this->exited[$w->getId()] = $exitedWorker;
                     unset($this->running[$w->getId()]);
-                    $this->debugLine("Worker {$w->getId()} took too long, terminated.");
                     $this->startWorker();
                 }
             }
@@ -333,10 +319,6 @@ class Loop
 
         $this->collectOutput();
         $this->collectResults();
-
-        if ($this->debugMode) {
-            $this->assertPostRunConditions();
-        }
 
         return $this;
     }
@@ -353,94 +335,11 @@ class Loop
     {
         foreach ($this->running as $runningWorker) {
             $this->exited[$runningWorker->getId()] = $runningWorker->terminate();
-            $this->debugLine("Worker {$runningWorker->getId()} terminated.");
         }
 
         $this->running = array_diff_key($this->running, $this->exited);
 
         return $this;
-    }
-
-    protected function assertPostRunConditions(): void
-    {
-        assert(count($this->started) >= 1);
-        assert(count($this->started) === count($this->exited));
-        $uncollectedWorkerOutput = array_map(static function (Running $w): array {
-            return ['stdout' => $w->readStdoutStream(), 'stderr' => $w->readStderrStream()];
-        }, array_values($this->started));
-        assert(array_sum(array_merge(...$uncollectedWorkerOutput)) === 0, print_r($uncollectedWorkerOutput, true));
-        if (!$this->fastFailure) {
-            assert(count($this->started) === count($this->workers));
-        }
-    }
-
-    public function getPeakParallelism(): int
-    {
-        return $this->peakParallelism;
-    }
-
-    private function getExitedWorkerById(string $workerId): ?Exited
-    {
-        foreach ($this->exited as $id => $worker) {
-            if ($workerId === $id) {
-                return $worker;
-            }
-        }
-
-        return null;
-    }
-
-    private function getRunningWorkerById(string $workerId): ?Running
-    {
-        foreach ($this->running as $id => $worker) {
-            if ($workerId === $id) {
-                return $worker;
-            }
-        }
-
-        return null;
-    }
-
-    private function getWorkerById(string $workerId): ?WorkerInterface
-    {
-        if ($worker = $this->getExitedWorkerById($workerId)) {
-            return $worker;
-        }
-
-        if ($worker = $this->getRunningWorkerById($workerId)) {
-            return $worker;
-        }
-
-        foreach ($this->workers as $id => $worker) {
-            if ($workerId === $id) {
-                return $worker;
-            }
-        }
-
-        return null;
-    }
-
-    public function removeWorker(string $workerId): ?WorkerInterface
-    {
-        if ($worker = $this->getWorkerById($workerId)) {
-            unset(
-                $this->started[$workerId],
-                $this->running[$workerId],
-                $this->exited[$workerId],
-                $this->results[$workerId],
-                $this->workers[$workerId]
-            );
-
-            if ($worker instanceof Running) {
-                return $worker->terminate();
-            }
-
-            $this->sortWorkersByResource();
-
-            return $worker;
-        }
-
-        return null;
     }
 
     public function failed(): bool
@@ -466,14 +365,5 @@ class Loop
     private function buildWorker(string $id, callable $worker): Worker
     {
         return new Worker($id, $worker, [], []);
-    }
-
-    private function debugLine(string $line): void
-    {
-        if (!$this->debugMode) {
-            return;
-        }
-
-        codecept_debug("Loop: $line");
     }
 }

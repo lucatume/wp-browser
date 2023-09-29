@@ -7,8 +7,7 @@ use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
-
-use function React\Promise\map;
+use Symfony\Component\Process\Process;
 
 class ChromedriverInstaller
 {
@@ -41,17 +40,17 @@ class ChromedriverInstaller
     ) {
         $this->output = $output ?? new NullOutput();
 
-        $platform       = $platform ?? $this->detectPlatform();
+        $platform = $platform ?? $this->detectPlatform();
         $this->platform = $this->checkPlatform($platform);
 
         $this->output->writeln("Platform: $platform");
 
-        $binary       = $binary ?? $this->detectBinary();
+        $binary = $binary ?? $this->detectBinary();
         $this->binary = $this->checkBinary($binary);
 
         $this->output->writeln("Binary: $binary");
 
-        $version         = $version ?? $this->detectVersion();
+        $version = $version ?? $this->detectVersion();
         $this->milestone = $this->checkVersion($version);
 
         $this->output->writeln("Version: $version");
@@ -64,14 +63,14 @@ class ChromedriverInstaller
     {
         if ($dir === null) {
             global $_composer_bin_dir;
-            $dir               = $_composer_bin_dir;
+            $dir = $_composer_bin_dir;
             $composerEnvBinDir = getenv('COMPOSER_BIN_DIR');
             if ($composerEnvBinDir && is_string($composerEnvBinDir) && is_dir($composerEnvBinDir)) {
                 $dir = $composerEnvBinDir;
             }
         }
 
-        if (! is_dir($dir)) {
+        if (!is_dir($dir)) {
             throw new InvalidArgumentException(
                 "The directory $dir does not exist.",
                 self::ERR_DESTINATION_NOT_DIR
@@ -80,10 +79,10 @@ class ChromedriverInstaller
 
         $this->output->writeln("Fetching Chromedriver version URL ...");
 
-        $downloadUrl     = $this->fetchChromedriverVersionUrl();
+        $downloadUrl = $this->fetchChromedriverVersionUrl();
         $zipFilePathname = rtrim(sys_get_temp_dir(), '\\/') . '/' . basename($downloadUrl);
 
-        if (is_file($zipFilePathname) && ! unlink($zipFilePathname)) {
+        if (is_file($zipFilePathname) && !unlink($zipFilePathname)) {
             throw new RuntimeException(
                 "Could not remove existing zip file $zipFilePathname",
                 self::ERR_REMOVE_EXISTING_ZIP_FILE
@@ -95,7 +94,7 @@ class ChromedriverInstaller
 
         $executableFileName = $dir . '/' . $this->getExecutableFileName();
 
-        if (is_file($executableFileName) && ! unlink($executableFileName)) {
+        if (is_file($executableFileName) && !unlink($executableFileName)) {
             throw new RuntimeException(
                 "Could not remove existing executable file $executableFileName",
                 self::ERR_REMOVE_EXISTING_BINARY
@@ -104,7 +103,7 @@ class ChromedriverInstaller
 
         $extractedPath = Zip::extractTo($zipFilePathname, sys_get_temp_dir());
 
-        if (! rename(
+        if (!rename(
             "$extractedPath/chromedriver-$this->platform/" . $this->getExecutableFileName(),
             $executableFileName
         )) {
@@ -132,16 +131,24 @@ class ChromedriverInstaller
     private function detectVersion(): string
     {
         $command = match ($this->platform) {
-            'linux64', 'mac-x64', 'mac-arm64' => escapeshellarg($this->binary) . ' --version',
-            'win32', 'win64' => 'reg query "HKEY_CURRENT_USER\Software\Google\Chrome\BLBeacon" /v version'
+            'linux64', 'mac-x64', 'mac-arm64' => [$this->binary, ' --version'],
+            'win32', 'win64' => [
+                'reg',
+                'query',
+                '"HKEY_CURRENT_USER\Software\Google\Chrome\BLBeacon"' . '/v' . 'version'
+            ]
         };
 
-        $chromeVersion = shell_exec($command);
+        $process = new Process($command);
+        $process->run();
+        $chromeVersion = $process->getOutput();
 
+        $matches = [];
         if (!(
-            $chromeVersion
-            && is_string($chromeVersion)
-            && preg_match('/\s*\d+\.\d+\.\d+\.\d+\s*/', $chromeVersion, $matches))
+                $chromeVersion
+                && is_string($chromeVersion)
+                && preg_match('/\s*\d+\.\d+\.\d+\.\d+\s*/', $chromeVersion, $matches))
+            && isset($matches[0]) && is_string($matches[0])
         ) {
             throw new RuntimeException(
                 "Could not detect Chrome version from $this->binary",
@@ -151,6 +158,7 @@ class ChromedriverInstaller
 
         return trim($matches[0]);
     }
+
     /**
      * @throws RuntimeException
      */
@@ -158,7 +166,7 @@ class ChromedriverInstaller
     {
         // Return one of `linux64`, `mac-arm64`,`mac-x64`, `win32`, `win64`.
         $system = php_uname('s');
-        $arch   = php_uname('m');
+        $arch = php_uname('m');
 
         if ($system === 'Darwin') {
             if ($arch === 'arm64') {
@@ -190,13 +198,13 @@ class ChromedriverInstaller
      */
     private function checkPlatform(mixed $platform): string
     {
-        if (! ( is_string($platform) && in_array($platform, [
+        if (!(is_string($platform) && in_array($platform, [
                 'linux64',
                 'mac-arm64',
                 'mac-x64',
                 'win32',
                 'win64'
-            ]) )) {
+            ]))) {
             throw new RuntimeException(
                 'Invalid platform, supported platforms are: linux64, mac-arm64, mac-x64, win32, win64.',
                 self::ERR_UNSUPPORTED_PLATFORM
@@ -207,10 +215,10 @@ class ChromedriverInstaller
         return $platform;
     }
 
-    private function detectWindowsBinaryPath():string
+    private function detectWindowsBinaryPath(): string
     {
         $candidates = [
-            getenv('ProgramFiles')    . '\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe',
+            getenv('ProgramFiles') . '\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe',
             getenv('ProgramFiles(x86)') . '\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe',
             getenv('LOCALAPPDATA') . '\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe'
         ];
@@ -231,7 +239,7 @@ class ChromedriverInstaller
     {
         return match ($this->platform) {
             'linux64' => '/usr/bin/google-chrome',
-            'mac-x64', 'mac-arm64' => '/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome',
+            'mac-x64', 'mac-arm64' => '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
             'win32', 'win64' => $this->detectWindowsBinaryPath()
         };
     }
@@ -239,7 +247,7 @@ class ChromedriverInstaller
     private function checkBinary(mixed $binary): string
     {
         // Replace escaped spaces with spaces to check the binary.
-        if (! ( is_string($binary) && is_executable(str_replace('\ ', ' ', $binary)) )) {
+        if (!(is_string($binary) && is_executable(str_replace('\ ', ' ', $binary)))) {
             throw new RuntimeException(
                 "Invalid Chrome binary: not executable or not existing.",
                 self::ERR_INVALID_BINARY
@@ -252,7 +260,7 @@ class ChromedriverInstaller
     private function checkVersion(mixed $version): string
     {
         $matches = [];
-        if (! ( is_string($version) && preg_match('/^.*?(?<major>\d+)(\.\d+\.\d+\.\d+)*$/', $version, $matches) )) {
+        if (!(is_string($version) && preg_match('/^.*?(?<major>\d+)(\.\d+\.\d+\.\d+)*$/', $version, $matches))) {
             throw new RuntimeException(
                 "Invalid Chrome version: must be in the form X.Y.Z.W.",
                 self::ERR_INVALID_VERSION_FORMAT
@@ -280,16 +288,16 @@ class ChromedriverInstaller
 
         $decoded = json_decode($milestoneDownloads, true, 512, JSON_THROW_ON_ERROR);
 
-        if (! (
+        if (!(
             is_array($decoded)
             && isset($decoded['milestones'])
             && is_array($decoded['milestones'])
-            && isset($decoded['milestones'][ $this->milestone ])
-            && is_array($decoded['milestones'][ $this->milestone ])
-            && isset($decoded['milestones'][ $this->milestone ]['downloads'])
-            && is_array($decoded['milestones'][ $this->milestone ]['downloads'])
-            && isset($decoded['milestones'][ $this->milestone ]['downloads']['chromedriver'])
-            && is_array($decoded['milestones'][ $this->milestone ]['downloads']['chromedriver'])
+            && isset($decoded['milestones'][$this->milestone])
+            && is_array($decoded['milestones'][$this->milestone])
+            && isset($decoded['milestones'][$this->milestone]['downloads'])
+            && is_array($decoded['milestones'][$this->milestone]['downloads'])
+            && isset($decoded['milestones'][$this->milestone]['downloads']['chromedriver'])
+            && is_array($decoded['milestones'][$this->milestone]['downloads']['chromedriver'])
         )) {
             throw new RuntimeException(
                 'Failed to decode known good Chrome and Chromedriver versions with downloads.',
@@ -297,8 +305,8 @@ class ChromedriverInstaller
             );
         }
 
-        foreach ($decoded['milestones'][ $this->milestone ]['downloads']['chromedriver'] as $download) {
-            if (! (
+        foreach ($decoded['milestones'][$this->milestone]['downloads']['chromedriver'] as $download) {
+            if (!(
                 is_array($download)
                 && isset($download['platform'], $download['url'])
                 && is_string($download['platform'])
