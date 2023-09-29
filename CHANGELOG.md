@@ -3,6 +3,10 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+ 
+### Fixed
+
+- Use Symphony Process component in loop code to solve Windows issues.
 
 ## [4.0.3] 2023-09-19;
 
