@@ -130,16 +130,13 @@ class ChromedriverInstaller
      */
     private function detectVersion(): string
     {
-        $command = match ($this->platform) {
-            'linux64', 'mac-x64', 'mac-arm64' => [$this->binary, ' --version'],
-            'win32', 'win64' => [
-                'reg',
-                'query',
-                '"HKEY_CURRENT_USER\Software\Google\Chrome\BLBeacon"' . '/v' . 'version'
-            ]
+        $process = match ($this->platform) {
+            'linux64', 'mac-x64', 'mac-arm64' => new Process([$this->binary, ' --version']),
+            'win32', 'win64' => Process::fromShellCommandline(
+                'reg query "HKEY_CURRENT_USER\Software\Google\Chrome\BLBeacon" /v version'
+            )
         };
 
-        $process = new Process($command);
         $process->run();
         $chromeVersion = $process->getOutput();
 
