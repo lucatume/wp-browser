@@ -192,6 +192,8 @@ use this command to update it.
 This command will download the latest version of Chromedriver compatible with the Chrome version installed on your
 machine in the Composer vendor directory.
 
+> Note: if the download fails, it might be [a certificate issue](troubleshooting.md#downloads-fail-in-windows).
+
 ### `generate:wpunit`
 
 Enable the command with:

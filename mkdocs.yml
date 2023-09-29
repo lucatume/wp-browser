@@ -33,6 +33,7 @@ nav:
       - wp:db:export: 'commands#wpdbexport'
       - chromedriver:update: 'commands#chromedriverupdate'
       - generate:wpunit: 'commands#generatewpunit'
+  - Troubleshooting: 'troubleshooting.md'
   - Sponsorship: 'https://github.com/sponsors/lucatume'
   - Changelog: 'https://github.com/lucatume/wp-browser/blob/master/CHANGELOG.md'
   - Version 3 documentation:
