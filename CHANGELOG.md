@@ -3,6 +3,8 @@ All notable changes after version 1.6.16 to this project will be documented in t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
+
+## [4.0.4] 2023-09-29;
  
 ### Fixed
 
@@ -1958,4 +1960,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.1]: https://github.com/lucatume/wp-browser/compare/4.0.0...4.0.1
 [4.0.2]: https://github.com/lucatume/wp-browser/compare/4.0.1...4.0.2
 [4.0.3]: https://github.com/lucatume/wp-browser/compare/4.0.2...4.0.3
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.3...HEAD
+[4.0.4]: https://github.com/lucatume/wp-browser/compare/4.0.3...4.0.4
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.4...HEAD
