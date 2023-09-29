@@ -140,16 +140,21 @@ class ChromedriverInstaller
         $process->run();
         $chromeVersion = $process->getOutput();
 
-        $matches = [];
-        if (!(
-                $chromeVersion
-                && is_string($chromeVersion)
-                && preg_match('/\s*\d+\.\d+\.\d+\.\d+\s*/', $chromeVersion, $matches))
-            && isset($matches[0]) && is_string($matches[0])
-        ) {
+        if ($chromeVersion === '') {
             throw new RuntimeException(
                 "Could not detect Chrome version from $this->binary",
                 self::ERR_VERSION_NOT_STRING
+            );
+        }
+
+        $matches = [];
+        if (!(
+            preg_match('/\s*\d+\.\d+\.\d+\.\d+\s*/', $chromeVersion, $matches)
+            && isset($matches[0]) && is_string($matches[0])
+        )) {
+            throw new RuntimeException(
+                "Could not detect Chrome version from $this->binary",
+                self::ERR_INVALID_VERSION_FORMAT
             );
         }
 
