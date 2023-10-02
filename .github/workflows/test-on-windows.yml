@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+
+name: Test (Windows)
+
+on: # yamllint disable-line rule:truthy
+  pull_request: null
+  push:
+    paths:
+      - "src/**"
+      - "includes/**"
+      - "tests/**"
+      - "composer.json"
+    branches:
+      - "master"
+
+permissions:
+  contents: "read"
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  test-windows:
+    strategy:
+      matrix:
+        suite:
+          - acceptance
+          - climodule
+          - functional
+          - muloader
+          - unit
+          - webdriver
+          - wpcli_module
+          - wploader_multisite
+          - wploader_wpdb_interaction
+          - wploadersuite
+    name: ${{ matrix.suite }} (Windows)
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php_version }}
+          extensions: uopz, sqlite3, gd
+          ini-values: post_max_size=256M, max_execution_time=180, uopz.exit=1
+          tools: composer
