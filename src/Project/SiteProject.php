@@ -70,8 +70,10 @@ class SiteProject extends InitTemplate implements ProjectInterface
      */
     public function setup(): void
     {
-        $this->say('You can use a portable configuration based on PHP built-in server, Chromedriver ' .
-            'and SQLite.');
+        $this->say(
+            'You can use a portable configuration based on PHP built-in server, Chromedriver ' .
+            'and SQLite.'
+        );
         $useDefaultConfiguration = $this->ask('Do you want to use this configuration?', true);
 
         if (!$useDefaultConfiguration) {
@@ -144,7 +146,7 @@ EOT;
                 'env' => [
                     'DATABASE_TYPE' => 'sqlite',
                     'DB_ENGINE' => 'sqlite',
-                    'DB_DIR' => '%codecept_root_dir%/tests/Support/Data',
+                    'DB_DIR' => implode(DIRECTORY_SEPARATOR, ['%codecept_root_dir%', 'tests', 'Support', 'Data']),
                     'DB_FILE' => 'db.sqlite'
                 ]
             ]
@@ -156,7 +158,10 @@ EOT;
         $this->testEnvironment->customCommands[] = DevRestart::class;
         $this->testEnvironment->customCommands[] = ChromedriverUpdate::class;
         $this->testEnvironment->wpRootDir = '.';
-        $this->testEnvironment->dbUrl = 'sqlite://%codecept_root_dir%/tests/Support/Data/db.sqlite';
+        $this->testEnvironment->dbUrl = 'sqlite://' . implode(
+            DIRECTORY_SEPARATOR,
+            ['%codecept_root_dir%', 'tests', 'Support', 'Data', 'db.sqlite']
+        );
 
         $this->testEnvironment->afterSuccess = function (): void {
             $this->scaffoldEndToEndActivationCest();
