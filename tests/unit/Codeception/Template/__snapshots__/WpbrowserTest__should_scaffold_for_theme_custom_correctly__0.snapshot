@@ -27,6 +27,7 @@ modules:
             browser: chrome
             host: '%CHROMEDRIVER_HOST%'
             port: '%CHROMEDRIVER_PORT%'
+            path: '/'
             window_size: 1200x1000
             capabilities:
               "goog:chromeOptions":
