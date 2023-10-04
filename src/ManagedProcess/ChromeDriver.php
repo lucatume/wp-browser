@@ -26,7 +26,10 @@ class ChromeDriver implements ManagedProcessInterface
         private array $arguments = ['--url-base=/wd/hub'],
         ?string $chromeDriverBinary = null
     ) {
-        $chromeDriverBinary = $chromeDriverBinary ?? Composer::binDir('/chromedriver');
+        if ($chromeDriverBinary === null) {
+            $chromedriverBinaryFile = DIRECTORY_SEPARATOR === '\\' ? 'chromedriver.exe' : 'chromedriver';
+            $chromeDriverBinary = Composer::binDir($chromedriverBinaryFile);
+        }
 
         if (!(file_exists($chromeDriverBinary) && is_executable($chromeDriverBinary))) {
             throw new RuntimeException(

@@ -150,7 +150,7 @@ EOT;
                 'env' => [
                     'DATABASE_TYPE' => 'sqlite',
                     'DB_ENGINE' => 'sqlite',
-                    'DB_DIR' => '%codecept_root_dir%/tests/Support/Data',
+                    'DB_DIR' => implode(DIRECTORY_SEPARATOR, ['%codecept_root_dir%','tests','Support','Data']),
                     'DB_FILE' => 'db.sqlite'
                 ]
             ]
@@ -161,7 +161,10 @@ EOT;
         $this->testEnvironment->customCommands[] = DevRestart::class;
         $this->testEnvironment->customCommands[] = ChromedriverUpdate::class;
         $this->testEnvironment->wpRootDir = FS::relativePath($this->workDir, $wpRootDir);
-        $this->testEnvironment->dbUrl = 'sqlite://%codecept_root_dir%/tests/_wordpress/data/db.sqlite';
+        $this->testEnvironment->dbUrl = 'sqlite://' . implode(
+            DIRECTORY_SEPARATOR,
+            ['%codecept_root_dir%', 'tests', '_wordpress', 'data', 'db.sqlite']
+        );
 
         $this->testEnvironment->afterSuccess = $this->getAfterSuccessClosure($activated);
     }

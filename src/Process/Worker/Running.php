@@ -36,7 +36,7 @@ class Running implements WorkerInterface
     /**
      * @throws ConfigurationException|ProcessException
      */
-    public static function fromWorker(Worker $worker): Running
+    public static function fromWorker(Worker $worker, bool $useFilePayloads = false): Running
     {
         $workerCallable = $worker->getCallable();
         $workerClosure = $workerCallable instanceof Closure ?
@@ -51,6 +51,7 @@ class Running implements WorkerInterface
         $workerSerializableClosure = new SerializableClosure($workerClosure);
 
         $request = new Request($control, $workerSerializableClosure);
+        $request->setUseFilePayloads($useFilePayloads);
 
         try {
             $workerProcess = new WorkerProcess([PHP_BINARY, $workerScriptPathname, $request->getPayload()]);

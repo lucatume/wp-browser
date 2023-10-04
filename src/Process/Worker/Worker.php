@@ -2,8 +2,10 @@
 
 namespace lucatume\WPBrowser\Process\Worker;
 
+use Closure;
 use Codeception\Exception\ConfigurationException;
 use lucatume\WPBrowser\Process\Protocol\Control;
+use ReflectionFunction;
 
 class Worker implements WorkerInterface
 {
@@ -52,6 +54,20 @@ class Worker implements WorkerInterface
         } else {
             $cwd = getcwd() ?: codecept_root_dir();
         }
+
+        if ($callable instanceof Closure) {
+            // Closures might come from files that are not autoloaded (e.g. test cases); include them in the required
+            // files to make sure the Closure will be bound to a valid scope.
+            $closureFile = (new ReflectionFunction($callable))->getFileName();
+            if ($closureFile !== false) {
+                if (!isset($control['requireFiles'])) {
+                    $control['requireFiles'] = [];
+                }
+                $control['requireFiles'][] = $closureFile;
+                $control['requireFiles'] = array_values(array_unique($control['requireFiles']));
+            }
+        }
+
         $this->control = [
             'autoloadFile' => $control['autoloadFile'] ?? $defaultControl['autoloadFile'],
             'requireFiles' => $control['requireFiles'] ?? $defaultControl['requireFiles'],
