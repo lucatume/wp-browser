@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.0.5] 2023-10-04;
+
 ### Fixed
 
 - Set `path` correctly in `WPWebDriver` module setup
@@ -1968,4 +1970,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.2]: https://github.com/lucatume/wp-browser/compare/4.0.1...4.0.2
 [4.0.3]: https://github.com/lucatume/wp-browser/compare/4.0.2...4.0.3
 [4.0.4]: https://github.com/lucatume/wp-browser/compare/4.0.3...4.0.4
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.4...HEAD
+[4.0.5]: https://github.com/lucatume/wp-browser/compare/4.0.4...4.0.5
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.5...HEAD
