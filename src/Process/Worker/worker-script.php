@@ -11,7 +11,17 @@ require_once $processSrcRoot . '/Protocol/Request.php';
 require_once $processSrcRoot . '/Protocol/ProtocolException.php';
 
 try {
-    $request = Request::fromPayload($argv[1]);
+    if (!isset($argv[1])) {
+        throw new RuntimeException('Payload empty.');
+    }
+
+    if (str_starts_with($argv[1], '$')) {
+        $payload = $argv[1];
+    } elseif (($payload = @file_get_contents($argv[1])) === false) {
+        throw new RuntimeException("Could not read payload from file $argv[1]");
+    }
+
+    $request = Request::fromPayload($payload);
     $serializableClosure = $request->getSerializableClosure();
     $returnValue = $serializableClosure();
 } catch (Throwable $throwable) {

@@ -8,6 +8,7 @@ use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
 class Request
 {
     private Control $control;
+    private bool $useFilePayloads = false;
 
     /**
      * @param array{
@@ -27,9 +28,27 @@ class Request
         $this->control = new Control($controlArray);
     }
 
+    /**
+     * @throws ProtocolException
+     */
     public function getPayload(): string
     {
-        return Parser::encode([$this->control->toArray(), $this->serializableClosure]);
+        $payload = Parser::encode([$this->control->toArray(), $this->serializableClosure]);
+
+        if (DIRECTORY_SEPARATOR === '\\' || $this->useFilePayloads) {
+            // On Windows the maximum length of the command line is 8191 characters.
+            // Any expanded env var, any path (e.g. to the PHP binary or the worker script) counts towards that limit.
+            // To avoid running into that limit we pass the payload through a temp file.
+            $payloadFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('wpb_worker_payload_', true);
+
+            if (file_put_contents($payloadFile, $payload, LOCK_EX) === false) {
+                throw new ProtocolException("Could not write payload to file $payloadFile");
+            }
+
+            return $payloadFile;
+        }
+
+        return $payload;
     }
 
     /**
@@ -64,5 +83,12 @@ class Request
     public function getControl(): Control
     {
         return clone $this->control;
+    }
+
+    public function setUseFilePayloads(bool $useFilePayloads): Request
+    {
+        $this->useFilePayloads = $useFilePayloads;
+
+        return $this;
     }
 }

@@ -40,6 +40,7 @@ class Loop
     private array $workers = [];
 
     private bool $fastFailureFlagRaised = false;
+    private bool $useFilePayloads = false;
 
     /**
      * @param array<int|string,Worker|callable> $workers
@@ -113,7 +114,7 @@ class Loop
      *     cwd?: string
      * } $options
      */
-    public function addWorkers(array $workers, array $options): Loop
+    public function addWorkers(array $workers, array $options = []): Loop
     {
         $builtWorkers = array_map([$this, 'ensureWorker'], array_keys($workers), $workers);
 
@@ -181,7 +182,7 @@ class Loop
         }
 
         try {
-            $w = Running::fromWorker($runnableWorker);
+            $w = Running::fromWorker($runnableWorker, $this->useFilePayloads);
             $this->started[$w->getId()] = $w;
             $this->running[$w->getId()] = $w;
             $this->peakParallelism = max((int)$this->peakParallelism, count($this->running));
@@ -345,6 +346,12 @@ class Loop
     public function failed(): bool
     {
         return $this->fastFailure && $this->fastFailureFlagRaised;
+    }
+
+    public function setUseFilePayloads(bool $useFilePayloads): Loop
+    {
+        $this->useFilePayloads = $useFilePayloads;
+        return $this;
     }
 
     /**
