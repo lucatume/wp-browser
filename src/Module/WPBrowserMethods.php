@@ -528,4 +528,26 @@ trait WPBrowserMethods
             }
         }
     }
+
+    /**
+     * Go to the admin page to edit the user with the specified ID.
+     *
+     * The method will **not** handle authentication the admin area.
+     *
+     * @example
+     * ```php
+     * $I->loginAsAdmin();
+     * $userId = $I->haveUserInDatabase('luca', 'editor');
+     * $I->amEditingUserWithId($userId);
+     * $I->fillField('email', 'new@example.net');
+     * ```
+     *
+     * @param int $id The user ID.
+     *
+     * @return void
+     */
+    public function amEditingUserWithId(int $id): void
+    {
+        $this->amOnAdminPage('/user-edit.php?user_id=' . $id);
+    }
 }
