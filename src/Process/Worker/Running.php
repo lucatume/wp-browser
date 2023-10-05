@@ -2,13 +2,14 @@
 
 namespace lucatume\WPBrowser\Process\Worker;
 
-use BadMethodCallException;
 use Closure;
+use Codeception\Exception\ConfigurationException;
+use lucatume\WPBrowser\Exceptions\RuntimeException;
+use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
 use lucatume\WPBrowser\Process\MemoryUsage;
+use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\Protocol\Request;
 use lucatume\WPBrowser\Process\Protocol\Response;
-use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
-use RuntimeException;
 
 class Running implements WorkerInterface
 {
@@ -18,73 +19,24 @@ class Running implements WorkerInterface
      * @var mixed|null
      */
     private mixed $returnValue = null;
-    /**
-     * @var resource
-     */
-    private $stdin;
-    /**
-     * @var array{
-     *     command: string,
-     *     pid: int,
-     *     running: bool,
-     *     signaled: bool,
-     *     stopped: bool,
-     *     exitcode: int,
-     *     termsig: int,
-     *     stopsig: int
-     * }|null
-     */
-    private ?array $cachedStatus = null;
-    /**
-     * @var resource
-     */
-    private $proc;
-    /**
-     * @var resource
-     */
-    private $stdout;
-    /**
-     * @var resource
-     */
-    private $stderr;
-
     private string $stdoutBuffer = '';
     private string $stderrBuffer = '';
     private bool $didExtractReturnValueFromStderr = false;
 
     /**
-     * @param resource $proc
-     * @param array<int,resource> $pipes
      * @param string[] $requiredResourcesIds
      */
     public function __construct(
         private string $id,
-        $proc,
-        array $pipes,
-        private float $startTime,
+        private WorkerProcess $proc,
         private array $requiredResourcesIds = []
     ) {
-        [$this->stdin, $this->stdout, $this->stderr] = $pipes;
-
-        if (!is_resource($proc)) {
-            throw new BadMethodCallException('proc must be a resource');
-        }
-
-        if (!is_resource($this->stdin)) {
-            throw new BadMethodCallException('stdin must be a resource');
-        }
-
-        if (!is_resource($this->stdout)) {
-            throw new BadMethodCallException('stdout must be a resource');
-        }
-
-        if (!is_resource($this->stderr)) {
-            throw new BadMethodCallException('stderr must be a resource');
-        }
-        $this->proc = $proc;
     }
 
-    public static function fromWorker(Worker $worker): Running
+    /**
+     * @throws ConfigurationException|ProcessException
+     */
+    public static function fromWorker(Worker $worker, bool $useFilePayloads = false): Running
     {
         $workerCallable = $worker->getCallable();
         $workerClosure = $workerCallable instanceof Closure ?
@@ -99,68 +51,24 @@ class Running implements WorkerInterface
         $workerSerializableClosure = new SerializableClosure($workerClosure);
 
         $request = new Request($control, $workerSerializableClosure);
+        $request->setUseFilePayloads($useFilePayloads);
 
-        $workerCommand = sprintf(
-            "%s %s %s",
-            escapeshellarg(PHP_BINARY),
-            escapeshellarg($workerScriptPathname),
-            escapeshellarg($request->getPayload())
-        );
-        $pipesDef = [
-            0 => ['pipe', 'r'],
-            1 => ['pipe', 'w'],
-            2 => ['pipe', 'w']
-        ];
-        $startTime = microtime(true);
-        $workerProc = proc_open($workerCommand, $pipesDef, $pipes);
-
-        if (!is_resource($workerProc)) {
-            throw new RuntimeException('Failed to open process.');
+        try {
+            $workerProcess = new WorkerProcess([PHP_BINARY, $workerScriptPathname, $request->getPayload()]);
+            $workerProcess->start();
+        } catch (\Exception $e) {
+            throw new ProcessException(
+                "Failed to start the worker process: {$e->getMessage()}",
+                $e->getCode(),
+                $e
+            );
         }
 
         return new Running(
             $worker->getId(),
-            $workerProc,
-            $pipes,
-            $startTime,
+            $workerProcess,
             $worker->getRequiredResourcesIds()
         );
-    }
-
-    /**
-     * @return array{
-     *     command: string,
-     *     pid: int,
-     *     running: bool,
-     *     signaled: bool,
-     *     stopped: bool,
-     *     exitcode: int,
-     *     termsig: int,
-     *     stopsig: int
-     * }
-     */
-    public function getStatus(): array
-    {
-        $liveStatus = is_resource($this->proc) ?
-            proc_get_status($this->proc) :
-            [
-                'command' => '',
-                'pid' => -1,
-                'running' => false,
-                'signaled' => false,
-                'stopped' => false,
-                'exitcode' => -1,
-                'termsig' => -1,
-                'stopsig' => -1,
-            ];
-
-        if ($this->cachedStatus !== null && $liveStatus['exitcode'] === -1) {
-            return $this->cachedStatus;
-        }
-
-        $this->cachedStatus = $liveStatus;
-
-        return $liveStatus;
     }
 
     private function kill(int $pid): void
@@ -172,48 +80,20 @@ class Running implements WorkerInterface
 
     public function terminate(): Exited
     {
-        $status = $this->getStatus();
+        $pid = $this->proc->getPid();
 
-        if (isset($status['pid'])) {
-            $pid = (int)$status['pid'];
+        if (!empty($pid)) {
             $this->kill($pid);
         }
 
-        foreach ([
-                'STDIN' => $this->stdin,
-                'STDOUT' => $this->stdout,
-                'STDERR' => $this->stderr,
-            ] as $name => $resource
-        ) {
-            if (is_resource($resource) && !fclose($resource)) {
-                throw new RuntimeException("Failed to close the $name pipe.");
-            }
-        }
-
-        // Kill signal.
-        $status = $this->getStatus();
-        $procClose = proc_close($this->proc);
-        if ($procClose >= 0) {
-            // Update the cached status if the process had not already terminated.
-            $this->cachedStatus = [
-                'command' => $status['command'],
-                'pid' => $status['pid'],
-                'running' => false,
-                'signaled' => true,
-                'stopped' => false,
-                'exitcode' => $procClose,
-                'termsig' => $status['termsig'],
-                'stopsig' => $status['stopsig'],
-            ];
-        }
+        $this->proc->stop(0, 9); // SIGKILL.
 
         return Exited::fromRunningWorker($this);
     }
 
     public function isRunning(): bool
     {
-        $status = $this->getStatus();
-        return (bool)(($status['running']) ?? false);
+        return $this->proc->isRunning();
     }
 
     public function getId(): string
@@ -231,32 +111,35 @@ class Running implements WorkerInterface
 
     public function getExitCode(): int
     {
-        return $this->getStatus()['exitcode'] ?? -1;
+        return $this->proc->getExitCode() ?? -1;
     }
 
     public function getStartTime(): float
     {
-        return $this->startTime;
+        return $this->proc->getStartTime();
     }
 
     /**
      * @return resource
+     * @throws ProcessException
      */
     public function getStdoutStream()
     {
-        return $this->stdout;
+        return $this->proc->getStdoutStream();
     }
 
     /**
      * @return resource
+     * @throws ProcessException
      */
-    public function getStderrStream()
+    public function getStdErrStream()
     {
-        return $this->stderr;
+        return $this->proc->getStdErrStream();
     }
 
     /**
      * @param resource $stream
+     * @throws ProcessException
      */
     public function readStream($stream): int
     {
@@ -264,32 +147,15 @@ class Running implements WorkerInterface
             return 0;
         }
 
-        $buffer = '';
-        do {
-            $read = fread($stream, 2048);
-            if ($read === false) {
-                throw new RuntimeException('Failed to read from stream.');
-            }
-            $buffer .= $read;
-        } while (!feof($stream));
-
-        if ($stream === $this->stdout) {
+        if ($stream === $this->getStdoutStream()) {
+            $buffer = $this->proc->getIncrementalOutput();
             $this->stdoutBuffer .= $buffer;
         } else {
+            $buffer = $this->proc->getIncrementalErrorOutput();
             $this->stderrBuffer .= $buffer;
         }
 
         return strlen($buffer);
-    }
-
-    public function readStdoutStream(): int
-    {
-        return $this->readStream($this->stdout);
-    }
-
-    public function readStderrStream(): int
-    {
-        return $this->readStream($this->stderr);
     }
 
     public function getStderrBuffer(): string

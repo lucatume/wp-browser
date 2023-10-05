@@ -148,7 +148,7 @@ EOT;
                 'env' => [
                     'DATABASE_TYPE' => 'sqlite',
                     'DB_ENGINE' => 'sqlite',
-                    'DB_DIR' => '%codecept_root_dir%/' . $dataDirRelativePath,
+                    'DB_DIR' => '%codecept_root_dir%' . DIRECTORY_SEPARATOR . $dataDirRelativePath,
                     'DB_FILE' => 'db.sqlite'
                 ]
             ]
@@ -160,7 +160,10 @@ EOT;
         $this->testEnvironment->customCommands[] = DevRestart::class;
         $this->testEnvironment->customCommands[] = ChromedriverUpdate::class;
         $this->testEnvironment->wpRootDir = '.';
-        $this->testEnvironment->dbUrl = 'sqlite://%codecept_root_dir%/' . $dataDirRelativePath . '/db.sqlite';
+        $this->testEnvironment->dbUrl = 'sqlite://' . implode(
+            DIRECTORY_SEPARATOR,
+            ['%codecept_root_dir%', $dataDirRelativePath, 'db.sqlite']
+        );
 
         $this->testEnvironment->afterSuccess = function (): void {
             $this->scaffoldEndToEndActivationCest();

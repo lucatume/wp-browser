@@ -25,6 +25,7 @@ modules:
             browser: chrome
             host: '%CHROMEDRIVER_HOST%'
             port: '%CHROMEDRIVER_PORT%'
+            path: '/'
             window_size: 1200x1000
             capabilities:
               "goog:chromeOptions":
@@ -269,8 +270,8 @@ TEST_TABLE_PREFIX=test_
 WORDPRESS_TABLE_PREFIX=wp_
 
 # The URL and domain of the WordPress site used in end-to-end tests.
-WORDPRESS_URL=http://localhost:64864
-WORDPRESS_DOMAIN=localhost:64864
+WORDPRESS_URL=http://localhost:51968
+WORDPRESS_DOMAIN=localhost:51968
 
 # The username and password of the administrator user of the WordPress site used in end-to-end tests.
 WORDPRESS_ADMIN_USER=admin
@@ -278,10 +279,10 @@ WORDPRESS_ADMIN_PASSWORD=password
 
 # The host and port of the ChromeDriver server that will be used in end-to-end tests.
 CHROMEDRIVER_HOST=localhost
-CHROMEDRIVER_PORT=64877
+CHROMEDRIVER_PORT=51983
 
 # The port on which the PHP built-in server will serve the WordPress installation.
-BUILTIN_SERVER_PORT=64864
+BUILTIN_SERVER_PORT=51968
 
 <<< /tests/.env <<<
 

@@ -76,4 +76,26 @@ class RequestTest extends Unit
         $this->assertEquals($request->getSerializableClosure(), $serializableClosure);
         $this->assertEquals($request->getControl(), $fromPayload->getControl());
     }
+
+    /**
+     * It should return a payload file path when getting payload on Windows
+     *
+     * @test
+     */
+    public function should_return_a_payload_file_path_when_getting_payload_on_windows(): void
+    {
+        $serializableClosure = new SerializableClosure(static function () {
+            return 'foo';
+        });
+        $control = ['foo' => 'bar'];
+        $encoded = Parser::encode([(new Control($control))->toArray(), $serializableClosure]);
+
+        $request = new Request(['foo' => 'bar'], $serializableClosure);
+        $request->setUseFilePayloads(true);
+        $payload = $request->getPayload();
+
+        $this->assertIsString($payload);
+        $this->assertFileExists($payload);
+        $this->assertStringEqualsFile($payload, $encoded);
+    }
 }
