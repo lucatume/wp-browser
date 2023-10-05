@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.0.6] 2023-10-05;
+
 ### Fixed
 
 - Added back the `amEditingUserWithId` methood to the `WPBrowser` and `WPWebDriver` modules. (thanks @johnbillion for the original 3.1.7 contribution)
@@ -1975,4 +1977,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.3]: https://github.com/lucatume/wp-browser/compare/4.0.2...4.0.3
 [4.0.4]: https://github.com/lucatume/wp-browser/compare/4.0.3...4.0.4
 [4.0.5]: https://github.com/lucatume/wp-browser/compare/4.0.4...4.0.5
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.5...HEAD
+[4.0.6]: https://github.com/lucatume/wp-browser/compare/4.0.5...4.0.6
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.6...HEAD
