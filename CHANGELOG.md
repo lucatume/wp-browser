@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Added back the `amEditingUserWithId` methood to the `WPBrowser` and `WPWebDriver` modules. (thanks @johnbillion for the original 3.1.7 contribution)
+
 ## [4.0.5] 2023-10-04;
 
 ### Fixed
