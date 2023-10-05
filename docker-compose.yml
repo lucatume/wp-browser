@@ -2,7 +2,6 @@ version: "3.8"
 
 services:
   database:
-    container_name: wpbrowser_database
     image: mariadb:10.8
     environment:
       MYSQL_ROOT_PASSWORD: ${WORDPRESS_DB_PASSWORD}

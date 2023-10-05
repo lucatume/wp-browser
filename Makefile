@@ -47,3 +47,10 @@ clean_procs:
 	pgrep chromedriver | xargs kill
 	rm -f var/_output/*.pid var/_output/*.running
 .PHONY: clean_procs
+
+build_35:
+	composer require --dev rector/rector
+	vendor/bin/rector --config=config/rector-35.php
+	rm -rf vendor composer.lock
+	COMPOSER=config/composer-35.json composer update -W
+.PHONY: build_35
