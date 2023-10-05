@@ -111,6 +111,21 @@ $I->amEditingPostWithId($postId);
 $I->fillField('post_title', 'Post title');
 ```
 
+#### amEditingUserWithId
+Signature: `amEditingUserWithId(int $id)` : `void`  
+
+Go to the admin page to edit the user with the specified ID.
+
+The method will **not** handle authentication the admin area.
+
+```php
+<?php
+$I->loginAsAdmin();
+$userId = $I->haveUserInDatabase('luca', 'editor');
+$I->amEditingUserWithId($userId);
+$I->fillField('email', 'new@example.net');
+```
+
 #### amHttpAuthenticated
 Signature: `amHttpAuthenticated($username, $password)` : `void`  
 

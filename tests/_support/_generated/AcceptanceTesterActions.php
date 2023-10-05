@@ -1,4 +1,4 @@
-<?php  //[STAMP] 148ccd6234ead9b1f5505ef1e0b761f5
+<?php  //[STAMP] df1287dea3c460a2adbcbff84fc4b739
 // phpcs:ignoreFile
 namespace _generated;
 
@@ -2856,6 +2856,31 @@ trait AcceptanceTesterActions
      */
     public function amEditingPostWithId(int $id): void {
         $this->getScenario()->runStep(new \Codeception\Step\Condition('amEditingPostWithId', func_get_args()));
+    }
+
+ 
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * Go to the admin page to edit the user with the specified ID.
+     *
+     * The method will **not** handle authentication the admin area.
+     *
+     * @example
+     * ```php
+     * $I->loginAsAdmin();
+     * $userId = $I->haveUserInDatabase('luca', 'editor');
+     * $I->amEditingUserWithId($userId);
+     * $I->fillField('email', 'new@example.net');
+     * ```
+     *
+     * @param int $id The user ID.
+     *
+     * @return void
+     * @see \lucatume\WPBrowser\Module\WPBrowser::amEditingUserWithId()
+     */
+    public function amEditingUserWithId(int $id): void {
+        $this->getScenario()->runStep(new \Codeception\Step\Condition('amEditingUserWithId', func_get_args()));
     }
 
  
@@ -6503,8 +6528,8 @@ trait AcceptanceTesterActions
      * Removes an attachment from the posts table.
      *
      * @example
-     *      ```
-     *      $postmeta = $I->grabpostmetatablename();
+     * ``` php
+     * $postmeta = $I->grabpostmetatablename();
      * $thumbnailId = $I->grabFromDatabase($postmeta, 'meta_value', [
      *      'post_id' => $id,
      *      'meta_key'=>'thumbnail_id'
