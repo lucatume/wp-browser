@@ -126,7 +126,11 @@ class WPConfigFile
 
             if ($result->getExitCode() !== 0) {
                 $previous = $returnValue instanceof Throwable ? $returnValue : null;
-                throw new ProcessException($result->getStderrBuffer(), $result->getExitCode(), $previous);
+                throw new ProcessException(
+					$result->getStderrBuffer() ?: $result->getStdoutBuffer(),
+					$result->getExitCode(),
+					$previous
+                );
             }
 
             $values = $returnValue;
