@@ -17,7 +17,7 @@ abstract class WPXMLTestCase extends WPTestCase {
 		$internal = libxml_use_internal_errors( true );
 		libxml_clear_errors();
 
-		$xml_dom = new DOMDocument();
+		$xml_dom = new \DOMDocument();
 		$xml_dom->loadXML( $xml, $options );
 		$libxml_last_error = libxml_get_last_error();
 
@@ -49,7 +49,7 @@ abstract class WPXMLTestCase extends WPTestCase {
 		static $xslt_proc;
 
 		if ( ! $xslt_proc ) {
-			$xslt_proc = new XSLTProcessor();
+			$xslt_proc = new \XSLTProcessor();
 			$xslt_proc->importStyleSheet( simplexml_load_file( __DIR__ . '/normalize-xml.xsl' ) );
 		}
 

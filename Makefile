@@ -25,6 +25,7 @@ package: update_core_phpunit_includes test
 
 update_sqlite_plugin:
 	bin/update_sqlite_plugin
+.PHONY: update_sqlite_plugin
 
 docs_serve:
 	mkdocs serve -a 0.0.0.0:8000
