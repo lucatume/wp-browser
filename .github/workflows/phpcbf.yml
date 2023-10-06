@@ -9,6 +9,8 @@ jobs:
   php-codesniffer:
     name: "PHPCBF automatically fix violations"
     runs-on: "ubuntu-22.04"
+    permissions:
+      contents: write
     steps:
       -
         name: "Set up PHP"
