@@ -30,7 +30,7 @@ class MysqlDatabase implements DatabaseInterface
         private string $dbHost,
         private string $tablePrefix = 'wp_'
     ) {
-        if (!preg_match('/^[a-zA-Z][\w_]{0,23}$/', $dbName) || str_starts_with('ii', $dbName)) {
+        if (!preg_match('/^[a-zA-Z][\w_]{0,64}$/', $dbName) || str_starts_with('ii', $dbName)) {
             throw new DbException(
                 "Invalid database name: $dbName",
                 DbException::INVALID_DB_NAME
