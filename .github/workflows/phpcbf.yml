@@ -30,7 +30,7 @@ jobs:
       -
         name: "Run PHPCBF"
         continue-on-error: true
-        run: "composer cs-fix"
+        run: "composer run cs-fix"
       -
         name: Commit PHPCBF changes
         uses: stefanzweifel/git-auto-commit-action@v4.1.1

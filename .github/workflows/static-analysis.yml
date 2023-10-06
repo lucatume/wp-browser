@@ -51,7 +51,7 @@ jobs:
         -
             name: "Run PHPCBF"
             continue-on-error: true
-            run: "composer cs-fix"
+            run: "composer run cs-fix"
         -
             name: "Run PHP Code Sniffer"
             run: "composer run cs"
