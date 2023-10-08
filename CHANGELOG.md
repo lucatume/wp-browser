@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.0.7] 2023-10-08;
+
 ### Fixed
 
 - Rework the Core PHPUnit test case handling to correctly fire the test case set up and tear down methods.
@@ -1982,4 +1984,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.4]: https://github.com/lucatume/wp-browser/compare/4.0.3...4.0.4
 [4.0.5]: https://github.com/lucatume/wp-browser/compare/4.0.4...4.0.5
 [4.0.6]: https://github.com/lucatume/wp-browser/compare/4.0.5...4.0.6
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.6...HEAD
+[4.0.7]: https://github.com/lucatume/wp-browser/compare/4.0.6...4.0.7
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.7...HEAD
