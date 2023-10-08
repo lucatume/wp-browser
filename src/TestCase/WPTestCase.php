@@ -79,26 +79,26 @@ class WPTestCase extends Unit
     protected function setUp(): void
     {
         parent::setUp();
-        self::getCoreTestCase()->set_up();
+        $this->set_up(); //@phpstan-ignore-line magic __call
     }
 
     protected function tearDown(): void
     {
-        self::getCoreTestCase()->tear_down();
+        $this->tear_down(); //@phpstan-ignore-line magic __call
         parent::tearDown();
     }
 
 
     public static function tearDownAfterClass(): void
     {
-        self::getCoreTestCase()->tear_down_after_class();
+        static::tear_down_after_class();  //@phpstan-ignore-line magic __callStatic
         parent::tearDownAfterClass();
     }
 
     protected function assertPostConditions(): void
     {
         parent::assertPostConditions();
-        self::getCoreTestCase()->assert_post_conditions();
+        static::assert_post_conditions(); //@phpstan-ignore-line magic __callStatic
     }
 
     public function __destruct()
