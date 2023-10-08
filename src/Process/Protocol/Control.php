@@ -78,16 +78,21 @@ class Control
      */
     public static function getDefault(): array
     {
+        if (empty($GLOBALS['_composer_autoload_path'])) {
+            $composerAutoloadPath = is_readable(getcwd() . '/vendor/autoload.php') ?
+                getcwd() . '/vendor/autoload.php'
+                : null;
+        } else {
+            $composerAutoloadPath = $GLOBALS['_composer_autoload_path'];
+        }
+
         return [
             'autoloadFile' => $GLOBALS['_composer_autoload_path'] ?? null,
             'requireFiles' => [],
             'cwd' => getcwd() ?: codecept_root_dir(),
             'codeceptionRootDir' => codecept_root_dir(),
             'codeceptionConfig' => Configuration::isEmpty() ? [] : Configuration::config(),
-            'composerAutoloadPath' => $GLOBALS['_composer_autoload_path']
-                                      ?? is_readable(getcwd() . '/vendor/autoload.php')
-                                            ? getcwd() . '/vendor/autoload.php'
-                                            : null,
+            'composerAutoloadPath' => $composerAutoloadPath,
             'composerBinDir' => $GLOBALS['_composer_bin_dir'] ?? null,
             'env' => $_ENV,
         ];
