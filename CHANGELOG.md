@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Composer autoload file path location in the `Process\Protocol\Control` that would cause tests to not run correctly outside of terminal. (thanks @BrianHenryIE)
+
 ## [4.0.7] 2023-10-08;
 
 ### Fixed
