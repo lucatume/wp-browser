@@ -1,7 +1,12 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+
 name: "PHPCBF automatically fix violations"
 
-on:
+on:  # yamllint disable-line rule:truthy
   push:
+    paths:
+      - "src/**"
+      - "includes/**"
     branches:
       - master
 
