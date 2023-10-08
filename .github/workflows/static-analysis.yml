@@ -49,5 +49,9 @@ jobs:
             name: "Run PHPHStan"
             run: "composer run stan"
         -
+            name: "Run PHPCBF"
+            continue-on-error: true
+            run: "composer run cs-fix"
+        -
             name: "Run PHP Code Sniffer"
             run: "composer run cs"
