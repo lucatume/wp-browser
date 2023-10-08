@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Better exception message in the `WordPress\WPConfigFile` class when the processing fails. (thanks @BrianHenryIE)
+- Deal with fixable code style fixes automatically. (thanks @BrianHenryIE)
 
 ### Fixed
 
