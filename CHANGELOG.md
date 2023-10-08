@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Rework the Core PHPUnit test case handling to correctly fire the test case set up and tear down methods.
+
 ## [4.0.6] 2023-10-05;
 
 ### Fixed
