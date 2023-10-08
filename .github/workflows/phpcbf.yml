@@ -1,0 +1,40 @@
+name: "PHPCBF automatically fix violations"
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  php-codesniffer:
+    name: "PHPCBF automatically fix violations"
+    runs-on: "ubuntu-22.04"
+    permissions:
+      contents: write
+    steps:
+      -
+        name: "Set up PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "8.0"
+          coverage: "none"
+      -
+        name: "Checkout repository"
+        uses: "actions/checkout@v3"
+      -
+        name: "Validate Composer configuration"
+        run: "composer validate --no-interaction --strict"
+      -
+        name: "Install dependencies"
+        uses: "ramsey/composer-install@v2"
+        with:
+          dependency-versions: "highest"
+      -
+        name: "Run PHPCBF"
+        continue-on-error: true
+        run: "composer run cs-fix"
+      -
+        name: Commit PHPCBF changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🤖 PHPCBF"
