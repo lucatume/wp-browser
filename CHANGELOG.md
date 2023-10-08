@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Better exception message in the `WordPress\WPConfigFile` class when the processing fails. (thanks @BrianHenryIE)
+
 ### Fixed
 
 - Composer autoload file path location in the `Process\Protocol\Control` that would cause tests to not run correctly outside of terminal. (thanks @BrianHenryIE)
