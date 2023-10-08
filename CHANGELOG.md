@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.0.8] 2023-10-08;
+
 ### Changed
 
 - Better exception message in the `WordPress\WPConfigFile` class when the processing fails. (thanks @BrianHenryIE)
@@ -1994,4 +1996,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.5]: https://github.com/lucatume/wp-browser/compare/4.0.4...4.0.5
 [4.0.6]: https://github.com/lucatume/wp-browser/compare/4.0.5...4.0.6
 [4.0.7]: https://github.com/lucatume/wp-browser/compare/4.0.6...4.0.7
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.7...HEAD
+[4.0.8]: https://github.com/lucatume/wp-browser/compare/4.0.7...4.0.8
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.8...HEAD
