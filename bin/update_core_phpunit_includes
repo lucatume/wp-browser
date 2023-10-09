@@ -1,5 +1,7 @@
 #! /usr/bin/env sh
 
+set -eux
+
 script_dir=$(dirname "$0")
 root_dir=$(cd "$script_dir/.." && pwd)
 includes_src="https://github.com/WordPress/wordpress-develop/branches/trunk/tests/phpunit/includes"
@@ -15,5 +17,6 @@ rm -rf "${root_dir}"/includes/core-phpunit/includes &&
   git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-rest-controller.php.patch &&
   git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-rest-post-type-controller.php.patch &&
   git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-xml.php.patch &&
-  git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-xmlrpc.php.patch
+  git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-xmlrpc.php.patch &&
+  php "${root_dir}/bin/namespace_global_class_names.php"
 

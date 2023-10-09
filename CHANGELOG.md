@@ -4,6 +4,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.0.9] 2023-10-09;
+
+### Fixed
+
+- Support database names up to 64 chars in the `Database\MysqlDatabase` class. (thanks @BrianHenryIE)
+
+## [4.0.8] 2023-10-08;
+
+### Changed
+
+- Better exception message in the `WordPress\WPConfigFile` class when the processing fails. (thanks @BrianHenryIE)
+- Deal with fixable code style fixes automatically. (thanks @BrianHenryIE)
+
+### Fixed
+
+- Composer autoload file path location in the `Process\Protocol\Control` that would cause tests to not run correctly outside of terminal. (thanks @BrianHenryIE)
+
+## [4.0.7] 2023-10-08;
+
+### Fixed
+
+- Rework the Core PHPUnit test case handling to correctly fire the test case set up and tear down methods.
+
 ## [4.0.6] 2023-10-05;
 
 ### Fixed
@@ -1978,4 +2001,7 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.4]: https://github.com/lucatume/wp-browser/compare/4.0.3...4.0.4
 [4.0.5]: https://github.com/lucatume/wp-browser/compare/4.0.4...4.0.5
 [4.0.6]: https://github.com/lucatume/wp-browser/compare/4.0.5...4.0.6
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.6...HEAD
+[4.0.7]: https://github.com/lucatume/wp-browser/compare/4.0.6...4.0.7
+[4.0.8]: https://github.com/lucatume/wp-browser/compare/4.0.7...4.0.8
+[4.0.9]: https://github.com/lucatume/wp-browser/compare/4.0.8...4.0.9
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.9...HEAD
