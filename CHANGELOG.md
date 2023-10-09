@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Support database names up to 64 chars in the `Database\MysqlDatabase` class. (thanks @BrianHenryIE)
+
 ## [4.0.8] 2023-10-08;
 
 ### Changed
