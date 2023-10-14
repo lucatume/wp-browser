@@ -228,6 +228,8 @@ EOT;
 
         // Remove the generated files that are not needed for the snapshot.
         FS::rrmdir($projectDir . '/plugin_89/' . Codeception::supportDir() . '/_generated');
+        FS::rrmdir($projectDir . '/plugin_89/tests/_wordpress');
+
 
         // Random ports will change: visit the data to replace the random ports with a placeholder.
         $this->assertMatchesDirectorySnapshot(
@@ -280,6 +282,7 @@ EOT;
 
         // Remove the generated files that are not needed for the snapshot.
         FS::rrmdir($projectDir . '/plugin_89/' . Codeception::supportDir() . '/_generated');
+        FS::rrmdir($projectDir . '/plugin_89/tests/_wordpress');
 
         // Random ports will change: visit the data to replace the random ports with a placeholder.
         $this->assertMatchesDirectorySnapshot(
@@ -471,6 +474,7 @@ EOT,
 
         // Remove the generated files that are not needed for the snapshot.
         FS::rrmdir($projectDir . '/theme_23/' . Codeception::supportDir() . '/_generated');
+        FS::rrmdir($projectDir . '/theme_23/tests/_wordpress');
 
         // Random ports will change: visit the data to replace the random ports with a placeholder.
         $this->assertMatchesDirectorySnapshot(
