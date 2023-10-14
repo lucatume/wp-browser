@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- Methods to set, delete, check and assert on the value of site and normal transients to the `WPDb` class.
+
 ### Fixed
 
 - Allow hyphens in database names in the `MySqlDatabase` class. (thanks @BrianHenryIE)
