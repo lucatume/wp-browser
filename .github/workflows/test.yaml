@@ -5,18 +5,18 @@ name: Test
 on: # yamllint disable-line rule:truthy
   pull_request:
     paths:
-      - "src/**"
-      - "includes/**"
-      - "tests/**"
-      - "composer.json"
-      - ".github/workflows/test.yaml"
+      - 'src/**'
+      - 'includes/**'
+      - 'tests/**'
+      - 'composer.json'
+      - '.github/workflows/test.yaml'
   push:
     paths:
-      - "src/**"
-      - "includes/**"
-      - "tests/**"
-      - "composer.json"
-      - ".github/workflows/test.yaml"
+      - 'src/**'
+      - 'includes/**'
+      - 'tests/**'
+      - 'composer.json'
+      - '.github/workflows/test.yaml'
     branches:
       - "master"
 
