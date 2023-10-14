@@ -87,7 +87,7 @@ abstract class ContentProject extends InitTemplate implements ProjectInterface
         }
 
         $wpRootDir = $this->workDir . '/tests/_wordpress';
-        $dataDir = Codeception::dataDir($this->workDir);
+	    $dataDir = $this->workDir . '/tests/_wordpress/data';
         $dataDirRelativePath = Codeception::dataDir();
 
         if (!is_dir($dataDir) && !(mkdir($dataDir, 0777, true) && is_dir($dataDir))) {
