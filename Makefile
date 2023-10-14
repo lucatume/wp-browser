@@ -53,6 +53,6 @@ build_35:
 	composer require --dev rector/rector
 	vendor/bin/rector --config=config/rector-35.php
 	rm -rf vendor composer.lock composer.json
-	mv config/composer-35.json composer.json
+	cp config/composer-35.json composer.json
 	composer update -W
 .PHONY: build_35
