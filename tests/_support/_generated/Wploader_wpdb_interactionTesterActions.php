@@ -1,4 +1,4 @@
-<?php  //[STAMP] 7c0b373e3e58a065597b2778cc58c82d
+<?php  //[STAMP] dde45ab0f621cbe9c13464df7daaffc5
 // phpcs:ignoreFile
 namespace _generated;
 
@@ -79,7 +79,7 @@ trait Wploader_wpdb_interactionTesterActions
      * [!] Method is generated. Documentation taken from corresponding module.
      *
      * Accessor method to get the object storing the factories for things.
-     * This methods gives access to the same factories provided by the
+     * This method gives access to the same factories provided by the
      * [Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/).
      *
      * @return FactoryStore A factory store, proxy to get hold of the Core suite object
@@ -3643,8 +3643,8 @@ trait Wploader_wpdb_interactionTesterActions
      * Removes an attachment from the posts table.
      *
      * @example
-     *      ```
-     *      $postmeta = $I->grabpostmetatablename();
+     * ``` php
+     * $postmeta = $I->grabpostmetatablename();
      * $thumbnailId = $I->grabFromDatabase($postmeta, 'meta_value', [
      *      'post_id' => $id,
      *      'meta_key'=>'thumbnail_id'
@@ -4220,6 +4220,214 @@ trait Wploader_wpdb_interactionTesterActions
      */
     public function cantSeeSiteOptionInDatabase(array|string $criteriaOrName, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeSiteOptionInDatabase', func_get_args()));
+    }
+
+ 
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * Fetches the value of a transient from the database.
+     *
+     * @example
+     * ```php
+     * $I->haveTransientInDatabase('foo', 23);
+     * $transientValue = $I->grabTransientFromDatabase('foo');
+     * $I->assertEquals(23, $transientValue);
+     * ```
+     * @param string $transient The transient name.
+     *
+     * @return mixed The transient value; it will be unserialized if it was serialized.
+     *
+     * @see \lucatume\WPBrowser\Module\WPDb::grabTransientFromDatabase()
+     */
+    public function grabTransientFromDatabase(string $transient): mixed {
+        return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTransientFromDatabase', func_get_args()));
+    }
+
+ 
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * Checks that a transient is not in the database.
+     *
+     * @example
+     * ```php
+     * $I->dontSeeTransientInDatabase('foo');
+     * $I->dontSeeTransientInDatabase('foo', 23);
+     * ```
+     * @param mixed $value The optional value to try and match.
+     *
+     * @param string $transient The transient name.
+     * @return void
+     * @throws JsonException
+     *
+     * @see \lucatume\WPBrowser\Module\WPDb::dontSeeTransientInDatabase()
+     */
+    public function dontSeeTransientInDatabase(string $transient, mixed $value = NULL): void {
+        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeTransientInDatabase', func_get_args()));
+    }
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * [!] Conditional Assertion: Test won't be stopped on fail
+     * Checks that a transient is not in the database.
+     *
+     * @example
+     * ```php
+     * $I->dontSeeTransientInDatabase('foo');
+     * $I->dontSeeTransientInDatabase('foo', 23);
+     * ```
+     * @param mixed $value The optional value to try and match.
+     *
+     * @param string $transient The transient name.
+     * @return void
+     * @throws JsonException
+     *
+     * @see \lucatume\WPBrowser\Module\WPDb::dontSeeTransientInDatabase()
+     */
+    public function cantSeeTransientInDatabase(string $transient, mixed $value = NULL): void {
+        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeTransientInDatabase', func_get_args()));
+    }
+
+ 
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * Checks that a transient is in the database.
+     *
+     * @example
+     * ```php
+     * $I->haveTransientInDatabase('foo', 23);
+     * $I->seeTransientInDatabase('foo');
+     * $I->seeTransientInDatabase('foo', 23);
+     * ```
+     * @param mixed $value The optional value to try and match.
+     *
+     * @param string $name The transient name.
+     * @return void
+     * @throws JsonException
+     *
+     * @see \lucatume\WPBrowser\Module\WPDb::seeTransientInDatabase()
+     */
+    public function seeTransientInDatabase(string $name, mixed $value = NULL): void {
+        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeTransientInDatabase', func_get_args()));
+    }
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * [!] Conditional Assertion: Test won't be stopped on fail
+     * Checks that a transient is in the database.
+     *
+     * @example
+     * ```php
+     * $I->haveTransientInDatabase('foo', 23);
+     * $I->seeTransientInDatabase('foo');
+     * $I->seeTransientInDatabase('foo', 23);
+     * ```
+     * @param mixed $value The optional value to try and match.
+     *
+     * @param string $name The transient name.
+     * @return void
+     * @throws JsonException
+     *
+     * @see \lucatume\WPBrowser\Module\WPDb::seeTransientInDatabase()
+     */
+    public function canSeeTransientInDatabase(string $name, mixed $value = NULL): void {
+        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeTransientInDatabase', func_get_args()));
+    }
+
+ 
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * Checks that a site transient is not in the database.
+     *
+     * @example
+     * ```php
+     * $I->dontSeeSiteTransientInDatabase('foo');
+     * $I->dontSeeSiteTransientInDatabase('foo', 23);
+     * ```
+     * @param mixed|null $value The optional value to try and match.
+     *
+     * @param string $transient The transient name.
+     * @return void
+     *
+     * @throws JsonException|ModuleException
+     *
+     * @see \lucatume\WPBrowser\Module\WPDb::dontSeeSiteTransientInDatabase()
+     */
+    public function dontSeeSiteTransientInDatabase(string $transient, mixed $value = NULL): void {
+        $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeSiteTransientInDatabase', func_get_args()));
+    }
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * [!] Conditional Assertion: Test won't be stopped on fail
+     * Checks that a site transient is not in the database.
+     *
+     * @example
+     * ```php
+     * $I->dontSeeSiteTransientInDatabase('foo');
+     * $I->dontSeeSiteTransientInDatabase('foo', 23);
+     * ```
+     * @param mixed|null $value The optional value to try and match.
+     *
+     * @param string $transient The transient name.
+     * @return void
+     *
+     * @throws JsonException|ModuleException
+     *
+     * @see \lucatume\WPBrowser\Module\WPDb::dontSeeSiteTransientInDatabase()
+     */
+    public function cantSeeSiteTransientInDatabase(string $transient, mixed $value = NULL): void {
+        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeSiteTransientInDatabase', func_get_args()));
+    }
+
+ 
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * Checks that a site transient is in the database.
+     *
+     * @example
+     * ```php
+     * $I->haveSiteTransientInDatabase('foo', 23);
+     * $I->seeSiteTransientInDatabase('foo');
+     * $I->seeSiteTransientInDatabase('foo', 23);
+     * ```
+     * @param mixed|null $value The optional value to try and match.
+     *
+     * @param string $transient The transient name.
+     * @return void
+     * @throws JsonException|ModuleException
+     *
+     * @see \lucatume\WPBrowser\Module\WPDb::seeSiteTransientInDatabase()
+     */
+    public function seeSiteTransientInDatabase(string $transient, mixed $value = NULL): void {
+        $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeSiteTransientInDatabase', func_get_args()));
+    }
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
+     * [!] Conditional Assertion: Test won't be stopped on fail
+     * Checks that a site transient is in the database.
+     *
+     * @example
+     * ```php
+     * $I->haveSiteTransientInDatabase('foo', 23);
+     * $I->seeSiteTransientInDatabase('foo');
+     * $I->seeSiteTransientInDatabase('foo', 23);
+     * ```
+     * @param mixed|null $value The optional value to try and match.
+     *
+     * @param string $transient The transient name.
+     * @return void
+     * @throws JsonException|ModuleException
+     *
+     * @see \lucatume\WPBrowser\Module\WPDb::seeSiteTransientInDatabase()
+     */
+    public function canSeeSiteTransientInDatabase(string $transient, mixed $value = NULL): void {
+        $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeSiteTransientInDatabase', func_get_args()));
     }
 
  

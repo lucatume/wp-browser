@@ -4792,4 +4792,117 @@ class WPDb extends Db
 
         return $criteria;
     }
+
+    /**
+     * Fetches the value of a transient from the database.
+     *
+     * @example
+     * ```php
+     * $I->haveTransientInDatabase('foo', 23);
+     * $transientValue = $I->grabTransientFromDatabase('foo');
+     * $I->assertEquals(23, $transientValue);
+     * ```
+     * @param string $transient The transient name.
+     *
+     * @return mixed The transient value; it will be unserialized if it was serialized.
+     *
+     */
+    public function grabTransientFromDatabase(string $transient): mixed
+    {
+        $transient = $this->normalizePrefixedOptionName($transient, '_transient_');
+        return $this->grabOptionFromDatabase($transient);
+    }
+
+    /**
+     * Checks that a transient is not in the database.
+     *
+     * @example
+     * ```php
+     * $I->dontSeeTransientInDatabase('foo');
+     * $I->dontSeeTransientInDatabase('foo', 23);
+     * ```
+     * @param mixed $value The optional value to try and match.
+     *
+     * @param string $transient The transient name.
+     * @return void
+     * @throws JsonException
+     *
+     */
+    public function dontSeeTransientInDatabase(string $transient, mixed $value = null): void
+    {
+        $transient = $this->normalizePrefixedOptionName($transient, '_transient_');
+        $this->dontSeeOptionInDatabase($transient, $value);
+    }
+
+    /**
+     * Checks that a transient is in the database.
+     *
+     * @example
+     * ```php
+     * $I->haveTransientInDatabase('foo', 23);
+     * $I->seeTransientInDatabase('foo');
+     * $I->seeTransientInDatabase('foo', 23);
+     * ```
+     * @param mixed $value The optional value to try and match.
+     *
+     * @param string $name The transient name.
+     * @return void
+     * @throws JsonException
+     *
+     */
+    public function seeTransientInDatabase(string $name, mixed $value = null): void
+    {
+        $transient = $this->normalizePrefixedOptionName($name, '_transient_');
+        $this->seeOptionInDatabase($transient, $value);
+    }
+
+    /**
+     * Checks that a site transient is not in the database.
+     *
+     * @example
+     * ```php
+     * $I->dontSeeSiteTransientInDatabase('foo');
+     * $I->dontSeeSiteTransientInDatabase('foo', 23);
+     * ```
+     * @param mixed|null $value The optional value to try and match.
+     *
+     * @param string $transient The transient name.
+     * @return void
+     *
+     * @throws JsonException|ModuleException
+     *
+     */
+    public function dontSeeSiteTransientInDatabase(string $transient, mixed $value = null): void
+    {
+        $currentBlogId = $this->blogId;
+        $this->useMainBlog();
+        $transient = $this->normalizePrefixedOptionName($transient, '_site_transient_');
+        $this->dontSeeOptionInDatabase($transient, $value);
+        $this->useBlog($currentBlogId);
+    }
+
+    /**
+     * Checks that a site transient is in the database.
+     *
+     * @example
+     * ```php
+     * $I->haveSiteTransientInDatabase('foo', 23);
+     * $I->seeSiteTransientInDatabase('foo');
+     * $I->seeSiteTransientInDatabase('foo', 23);
+     * ```
+     * @param mixed|null $value The optional value to try and match.
+     *
+     * @param string $transient The transient name.
+     * @return void
+     * @throws JsonException|ModuleException
+     *
+     */
+    public function seeSiteTransientInDatabase(string $transient, mixed $value = null): void
+    {
+        $currentBlogId = $this->blogId;
+        $this->useMainBlog();
+        $transient = $this->normalizePrefixedOptionName($transient, '_site_transient_');
+        $this->seeOptionInDatabase($transient, $value);
+        $this->useBlog($currentBlogId);
+    }
 }
