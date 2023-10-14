@@ -4,6 +4,7 @@ namespace lucatume\WPBrowser\WordPress;
 
 use DirectoryIterator;
 use FilesystemIterator;
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
@@ -17,9 +18,7 @@ use lucatume\WPBrowser\WordPress\InstallationState\Multisite;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use SplFileInfo;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
 use Throwable;
 
 class Installation

@@ -3,9 +3,8 @@
 namespace lucatume\WPBrowser\Extension;
 
 use Codeception\Exception\ExtensionException;
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 use Throwable;
 

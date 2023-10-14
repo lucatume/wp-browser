@@ -1,6 +1,7 @@
 <?php
 namespace Codeception\Template;
 
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Tests\FSTemplates\BedrockProject;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Codeception;
@@ -10,7 +11,6 @@ use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
-use Symfony\Component\Process\Process;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 class WpbrowserTest extends \Codeception\Test\Unit

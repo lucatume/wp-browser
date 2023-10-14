@@ -3,11 +3,11 @@
 
 namespace lucatume\WPBrowser\Utils;
 
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Tests\Traits\ClassStubs;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use PHPUnit\Framework\Assert;
-use Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 class ComposerTest extends \Codeception\Test\Unit

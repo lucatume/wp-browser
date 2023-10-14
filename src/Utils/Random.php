@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace lucatume\WPBrowser\Utils;
 
 use Hoa\Compiler\Llk\Sampler\Exception;
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
-use Symfony\Component\Process\Process;
 use Throwable;
 
 class Random

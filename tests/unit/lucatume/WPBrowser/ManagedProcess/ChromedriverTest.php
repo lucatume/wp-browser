@@ -4,10 +4,10 @@
 namespace lucatume\WPBrowser\ManagedProcess;
 
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Composer;
-use Symfony\Component\Process\Process;
 
 class ChromedriverTest extends Unit
 {

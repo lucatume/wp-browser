@@ -4,10 +4,10 @@
 namespace lucatume\WPBrowser\ManagedProcess;
 
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
-use Symfony\Component\Process\Process;
 
 class PhpBuiltinServerProcessMock extends Process
 {

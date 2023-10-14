@@ -2,9 +2,9 @@
 
 namespace lucatume\WPBrowser\Process\Worker;
 
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Utils\Property;
-use Symfony\Component\Process\Process;
 
 class WorkerProcess extends Process
 {

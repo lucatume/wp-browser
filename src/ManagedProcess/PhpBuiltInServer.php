@@ -2,10 +2,10 @@
 
 namespace lucatume\WPBrowser\ManagedProcess;
 
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\Utils\Filesystem;
-use Symfony\Component\Process\Process;
 
 class PhpBuiltInServer implements ManagedProcessInterface
 {

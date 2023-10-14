@@ -10,10 +10,10 @@ use Codeception\Lib\Console\Output;
 use Codeception\Suite;
 use Codeception\Test\Unit;
 use Exception;
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Composer;
 use stdClass;
-use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
