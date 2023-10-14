@@ -4,6 +4,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.0.10] 2023-10-14;
+
+### Added
+
+- Methods to set, delete, check and assert on the value of site and normal transients to the `WPDb` class.
+
+### Fixed
+
+- Allow hyphens in database names in the `MySqlDatabase` class. (thanks @BrianHenryIE)
+
 ## [4.0.9] 2023-10-09;
 
 ### Fixed
@@ -2004,4 +2014,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.7]: https://github.com/lucatume/wp-browser/compare/4.0.6...4.0.7
 [4.0.8]: https://github.com/lucatume/wp-browser/compare/4.0.7...4.0.8
 [4.0.9]: https://github.com/lucatume/wp-browser/compare/4.0.8...4.0.9
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.9...HEAD
+[4.0.10]: https://github.com/lucatume/wp-browser/compare/4.0.9...4.0.10
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.10...HEAD

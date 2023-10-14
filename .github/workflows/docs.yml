@@ -1,9 +1,15 @@
 name: docs
 on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - '.github/workflows/docs.yml'
   push:
     paths:
-        - 'docs/**'
-        - mkdocs.yml
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - '.github/workflows/docs.yml'
     branches:
       - master
 permissions:

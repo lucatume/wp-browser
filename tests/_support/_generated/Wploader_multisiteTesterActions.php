@@ -90,7 +90,7 @@ trait Wploader_multisiteTesterActions
      * [!] Method is generated. Documentation taken from corresponding module.
      *
      * Accessor method to get the object storing the factories for things.
-     * This methods gives access to the same factories provided by the
+     * This method gives access to the same factories provided by the
      * [Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/).
      *
      * @return FactoryStore A factory store, proxy to get hold of the Core suite object

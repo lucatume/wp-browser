@@ -565,6 +565,16 @@ $I->dontSeeSiteOptionInDatabase('foo_count', 23);
 $I->dontSeeSiteOptionInDatabase(['option_name => 'foo_count', 'option_value' => 23]);
 ```
 
+#### dontSeeSiteTransientInDatabase
+Signature: `dontSeeSiteTransientInDatabase(string $transient, [mixed $value])` : `void`  
+
+Checks that a site transient is not in the database.
+
+```php
+<?php
+$I->dontSeeSiteTransientInDatabase('foo');
+$I->dontSeeSiteTransientInDatabase('foo', 23);
+```
 #### dontSeeTableInDatabase
 Signature: `dontSeeTableInDatabase(string $table)` : `void`  
 
@@ -615,6 +625,16 @@ list($termId, $termTaxonomyId) = $I->haveTermInDatabase('fiction', 'genre');
 $I->dontSeeTermTaxonomyInDatabase(['term_id' => $termId, 'taxonomy' => 'country']);
 ```
 
+#### dontSeeTransientInDatabase
+Signature: `dontSeeTransientInDatabase(string $transient, [mixed $value])` : `void`  
+
+Checks that a transient is not in the database.
+
+```php
+<?php
+$I->dontSeeTransientInDatabase('foo');
+$I->dontSeeTransientInDatabase('foo', 23);
+```
 #### dontSeeUserInDatabase
 Signature: `dontSeeUserInDatabase(array $criteria)` : `void`  
 
@@ -1200,6 +1220,17 @@ $I->useBlog(23);
 $I->grabTermsTableName();
 ```
 
+#### grabTransientFromDatabase
+Signature: `grabTransientFromDatabase(string $transient)` : `mixed`  
+
+Fetches the value of a transient from the database.
+
+```php
+<?php
+$I->haveTransientInDatabase('foo', 23);
+$transientValue = $I->grabTransientFromDatabase('foo');
+$I->assertEquals(23, $transientValue);
+```
 #### grabUserIdFromDatabase
 Signature: `grabUserIdFromDatabase(string $userLogin)` : `int|false`  
 
@@ -1932,6 +1963,17 @@ $I->seeSiteSiteTransientInDatabase('total_counts');
 $I->seeSiteSiteTransientInDatabase('total_counts', 23);
 ```
 
+#### seeSiteTransientInDatabase
+Signature: `seeSiteTransientInDatabase(string $transient, [mixed $value])` : `void`  
+
+Checks that a site transient is in the database.
+
+```php
+<?php
+$I->haveSiteTransientInDatabase('foo', 23);
+$I->seeSiteTransientInDatabase('foo');
+$I->seeSiteTransientInDatabase('foo', 23);
+```
 #### seeTableInDatabase
 Signature: `seeTableInDatabase(string $table)` : `void`  
 
@@ -1989,6 +2031,17 @@ list($termId, $termTaxonomyId) = $I->haveTermInDatabase('fiction', 'genre');
 $I->seeTermTaxonomyInDatabase(['term_id' => $termId, 'taxonomy' => 'genre']);
 ```
 
+#### seeTransientInDatabase
+Signature: `seeTransientInDatabase(string $name, [mixed $value])` : `void`  
+
+Checks that a transient is in the database.
+
+```php
+<?php
+$I->haveTransientInDatabase('foo', 23);
+$I->seeTransientInDatabase('foo');
+$I->seeTransientInDatabase('foo', 23);
+```
 #### seeUserInDatabase
 Signature: `seeUserInDatabase(array $criteria)` : `void`  
 

@@ -2,11 +2,17 @@
 
 name: "PHPCBF automatically fix violations"
 
-on:  # yamllint disable-line rule:truthy
+on: # yamllint disable-line rule:truthy
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'includes/**'
+      - '.github/workflows/phpcbf.yml'
   push:
     paths:
-      - "src/**"
-      - "includes/**"
+      - 'src/**'
+      - 'includes/**'
+      - '.github/workflows/phpcbf.yml'
     branches:
       - master
 
@@ -17,29 +23,23 @@ jobs:
     permissions:
       contents: write
     steps:
-      -
-        name: "Set up PHP"
+      - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "8.0"
           coverage: "none"
-      -
-        name: "Checkout repository"
+      - name: "Checkout repository"
         uses: "actions/checkout@v3"
-      -
-        name: "Validate Composer configuration"
+      - name: "Validate Composer configuration"
         run: "composer validate --no-interaction --strict"
-      -
-        name: "Install dependencies"
+      - name: "Install dependencies"
         uses: "ramsey/composer-install@v2"
         with:
           dependency-versions: "highest"
-      -
-        name: "Run PHPCBF"
+      - name: "Run PHPCBF"
         continue-on-error: true
         run: "composer run cs-fix"
-      -
-        name: Commit PHPCBF changes
+      - name: Commit PHPCBF changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "🤖 PHPCBF"

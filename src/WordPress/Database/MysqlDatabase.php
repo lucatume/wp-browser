@@ -30,7 +30,7 @@ class MysqlDatabase implements DatabaseInterface
         private string $dbHost,
         private string $tablePrefix = 'wp_'
     ) {
-        if (!preg_match('/^[a-zA-Z][\w_]{0,64}$/', $dbName) || str_starts_with('ii', $dbName)) {
+        if (!preg_match('/^[a-zA-Z][\w_-]{0,64}$/', $dbName) || str_starts_with('ii', $dbName)) {
             throw new DbException(
                 "Invalid database name: $dbName",
                 DbException::INVALID_DB_NAME
@@ -125,7 +125,7 @@ class MysqlDatabase implements DatabaseInterface
     public function create(): self
     {
         $pdo = $this->getPDO();
-        if ($pdo->query('CREATE DATABASE IF NOT EXISTS ' . $this->dbName) === false) {
+        if ($pdo->query("CREATE DATABASE IF NOT EXISTS `{$this->dbName}`") === false) {
             throw new DbException(
                 'Could not create database ' . $this->dbName . ':' . json_encode($pdo->errorInfo()),
                 DbException::FAILED_QUERY
@@ -142,7 +142,7 @@ class MysqlDatabase implements DatabaseInterface
     public function drop(): self
     {
         $pdo = $this->getPDO();
-        if ($pdo->query('DROP DATABASE IF EXISTS ' . $this->dbName) === false) {
+        if ($pdo->query("DROP DATABASE IF EXISTS `{$this->dbName}`") === false) {
             throw new DbException(
                 'Could not drop database ' . $this->dbName . ': ' . json_encode($pdo->errorInfo()),
                 DbException::FAILED_QUERY
@@ -154,7 +154,7 @@ class MysqlDatabase implements DatabaseInterface
 
     public function exists(): bool
     {
-        $result = $this->getPDO()->query("SHOW DATABASES LIKE '$this->dbName'", PDO::FETCH_COLUMN, 0);
+        $result = $this->getPDO()->query("SHOW DATABASES LIKE '{$this->dbName}'", PDO::FETCH_COLUMN, 0);
 
         if ($result === false) {
             return false;
@@ -170,7 +170,7 @@ class MysqlDatabase implements DatabaseInterface
     public function useDb(string $dbName): self
     {
         $pdo = $this->getPDO();
-        if ($pdo->query('USE ' . $dbName) === false) {
+        if ($pdo->query("USE `{$dbName}`") === false) {
             throw new DbException(
                 'Could not use database ' . $this->dbName . ': ' . json_encode($pdo->errorInfo()),
                 DbException::FAILED_QUERY
