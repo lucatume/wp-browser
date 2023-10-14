@@ -10,7 +10,7 @@ on: # yamllint disable-line rule:truthy
       - ".github/workflows/phpcbf.yml"
   push:
     paths:
-      - "src/**"J
+      - "src/**"
       - "includes/**"
       - ".github/workflows/phpcbf.yml"
     branches:
