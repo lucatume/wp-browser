@@ -5,14 +5,14 @@ name: "PHPCBF automatically fix violations"
 on: # yamllint disable-line rule:truthy
   pull_request:
     paths:
-      - "src/**"
-      - "includes/**"
-      - ".github/workflows/phpcbf.yml"
+      - 'src/**'
+      - 'includes/**'
+      - '.github/workflows/phpcbf.yml'
   push:
     paths:
-      - "src/**"
-      - "includes/**"
-      - ".github/workflows/phpcbf.yml"
+      - 'src/**'
+      - 'includes/**'
+      - '.github/workflows/phpcbf.yml'
     branches:
       - master
 
