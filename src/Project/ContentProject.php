@@ -87,7 +87,7 @@ abstract class ContentProject extends InitTemplate implements ProjectInterface
         }
 
         $wpRootDir = $this->workDir . '/tests/_wordpress';
-	    $dataDir = $this->workDir . '/tests/_wordpress/data';
+        $dataDir = $this->workDir . '/tests/_wordpress/data';
         $dataDirRelativePath = Codeception::dataDir();
 
         if (!is_dir($dataDir) && !(mkdir($dataDir, 0777, true) && is_dir($dataDir))) {
@@ -171,7 +171,7 @@ EOT;
         $this->testEnvironment->wpRootDir = FS::relativePath($this->workDir, $wpRootDir);
         $this->testEnvironment->dbUrl = 'sqlite://' . implode(
             DIRECTORY_SEPARATOR,
-            ['%codecept_root_dir%', $dataDirRelativePath, 'db.sqlite']
+            ['%codecept_root_dir%', 'tests', '_wordpress', 'data', 'db.sqlite']
         );
 
         $this->testEnvironment->afterSuccess = $this->getAfterSuccessClosure($activated);
