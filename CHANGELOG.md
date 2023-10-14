@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Allow hyphens in database names in the `MySqlDatabase` class. (thanks @BrianHenryIE)
+
 ## [4.0.9] 2023-10-09;
 
 ### Fixed
