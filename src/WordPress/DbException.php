@@ -14,4 +14,5 @@ class DbException extends Exception
     public const DUMP_FILE_NOT_READABLE = 7;
     public const TABLE_PREFIX_NOT_FOUND = 8;
     public const FAILED_DUMP = 9;
+    public const PREPARE_FAILED = 10;
 }
