@@ -13,6 +13,9 @@ use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
+/**
+ * @group slow
+ */
 class WpbrowserTest extends \Codeception\Test\Unit
 {
     use TmpFilesCleanup;
