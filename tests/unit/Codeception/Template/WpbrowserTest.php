@@ -658,6 +658,10 @@ EOT;
      */
     public function should_scaffold_correctly_on_site_with_non_default_structure(): void
     {
+        if (PHP_VERSION_ID < 80000) {
+            $this->markTestSkipped('This test requires PHP 8.0 or higher.');
+        }
+
         $composerFileCode = <<< EOT
 {
   "name": "acme/site-project",
