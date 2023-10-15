@@ -65,7 +65,12 @@ class StubClassFactory
             $matches);
         $constructorParams = '';
         if (!empty($matches)) {
-            $constructorParams = implode(', ', $matches['parameter']);
+            $constructorParams = implode(
+                ', ',
+                array_map(static function (string $p): string {
+                    return str_replace('or NULL', '', $p);
+                }, $matches['parameter'])
+            );
         }
 
         if (isset($parameters['__construct'])) {
