@@ -87,8 +87,12 @@ class Dispatcher
      */
     public static function dispatch(string $name, mixed $origin = null, array $context = []): ?object
     {
-        $event = new Event($name, $context, $origin);
+        if (class_exists(\Symfony\Contracts\EventDispatcher\Event::class)) {
+            $event = new Event($name, $context, $origin);
+            return self::getEventDispatcher()?->dispatch($event, $name);
+        }
 
-        return self::getEventDispatcher()?->dispatch($event, $name);
+        $event = new LegacyEvent($name, $context, $origin);
+        return self::getEventDispatcher()?->dispatch($name, $event);
     }
 }
