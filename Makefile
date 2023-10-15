@@ -50,9 +50,12 @@ clean_procs:
 .PHONY: clean_procs
 
 build_35:
-	composer require --dev rector/rector
+	composer require --dev rector/rector -W
 	vendor/bin/rector --config=config/rector-35.php
 	rm -rf vendor composer.lock composer.json
 	cp config/composer-35.json composer.json
 	composer update -W
 .PHONY: build_35
+
+test_35:
+	WPBROWSER_VERSION=3.5 vendor/bin/codecept run --debug -f
