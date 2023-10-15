@@ -5,6 +5,8 @@ namespace lucatume\WPBrowser\WordPress\Database;
 use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\WPConfigFile;
 use PDO;
+use PDOException;
+use PDOStatement;
 use SQLite3;
 
 class SQLiteDatabase implements DatabaseInterface
@@ -84,7 +86,7 @@ class SQLiteDatabase implements DatabaseInterface
     }
 
     /**
-     * @throws \PDOException if the attempt to connect to the requested database fails.
+     * @throws PDOException if the attempt to connect to the requested database fails.
      */
     public function getPDO(): PDO
     {
@@ -137,6 +139,11 @@ class SQLiteDatabase implements DatabaseInterface
     public function query(string $query, array $params = []): int
     {
         $stmt = $this->getPDO()->prepare($query);
+
+        if (!$stmt instanceof PDOStatement) {
+            throw new DbException("Could not prepare `{$query}`: " . $this->getPDO()->errorInfo()[2], DbException::PREPARE_FAILED);
+        }
+
         $stmt->execute($params);
         return $stmt->rowCount();
     }
@@ -159,6 +166,11 @@ class SQLiteDatabase implements DatabaseInterface
         $query = "INSERT OR REPLACE INTO {$this->tablePrefix}options (option_name, option_value, autoload)"
             . " VALUES (:name, :value, :autoload)";
         $stmt = $this->getPDO()->prepare($query);
+
+        if (!$stmt instanceof PDOStatement) {
+            throw new DbException("Could not prepare `{$query}`: " . $this->getPDO()->errorInfo()[2], DbException::PREPARE_FAILED);
+        }
+
         $stmt->execute([':name' => $name, ':value' => $value, ':autoload' => 'yes']);
         return $stmt->rowCount();
     }
@@ -170,6 +182,11 @@ class SQLiteDatabase implements DatabaseInterface
     {
         $query = "SELECT option_value FROM {$this->tablePrefix}options WHERE option_name = :name";
         $stmt = $this->getPDO()->prepare($query);
+
+        if (!$stmt instanceof PDOStatement) {
+            throw new DbException("Could not prepare `{$query}`: " . $this->getPDO()->errorInfo()[2], DbException::PREPARE_FAILED);
+        }
+
         $stmt->execute([':name' => $name]);
         $value = $stmt->fetchColumn();
         if ($value === false) {
