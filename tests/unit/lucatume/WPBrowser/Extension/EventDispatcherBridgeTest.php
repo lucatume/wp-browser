@@ -13,7 +13,6 @@ use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use PHPUnit\Framework\Assert;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use UnitTester;
 
 class EventDispatcherBridgeTest extends Unit
 {
@@ -34,7 +33,8 @@ class EventDispatcherBridgeTest extends Unit
         $this->expectException(ExtensionException::class);
         $this->expectExceptionMessage('Could not find the application event dispatcher.');
 
-        $eventDispatcherBridge->onModuleInit(new SuiteEvent());
+        $suite = PHP_VERSION_ID >= 80000 ? null : new Suite;
+        $eventDispatcherBridge->onModuleInit(new SuiteEvent($suite));
     }
 
     /**
@@ -59,7 +59,8 @@ class EventDispatcherBridgeTest extends Unit
             });
 
         $eventDispatcherBridge = new EventDispatcherBridge([], []);
-        $eventDispatcherBridge->onSuiteInit(new SuiteEvent());
+        $suite = PHP_VERSION_ID >= 80000 ? null : new Suite;
+        $eventDispatcherBridge->onSuiteInit(new SuiteEvent($suite));
     }
 
     /**
@@ -88,7 +89,8 @@ class EventDispatcherBridgeTest extends Unit
         $this->uopzSetStaticMethodReturn(Dispatcher::class, 'setEventDispatcher', null);
 
         $eventDispatcherBridge = new EventDispatcherBridge([], []);
-        $eventDispatcherBridge->onSuiteBefore(new SuiteEvent());
+        $suite = PHP_VERSION_ID >= 80000 ? null : new Suite;
+        $eventDispatcherBridge->onSuiteBefore(new SuiteEvent($suite));
 
         $this->assertEquals(2, $calls);
     }
@@ -113,7 +115,8 @@ class EventDispatcherBridgeTest extends Unit
             } , true);
 
         $eventDispatcherBridge = new EventDispatcherBridge([], []);
-        $eventDispatcherBridge->onSuiteBefore(new SuiteEvent());
+        $suite = PHP_VERSION_ID >= 80000 ? null : new Suite;
+        $eventDispatcherBridge->onSuiteBefore(new SuiteEvent($suite));
 
         $this->assertSame($eventDispatcher, $setEventDispatcher);
     }
