@@ -263,7 +263,7 @@ class DockerComposeControllerTest extends Unit
         $mockSuite = $this->make(Suite::class, ['getName' => 'end2end']);
 
         $this->expectException(ExtensionException::class);
-        $this->expectExceptionMessageMatches('/Failed to start Docker Compose/');
+        $this->expectExceptionMessageRegExp('/Failed to start Docker Compose/');
 
         $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
     }
@@ -315,7 +315,7 @@ class DockerComposeControllerTest extends Unit
         };
 
         $this->expectException(ExtensionException::class);
-        $this->expectExceptionMessageMatches('/Failed to stop Docker Compose/');
+        $this->expectExceptionMessageRegExp('/Failed to stop Docker Compose/');
 
         $extension->stop($this->output);
     }

@@ -814,7 +814,7 @@ class WPLoaderTest extends Unit
         $this->mockModuleContainer->mock($dbModuleName, $mockDbModule);
 
         $this->expectException(ModuleConfigException::class);
-        $this->expectExceptionMessageMatches(
+        $this->expectExceptionMessageRegExp(
             '/The WPLoader module is not being used to only load ' .
             'WordPress, but to also install it/'
         );
@@ -953,7 +953,7 @@ class WPLoaderTest extends Unit
         Installation::scaffold($wpRootDir, 'latest');
 
         $this->expectException(ModuleException::class);
-        $this->expectExceptionMessageMatches('/WordPress bootstrap failed/');
+        $this->expectExceptionMessageRegExp('/WordPress bootstrap failed/');
 
         $wpLoader = $this->module();
         $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
