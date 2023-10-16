@@ -9,6 +9,7 @@ use Codeception\Test\Unit;
 use DateTime;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Strings;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\AssertionFailedError;
 
 class WPFilesystemTest extends Unit
@@ -20,6 +21,15 @@ class WPFilesystemTest extends Unit
     protected array $config = [];
     protected $backupGlobals = false;
     protected $nowUploads;
+
+    private function assertFileDoesNotExist(string $filename, string $message = ''): void
+    {
+        if (method_exists(Assert::class, 'assertFileDoesNotExist')) {
+            Assert::assertFileDoesNotExist($filename, $message);
+            return;
+        }
+        $this->assertFileNotExists($filename, $message);
+    }
 
     protected function module(): WPFilesystem
     {
