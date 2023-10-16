@@ -774,7 +774,7 @@ class WPLoaderTest extends Unit
             );
 
         $wpLoader = $this->module();
-        $mockDbModule = $this->createStub($dbModuleClass);
+        $mockDbModule = $this->createMock($dbModuleClass);
         $this->mockModuleContainer->mock($dbModuleName, $mockDbModule);
 
         $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
@@ -810,7 +810,7 @@ class WPLoaderTest extends Unit
         ];
 
         $wpLoader = $this->module();
-        $mockDbModule = $this->createStub($dbModuleClass);
+        $mockDbModule = $this->createMock($dbModuleClass);
         $this->mockModuleContainer->mock($dbModuleName, $mockDbModule);
 
         $this->expectException(ModuleConfigException::class);
@@ -851,7 +851,7 @@ class WPLoaderTest extends Unit
         Installation::scaffold($wpRootDir, '6.1.1')->configure($db);
 
         $wpLoader = $this->module();
-        $mockDbModule = $this->createStub($dbModuleClass);
+        $mockDbModule = $this->createMock($dbModuleClass);
         $this->mockModuleContainer->mock($dbModuleName, $mockDbModule);
 
         $ok = $this->assertInIsolation(static function () use ($wpLoader) {
