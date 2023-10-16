@@ -8,6 +8,24 @@ use PHPUnit\Framework\Assert;
 
 class DbDumpTest extends Unit
 {
+    private function assertMatchesRegularExpression(string $pattern, string $string, string $message = ''): void
+    {
+        if (method_exists(Assert::class, 'assertMatchesRegularExpression')) {
+            Assert::assertMatchesRegularExpression($pattern, $string, $message);
+            return;
+        }
+        Assert::assertRegExp($pattern, $string, $message);
+    }
+
+    private function assertDoesNotMatchRegularExpression(string $pattern, string $string, string $message = ''): void
+    {
+        if (method_exists(Assert::class, 'assertDoesNotMatchRegularExpression')) {
+            Assert::assertDoesNotMatchRegularExpression($pattern, $string, $message);
+            return;
+        }
+        Assert::assertNotRegExp($pattern, $string, $message);
+    }
+
     /**
      * @var string
      */
@@ -31,8 +49,8 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInSqlString($sql);
 
-        Assert::assertMatchesRegularExpression('~.*original.dev.*~', $sql);
-        Assert::assertDoesNotMatchRegularExpression('/.*some-wp.dev.*/', $sql);
+        $this->assertMatchesRegularExpression('~.*original.dev.*~', $sql);
+        $this->assertDoesNotMatchRegularExpression('/.*some-wp.dev.*/', $sql);
     }
 
     /**
@@ -52,8 +70,8 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInSqlString($sql);
 
-        Assert::assertMatchesRegularExpression('/.*some-wp.dev.*/', $sql);
-        Assert::assertDoesNotMatchRegularExpression('~.*original.dev/wp.*~', $sql);
+        $this->assertMatchesRegularExpression('/.*some-wp.dev.*/', $sql);
+        $this->assertDoesNotMatchRegularExpression('~.*original.dev/wp.*~', $sql);
     }
 
     /**
@@ -75,8 +93,8 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInSqlString($sql);
 
-        Assert::assertMatchesRegularExpression('~.*http:\\/\\/some-wp.dev.*~', $sql);
-        Assert::assertDoesNotMatchRegularExpression('~.*https:\\/\\/original.dev/wp.*~', $sql);
+        $this->assertMatchesRegularExpression('~.*http:\\/\\/some-wp.dev.*~', $sql);
+        $this->assertDoesNotMatchRegularExpression('~.*https:\\/\\/original.dev/wp.*~', $sql);
     }
 
     /**
@@ -98,8 +116,8 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInSqlString($sql);
 
-        Assert::assertMatchesRegularExpression('~.*https:\\/\\/some-wp.dev.*~', $sql);
-        Assert::assertDoesNotMatchRegularExpression('~.*https:\\/\\/original.dev/wp.*~', $sql);
+        $this->assertMatchesRegularExpression('~.*https:\\/\\/some-wp.dev.*~', $sql);
+        $this->assertDoesNotMatchRegularExpression('~.*https:\\/\\/original.dev/wp.*~', $sql);
     }
 
     /**
@@ -132,7 +150,7 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInMultisiteSqlString($sut->replaceSiteDomainInSqlString($sql));
 
-        Assert::assertMatchesRegularExpression('~.*original.dev/wp.*~', $sql);
+        $this->assertMatchesRegularExpression('~.*original.dev/wp.*~', $sql);
     }
 
     /**
@@ -165,8 +183,8 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInMultisiteSqlString($sut->replaceSiteDomainInSqlString($sql));
 
-        Assert::assertMatchesRegularExpression('~.*some-wp.dev.*~', $sql);
-        Assert::assertDoesNotMatchRegularExpression('~.*original.dev/wp.*~', $sql);
+        $this->assertMatchesRegularExpression('~.*some-wp.dev.*~', $sql);
+        $this->assertDoesNotMatchRegularExpression('~.*original.dev/wp.*~', $sql);
     }
 
     /**
