@@ -6,6 +6,7 @@ namespace Unit\lucatume\WPBrowser\Extension;
 use Codeception\Event\SuiteEvent;
 use Codeception\Events;
 use Codeception\Exception\ExtensionException;
+use Codeception\Suite;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Extension\EventDispatcherBridge;
