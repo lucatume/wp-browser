@@ -8,6 +8,7 @@ use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Utils\Random;
 
 class PhpBuiltinServerProcessMock extends Process
 {
@@ -99,7 +100,7 @@ class PhpBuiltInServerTest extends Unit
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(PhpBuiltInServer::ERR_ENV);
 
-        new PhpBuiltInServer(__DIR__, 0, $env);
+        new PhpBuiltInServer(__DIR__, 2389, $env);
     }
 
     /**
@@ -109,9 +110,10 @@ class PhpBuiltInServerTest extends Unit
      */
     public function should_start_php_built_in_server_with_specified_workers(): void
     {
+        $port = Random::openLocalhostPort();
         $this->uopzSetMock(Process::class, PhpBuiltinServerProcessMock::class);
 
-        $server = new PhpBuiltInServer(__DIR__, 0, [
+        $server = new PhpBuiltInServer(__DIR__, $port, [
             'PHP_CLI_SERVER_WORKERS' => 3,
         ]);
         $server->start();
@@ -127,9 +129,10 @@ class PhpBuiltInServerTest extends Unit
      */
     public function should_start_on_random_port_if_not_specified(): void
     {
+        $port = Random::openLocalhostPort();
         $this->uopzSetMock(Process::class, PhpBuiltinServerProcessMock::class);
 
-        $server = new PhpBuiltInServer(__DIR__, 0);
+        $server = new PhpBuiltInServer(__DIR__, $port);
         $server->start();
 
         $this->assertCount(1, PhpBuiltinServerProcessMock::$instances);
@@ -143,17 +146,17 @@ class PhpBuiltInServerTest extends Unit
      */
     public function should_throw_if_specified_port_already_in_use(): void
     {
-        $this->uopzSetMock(Process::class, PhpBuiltinServerProcessMock::class);
+        $port = Random::openLocalhostPort();
+        $previousProcess = new Process([
+            PHP_BINARY,
+            '-S',
+            "localhost:$port",
+            '-t',
+            __DIR__
+        ]);
+        $previousProcess->start();
 
-        $startServer = new PhpBuiltInServer(__DIR__, 0);
-        $startServer->start();
-
-        // Remove the PID file to allow starting another one.
-        if (!unlink(PhpBuiltInServer::getPidFile())) {
-            throw new \RuntimeException('Could not remove PID file.');
-        }
-
-        $server = new PhpBuiltInServer(__DIR__, $startServer->getPort());
+        $server = new PhpBuiltInServer(__DIR__, $port);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(PhpBuiltInServer::ERR_PORT_ALREADY_IN_USE);
