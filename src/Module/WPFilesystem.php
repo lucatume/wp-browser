@@ -246,17 +246,17 @@ class WPFilesystem extends Filesystem
      * $I->seeFileFound('shop.log');
      * ```
      *
-     * @param string|null $path The path, relative to the site uploads folder.
+     * @param string|int|null $path The path, relative to the site uploads folder.
      *
      *
      * @throws Exception If the path is a date string and is not parsable by the `strtotime` function.
      */
-    public function amInUploadsPath(string $path = null): void
+    public function amInUploadsPath(string|int $path = null): void
     {
         if (null === $path) {
             $path = $this->config['uploads'];
-        } elseif (is_dir($this->config['uploads'] . FS::unleadslashit($path))) {
-            $path = $this->config['uploads'] . FS::unleadslashit($path);
+        } elseif (is_dir($this->config['uploads'] . FS::unleadslashit((string)$path))) {
+            $path = $this->config['uploads'] . FS::unleadslashit((string)$path);
         } else {
             // time based?
             $path = $this->config['uploads'] . $this->buildDateFrag($path);
