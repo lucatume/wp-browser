@@ -11,10 +11,10 @@ use DateTimeZone;
 use Error;
 use ErrorException;
 use Generator;
+use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Process\StderrStream;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use ParseError;
-use PHPUnit\TextUI\RuntimeException;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 class StderrStreamTest extends Unit
@@ -95,7 +95,7 @@ EOT;
         ];
 
         $nestedException = <<<EOT
-[17-Mar-2023 16:54:06 Europe/Paris] PHP Fatal error:  Uncaught PHPUnit\TextUI\RuntimeException: For Reasons in /includes/core-phpunit/includes/bootstrap.php:261
+[17-Mar-2023 16:54:06 Europe/Paris] PHP Fatal error:  Uncaught lucatume\WPBrowser\Exceptions\RuntimeException: For Reasons in /includes/core-phpunit/includes/bootstrap.php:261
 Stack trace:
 #0 /src/Module/WPLoader.php(652): require()
 #1 /src/Module/WPLoader.php(426): lucatume\WPBrowser\Module\WPLoader->installAndBootstrapInstallation()
