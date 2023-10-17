@@ -665,15 +665,6 @@ EOT;
             $this->markTestSkipped('This test requires PHP 8.0 or higher.');
         }
 
-        $composerFileCode = <<< EOT
-{
-  "name": "acme/site-project",
-  "type": "project",
-  "require": {},
-  "require-dev": {}
-}
-EOT;
-
         $projectDir = FS::tmpDir('setup_');
         $dbName = Random::dbName();
         $dbHost = Env::get('WORDPRESS_DB_HOST');
