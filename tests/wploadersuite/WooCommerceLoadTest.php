@@ -1,10 +1,8 @@
 <?php
 
-namespace lucatume\WPBrowser\Tests\TestCase;
-
 use lucatume\WPBrowser\TestCase\WPTestCase;
 
-class WooCommerceLoadTestCase extends WPTestCase
+class WooCommerceLoadTest extends WPTestCase
 {
     public function testWordPressLoadedCorrectly(): void
     {
