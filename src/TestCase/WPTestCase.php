@@ -38,18 +38,45 @@ class WPTestCase extends Unit
         'wp_meta_keys',
         // WooCommerce.
         'woocommerce',
+        // Additional globals.
+        '_wp_registered_theme_features'
     ];
+
+    // Back-compat.
+    protected $backupGlobalsBlacklist = [];
 
     // Backup, and reset, static class attributes between tests.
     protected $backupStaticAttributes = true;
 
     // A list of static attributes that should not be backed up as they are wired to explode when doing so.
     protected $backupStaticAttributesExcludeList = [
+        // WordPress
+        'WP_Block_Type_Registry' => ['instance'],
+        // wp-browser
+        'lucatume\WPBrowser\Events\Dispatcher' => ['eventDispatcher'],
+        self::class => ['coreTestCaseMap'],
+        // Codeception
+        'Codeception\Util\Annotation' => ['reflectedClasses'],
         // WooCommerce.
         'WooCommerce' => ['_instance'],
         'Automattic\WooCommerce\Internal\Admin\FeaturePlugin' => ['instance'],
         'Automattic\WooCommerce\RestApi\Server' => ['instance']
     ];
+
+    // Back-compat.
+    protected $backupStaticAttributesBlacklist = [];
+
+    /**
+     * @var array<string,mixed>
+     */
+    protected array $additionalGlobalsBackup = [];
+
+    public function __construct(?string $name = null, array $data = [], $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName);
+        $this->backupGlobalsBlacklist = $this->backupGlobalsExcludeList;
+        $this->backupStaticAttributesBlacklist = $this->backupStaticAttributesExcludeList;
+    }
 
     /**
      * @var array<string,WP_UnitTestCase>
@@ -75,15 +102,37 @@ class WPTestCase extends Unit
         self::getCoreTestCase()->set_up_before_class();
     }
 
+    protected function backupAdditionalGlobals(): void
+    {
+        foreach (
+            [
+                '_wp_registered_theme_features'
+            ] as $key
+        ) {
+            if (isset($GLOBALS[$key])) {
+                $this->additionalGlobalsBackup = $GLOBALS[$key];
+            }
+        }
+    }
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->set_up(); //@phpstan-ignore-line magic __call
+        $this->backupAdditionalGlobals();
+    }
+
+    protected function restoreAdditionalGlobals(): void
+    {
+        foreach ($this->additionalGlobalsBackup as $key => $value) {
+            $GLOBALS[$key] = $value;
+            unset($this->additionalGlobalsBackup[$key]);
+        }
     }
 
     protected function tearDown(): void
     {
+        $this->restoreAdditionalGlobals();
         $this->tear_down(); //@phpstan-ignore-line magic __call
         parent::tearDown();
     }
