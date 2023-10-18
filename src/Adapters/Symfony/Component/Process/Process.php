@@ -7,19 +7,25 @@ use Symfony\Component\Process\Process as SymfonyProcess;
 
 class Process extends SymfonyProcess
 {
+    /**
+     * @param string[] $command
+     * @param array<string,mixed>|null $env
+     * @param array<string,mixed>|null $options
+     */
     public function __construct(
-        $commandline,
-        $cwd = null,
+        array $command,
+        string $cwd = null,
         array $env = null,
-        $input = null,
-        $timeout = 60,
+        mixed $input = null,
+        ?float $timeout = 60,
         array $options = null
     ) {
-        parent::__construct($commandline, $cwd, $env, $input, $timeout, $options);
-
         if (method_exists($this, 'inheritEnvironmentVariables')) {
+            parent::__construct($command, $cwd, $env, $input, $timeout, $options); //@phpstan-ignore-line
             $this->inheritEnvironmentVariables(true);
         }
+
+        parent::__construct($command, $cwd, $env, $input, $timeout);
     }
 
     public function getStartTime(): float

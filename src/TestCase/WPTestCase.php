@@ -71,9 +71,14 @@ class WPTestCase extends Unit
      */
     protected array $additionalGlobalsBackup = [];
 
+    /**
+     * @param array<mixed> $data
+     */
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
+
+        // Back-compat.
         $this->backupGlobalsBlacklist = $this->backupGlobalsExcludeList;
         $this->backupStaticAttributesBlacklist = $this->backupStaticAttributesExcludeList;
     }
@@ -104,8 +109,7 @@ class WPTestCase extends Unit
 
     protected function backupAdditionalGlobals(): void
     {
-        foreach (
-            [
+        foreach ([
                 '_wp_registered_theme_features'
             ] as $key
         ) {

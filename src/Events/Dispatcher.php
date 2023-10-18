@@ -93,6 +93,6 @@ class Dispatcher
         }
 
         $event = new LegacyEvent($name, $context, $origin);
-        return self::getEventDispatcher()?->dispatch($name, $event);
+        return self::getEventDispatcher()?->dispatch($name, $event); //@phpstan-ignore-line
     }
 }

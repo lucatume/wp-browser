@@ -52,7 +52,7 @@ class PhpBuiltInServer implements ManagedProcessInterface
             '-S',
             "localhost:$this->port",
             '-t',
-            Filesystem::realpath($this->docRoot),
+            Filesystem::realpath($this->docRoot) ?: $this->docRoot,
             $routerPathname
         ];
         $process = new Process(
