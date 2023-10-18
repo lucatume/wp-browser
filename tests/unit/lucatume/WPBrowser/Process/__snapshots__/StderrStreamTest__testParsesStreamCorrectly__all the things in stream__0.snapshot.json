@@ -116,12 +116,12 @@
     },
     {
         "isException": true,
-        "exceptionClass": "PHPUnit\\TextUI\\RuntimeException",
+        "exceptionClass": "lucatume\\WPBrowser\\Exceptions\\RuntimeException",
         "date": "17-Mar-2023",
         "time": "16:54:06",
         "timezone": "Europe\/Paris",
         "type": "Fatal error",
-        "message": "Uncaught PHPUnit\\TextUI\\RuntimeException: For Reasons",
+        "message": "Uncaught lucatume\\WPBrowser\\Exceptions\\RuntimeException: For Reasons",
         "file": "\/includes\/core-phpunit\/includes\/bootstrap.php",
         "line": 261,
         "trace": [
