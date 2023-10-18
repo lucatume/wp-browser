@@ -313,6 +313,9 @@ class MysqlDatabase implements DatabaseInterface
             if (str_ends_with($line, ';')) {
                 try {
                     $modified = $pdo->exec($line);
+                    if ($modified === false) {
+                        throw new Exception($pdo->errorInfo()[2]);
+                    }
                 } catch (Exception $e) {
                     fclose($dumpFileHandle);
                     throw new DbException("Failed to execute query: " . $e->getMessage(), DbException::FAILED_QUERY);
