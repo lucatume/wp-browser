@@ -21,6 +21,7 @@ class WPDbTest extends Unit
 {
     use UopzFunctions;
     use LoopIsolation;
+    use TmpFilesCleanup;
 
     protected $backupGlobals = false;
     private array $config = [
