@@ -14,6 +14,8 @@ use PHPUnit\Framework\AssertionFailedError;
 
 class WPFilesystemTest extends Unit
 {
+    use TmpFilesCleanup;
+
     /**
      * @var ModuleContainer
      */
