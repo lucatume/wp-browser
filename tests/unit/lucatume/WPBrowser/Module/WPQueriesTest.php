@@ -18,7 +18,6 @@ use wpdb;
 class WPQueriesTest extends Unit
 {
     use UopzFunctions;
-    use TmpFilesCleanup;
 
     protected bool $cleanupTmpAfterTest = false;
     private static ?string $wpRootDir = null;
@@ -52,6 +51,14 @@ class WPQueriesTest extends Unit
         $wpQueries = new WPQueries($moduleContainer, $this->config, $this->wpdb);
 
         return $wpQueries;
+    }
+
+    /**
+     * @afterClass
+     */
+    public static function removeTmpDirAfterTestCase(): void
+    {
+        FS::rrmdir(self::$wpRootDir);
     }
 
     /**
