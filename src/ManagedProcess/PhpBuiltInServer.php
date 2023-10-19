@@ -62,7 +62,7 @@ class PhpBuiltInServer implements ManagedProcessInterface
         );
         $process->setOptions(['create_new_console' => true]);
         $process->start();
-        $confirmPort = $this->readPortFromProcessOutput($process);
+        $confirmPort = $this->confirmServerRunningOnPort($process);
         if ($confirmPort === null || !(is_numeric($confirmPort) && (int)$confirmPort > 0)) {
             $error = new RuntimeException(
                 'Could not start PHP Built-in server: ' . $process->getErrorOutput(),
@@ -80,27 +80,40 @@ class PhpBuiltInServer implements ManagedProcessInterface
         return $this->port;
     }
 
-    private function readPortFromProcessOutput(Process $process): ?int
+    private function confirmServerRunningOnPort(Process $process): ?int
     {
-        for ($attempts = 0; $attempts < 30; $attempts++) {
-            // The Server log is written to STDERR.
-            $output = $process->getErrorOutput();
-            $matches = [];
-            preg_match('/^.*localhost:(?<port>\d+).*$/m', $output, $matches);
+        // Using curl, make sure the server is running, it can be in error, but it should answer HEAD requests.
+        $curl = curl_init("http://localhost:$this->port");
 
-            if (!isset($matches['port'])) {
-                usleep(100000);
-                continue;
+        if (!is_resource($curl)) {
+            throw new RuntimeException(
+                "Could not check PHP Built-in server: curl resource not created.",
+                ManagedProcessInterface::ERR_CHECK
+            );
+        }
+
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HEADER, true);
+        curl_setopt($curl, CURLOPT_NOBODY, true);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT_MS, 1000);
+        curl_setopt($curl, CURLOPT_TIMEOUT_MS, 1000);
+
+        for ($attempts = 0; $attempts < 30; $attempts++) {
+            curl_exec($curl);
+            $curlInfo = curl_getinfo($curl);
+
+            if (isset($curlInfo['http_code']) && $curlInfo['http_code'] !== 0) {
+                curl_close($curl);
+                return $this->port;
             }
 
             if ($process->getExitCode() !== null) {
+                curl_close($curl);
                 throw new RuntimeException(
                     "PHP Built-in server could not start: port already in use.",
                     self::ERR_PORT_ALREADY_IN_USE
                 );
             }
-
-            return (int)$matches['port'];
         }
 
         return null;
