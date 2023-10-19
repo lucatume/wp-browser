@@ -2,6 +2,7 @@
 
 namespace lucatume\WPBrowser\ManagedProcess;
 
+use CurlHandle;
 use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Utils\Arr;
@@ -14,6 +15,7 @@ class PhpBuiltInServer implements ManagedProcessInterface
     public const ERR_DOC_ROOT_NOT_FOUND = 1;
     public const ERR_PORT_ALREADY_IN_USE = 2;
     public const ERR_ENV = 3;
+    public const ERR_CHECK = 4;
     public const PID_FILE_NAME = 'php-built-in-server.pid';
     private string $prettyName = 'PHP Built-in Server';
 
@@ -85,10 +87,10 @@ class PhpBuiltInServer implements ManagedProcessInterface
         // Using curl, make sure the server is running, it can be in error, but it should answer HEAD requests.
         $curl = curl_init("http://localhost:$this->port");
 
-        if (!is_resource($curl)) {
+        if ($curl === false) {
             throw new RuntimeException(
                 "Could not check PHP Built-in server: curl resource not created.",
-                ManagedProcessInterface::ERR_CHECK
+                self::ERR_CHECK
             );
         }
 
