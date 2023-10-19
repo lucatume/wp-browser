@@ -126,7 +126,7 @@ class SqliteDatabaseTest extends \Codeception\Test\Unit
         $this->assertFileExists($dir . '/' . $file);
         $db->drop();
         $this->assertFalse($db->exists());
-        $this->assertTrue(file_exists($dir . '/' . $file));
+        $this->assertFalse(file_exists($dir . '/' . $file));
     }
 
     /**

@@ -8,6 +8,7 @@ use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Module\Support\DbDump;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
+use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
