@@ -46,5 +46,4 @@ extensions:
         - "lucatume\\WPBrowser\\Command\\DbImport"
         - "lucatume\\WPBrowser\\Command\\DbExport"
 snapshot:
-    version: "3.5"
     refresh: true
