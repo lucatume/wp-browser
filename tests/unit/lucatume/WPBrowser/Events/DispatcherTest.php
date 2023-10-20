@@ -46,10 +46,7 @@ class DispatcherTest extends Unit
             $callStack[] = 'first';
         }, 100);
 
-        $eventClass = class_exists(\Symfony\Contracts\EventDispatcher\Event::class) ?
-            Event::class : LegacyEvent::class;
-
-        $this->assertInstanceOf($eventClass, Dispatcher::dispatch('TEST_EVENT'));
+        $this->assertInstanceOf(Event::class, Dispatcher::dispatch('TEST_EVENT'));
 
         $this->assertEquals([
             'first',
@@ -62,7 +59,7 @@ class DispatcherTest extends Unit
             $callStack[] = 'new first';
         }, 200);
 
-        $this->assertInstanceOf($eventClass, Dispatcher::dispatch('TEST_EVENT'));
+        $this->assertInstanceOf(Event::class, Dispatcher::dispatch('TEST_EVENT'));
 
         $this->assertEquals([
             'new first',
@@ -75,7 +72,7 @@ class DispatcherTest extends Unit
         $removeThird();
         $removeFirst();
 
-        $this->assertInstanceOf($eventClass, Dispatcher::dispatch('TEST_EVENT'));
+        $this->assertInstanceOf(Event::class, Dispatcher::dispatch('TEST_EVENT'));
 
         $this->assertEquals([
             'new first',
@@ -113,9 +110,7 @@ class DispatcherTest extends Unit
             $callStack[] = 'first';
         }, 100);
 
-        $eventClass = class_exists(\Symfony\Contracts\EventDispatcher\Event::class) ?
-            Event::class : LegacyEvent::class;
-        $this->assertInstanceOf($eventClass, Dispatcher::dispatch('TEST_EVENT'));
+        $this->assertInstanceOf(Event::class, Dispatcher::dispatch('TEST_EVENT'));
 
         $this->assertEquals([
             'first',
@@ -128,7 +123,7 @@ class DispatcherTest extends Unit
             $callStack[] = 'new first';
         }, 200);
 
-        $this->assertInstanceOf($eventClass, Dispatcher::dispatch('TEST_EVENT'));
+        $this->assertInstanceOf(Event::class, Dispatcher::dispatch('TEST_EVENT'));
 
         $this->assertEquals([
             'new first',
@@ -141,7 +136,7 @@ class DispatcherTest extends Unit
         $removeThird();
         $removeFirst();
 
-        $this->assertInstanceOf($eventClass, Dispatcher::dispatch('TEST_EVENT'));
+        $this->assertInstanceOf(Event::class, Dispatcher::dispatch('TEST_EVENT'));
 
         $this->assertEquals([
             'new first',
