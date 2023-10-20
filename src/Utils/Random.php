@@ -53,7 +53,7 @@ class Random
     }
 
     /**
-     * @throws \Exception
+     * @throws \RuntimeException|\Exception
      */
     public static function openLocalhostPort(): int
     {
@@ -63,18 +63,14 @@ class Random
             do {
                 $port = random_int(1025, 65535);
             } while (in_array($port, $testedPorts, true));
-            $testedPorts[] = $port;
-            $docRoot = __DIR__;
-            $process = new Process([PHP_BINARY, '-S', "localhost:$port", '-t', $docRoot]);
-            $process->start();
-            if (!$process->isRunning() && $process->getExitCode() !== 0) {
-                $process->stop();
-                continue;
-            }
 
-            $process->stop();
-            return $port;
+            $testedPorts[] = $port;
+
+            if (!Ports::isPortOccupied($port)) {
+                return $port;
+            }
         }
+
         throw new RuntimeException(
             'Could not start PHP built-in server to find free localhost port after many attempts.'
         );
