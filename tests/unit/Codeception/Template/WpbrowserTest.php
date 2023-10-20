@@ -230,7 +230,6 @@ EOT;
         $process->mustRun();
 
         // Remove the generated files that are not needed for the snapshot.
-        unlink($projectDir . '/plugin_89/' . Codeception::dataDir() . '/dump.sql');
         FS::rrmdir($projectDir . '/plugin_89/' . Codeception::supportDir() . '/_generated');
         FS::rrmdir($projectDir . '/plugin_89/tests/_wordpress');
         FS::rrmdir($projectDir . '/plugin_89/vendor');
@@ -286,7 +285,6 @@ EOT;
         $process->mustRun();
 
         // Remove the generated files that are not needed for the snapshot.
-        unlink($projectDir . '/plugin_89/' . Codeception::dataDir() . '/dump.sql');
         FS::rrmdir($projectDir . '/plugin_89/' . Codeception::supportDir() . '/_generated');
         FS::rrmdir($projectDir . '/plugin_89/tests/_wordpress');
         FS::rrmdir($projectDir . '/plugin_89/vendor');
@@ -480,7 +478,6 @@ EOT,
         $process->mustRun();
 
         // Remove the generated files that are not needed for the snapshot.
-        unlink($projectDir . '/theme_23/' . Codeception::dataDir() . '/dump.sql');
         FS::rrmdir($projectDir . '/theme_23/' . Codeception::supportDir() . '/_generated');
         FS::rrmdir($projectDir . '/theme_23/tests/_wordpress');
         FS::rrmdir($projectDir . '/theme_23/vendor');

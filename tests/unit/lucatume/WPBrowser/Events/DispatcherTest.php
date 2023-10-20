@@ -6,7 +6,6 @@ namespace lucatume\WPBrowser\Events;
 use Codeception\Events;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
-use lucatume\WPBrowser\Utils\Property;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -92,11 +91,7 @@ class DispatcherTest extends Unit
 
         Dispatcher::setEventDispatcher();
 
-        $eventDispatcherInterface = interface_exists(\Psr\EventDispatcher\EventDispatcherInterface::class) ?
-            EventDispatcherInterface::class
-            : \Symfony\Component\EventDispatcher\EventDispatcherInterface::class;
-
-        $this->assertInstanceOf($eventDispatcherInterface, Dispatcher::getEventDispatcher());
+        $this->assertInstanceOf(EventDispatcherInterface::class, Dispatcher::getEventDispatcher());
         $this->assertNotSame($previousDispatcher, Dispatcher::getEventDispatcher());
 
         $callStack = [];

@@ -42,9 +42,6 @@ class WPTestCase extends Unit
         '_wp_registered_theme_features'
     ];
 
-    // Back-compat.
-    protected $backupGlobalsBlacklist = [];
-
     // Backup, and reset, static class attributes between tests.
     protected $backupStaticAttributes = true;
 
@@ -63,25 +60,10 @@ class WPTestCase extends Unit
         'Automattic\WooCommerce\RestApi\Server' => ['instance']
     ];
 
-    // Back-compat.
-    protected $backupStaticAttributesBlacklist = [];
-
     /**
      * @var array<string,mixed>
      */
     protected array $additionalGlobalsBackup = [];
-
-    /**
-     * @param array<mixed> $data
-     */
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-
-        // Back-compat.
-        $this->backupGlobalsBlacklist = $this->backupGlobalsExcludeList;
-        $this->backupStaticAttributesBlacklist = $this->backupStaticAttributesExcludeList;
-    }
 
     /**
      * @var array<string,WP_UnitTestCase>

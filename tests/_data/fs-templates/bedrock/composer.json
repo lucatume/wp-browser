@@ -31,6 +31,7 @@
     }
   ],
   "require": {
+    "php": ">=8.0",
     "composer/installers": "^2.2",
     "vlucas/phpdotenv": "^5.5",
     "oscarotero/env": "^2.1",
