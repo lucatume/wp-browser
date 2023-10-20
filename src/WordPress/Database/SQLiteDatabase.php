@@ -141,7 +141,10 @@ class SQLiteDatabase implements DatabaseInterface
         $stmt = $this->getPDO()->prepare($query);
 
         if (!$stmt instanceof PDOStatement) {
-            throw new DbException("Could not prepare `{$query}`: " . $this->getPDO()->errorInfo()[2], DbException::PREPARE_FAILED);
+            throw new DbException(
+                "Could not prepare `{$query}`: " . $this->getPDO()->errorInfo()[2],
+                DbException::PREPARE_FAILED
+            );
         }
 
         $stmt->execute($params);
@@ -168,7 +171,10 @@ class SQLiteDatabase implements DatabaseInterface
         $stmt = $this->getPDO()->prepare($query);
 
         if (!$stmt instanceof PDOStatement) {
-            throw new DbException("Could not prepare `{$query}`: " . $this->getPDO()->errorInfo()[2], DbException::PREPARE_FAILED);
+            throw new DbException(
+                "Could not prepare `{$query}`: " . $this->getPDO()->errorInfo()[2],
+                DbException::PREPARE_FAILED
+            );
         }
 
         $stmt->execute([':name' => $name, ':value' => $value, ':autoload' => 'yes']);
@@ -184,7 +190,10 @@ class SQLiteDatabase implements DatabaseInterface
         $stmt = $this->getPDO()->prepare($query);
 
         if (!$stmt instanceof PDOStatement) {
-            throw new DbException("Could not prepare `{$query}`: " . $this->getPDO()->errorInfo()[2], DbException::PREPARE_FAILED);
+            throw new DbException(
+                "Could not prepare `{$query}`: " . $this->getPDO()->errorInfo()[2],
+                DbException::PREPARE_FAILED
+            );
         }
 
         $stmt->execute([':name' => $name]);
