@@ -147,14 +147,14 @@ class PhpBuiltInServerTest extends Unit
     public function should_throw_if_specified_port_already_in_use(): void
     {
         $port = Random::openLocalhostPort();
-        $previousProcess = new Process([
-            PHP_BINARY,
-            '-S',
-            "localhost:$port",
-            '-t',
-            __DIR__
-        ]);
-        $previousProcess->start();
+
+        $previousServer = new PhpBuiltInServer(__DIR__, $port);
+        $previousServer->start();
+
+        // Remove the PID file to make sure the second server will attempt a start.
+        if (!unlink(PhpBuiltInServer::getPidFile())) {
+            throw new \RuntimeException('Could not delete PID file.');
+        }
 
         $server = new PhpBuiltInServer(__DIR__, $port);
 

@@ -7,6 +7,7 @@ use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\Utils\Filesystem;
+use lucatume\WPBrowser\Utils\Ports;
 
 class PhpBuiltInServer implements ManagedProcessInterface
 {
@@ -64,8 +65,7 @@ class PhpBuiltInServer implements ManagedProcessInterface
         );
         $process->setOptions(['create_new_console' => true]);
         $process->start();
-        $confirmPort = $this->confirmServerRunningOnPort($process);
-        if ($confirmPort === null || !(is_numeric($confirmPort) && (int)$confirmPort > 0)) {
+        if (!$this->confirmServerRunningOnPort($process)) {
             $error = new RuntimeException(
                 'Could not start PHP Built-in server: ' . $process->getErrorOutput(),
                 ManagedProcessInterface::ERR_START
@@ -73,7 +73,6 @@ class PhpBuiltInServer implements ManagedProcessInterface
             $this->stop();
             throw $error;
         }
-        $this->port = (int)$confirmPort;
         $this->process = $process;
     }
 
@@ -82,42 +81,22 @@ class PhpBuiltInServer implements ManagedProcessInterface
         return $this->port;
     }
 
-    private function confirmServerRunningOnPort(Process $process): ?int
+    private function confirmServerRunningOnPort(Process $process): bool
     {
-        // Using curl, make sure the server is running, it can be in error, but it should answer HEAD requests.
-        $curl = curl_init("http://localhost:$this->port");
-
-        if ($curl === false) {
-            throw new RuntimeException(
-                "Could not check PHP Built-in server: curl resource not created.",
-                self::ERR_CHECK
+        codecept_debug('confirming ...');
+        if ($process->getErrorOutput() === '') {
+            $process->waitUntil(
+                static function (string $type, string $output): bool {
+                    codecept_debug(sprintf('type: %s, output: %s', $type, $output));
+                    return $type === Process::ERR && !empty($output);
+                }
             );
         }
 
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HEADER, true);
-        curl_setopt($curl, CURLOPT_NOBODY, true);
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT_MS, 1000);
-        curl_setopt($curl, CURLOPT_TIMEOUT_MS, 1000);
-
-        for ($attempts = 0; $attempts < 30; $attempts++) {
-            curl_exec($curl);
-            $curlInfo = curl_getinfo($curl);
-
-            if (isset($curlInfo['http_code']) && $curlInfo['http_code'] !== 0) {
-                curl_close($curl);
-                return $this->port;
-            }
-
-            if ($process->getExitCode() !== null) {
-                curl_close($curl);
-                throw new RuntimeException(
-                    "PHP Built-in server could not start: port already in use.",
-                    self::ERR_PORT_ALREADY_IN_USE
-                );
-            }
+        if (stripos($process->getErrorOutput(), 'failed') !== false) {
+            return false;
         }
 
-        return null;
+        return Ports::isPortOccupied($this->port);
     }
 }
