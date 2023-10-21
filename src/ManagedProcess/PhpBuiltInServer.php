@@ -83,11 +83,9 @@ class PhpBuiltInServer implements ManagedProcessInterface
 
     private function confirmServerRunningOnPort(Process $process): bool
     {
-        codecept_debug('confirming ...');
         if ($process->getErrorOutput() === '') {
             $process->waitUntil(
                 static function (string $type, string $output): bool {
-                    codecept_debug(sprintf('type: %s, output: %s', $type, $output));
                     return $type === Process::ERR && !empty($output);
                 }
             );
