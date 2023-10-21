@@ -83,13 +83,9 @@ class PhpBuiltInServer implements ManagedProcessInterface
 
     private function confirmServerRunningOnPort(Process $process): bool
     {
-        if ($process->getErrorOutput() === '') {
-            $process->waitUntil(
-                static function (string $type, string $output): bool {
-                    return $type === Process::ERR && !empty($output);
-                }
-            );
-        }
+        do {
+            $processOutput = $process->getErrorOutput();
+        } while (stripos($processOutput, 'failed') === false && stripos($processOutput, 'started') === false);
 
         if (stripos($process->getErrorOutput(), 'failed') !== false) {
             return false;

@@ -47,6 +47,7 @@ clean_procs:
 	pgrep -f 'php -S' | xargs kill
 	pgrep chromedriver | xargs kill
 	rm -f var/_output/*.pid var/_output/*.running
+	docker compose down
 .PHONY: clean_procs
 
 build_35:

@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow
 
-name: Test
+name: Test Debug
 
 on: # yamllint disable-line rule:truthy
   pull_request:
@@ -33,16 +33,7 @@ jobs:
       matrix:
         php_version: [ '8.0', '8.1', '8.2' ]
         suite:
-          - acceptance
-          - climodule
-          - functional
-          - muloader
           - unit
-          - webdriver
-          - wpcli_module
-          - wploader_multisite
-          - wploader_wpdb_interaction
-          - wploadersuite
     name: ${{ matrix.suite }} php@${{ matrix.php_version }}
     runs-on: ubuntu-22.04
     steps:
@@ -87,7 +78,7 @@ jobs:
 
       - name: Run tests
         id: test
-        run: vendor/bin/codecept run ${{ matrix.suite }}
+        run: vendor/bin/codecept run tests/unit/lucatume/WPBrowser/ManagedProcess/PhpBuiltInServerTest.php --debug
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
