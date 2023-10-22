@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use lucatume\Rector\SwapEventDispatcherEventNameParameters;
-use lucatume\WPBrowser\TestCase\WPTestCase;
 use Rector\Config\RectorConfig;
 use Rector\Renaming\Rector\MethodCall\RenameMethodRector;
 use Rector\Renaming\Rector\Name\RenameClassRector;
@@ -16,8 +15,8 @@ use Rector\TypeDeclaration\Rector\Closure\AddClosureReturnTypeRector;
 
 return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->paths([
-//        dirname(__DIR__) . '/includes',
-//        dirname(__DIR__) . '/src',
+        dirname(__DIR__) . '/includes',
+        dirname(__DIR__) . '/src',
         dirname(__DIR__) . '/tests',
     ]);
 
@@ -44,6 +43,6 @@ return static function (RectorConfig $rectorConfig): void {
     ]);
 
     $rectorConfig->rule(SwapEventDispatcherEventNameParameters::class);
-//
-//    $rectorConfig->sets([DowngradeLevelSetList::DOWN_TO_PHP_71]);
+
+    $rectorConfig->sets([DowngradeLevelSetList::DOWN_TO_PHP_71]);
 };
