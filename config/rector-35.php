@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use lucatume\Rector\SwapEventDispatcherEventNameParameters;
 use Rector\Config\RectorConfig;
+use Rector\DowngradePhp72\Rector\ClassMethod\DowngradeParameterTypeWideningRector;
 use Rector\Renaming\Rector\MethodCall\RenameMethodRector;
 use Rector\Renaming\Rector\Name\RenameClassRector;
 use Rector\Renaming\Rector\PropertyFetch\RenamePropertyRector;
@@ -45,4 +46,5 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->rule(SwapEventDispatcherEventNameParameters::class);
 
     $rectorConfig->sets([DowngradeLevelSetList::DOWN_TO_PHP_71]);
+    $rectorConfig->skip([DowngradeParameterTypeWideningRector::class]);
 };
