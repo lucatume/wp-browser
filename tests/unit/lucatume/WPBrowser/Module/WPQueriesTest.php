@@ -58,7 +58,9 @@ class WPQueriesTest extends Unit
      */
     public static function removeTmpDirAfterTestCase(): void
     {
-        FS::rrmdir(self::$wpRootDir);
+        if (file_exists(self::$wpRootDir)) {
+            FS::rrmdir(self::$wpRootDir);
+        }
     }
 
     /**
