@@ -15,7 +15,7 @@ use ReflectionObject;
 /**
  * Provides a wrapper for serialization of closures
  */
-class SerializableClosure
+class SerializableClosure implements Serializable
 {
     /**
      * @var Closure Wrapped closure
@@ -635,4 +635,18 @@ class SerializableClosure
         }
     }
 
+    public function serialize(): ?string
+    {
+        return \serialize($this->__serialize());
+    }
+
+    /**
+     * @param string $data
+     * @return void
+     */
+    public function unserialize($data): void
+    {
+        $unserialized = \unserialize($data, ['allowed_classes' => true]);
+        $this->__unserialize($unserialized);
+    }
 }
