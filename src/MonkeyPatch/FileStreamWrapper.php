@@ -457,7 +457,11 @@ class FileStreamWrapper
 
         [$fileContents, $openedPath] = $patcher->patch($fileContents, $absPath);
 
-        $fileResource = fopen('php://temp', 'rb+', false, $this->context);
+        if ($this->context !== null) {
+            $fileResource = fopen('php://temp', 'rb+', false, $this->context);
+        } else {
+            $fileResource = fopen('php://temp', 'rb+');
+        }
 
         if ($fileResource === false) {
             throw new MonkeyPatchingException("Could not open temporary file for writing.");
