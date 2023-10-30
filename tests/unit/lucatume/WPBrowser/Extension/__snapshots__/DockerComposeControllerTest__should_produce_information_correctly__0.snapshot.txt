@@ -1,16 +1,4 @@
 array (
-  'status' => 'up',
-  'config' => 
-  array (
-    'services' => 
-    array (
-      'foo' => 
-      array (
-        'ports' => 
-        array (
-          0 => '8088:80',
-        ),
-      ),
-    ),
-  ),
+  'status' => 'down',
+  'config' => '',
 )

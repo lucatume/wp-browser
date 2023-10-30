@@ -150,6 +150,8 @@ class DockerComposeController extends ServiceExtension
                 'config'
             ]);
             $dockerComposeConfig = $process->mustRun()->getOutput();
+            $process->mustRun();
+            $dockerComposeConfig = $process->getOutput();
 
             return [
                 'status' => 'up',
