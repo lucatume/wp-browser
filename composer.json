@@ -60,7 +60,8 @@
     },
     "files": [
       "src/version-4-aliases.php",
-      "src/Deprecated/deprecated-functions.php"
+      "src/Deprecated/deprecated-functions.php",
+      "src/functions.php"
     ]
   },
   "autoload-dev": {

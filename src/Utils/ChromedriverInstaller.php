@@ -1,5 +1,6 @@
 <?php
 
+
 namespace lucatume\WPBrowser\Utils;
 
 use JsonException;
@@ -8,6 +9,9 @@ use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
+
+use function lucatume\WPBrowser\useMemoString;
 
 class ChromedriverInstaller
 {
@@ -80,35 +84,36 @@ class ChromedriverInstaller
         $this->output->writeln("Fetching Chromedriver version URL ...");
 
         $downloadUrl = $this->fetchChromedriverVersionUrl();
-        $zipFilePathname = rtrim(sys_get_temp_dir(), '\\/') . '/' . basename($downloadUrl);
 
-        if (is_file($zipFilePathname) && !unlink($zipFilePathname)) {
-            throw new RuntimeException(
-                "Could not remove existing zip file $zipFilePathname",
-                self::ERR_REMOVE_EXISTING_ZIP_FILE
-            );
+        $cacheDir = FS::cacheDir() . '/chromedriver';
+
+        if (!is_dir($cacheDir) && !(mkdir($cacheDir, 0777, true) && is_dir($cacheDir))) {
+            throw new RuntimeException("Could not create Chromedriver cache directory $cacheDir.");
         }
 
-        $zipFilePathname = Download::fileFromUrl($downloadUrl, $zipFilePathname);
-        $this->output->writeln('Downloaded Chromedriver to ' . $zipFilePathname);
-
+        $zipFilePathname = rtrim($cacheDir, '\\/') . '/' . basename($downloadUrl);
         $executableFileName = $dir . '/' . $this->getExecutableFileName();
 
-        if (is_file($executableFileName) && !unlink($executableFileName)) {
-            throw new RuntimeException(
-                "Could not remove existing executable file $executableFileName",
-                self::ERR_REMOVE_EXISTING_BINARY
-            );
+        if (!is_file($zipFilePathname)) {
+            $zipFilePathname = Download::fileFromUrl($downloadUrl, $zipFilePathname);
+            $this->output->writeln('Downloaded Chromedriver to ' . $zipFilePathname);
+
+            if (is_file($executableFileName) && !unlink($executableFileName)) {
+                throw new RuntimeException(
+                    "Could not remove existing executable file $executableFileName",
+                    self::ERR_REMOVE_EXISTING_BINARY
+                );
+            }
+
+            Zip::extractTo($zipFilePathname, $cacheDir);
         }
 
-        $extractedPath = Zip::extractTo($zipFilePathname, sys_get_temp_dir());
-
-        if (!rename(
-            "$extractedPath/chromedriver-$this->platform/" . $this->getExecutableFileName(),
+        if (!copy(
+            "$cacheDir/chromedriver-$this->platform/" . $this->getExecutableFileName(),
             $executableFileName
         )) {
             throw new RuntimeException(
-                "Could not move Chromedriver to $executableFileName",
+                "Could not copy Chromedriver to $executableFileName",
                 self::ERR_MOVE_BINARY
             );
         }
@@ -272,10 +277,18 @@ class ChromedriverInstaller
         return $matches['major'];
     }
 
+    private function fetchChromedriverVersionUrl(): string
+    {
+        return useMemoString(
+            fn() => $this->unmemoizedFetchChromedriverVersionUrl(),
+            [$this->platform, $this->milestone]
+        );
+    }
+
     /**
      * @throws JsonException
      */
-    private function fetchChromedriverVersionUrl(): string
+    private function unmemoizedFetchChromedriverVersionUrl(): string
     {
         $milestoneDownloads = file_get_contents(
             'https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json'
