@@ -26,6 +26,9 @@ jobs:
           build-args: |
             PHP_VERSION=5.6
             WP_IMAGE_VERSION=5
+            WP_IMAGE_NAME=php-5.6apache
+            WP_PHP_VERSION=5.6
+            WP_DOCKERFILE=Dockerfile-PHP-5.6
             TARGET=wordpress
             USER_UID=33
             USER_GID=33
@@ -72,15 +75,18 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: containers/php
-          file: containers/php/Dockerfile-PHP-5.6
+          file: containers/php/Dockerfile
           push: false
-          tags: lucatume/wp-browser-v3-wordpress:php5.6-apache
+          tags: lucatume/wp-browser-v3-wordpress:php-apache
           cache-from: type=gha,scope=5.6
           cache-to: type=gha,mode=max,scope=5.6
           load: true
           build-args: |
-            PHP_VERSION=5.6
-            WP_IMAGE_VERSION=5
+            PHP_VERSION=${{ matrix.php_version }}
+            WP_IMAGE_VERSION=6
+            WP_IMAGE_NAME=php-apache
+            WP_PHP_VERSION=${{ matrix.php_version }}
+            WP_DOCKERFILE=Dockerfile
             TARGET=wordpress
             USER_UID=33
             USER_GID=33
@@ -103,7 +109,7 @@ jobs:
             USER_GID=33
             USER_NAME=www-data
       - name: Build
-        run: bin/stack -p5.6 build
+        run: bin/stack -p${{ matrix.php_version }} build
       - name: Cache Composer dependencies
         uses: actions/cache@v3
         with:

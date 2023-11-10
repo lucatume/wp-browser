@@ -25,13 +25,13 @@ services:
     user: "${USER_UID}:${USER_GID}"
     sysctls:
       - net.ipv4.ip_unprivileged_port_start=0
-    image: lucatume/wp-browser-v3-wordpress:php5.6-apache
+    image: lucatume/wp-browser-v3-wordpress:${WP_IMAGE_NAME:-php-apache}
     build:
       context: ./containers/php
-      dockerfile: "Dockerfile-PHP-5.6"
+      dockerfile: "${WP_DOCKERFILE:-Dockerfile}"
       args:
-        PHP_VERSION: "5.6"
-        WP_IMAGE_VERSION: "5"
+        PHP_VERSION: "${WP_PHP_VERSION:-7.4}"
+        WP_IMAGE_VERSION: "${WP_IMAGE_VERSION:-6}"
         USER_UID: "${USER_UID:-33}"
         USER_GID: "${USER_GID:-33}"
         USER_NAME: "${USER_NAME:-www-data}"
