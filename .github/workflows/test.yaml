@@ -79,8 +79,8 @@ jobs:
           file: containers/php/Dockerfile
           push: false
           tags: lucatume/wp-browser-v3-wordpress:php-apache
-          cache-from: type=gha,scope=5.6
-          cache-to: type=gha,mode=max,scope=5.6
+          cache-from: type=gha,scope=${{ matrix.php_version }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.php_version }}
           load: true
           build-args: |
             PHP_VERSION=${{ matrix.php_version }}
