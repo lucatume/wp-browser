@@ -5,6 +5,7 @@ on:
       - "src/**"
       - "tests/**"
       - "composer.json"
+      - ".github/workflows/test.yaml"
 jobs:
   test_codeception_4_php_56:
     name: PHP 5.6, Codeception 4

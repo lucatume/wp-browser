@@ -5,6 +5,7 @@ on:
         - "src/**"
         - "tests/**"
         - "composer.json"
+        - ".github/workflows/static-analysis.yaml"
 jobs:
   lint-on-56:
     name: PHP 5.6 lint
