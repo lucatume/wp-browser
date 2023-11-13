@@ -88,21 +88,12 @@ class ChromedriverTest extends Unit
      */
     public function should_throw_if_pid_is_not_integer_on_start(): void
     {
-        $mockProcess = new class(['chromedriver']) extends Process {
-            public function getOutput(): string
-            {
-                return 'ChromeDriver was started successfully.';
-            }
-            public function getPid(): ?int
-            {
-                return null;
-            }
-
-            public function stop(float $timeout = 10, ?int $signal = null): ?int
-            {
-                return 5;
-            }
-        };
+        $mockProcess = $this->makeEmpty(Process::class, [
+            'getOutput' => 'ChromeDriver was started successfully.',
+            'getPid' => null,
+            'isRunning' => true,
+            'stop' => 5
+        ]);
         $this->uopzSetMock(Process::class, $mockProcess);
 
         $chromedriver = new ChromeDriver(3456, ['--url-base=wd/hub', '--headless']);
@@ -120,17 +111,11 @@ class ChromedriverTest extends Unit
      */
     public function should_throw_if_pif_file_cannot_be_written_on_start(): void
     {
-        $mockProcess = new class(['chromedriver']) extends Process {
-            public function getOutput(): string
-            {
-                return 'ChromeDriver was started successfully.';
-            }
-            public function getPid(): ?int
-            {
-                return 2389;
-            }
-
-        };
+        $mockProcess = $this->makeEmpty(Process::class,[
+            'getOutput'   => 'ChromeDriver was started successfully.',
+            'isRunning' => true,
+            'getPid'      => 2389,
+        ]);
         $this->uopzSetMock(Process::class, $mockProcess);
 
         $chromedriver = new ChromeDriver(3456, ['--url-base=wd/hub', '--headless']);
