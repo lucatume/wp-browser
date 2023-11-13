@@ -18,3 +18,5 @@
 /todo.txt                 	export-ignore
 /var                      	export-ignore
 /vendor                   	export-ignore
+
+*.php diff=php
