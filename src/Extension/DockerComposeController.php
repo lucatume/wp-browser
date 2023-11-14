@@ -149,7 +149,6 @@ class DockerComposeController extends ServiceExtension
                 ...$this->getCommand($this->config),
                 'config'
             ]);
-            $dockerComposeConfig = $process->mustRun()->getOutput();
             $process->mustRun();
             $dockerComposeConfig = $process->getOutput();
 
