@@ -58,6 +58,14 @@ class PhpBuiltInServer implements ManagedProcessInterface
             Filesystem::realpath($this->docRoot) ?: $this->docRoot,
             $routerPathname
         ];
+
+        if (Ports::isPortOccupied($this->port)) {
+            throw new RuntimeException(
+                'Port ' . $this->port . ' is already in use.',
+                self::ERR_PORT_ALREADY_IN_USE
+            );
+        }
+
         $process = new Process(
             $command,
             $this->docRoot,
@@ -85,7 +93,11 @@ class PhpBuiltInServer implements ManagedProcessInterface
     {
         $attempts = 0;
         do {
-            if ($process->isRunning() && $process->getExitCode() === null && Ports::isPortOccupied($this->port)) {
+            if ($process->getExitCode() !== null) {
+                return false;
+            }
+
+            if ($process->isRunning() && Ports::isPortOccupied($this->port)) {
                 return true;
             }
 
