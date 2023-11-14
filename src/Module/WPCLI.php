@@ -143,7 +143,7 @@ class WPCLI extends Module
 
         $cliProcess = new CliProcess($command, $config['path'], $env, $input, $config['timeout']);
 
-        $this->debugSection('command', $cliProcess->getCommandLine());
+        $this->debugSection('WPCLI command', $cliProcess->getCommandLine());
 
         try {
             $cliProcess->run();
@@ -160,13 +160,13 @@ class WPCLI extends Module
 
         $this->lastCliProcess = $cliProcess;
 
-        $this->debugSection('STDOUT', $cliProcess->getOutput());
-        $this->debugSection('STDERR', $cliProcess->getErrorOutput());
+        $this->debugSection('WPCLI STDOUT', $cliProcess->getOutput());
+        $this->debugSection('WPCLI STDERR', $cliProcess->getErrorOutput());
 
         /** @var int $exitCode The process terminated at this stage. */
         $exitCode = $cliProcess->getExitCode();
 
-        $this->debugSection('exit code', print_r($exitCode, true));
+        $this->debugSection('WPCLI exit code', print_r($exitCode, true));
 
         if ($config['throw'] && $exitCode !== 0) {
             throw new ModuleException(
@@ -180,11 +180,6 @@ class WPCLI extends Module
         }
 
         return $exitCode;
-    }
-
-    protected function debugSection(string $title, mixed $message): void
-    {
-        parent::debugSection("WPCLI $title", $message);
     }
 
     /**
