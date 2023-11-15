@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use lucatume\Rector\RemoveClassMethodTypeHinting;
 use lucatume\Rector\SwapEventDispatcherEventNameParameters;
 use Rector\Config\RectorConfig;
 use Rector\DowngradePhp72\Rector\ClassMethod\DowngradeParameterTypeWideningRector;
@@ -47,4 +48,8 @@ return static function (RectorConfig $rectorConfig): void {
 
     $rectorConfig->sets([DowngradeLevelSetList::DOWN_TO_PHP_71]);
     $rectorConfig->skip([DowngradeParameterTypeWideningRector::class]);
+
+    $rectorConfig->ruleWithConfiguration(RemoveClassMethodTypeHinting::class, [
+        'lucatume\WPBrowser\Module\WPDb' => ['_cleanup','_loadDump', 'loadDumpUsingDriver']
+    ]);
 };
