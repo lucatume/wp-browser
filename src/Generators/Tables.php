@@ -99,9 +99,9 @@ class Tables
      * @param int $blogId               The blog ID.
      * @param array<string,mixed> $data The blog data.
      *
-     * @return string The SQL query.
+     * @return string[] The SQL queries to scaffold the blog tables.
      */
-    public function getBlogScaffoldQuery(string $prefix, int $blogId, array $data): string
+    public function getBlogScaffoldQueries(string $prefix, int $blogId, array $data): array
     {
         $template = $this->templates('new-blog');
         $data = array_merge([
@@ -124,7 +124,14 @@ class Tables
         $data['home'] = $data['home'] ?? $data['siteurl'];
         $data['template'] = $data['template'] ?? $data['stylesheet'];
 
-        return Strings::renderString($template, $data);
+        return array_values(
+            array_map(
+                'trim',
+                array_filter(
+                    explode('-- break --', Strings::renderString($template, $data))
+                )
+            )
+        );
     }
 
     /**
@@ -133,9 +140,9 @@ class Tables
      * @param string $tablePrefix The database table prefix.
      * @param int $blogId         The blog ID.
      *
-     * @return string SQL code.
+     * @return string[] The SQL queries to drop the blog tables.
      */
-    public function getBlogDropQuery(string $tablePrefix, int $blogId): string
+    public function getBlogDropQueries(string $tablePrefix, int $blogId): array
     {
         $template = $this->templates('drop-blog-tables');
         $data = [
@@ -143,6 +150,11 @@ class Tables
             'blog_id' => $blogId
         ];
 
-        return Strings::renderString($template, $data);
+        return array_values(
+            array_map(
+                'trim',
+                array_filter(explode('-- break --', Strings::renderString($template, $data)))
+            )
+        );
     }
 }

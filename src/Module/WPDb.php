@@ -3362,15 +3362,21 @@ class WPDb extends Db
 
         $tables = new Tables(get_class($this->drivers[$this->currentDatabase]));
 
-        $dropQuery = $tables->getBlogDropQuery($this->config['tablePrefix'], $blogId);
-        $pdoStatement = $pdo->prepare($dropQuery);
-        $this->debugSection('Query', $pdoStatement->queryString);
-        $pdo->exec($dropQuery);
+        $dropQueries = $tables->getBlogDropQueries($this->config['tablePrefix'], $blogId);
+        foreach ($dropQueries as $dropQuery) {
+            $this->debugSection('Query', $dropQuery);
+            if ($pdo->exec($dropQuery) === false) {
+                throw new ModuleException($this, 'Failed to drop blog tables: ' . ($pdo->errorInfo()[2] ?? 'n/a'));
+            }
+        }
 
-        $scaffoldQuery = $tables->getBlogScaffoldQuery($this->config['tablePrefix'], $blogId, $data);
-        $pdoStatement = $pdo->prepare($scaffoldQuery);
-        $this->debugSection('Query', $pdoStatement->queryString);
-        $pdo->exec($scaffoldQuery);
+        $scaffoldQueries = $tables->getBlogScaffoldQueries($this->config['tablePrefix'], $blogId, $data);
+        foreach ($scaffoldQueries as $scaffoldQuery) {
+            $this->debugSection('Query', $scaffoldQuery);
+            if ($pdo->exec($scaffoldQuery) === false) {
+                throw new ModuleException($this, 'Failed to scaffold blog tables: ' . ($pdo->errorInfo()[2] ?? 'n/a'));
+            }
+        }
 
         $this->scaffoldedBlogIds[] = $blogId;
     }
