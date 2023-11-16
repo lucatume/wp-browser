@@ -78,13 +78,6 @@ class SerializableThrowable
     {
         $this->throwable = $data['throwable'];
         $this->colorize = $data['colorize'];
-        Property::setPrivateProperties($this->throwable, [
-            'message' => $data['message'],
-            'trace' => $this->prettyPrintTrace($data['trace']),
-            'file' => $data['file'],
-            'line' => $data['line'],
-            'code' => $data['code'],
-        ]);
     }
 
     /**
@@ -101,8 +94,12 @@ class SerializableThrowable
             'code' => $this->code,
             'file' => $this->file,
             'line' => $this->line,
+            'trace' => $this->prettyPrintTrace($this->trace)
         ]);
 
+        if ($options & self::RELATIVE_PAHTNAMES) {
+            $this->makeTraceFilesRelative();
+        }
         return $this->throwable;
     }
 
