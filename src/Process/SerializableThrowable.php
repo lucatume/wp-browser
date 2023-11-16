@@ -96,6 +96,13 @@ class SerializableThrowable
             $this->makeTraceFilesRelative();
         }
 
+        Property::setPropertiesForClass($this->throwable, \Exception::class, [
+            'message' => $this->message,
+            'code' => $this->code,
+            'file' => $this->file,
+            'line' => $this->line,
+        ]);
+
         return $this->throwable;
     }
 
