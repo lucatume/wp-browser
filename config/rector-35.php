@@ -50,6 +50,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->skip([DowngradeParameterTypeWideningRector::class]);
 
     $rectorConfig->ruleWithConfiguration(RemoveClassMethodTypeHinting::class, [
-        'lucatume\WPBrowser\Module\WPDb' => ['_cleanup','_loadDump', 'loadDumpUsingDriver']
+        'lucatume\WPBrowser\Module\WPDb' => ['_cleanup','_loadDump', 'loadDumpUsingDriver'],
+        'lucatume\WPBrowser\Module\WPFilesystem' => ['_failed', 'assertDirectoryExists']
     ]);
 };
