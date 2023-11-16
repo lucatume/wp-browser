@@ -444,6 +444,8 @@ class WPLoader extends Module
             $this->installAndBootstrapInstallation();
         }
 
+        wp_cache_flush();
+
         $this->factoryStore = new FactoryStore();
 
         if (Debug::isEnabled()) {
