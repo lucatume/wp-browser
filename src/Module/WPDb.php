@@ -28,6 +28,8 @@ use lucatume\WPBrowser\Utils\Strings;
 use lucatume\WPBrowser\Utils\WP;
 use PDO;
 use PDOException;
+use ReflectionException;
+use ReflectionMethod;
 use RuntimeException;
 
 /**
@@ -3303,6 +3305,10 @@ class WPDb extends Db
             );
         }
 
+        // A table DROP and INSERT will trigger a schema change and will trigger a transaction commit.
+        // Reconnecting now is a good insurance against schema change related errors.
+        $this->reconnectCurrentDatabase();
+
         return $blogId;
     }
 
@@ -4903,5 +4909,26 @@ class WPDb extends Db
         $transient = $this->normalizePrefixedOptionName($transient, '_site_transient_');
         $this->seeOptionInDatabase($transient, $value);
         $this->useBlog($currentBlogId);
+    }
+
+    private function reconnectCurrentDatabase(): void
+    {
+        $allDbConfigs = $this->getDatabases();
+        if (!isset($allDbConfigs[$this->currentDatabase])) {
+            return;
+        }
+        $currentDatabaseConfig = $allDbConfigs[$this->currentDatabase];
+
+        try {
+            $disconnectMethodReflection = new ReflectionMethod($this, 'disconnect');
+            $connectMethodReflection = new ReflectionMethod($this, 'connect');
+            $disconnectMethodReflection->setAccessible(true);
+            $connectMethodReflection->setAccessible(true);
+            $this->debugSection('WPDb', 'Reconnecting to database ' . $this->currentDatabase);
+            $disconnectMethodReflection->invoke($this, $this->currentDatabase);
+            $connectMethodReflection->invoke($this, $this->currentDatabase, $currentDatabaseConfig);
+        } catch (ReflectionException $e) {
+            // Do nothing, the attempt was not successful.
+        }
     }
 }
