@@ -85,11 +85,8 @@ class SerializableThrowable
      */
     public function getThrowable(int $options = 0): Throwable
     {
-        if ($options & self::RELATIVE_PAHTNAMES) {
-            $this->makeTraceFilesRelative();
-        }
-
-        Property::setPropertiesForClass($this->throwable, \Exception::class, [
+        $errorClass = $this->throwable instanceof \Error ? \Error::class : \Exception::class;
+        Property::setPropertiesForClass($this->throwable, $errorClass, [
             'message' => $this->message,
             'code' => $this->code,
             'file' => $this->file,
@@ -163,7 +160,8 @@ class SerializableThrowable
             $traceEntry['line'] = 1;
             $relativePathnameTrace[$k] = $traceEntry;
         }
-        Property::setPrivateProperties($this->throwable, [
+        $errorClass = $this->throwable instanceof \Error ? \Error::class : \Exception::class;
+        Property::setPropertiesForClass($this->throwable, $errorClass, [
             'file' => $relativeFile,
             'trace' => $relativePathnameTrace,
         ]);
