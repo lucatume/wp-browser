@@ -223,11 +223,19 @@ class ChromeDriverControllerTest extends Unit
 
         $this->assertFileExists(ChromeDriver::getPidFile());
 
-        $this->assertMatchesStringSnapshot(var_export($extension->getInfo(), true));
+        $this->assertEquals([
+            'running' => 'yes',
+            'pidFile' => 'var/_output/chromedriver.pid',
+            'port' => 4444,
+        ], $extension->getInfo());
 
         $extension->stop($this->output);
 
-        $this->assertMatchesStringSnapshot(var_export($extension->getInfo(), true));
+        $this->assertEquals([
+            'running' => 'no',
+            'pidFile' => 'var/_output/chromedriver.pid',
+            'port' => 4444,
+        ], $extension->getInfo());
     }
 
     /**

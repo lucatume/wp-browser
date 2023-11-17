@@ -321,10 +321,26 @@ class BuiltInServerControllerTest extends Unit
 
         $this->assertFileExists(PhpBuiltInServer::getPidFile());
 
-        $this->assertMatchesStringSnapshot(var_export($extension->getInfo(), true));
+        $this->assertEquals([
+            'running' => 'yes',
+            'pidFile' => 'var/_output/php-built-in-server.pid',
+            'port' => 8923,
+            'docroot' => ltrim(str_replace(getcwd(), '', __DIR__),DIRECTORY_SEPARATOR),
+            'workers' => 5,
+            'url' => 'http://localhost:8923/',
+            'env' => [],
+        ], $extension->getInfo());
 
         $extension->stop($this->output);
 
-        $this->assertMatchesStringSnapshot(var_export($extension->getInfo(), true));
+        $this->assertEquals([
+            'running' => 'no',
+            'pidFile' => 'var/_output/php-built-in-server.pid',
+            'port' => 8923,
+            'docroot' => ltrim(str_replace(getcwd(), '', __DIR__),DIRECTORY_SEPARATOR),
+            'workers' => 5,
+            'url' => 'http://localhost:8923/',
+            'env' => [],
+        ],$extension->getInfo());
     }
 }
