@@ -10,6 +10,7 @@ use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 class ChromedriverInstallerTest extends \Codeception\Test\Unit
 {
     use UopzFunctions;
+    use TmpFilesCleanup;
 
     /**
      * It should throw if detected platform is not supported
