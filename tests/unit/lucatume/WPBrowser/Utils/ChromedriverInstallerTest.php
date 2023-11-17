@@ -5,6 +5,7 @@ namespace lucatume\WPBrowser\Utils;
 
 use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
+use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 
 class ChromedriverInstallerTest extends \Codeception\Test\Unit
