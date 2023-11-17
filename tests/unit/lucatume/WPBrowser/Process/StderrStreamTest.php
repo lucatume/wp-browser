@@ -177,10 +177,12 @@ EOT;
             E_CORE_WARNING
         ];
 
-        yield 'Compile error in stream' => [
-            '[17-Mar-2023 16:54:06 Europe/Paris] PHP Compile error:  Cannot use output buffering in output buffering display handlers in /src/Process/Worker/worker-script.php on line 15',
-            CompileError::class
-        ];
+        if (PHP_VERSION >= 73000) {
+            yield 'Compile error in stream' => [
+                '[17-Mar-2023 16:54:06 Europe/Paris] PHP Compile error:  Cannot use output buffering in output buffering display handlers in /src/Process/Worker/worker-script.php on line 15',
+                CompileError::class
+            ];
+        }
 
         yield 'Compile warning in stream' => [
             '[17-Mar-2023 16:54:06 Europe/Paris] PHP Compile warning:  Cannot use output buffering in output buffering display handlers in /src/Process/Worker/worker-script.php on line 15',
