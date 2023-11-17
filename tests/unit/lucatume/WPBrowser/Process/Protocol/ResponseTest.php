@@ -48,10 +48,10 @@ class ResponseTest extends TestCase
 
     public function testFromStderrWithNoSeparator(): void
     {
-        $stderrBufferString = '[17-Mar-2023 16:54:06 Europe/Paris] PHP Compile error:  Cannot use output buffering in output buffering display handlers in Unknown on line 0';
+        $stderrBufferString = '[17-Mar-2023 16:54:06 Europe/Paris] PHP Parse error:  Expected T_CLASS or string, got foo in Unknown on line 0';
         $response = Response::fromStderr($stderrBufferString);
 
-        $this->assertInstanceOf(CompileError::class, $response->getReturnValue());
+        $this->assertInstanceOf(ParseError::class, $response->getReturnValue());
         $this->assertEquals(1, $response->getExitValue());
     }
 
