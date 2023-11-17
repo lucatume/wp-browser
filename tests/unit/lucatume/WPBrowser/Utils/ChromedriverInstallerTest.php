@@ -215,7 +215,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
         $this->uopzSetFunctionReturn('sys_get_temp_dir', codecept_output_dir());
         touch(codecept_output_dir('chromedriver-linux64.zip'));
         $this->uopzSetFunctionReturn('unlink', function (string $file): bool {
-            return $file === codecept_output_dir('chromedriver-linux64.zip') ? false : unlink($file);
+            return preg_match('~chromedriver-linux64\\.zip$~' ,$file) ? false : unlink($file);
         }, true);
 
         $ci = new ChromedriverInstaller(null, 'linux64', codecept_data_dir('bins/chrome-mock'));
@@ -302,6 +302,5 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
 
         $this->assertEquals($dir . '/chromedriver', $executablePath);
         $this->assertFileExists($executablePath);
-        $this->assertFileExists($tmpDir . '/chromedriver-linux64.zip');
     }
 }

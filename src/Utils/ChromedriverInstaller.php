@@ -94,21 +94,26 @@ class ChromedriverInstaller
         $zipFilePathname = rtrim($cacheDir, '\\/') . '/' . basename($downloadUrl);
         $executableFileName = $dir . '/' . $this->getExecutableFileName();
 
-        if (!is_file($zipFilePathname)) {
-            $zipFilePathname = Download::fileFromUrl($downloadUrl, $zipFilePathname);
-            $this->output->writeln('Downloaded Chromedriver to ' . $zipFilePathname);
-
-            if (is_file($executableFileName) && !unlink($executableFileName)) {
-                throw new RuntimeException(
-                    "Could not remove existing executable file $executableFileName",
-                    self::ERR_REMOVE_EXISTING_BINARY
-                );
-            }
-
-            Zip::extractTo($zipFilePathname, $cacheDir);
+        if (is_file($zipFilePathname) && !unlink($zipFilePathname)) {
+            throw new RuntimeException(
+                "Could not remove existing zip file $zipFilePathname",
+                self::ERR_REMOVE_EXISTING_ZIP_FILE
+            );
         }
 
-        if (!copy(
+        $zipFilePathname = Download::fileFromUrl($downloadUrl, $zipFilePathname);
+        $this->output->writeln('Downloaded Chromedriver to ' . $zipFilePathname);
+
+        if (is_file($executableFileName) && !unlink($executableFileName)) {
+            throw new RuntimeException(
+                "Could not remove existing executable file $executableFileName",
+                self::ERR_REMOVE_EXISTING_BINARY
+            );
+        }
+
+        Zip::extractTo($zipFilePathname, $cacheDir);
+
+        if (!rename(
             "$cacheDir/chromedriver-$this->platform/" . $this->getExecutableFileName(),
             $executableFileName
         )) {
