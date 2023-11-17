@@ -337,10 +337,10 @@ class BuiltInServerControllerTest extends Unit
             'running' => 'no',
             'pidFile' => 'var/_output/php-built-in-server.pid',
             'port' => 8923,
-            'docroot' => ltrim(str_replace(getcwd(), '', __DIR__),DIRECTORY_SEPARATOR),
+            'docroot' => ltrim(str_replace(getcwd(), '', __DIR__), DIRECTORY_SEPARATOR),
             'workers' => 5,
             'url' => 'http://localhost:8923/',
             'env' => [],
-        ],$extension->getInfo());
+        ], $extension->getInfo());
     }
 }
