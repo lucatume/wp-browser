@@ -11,8 +11,11 @@ use Rector\Core\Rector\AbstractRector;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
-class RemoveClassMethodTypeHinting extends AbstractRector implements ConfigurableRectorInterface
+class RemoveTypeHinting extends AbstractRector implements ConfigurableRectorInterface
 {
+    public const REMOVE_ALL = 'remove_all';
+    public const REMOVE_RETURN_TYPE_HINTING = 'remove_return_type_hinting';
+    public const REMOVE_PARAM_TYPE_HINTING = 'remove_param_type_hinting';
     private array $configuration;
     private ?Class_ $currentClass = null;
 
@@ -69,19 +72,38 @@ class RemoveClassMethodTypeHinting extends AbstractRector implements Configurabl
         ) : $node->name->toString();
         $methodName = $node->name->toString();
 
-        if (!(isset($this->configuration[$className]) && in_array(
-            $methodName,
-            $this->configuration[$className],
-            true
-        ))) {
+        if (!(isset($this->configuration[$className][$methodName]))) {
             return null;
         }
 
-        $node->params = array_map(function (Param $param) {
+        $methodConfig = $this->configuration[$className][$methodName];
+        $removeAll = isset($methodConfig[self::REMOVE_ALL]);
+
+        foreach ($node->params as $param) {
+            if ($removeAll) {
+                $param->type = null;
+                continue;
+            }
+
+            if (!$param->var instanceof Node\Expr\Variable) {
+                continue;
+            }
+
+            $paramName = $param->var->name instanceof Node\Identifier ?
+                $param->var->name->toString()
+                : $param->var->name;
+
+            if (!in_array($paramName, $methodConfig[self::REMOVE_PARAM_TYPE_HINTING] ?? [], true)) {
+                continue;
+            }
+
             $param->type = null;
-            return $param;
-        }, $node->params);
-        $node->returnType = null;
+        }
+
+        $removeReturnTypeHinting = isset($methodConfig[self::REMOVE_RETURN_TYPE_HINTING]);
+        if ($removeAll || $removeReturnTypeHinting) {
+            $node->returnType = null;
+        }
 
         return $node;
     }

@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-use lucatume\Rector\RemoveClassMethodTypeHinting;
+use Codeception\TestInterface;
+use lucatume\Rector\RemoveTypeHinting;
 use lucatume\Rector\SwapEventDispatcherEventNameParameters;
 use Rector\Config\RectorConfig;
 use Rector\DowngradePhp72\Rector\ClassMethod\DowngradeParameterTypeWideningRector;
@@ -49,8 +50,36 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->sets([DowngradeLevelSetList::DOWN_TO_PHP_71]);
     $rectorConfig->skip([DowngradeParameterTypeWideningRector::class]);
 
-    $rectorConfig->ruleWithConfiguration(RemoveClassMethodTypeHinting::class, [
-        'lucatume\WPBrowser\Module\WPDb' => ['_cleanup','_loadDump', 'loadDumpUsingDriver'],
-        'lucatume\WPBrowser\Module\WPFilesystem' => ['_failed', 'assertDirectoryExists']
+    $rectorConfig->ruleWithConfiguration(RemoveTypeHinting::class, [
+        'lucatume\WPBrowser\Module\WPDb' => [
+            '_cleanup' => [
+                // from: public function _cleanup(string $databaseKey = null, array $databaseConfig = null): void
+                // to: public function _cleanup($databaseKey = null, $databaseConfig = null)
+                RemoveTypeHinting::REMOVE_ALL => true
+            ],
+            '_loadDump' => [
+                // from: public function _loadDump(string $databaseKey = null, array $databaseConfig = null): void
+                // public function _loadDump($databaseKey = null, $databaseConfig = null)
+                RemoveTypeHinting::REMOVE_ALL => true
+            ],
+            'loadDumpUsingDriver' => [
+                // from: protected function loadDumpUsingDriver(string $databaseKey): void
+                // to: protected function loadDumpUsingDriver($databaseKey)
+                RemoveTypeHinting::REMOVE_ALL => true
+            ]
+        ],
+        'lucatume\WPBrowser\Module\WPFilesystem' => [
+            // from: public function _failed(TestInterface $test, Exception $fail): void
+            // to: public function _failed(TestInterface $test, Exception $fail)
+            '_failed' => [
+                RemoveTypeHinting::REMOVE_RETURN_TYPE_HINTING => true,
+                RemoveTypeHinting::REMOVE_PARAM_TYPE_HINTING => ['fail']
+            ],
+            // from: public function assertDirectoryExists(string $directory, string $message = ''): void
+            // to: protected function assertDirectoryExists($directory, $message = '')
+            'assertDirectoryExists' => [
+                RemoveTypeHinting::REMOVE_ALL => true
+            ]
+        ]
     ]);
 };
