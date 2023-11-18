@@ -991,7 +991,7 @@ class WPLoaderTest extends Unit
             ],
             'theme' => 'twentytwenty',
         ];
-        if (PHP_VERSION_ID >= 74000) {
+        if (PHP_VERSION >= 7.4) {
             // WooCommerce has a minimum PHP version of 7.4.0 required.
             $this->config['plugins'][] = 'woocommerce/woocommerce.php';
         }
@@ -1014,7 +1014,7 @@ class WPLoaderTest extends Unit
                 'akismet/akismet.php',
                 'hello-dolly/hello.php'
             ];
-            if (PHP_VERSION_ID >= 74000) {
+            if (PHP_VERSION >= 7.4) {
                 $expectedActivePlugins[] = 'woocommerce/woocommerce.php';
             }
             Assert::assertEquals($expectedActivePlugins, get_option('active_plugins'));
@@ -1046,7 +1046,7 @@ class WPLoaderTest extends Unit
                 $wpLoader->getThemesFolder('/some-file.php')
             );
             WPAssert::assertTableExists('posts');
-            if (PHP_VERSION >= 74000) {
+            if (PHP_VERSION >= 7.4) {
                 WPAssert::assertTableExists('woocommerce_order_items');
             }
             WPAssert::assertUpdatesDisabled();
@@ -1089,7 +1089,7 @@ class WPLoaderTest extends Unit
             'theme' => 'twentytwenty',
             'multisite' => true,
         ];
-        if (PHP_VERSION_ID >= 74000) {
+        if (PHP_VERSION >= 7.4) {
             // WooCommerce has a minimum PHP version of 7.4.0 required.
             $this->config['plugins'][] = 'woocommerce/woocommerce.php';
         }
@@ -1112,7 +1112,7 @@ class WPLoaderTest extends Unit
                 'akismet/akismet.php',
                 'hello-dolly/hello.php'
             ];
-            if(PHP_VERSION >= 740000){
+            if(PHP_VERSION >= 7.4){
                 $expectedActivePlugins[] = 'woocommerce/woocommerce.php';
             }
             Assert::assertEquals($expectedActivePlugins, array_keys(get_site_option('active_sitewide_plugins')));
@@ -1145,7 +1145,7 @@ class WPLoaderTest extends Unit
                 $wpLoader->getThemesFolder('/some-file.php')
             );
             WPAssert::assertTableExists('posts');
-            if (PHP_VERSION >= 74000) {
+            if (PHP_VERSION >= 7.4) {
                 WPAssert::assertTableExists('woocommerce_order_items');
             }
             WPAssert::assertUpdatesDisabled();
@@ -1379,7 +1379,7 @@ class WPLoaderTest extends Unit
             ],
             'theme' => 'some-child-theme'
         ];
-        if(PHP_VERSION >= 74000){
+        if(PHP_VERSION >= 7.4){
             // WooCommerce has a minimum PHP version of 7.4.0 required.
             $this->config['plugins'][] = 'woocommerce/woocommerce.php';
         }
@@ -1449,7 +1449,7 @@ class WPLoaderTest extends Unit
             'theme' => 'twentytwenty-child',
             'multisite' => true,
         ];
-        if(PHP_VERSION >= 74000){
+        if(PHP_VERSION >= 7.4){
             // WooCommerce has a minimum PHP version of 7.4.0 required.
             $this->config['plugins'][] = 'woocommerce/woocommerce.php';
         }

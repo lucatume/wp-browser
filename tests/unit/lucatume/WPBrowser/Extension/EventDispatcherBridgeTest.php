@@ -34,7 +34,7 @@ class EventDispatcherBridgeTest extends Unit
         $this->expectException(ExtensionException::class);
         $this->expectExceptionMessage('Could not find the application event dispatcher.');
 
-        $suite = PHP_VERSION_ID >= 80000 ? null : new Suite;
+        $suite = PHP_VERSION >= 8.0 ? null : new Suite;
         $eventDispatcherBridge->onModuleInit(new SuiteEvent($suite));
     }
 
@@ -60,7 +60,7 @@ class EventDispatcherBridgeTest extends Unit
             });
 
         $eventDispatcherBridge = new EventDispatcherBridge([], []);
-        $suite = PHP_VERSION_ID >= 80000 ? null : new Suite;
+        $suite = PHP_VERSION >= 8.0 ? null : new Suite;
         $eventDispatcherBridge->onSuiteInit(new SuiteEvent($suite));
     }
 
@@ -90,7 +90,7 @@ class EventDispatcherBridgeTest extends Unit
         $this->uopzSetStaticMethodReturn(Dispatcher::class, 'setEventDispatcher', null);
 
         $eventDispatcherBridge = new EventDispatcherBridge([], []);
-        $suite = PHP_VERSION_ID >= 80000 ? null : new Suite;
+        $suite = PHP_VERSION >= 8.0 ? null : new Suite;
         $eventDispatcherBridge->onSuiteBefore(new SuiteEvent($suite));
 
         $this->assertEquals(2, $calls);
@@ -116,7 +116,7 @@ class EventDispatcherBridgeTest extends Unit
             } , true);
 
         $eventDispatcherBridge = new EventDispatcherBridge([], []);
-        $suite = PHP_VERSION_ID >= 80000 ? null : new Suite;
+        $suite = PHP_VERSION >= 8.0 ? null : new Suite;
         $eventDispatcherBridge->onSuiteBefore(new SuiteEvent($suite));
 
         $this->assertSame($eventDispatcher, $setEventDispatcher);

@@ -177,7 +177,7 @@ EOT;
             E_CORE_WARNING
         ];
 
-        if (PHP_VERSION >= 73000) {
+        if (PHP_VERSION >= 7.3) {
             yield 'Compile error in stream' => [
                 '[17-Mar-2023 16:54:06 Europe/Paris] PHP Compile error:  Cannot use output buffering in output buffering display handlers in /src/Process/Worker/worker-script.php on line 15',
                 CompileError::class

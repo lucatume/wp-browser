@@ -662,7 +662,7 @@ EOT;
      */
     public function should_scaffold_correctly_on_site_with_non_default_structure(): void
     {
-        if (PHP_VERSION_ID < 80000) {
+        if (PHP_VERSION < 8.0) {
             $this->markTestSkipped('This test requires PHP 8.0 or higher.');
         }
 
