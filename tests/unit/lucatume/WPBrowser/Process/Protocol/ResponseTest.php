@@ -51,13 +51,15 @@ class ResponseTest extends TestCase
         $stderrBufferString = '[17-Mar-2023 16:54:06 Europe/Paris] PHP Parse error:  Expected T_CLASS or string, got foo in Unknown on line 0';
         $response = Response::fromStderr($stderrBufferString);
 
-        $this->assertInstanceOf(ParseError::class, $response->getReturnValue());
+        $this->assertInstanceOf(\ParseError::class, $response->getReturnValue());
         $this->assertEquals(1, $response->getExitValue());
     }
 
     public function testFromStderrWithSeparatorAndValidPayload(): void
     {
-        $returnValue = new SerializableClosure(static fn() => "success");
+        $returnValue = new SerializableClosure(static function () {
+            return "success";
+        });
         $telemetry = ["memoryPeakUsage" => 123456];
         $payload = Parser::encode([$returnValue, $telemetry]);
         $separator = Response::$stderrValueSeparator;
@@ -89,7 +91,9 @@ class ResponseTest extends TestCase
     public function testGetStderrLength(): void
     {
         $separator = Response::$stderrValueSeparator;
-        $payload = Parser::encode([new SerializableClosure(static fn() => "success"), ['foo' => 'bar']]);
+        $payload = Parser::encode([new SerializableClosure(static function () {
+            return "success";
+        }), ['foo' => 'bar']]);
         $stderrBufferString = "Error message{$separator}{$payload}";
 
         $response = Response::fromStderr($stderrBufferString);
@@ -98,7 +102,9 @@ class ResponseTest extends TestCase
     }
 
     public function testFromStderrWithNoiseAfterPayload():void{
-        $returnValue = new SerializableClosure(static fn() => "success");
+        $returnValue = new SerializableClosure(static function () {
+            return "success";
+        });
         $telemetry = ["memoryPeakUsage" => 123456];
         $payload = Parser::encode([$returnValue, $telemetry]);
         $separator = Response::$stderrValueSeparator;
