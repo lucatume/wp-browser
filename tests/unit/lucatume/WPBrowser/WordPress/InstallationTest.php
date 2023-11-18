@@ -650,6 +650,10 @@ PHP;
      */
     public function should_find_word_press_installation_in_directory(): void
     {
+        if (PHP_VERSION < 8.0) {
+            $this->markTestSkipped('PHP 8.0 required.');
+        }
+
         $db = new MysqlDatabase(
             Random::dbName(),
             Env::get('WORDPRESS_DB_USER'),
