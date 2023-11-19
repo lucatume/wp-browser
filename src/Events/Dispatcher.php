@@ -94,6 +94,17 @@ class Dispatcher
         }
 
         $event = new Event($name, $context, $origin);
-        return $eventDispatcher->dispatch($event, $name);
+        try {
+            $dispatchMethodReflection = new \ReflectionMethod($eventDispatcher, 'dispatch');
+            $firstParameterReflection = $dispatchMethodReflection->getParameters()[0] ?? null;
+            $firstParameterType = $firstParameterReflection ? $firstParameterReflection->getType() : null;
+            if ($firstParameterType instanceof \ReflectionType && (string)$firstParameterType === 'object') {
+                return $eventDispatcher->dispatch($event, $name);
+            }
+
+            return $eventDispatcher->dispatch($name, $event); // @phpstan-ignore-line
+        } catch (\ReflectionException $e) {
+            return null;
+        }
     }
 }
