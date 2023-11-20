@@ -152,28 +152,28 @@ class WPLoader extends Module
      */
     protected $config
         = [
-		    'loadOnly'                  => false,
-		    'isolatedInstall'           => true,
-		    'installationTableHandling' => 'empty',
-		    'wpDebug'                   => true,
-		    'multisite'                 => false,
-		    'skipPluggables'            => false,
-		    'dbCharset'                 => 'utf8',
-		    'dbCollate'                 => '',
-		    'tablePrefix'               => 'wptests_',
-		    'domain'                    => 'example.org',
-		    'adminEmail'                => 'admin@example.org',
-		    'title'                     => 'Test Blog',
-		    'phpBinary'                 => 'php',
-		    'language'                  => '',
-		    'configFile'                => '',
-		    'contentFolder'             => '',
-		    'pluginsFolder'             => '',
-		    'plugins'                   => [],
-		    'activatePlugins'           => [],
-		    'activatePluginsSilently'   => [],
-		    'bootstrapActions'          => '',
-		    'theme'                     => '',
+            'loadOnly'                  => false,
+            'isolatedInstall'           => true,
+            'installationTableHandling' => 'empty',
+            'wpDebug'                   => true,
+            'multisite'                 => false,
+            'skipPluggables'            => false,
+            'dbCharset'                 => 'utf8',
+            'dbCollate'                 => '',
+            'tablePrefix'               => 'wptests_',
+            'domain'                    => 'example.org',
+            'adminEmail'                => 'admin@example.org',
+            'title'                     => 'Test Blog',
+            'phpBinary'                 => 'php',
+            'language'                  => '',
+            'configFile'                => '',
+            'contentFolder'             => '',
+            'pluginsFolder'             => '',
+            'plugins'                   => [],
+            'activatePlugins'           => [],
+            'activatePluginsSilently'   => [],
+            'bootstrapActions'          => '',
+            'theme'                     => '',
         ];
 
     /**
@@ -1121,13 +1121,13 @@ class WPLoader extends Module
      */
     protected function getInstallationConfiguration()
     {
-	    return new Configuration( [
-		    'tablesHandling'          => isset( $this->config['installationTableHandling'] ) ?
-			    $this->config['installationTableHandling']
-			    : 'empty',
-		    'activatePluginsSilently' => isset( $this->config['activatePluginsSilently'] ) ?
-			    (array) $this->config['activatePluginsSilently']
-			    : []
-	    ] );
+        return new Configuration([
+            'tablesHandling'          => isset($this->config['installationTableHandling']) ?
+                $this->config['installationTableHandling']
+                : 'empty',
+            'activatePluginsSilently' => isset($this->config['activatePluginsSilently']) ?
+                (array) $this->config['activatePluginsSilently']
+                : []
+        ]);
     }
 }
