@@ -138,6 +138,10 @@ class WPLoader extends Module
      * activated calling the `activate_{$plugin}` before any test case runs and
      * after mu-plugins have been loaded; these should be defined in the
      * `folder/plugin-file.php` format.
+     * activatePlugins - array, def. `[]`, a list of plugins that should be
+     *  silently activated calling the `activate_{$plugin}` before any test case runs and
+     *  after mu-plugins have been loaded; these should be defined in the
+     *  `folder/plugin-file.php` format.
      * bootstrapActions - array, def. `[]`, a list of actions that should be
      * called after before any test case runs.
      * skipPluggables - bool, def. `false`, if set to `true` will skip the
@@ -148,27 +152,28 @@ class WPLoader extends Module
      */
     protected $config
         = [
-            'loadOnly'                  => false,
-            'isolatedInstall'           => true,
-            'installationTableHandling' => 'empty',
-            'wpDebug'                   => true,
-            'multisite'                 => false,
-            'skipPluggables'            => false,
-            'dbCharset'                 => 'utf8',
-            'dbCollate'                 => '',
-            'tablePrefix'               => 'wptests_',
-            'domain'                    => 'example.org',
-            'adminEmail'                => 'admin@example.org',
-            'title'                     => 'Test Blog',
-            'phpBinary'                 => 'php',
-            'language'                  => '',
-            'configFile'                => '',
-            'contentFolder'             => '',
-            'pluginsFolder'             => '',
-            'plugins'                   => '',
-            'activatePlugins'           => '',
-            'bootstrapActions'          => '',
-            'theme'                     => '',
+		    'loadOnly'                  => false,
+		    'isolatedInstall'           => true,
+		    'installationTableHandling' => 'empty',
+		    'wpDebug'                   => true,
+		    'multisite'                 => false,
+		    'skipPluggables'            => false,
+		    'dbCharset'                 => 'utf8',
+		    'dbCollate'                 => '',
+		    'tablePrefix'               => 'wptests_',
+		    'domain'                    => 'example.org',
+		    'adminEmail'                => 'admin@example.org',
+		    'title'                     => 'Test Blog',
+		    'phpBinary'                 => 'php',
+		    'language'                  => '',
+		    'configFile'                => '',
+		    'contentFolder'             => '',
+		    'pluginsFolder'             => '',
+		    'plugins'                   => [],
+		    'activatePlugins'           => [],
+		    'activatePluginsSilently'   => [],
+		    'bootstrapActions'          => '',
+		    'theme'                     => '',
         ];
 
     /**
@@ -1116,10 +1121,13 @@ class WPLoader extends Module
      */
     protected function getInstallationConfiguration()
     {
-        return new Configuration([
-            'tablesHandling' => isset($this->config['installationTableHandling']) ?
-                $this->config['installationTableHandling']
-                : 'empty'
-        ]);
+	    return new Configuration( [
+		    'tablesHandling'          => isset( $this->config['installationTableHandling'] ) ?
+			    $this->config['installationTableHandling']
+			    : 'empty',
+		    'activatePluginsSilently' => isset( $this->config['activatePluginsSilently'] ) ?
+			    (array) $this->config['activatePluginsSilently']
+			    : []
+	    ] );
     }
 }

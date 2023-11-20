@@ -32,6 +32,9 @@
         "Must-use plugins health-check:": "mu-plugins directory (wp-content/mu-plugins) does not exist.",
         "Plugins health-check:": {
             "Inactive plugin [akismet]": "wp-content/plugins/akismet",
+            "Inactive plugin [doing-it-right]": "wp-content/plugins/doing-it-right",
+            "Inactive plugin [doing-it-wrong-1]": "wp-content/plugins/doing-it-wrong-1",
+            "Inactive plugin [doing-it-wrong-2]": "wp-content/plugins/doing-it-wrong-2",
             "Inactive plugin [isolated-test-plugin-two]": "wp-content/plugins/isolated-test-plugin-two",
             "Inactive plugin [isolated-test-plugin]": "wp-content/plugins/isolated-test-plugin",
             "Inactive plugin [mu-plugin-1]": "wp-content/plugins/mu-plugin-1",
