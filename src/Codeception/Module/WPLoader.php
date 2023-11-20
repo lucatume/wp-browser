@@ -138,6 +138,10 @@ class WPLoader extends Module
      * activated calling the `activate_{$plugin}` before any test case runs and
      * after mu-plugins have been loaded; these should be defined in the
      * `folder/plugin-file.php` format.
+     * activatePlugins - array, def. `[]`, a list of plugins that should be
+     *  silently activated calling the `activate_{$plugin}` before any test case runs and
+     *  after mu-plugins have been loaded; these should be defined in the
+     *  `folder/plugin-file.php` format.
      * bootstrapActions - array, def. `[]`, a list of actions that should be
      * called after before any test case runs.
      * skipPluggables - bool, def. `false`, if set to `true` will skip the
@@ -165,8 +169,9 @@ class WPLoader extends Module
             'configFile'                => '',
             'contentFolder'             => '',
             'pluginsFolder'             => '',
-            'plugins'                   => '',
-            'activatePlugins'           => '',
+            'plugins'                   => [],
+            'activatePlugins'           => [],
+            'activatePluginsSilently'   => [],
             'bootstrapActions'          => '',
             'theme'                     => '',
         ];
@@ -1117,9 +1122,12 @@ class WPLoader extends Module
     protected function getInstallationConfiguration()
     {
         return new Configuration([
-            'tablesHandling' => isset($this->config['installationTableHandling']) ?
+            'tablesHandling'          => isset($this->config['installationTableHandling']) ?
                 $this->config['installationTableHandling']
-                : 'empty'
+                : 'empty',
+            'activatePluginsSilently' => isset($this->config['activatePluginsSilently']) ?
+                (array) $this->config['activatePluginsSilently']
+                : []
         ]);
     }
 }

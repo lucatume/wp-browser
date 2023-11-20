@@ -192,9 +192,13 @@ if ($multisite) {
 	$current_site->blog_id = 1;
 }
 
+$activatePluginsSilently = isset( $configuration['activatePluginsSilently'] ) ?
+	$configuration['activatePluginsSilently']
+	: [];
+
 // finally activate the plugins that should be activated
 if (!empty($activePlugins)) {
-	$activePlugins = array_unique($activePlugins);
+	$activePlugins = array_values( array_unique( array_merge( $activePlugins, $activatePluginsSilently ) ) );
 
 	if ($multisite) {
 		require(ABSPATH . WPINC . '/class-wp-site-query.php');
@@ -204,8 +208,9 @@ if (!empty($activePlugins)) {
 	}
 
 	foreach ($activePlugins as $plugin) {
+		$silent                  = in_array($plugin, $activatePluginsSilently,true);
 		printf("\n%sctivating plugin [%s]...", $multisite ? 'Network a' : 'A', $plugin);
-		$activated = activate_plugin($plugin, null, $multisite, false);
+		$activated = activate_plugin($plugin, null, $multisite, $silent);
 
 		if (is_wp_error($activated)) {
 			echo $activated->get_error_message();

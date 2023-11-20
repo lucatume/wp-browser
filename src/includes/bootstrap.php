@@ -114,6 +114,7 @@ if(empty($skipWordPressInstall)){
 				'WPLANG' => WPLANG,
 			],
 			'tablesHandling' => $installationConfiguration->get('tablesHandling','empty'),
+			'activatePluginsSilently' => $installationConfiguration->get('activatePluginsSilently', []),
 		];
 
 		$dirConstants = [

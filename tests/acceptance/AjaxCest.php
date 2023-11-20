@@ -1,8 +1,10 @@
 <?php
 
-class AjaxCest {
-	public function _before( AcceptanceTester $I ) {
-		$code = <<< PHP
+class AjaxCest
+{
+    public function _before(AcceptanceTester $I)
+    {
+        $code = <<< PHP
 <?php
 /**
  * Plugin Name: Test Ajax Plugin
@@ -30,53 +32,58 @@ add_action( 'wp_footer', function(){
 });
 PHP;
 
-		$I->haveMuPlugin( 'test-ajax-plugin', $code );
-	}
+        $I->haveMuPlugin('test-ajax-plugin', $code);
+    }
 
-	public function test_invalid_action_returns_400( AcceptanceTester $I ) {
-		$I->amOnAdminAjaxPage( [
-			'action' => 'invalid_action'
-		] );
-		$I->seeResponseCodeIs( 400 );
-	}
+    public function test_invalid_action_returns_400(AcceptanceTester $I)
+    {
+        $I->amOnAdminAjaxPage([
+            'action' => 'invalid_action'
+        ]);
+        $I->seeResponseCodeIs(400);
+    }
 
-	public function test_missing_nonce_returns_403( AcceptanceTester $I ) {
-		$I->amOnAdminAjaxPage( [
-			'action' => 'test_ajax_action'
-		] );
-		$I->seeResponseCodeIs( 403 );
-	}
+    public function test_missing_nonce_returns_403(AcceptanceTester $I)
+    {
+        $I->amOnAdminAjaxPage([
+            'action' => 'test_ajax_action'
+        ]);
+        $I->seeResponseCodeIs(403);
+    }
 
-	public function test_wrong_nonce_returns_403( AcceptanceTester $I ) {
-		$I->amOnAdminAjaxPage( [
-			'action'      => 'test_ajax_action',
-			'_ajax_nonce' => 'wrong_nonce'
-		] );
-		$I->seeResponseCodeIs( 403 );
-	}
+    public function test_wrong_nonce_returns_403(AcceptanceTester $I)
+    {
+        $I->amOnAdminAjaxPage([
+            'action'      => 'test_ajax_action',
+            '_ajax_nonce' => 'wrong_nonce'
+        ]);
+        $I->seeResponseCodeIs(403);
+    }
 
-	public function test_valid_nonce_returns_200_for_visitor( AcceptanceTester $I ) {
-		$I->amOnPage( '/' );
-		$nonce = $I->grabValueFrom( '#test-ajax-nonce' );
+    public function test_valid_nonce_returns_200_for_visitor(AcceptanceTester $I)
+    {
+        $I->amOnPage('/');
+        $nonce = $I->grabValueFrom('#test-ajax-nonce');
 
-		$I->amOnAdminAjaxPage( [
-			'action'      => 'test_ajax_action',
-			'_ajax_nonce' => $nonce
-		] );
-		$I->seeResponseCodeIs( 200 );
-		$I->canSee( json_encode( [ 'type' => 'no-priv' ] ) );
-	}
+        $I->amOnAdminAjaxPage([
+            'action'      => 'test_ajax_action',
+            '_ajax_nonce' => $nonce
+        ]);
+        $I->seeResponseCodeIs(200);
+        $I->canSee(json_encode([ 'type' => 'no-priv' ]));
+    }
 
-	public function test_valid_nonce_returns_200_for_admin( AcceptanceTester $I ) {
-		$I->loginAsAdmin();
-		$I->amOnPage( '/' );
-		$nonce = $I->grabValueFrom( '#test-ajax-nonce' );
+    public function test_valid_nonce_returns_200_for_admin(AcceptanceTester $I)
+    {
+        $I->loginAsAdmin();
+        $I->amOnPage('/');
+        $nonce = $I->grabValueFrom('#test-ajax-nonce');
 
-		$I->amOnAdminAjaxPage( [
-			'action'      => 'test_ajax_action',
-			'_ajax_nonce' => $nonce
-		] );
-		$I->seeResponseCodeIs( 200 );
-		$I->canSee( json_encode( [ 'type' => 'priv' ] ) );
-	}
+        $I->amOnAdminAjaxPage([
+            'action'      => 'test_ajax_action',
+            '_ajax_nonce' => $nonce
+        ]);
+        $I->seeResponseCodeIs(200);
+        $I->canSee(json_encode([ 'type' => 'priv' ]));
+    }
 }
