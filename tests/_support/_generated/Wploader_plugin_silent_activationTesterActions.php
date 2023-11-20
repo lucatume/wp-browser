@@ -112,7 +112,7 @@ trait Wploader_plugin_silent_activationTesterActions
      * @return void
      * @see \Codeception\Module\WPLoader::startWpFiltersDebug()
      */
-    public function startWpFiltersDebug(?callable $format = NULL) {
+    public function startWpFiltersDebug($format = NULL) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('startWpFiltersDebug', func_get_args()));
     }
 
