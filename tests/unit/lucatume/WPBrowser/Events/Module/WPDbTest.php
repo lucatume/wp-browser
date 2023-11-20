@@ -25,9 +25,15 @@ class WPDbTest extends Unit
     use TmpFilesCleanup;
 
     protected $backupGlobals = false;
-    private array $config = [
+    /**
+     * @var mixed[]
+     */
+    private $config = [
     ];
-    private static ?PDO $pdo;
+    /**
+     * @var \PDO|null
+     */
+    private static $pdo;
 
     /**
      * @before

@@ -78,6 +78,11 @@ class SerializableThrowable
     {
         $this->throwable = $data['throwable'];
         $this->colorize = $data['colorize'];
+        $this->message = $data['message'];
+        $this->code = $data['code'];
+        $this->file = $data['file'];
+        $this->line = $data['line'];
+        $this->trace = $data['trace'];
     }
 
     /**

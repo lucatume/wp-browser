@@ -24,9 +24,18 @@ class WPCLITest extends Unit
     use TmpFilesCleanup;
 
     protected $backupGlobals = false;
-    private static ?Installation $installation = null;
-    protected bool $cleanupTmpAfterTest = false;
-    private array $cleanupAfter = [];
+    /**
+     * @var \lucatume\WPBrowser\WordPress\Installation|null
+     */
+    private static $installation;
+    /**
+     * @var bool
+     */
+    protected $cleanupTmpAfterTest = false;
+    /**
+     * @var mixed[]
+     */
+    private $cleanupAfter = [];
 
     public function _before(): void
     {
@@ -412,10 +421,11 @@ class WPCLITest extends Unit
      *
      * @test
      * @dataProvider strictArgsInlineValuesProvider
+     * @param mixed $configValue
      */
     public function should_allow_overriding_strict_args_in_command_line(
         string $strictArg,
-        mixed $configValue,
+        $configValue,
         string $inlineValue
     ): void {
         $wpcli = $this->module([

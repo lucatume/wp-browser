@@ -49,16 +49,28 @@ class WPLoaderTest extends Unit
     /**
      * @var UnitTester
      */
-    protected UnitTester $tester;
+    protected $tester;
 
     /**
      * @var array
      */
-    protected array $config;
-    private ?string $previousCwd = null;
-    private ?string $homeEnvBackup = null;
-    private ?string $homeServerBackup = null;
-    private ?ModuleContainer $mockModuleContainer = null;
+    protected $config;
+    /**
+     * @var string|null
+     */
+    private $previousCwd;
+    /**
+     * @var string|null
+     */
+    private $homeEnvBackup;
+    /**
+     * @var string|null
+     */
+    private $homeServerBackup;
+    /**
+     * @var \Codeception\Lib\ModuleContainer|null
+     */
+    private $mockModuleContainer;
 
     /**
      * @after

@@ -19,11 +19,23 @@ class WPQueriesTest extends Unit
 {
     use UopzFunctions;
 
-    protected bool $cleanupTmpAfterTest = false;
-    private static ?string $wpRootDir = null;
+    /**
+     * @var bool
+     */
+    protected $cleanupTmpAfterTest = false;
+    /**
+     * @var string|null
+     */
+    private static $wpRootDir;
     protected $backupGlobals = false;
-    private array $config = [];
-    private ?wpdb $wpdb;
+    /**
+     * @var mixed[]
+     */
+    private $config = [];
+    /**
+     * @var \wpdb|null
+     */
+    private $wpdb;
 
     private function makeInstance(): WPQueries
     {
