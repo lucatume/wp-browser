@@ -47,7 +47,7 @@ class ComposerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_trying_to_build_on_non_json_file(): void
     {
-        if (PHP_VERSION_ID >= 70300) {
+        if (PHP_VERSION >= 8.0 ) {
             $this->expectException(\JsonException::class);
         } else {
             $this->expectException(\Exception::class);
