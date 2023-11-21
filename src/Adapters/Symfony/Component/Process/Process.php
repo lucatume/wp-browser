@@ -7,6 +7,7 @@ use Symfony\Component\Process\Process as SymfonyProcess;
 
 class Process extends SymfonyProcess
 {
+    private $options = [];
     /**
      * @param string[] $command
      * @param array<string,mixed>|null $env
@@ -44,5 +45,24 @@ class Process extends SymfonyProcess
         $startTime = $startTimeReflectionProperty->getValue($this);
 
         return $startTime;
+    }
+
+    public function __call(string $name, array $arguments)
+    {
+        if ($name === 'setOptions') {
+            $this->options = $arguments[0] ?? [];
+            return;
+        }
+    }
+
+    public function __destruct()
+    {
+        if (($this->options['create_new_console'] ?? false) || method_exists($this, 'setOptions')) {
+            parent::__destruct();
+        }
+
+        $closeMethodReflection = new \ReflectionMethod(SymfonyProcess::class, 'close');
+        $closeMethodReflection->setAccessible(true);
+        $closeMethodReflection->invoke($this);
     }
 }
