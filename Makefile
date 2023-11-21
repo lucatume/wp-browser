@@ -56,5 +56,24 @@ build_35:
 	vendor/bin/rector --config=config/rector-35.php
 	rm -rf vendor composer.lock composer.json
 	cp config/composer-35.json composer.json
+	plink 7.1
 	composer update -W
+	${MAKE} clean_procs
+	vendor/bin/codeception chromedriver:update
+	WPBROWSER_VERSION=3.5 vendor/bin/codecept run unit
+	plink 7.2
+	composer update -W
+	${MAKE} clean_procs
+	vendor/bin/codeception chromedriver:update
+	WPBROWSER_VERSION=3.5 vendor/bin/codecept run unit
+	plink 7.3
+	composer update -W
+	${MAKE} clean_procs
+	vendor/bin/codeception chromedriver:update
+	WPBROWSER_VERSION=3.5 vendor/bin/codecept run unit
+	plink 7.4
+	composer update -W
+	${MAKE} clean_procs
+	vendor/bin/codeception chromedriver:update
+	WPBROWSER_VERSION=3.5 vendor/bin/codecept run unit
 .PHONY: build_35
