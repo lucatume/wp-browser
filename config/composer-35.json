@@ -19,7 +19,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "php": ">=7.1 <8.3",
+    "php": ">=7.1 <8.0",
     "ext-pdo": "*",
     "ext-mysqli": "*",
     "ext-fileinfo": "*",
@@ -59,7 +59,8 @@
     "files": [
       "src/version-4-aliases.php",
       "src/Deprecated/deprecated-functions.php",
-      "src/functions.php"
+      "src/functions.php",
+      "src/shim.php"
     ]
   },
   "autoload-dev": {
