@@ -1,4 +1,5 @@
 <?php
+
 namespace Codeception\Template;
 
 use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
@@ -235,8 +236,8 @@ EOT;
         FS::rrmdir($projectDir . '/plugin_89/tests/_wordpress');
         FS::rrmdir($projectDir . '/plugin_89/vendor');
         FS::rrmdir($projectDir . '/plugin_89/var');
-        $dataDir = Codeception::dataDir($projectDir.'/plugin_89');
-        unlink($dataDir. "/dump.sql");
+        $dataDir = Codeception::dataDir($projectDir . '/plugin_89');
+        file_exists($dataDir . "/dump.sql") && unlink($dataDir . "/dump.sql");
 
 
         // Random ports will change: visit the data to replace the random ports with a placeholder.
@@ -293,8 +294,8 @@ EOT;
         FS::rrmdir($projectDir . '/plugin_89/tests/_wordpress');
         FS::rrmdir($projectDir . '/plugin_89/vendor');
         FS::rrmdir($projectDir . '/plugin_89/var');
-        $dataDir = Codeception::dataDir($projectDir.'/plugin_89');
-        unlink($dataDir. "/dump.sql");
+        $dataDir = Codeception::dataDir($projectDir . '/plugin_89');
+        file_exists($dataDir . "/dump.sql") && unlink($dataDir . "/dump.sql");
 
         // Random ports will change: visit the data to replace the random ports with a placeholder.
         $this->assertMatchesDirectorySnapshot(
@@ -491,8 +492,8 @@ EOT,
         FS::rrmdir($projectDir . '/theme_23/tests/_wordpress');
         FS::rrmdir($projectDir . '/theme_23/vendor');
         FS::rrmdir($projectDir . '/theme_23/var');
-        $dataDir = Codeception::dataDir($projectDir.'/theme_23');
-        unlink($dataDir. "/dump.sql");
+        $dataDir = Codeception::dataDir($projectDir . '/theme_23');
+        file_exists($dataDir . "/dump.sql") && unlink($dataDir . "/dump.sql");
 
         // Random ports will change: visit the data to replace the random ports with a placeholder.
         $this->assertMatchesDirectorySnapshot(
@@ -670,7 +671,7 @@ EOT;
      */
     public function should_scaffold_correctly_on_site_with_non_default_structure(): void
     {
-        if (PHP_VERSION < 8.0 || Codecept::VERSION < 5.0) {
+        if (PHP_VERSION < 8.0) {
             $this->markTestSkipped('This test requires PHP 8.0 or higher.');
         }
 
