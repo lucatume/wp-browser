@@ -234,6 +234,9 @@ EOT;
         FS::rrmdir($projectDir . '/plugin_89/' . Codeception::supportDir() . '/_generated');
         FS::rrmdir($projectDir . '/plugin_89/tests/_wordpress');
         FS::rrmdir($projectDir . '/plugin_89/vendor');
+        FS::rrmdir($projectDir . '/plugin_89/var');
+        $dataDir = Codeception::dataDir($projectDir.'/plugin_89');
+        unlink($dataDir. "/dump.sql");
 
 
         // Random ports will change: visit the data to replace the random ports with a placeholder.
@@ -289,6 +292,9 @@ EOT;
         FS::rrmdir($projectDir . '/plugin_89/' . Codeception::supportDir() . '/_generated');
         FS::rrmdir($projectDir . '/plugin_89/tests/_wordpress');
         FS::rrmdir($projectDir . '/plugin_89/vendor');
+        FS::rrmdir($projectDir . '/plugin_89/var');
+        $dataDir = Codeception::dataDir($projectDir.'/plugin_89');
+        unlink($dataDir. "/dump.sql");
 
         // Random ports will change: visit the data to replace the random ports with a placeholder.
         $this->assertMatchesDirectorySnapshot(
@@ -485,6 +491,8 @@ EOT,
         FS::rrmdir($projectDir . '/theme_23/tests/_wordpress');
         FS::rrmdir($projectDir . '/theme_23/vendor');
         FS::rrmdir($projectDir . '/theme_23/var');
+        $dataDir = Codeception::dataDir($projectDir.'/theme_23');
+        unlink($dataDir. "/dump.sql");
 
         // Random ports will change: visit the data to replace the random ports with a placeholder.
         $this->assertMatchesDirectorySnapshot(
