@@ -67,6 +67,7 @@ class Process extends SymfonyProcess
     {
         if (($this->options['create_new_console'] ?? false) || method_exists($this, 'setOptions')) {
             parent::__destruct();
+            return;
         }
 
         $closeMethodReflection = new \ReflectionMethod(SymfonyProcess::class, 'close');
