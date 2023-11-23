@@ -21,7 +21,7 @@ function __test_useMemoFunctionWithDependencies(): int
     return $calls++;
 }
 
-class _UseMemoInvokableObject
+class _UseMemoInvocableObject
 {
     public function __invoke(): int
     {
@@ -102,10 +102,10 @@ class functionsTest extends \Codeception\Test\Unit
         }
     }
 
-    public function test_useMemo_with_invokable_object(): void
+    public function test_useMemo_with_invocable_object(): void
     {
         foreach (range(1, 3) as $k) {
-            $object = new _UseMemoInvokableObject();
+            $object = new _UseMemoInvocableObject();
             $this->assertEquals(1, useMemo($object));
         }
         foreach (range(2, 4) as $k) {
