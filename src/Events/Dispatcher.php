@@ -94,6 +94,7 @@ class Dispatcher
         }
 
         $event = new Event($name, $context, $origin);
+
         try {
             $dispatchMethodReflection = new \ReflectionMethod($eventDispatcher, 'dispatch');
             $firstParameterReflection = $dispatchMethodReflection->getParameters()[0] ?? null;
@@ -102,7 +103,7 @@ class Dispatcher
                 return $eventDispatcher->dispatch($event, $name);
             }
 
-            return $eventDispatcher->dispatch($name, $event);
+            return $eventDispatcher->dispatch($name, $event); //@phpstan-ignore-line
         } catch (\ReflectionException $e) {
             return null;
         }

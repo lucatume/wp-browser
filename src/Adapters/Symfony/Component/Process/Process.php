@@ -7,6 +7,9 @@ use Symfony\Component\Process\Process as SymfonyProcess;
 
 class Process extends SymfonyProcess
 {
+    /**
+     * @var array<string,mixed>
+     */
     private $options = [];
     /**
      * @param string[] $command
@@ -47,12 +50,17 @@ class Process extends SymfonyProcess
         return $startTime;
     }
 
+    /**
+     * @param string $name
+     * @param array<mixed> $arguments
+     * @return void
+     */
     public function __call(string $name, array $arguments)
     {
         if ($name === 'setOptions') {
             $this->options = $arguments[0] ?? [];
-            return;
         }
+        return;
     }
 
     public function __destruct()
