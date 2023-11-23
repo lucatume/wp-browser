@@ -93,6 +93,12 @@ if (!is_dir($wpRootDir . '/wp-content/themes/twentytwenty')) {
     $installation->runWpCliCommandOrThrow(['theme', 'install', 'twentytwenty', '--activate']);
 }
 
+echo "Checking TwentyTwentyOne theme in $wpRootDir ...\n";
+if (!is_dir($wpRootDir . '/wp-content/themes/twentytwentyone')) {
+    echo "Installing TwentyTwentyOne theme in $wpRootDir ...\n";
+    $installation->runWpCliCommandOrThrow(['theme', 'install', 'twentytwentyone', '--activate']);
+}
+
 echo "Installing required test plugins in $wpRootDir ...\n";
 $installation->runWpCliCommandOrThrow(['plugin', 'install', 'woocommerce', 'akismet', 'hello-dolly']);
 
