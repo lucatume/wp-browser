@@ -5,11 +5,18 @@ namespace lucatume\WPBrowser\WordPress;
 use lucatume\WPBrowser\Utils\Download;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Zip;
+use lucatume\WPBrowser\Utils\Env;
 
 class Source
 {
     public static function getForVersion(string $version = 'latest'): string
     {
+        $envSourceDir = Env::get('WPBROWSER_WORDPRESS_SOURCE_DIR', null);
+
+        if (is_string($envSourceDir) && is_dir($envSourceDir . DIRECTORY_SEPARATOR . $version)) {
+            return $envSourceDir . DIRECTORY_SEPARATOR . $version;
+        }
+
         $cacheDir = FS::cacheDir();
         $versionsCacheDir = $cacheDir . '/wordpress/';
         $sourceDir = $versionsCacheDir . $version;

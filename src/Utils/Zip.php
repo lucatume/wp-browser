@@ -1,4 +1,5 @@
 <?php
+
 namespace lucatume\WPBrowser\Utils;
 
 use RuntimeException;
@@ -22,5 +23,28 @@ class Zip
         }
 
         return $destination;
+    }
+
+    public static function extractFile(string $zipFile, string $filename, string $destinationFileName): string
+    {
+        $zip = new ZipArchive();
+
+        if ($zip->open($zipFile) !== true) {
+            throw new RuntimeException("Could not open {$zipFile}.");
+        }
+
+        if (($fileIndex = $zip->locateName($filename, ZipArchive::FL_NODIR)) === false) {
+            throw new RuntimeException("Could not locate {$filename} in {$zipFile}.");
+        }
+
+        if (($name = $zip->getNameIndex($fileIndex)) === false) {
+            throw new RuntimeException("Could not get name for {$fileIndex} in {$zipFile}.");
+        }
+
+        if (!copy("zip://{$zipFile}#{$name}", $destinationFileName)) {
+            throw new RuntimeException("Could not copy {$name} from {$zipFile} to {$destinationFileName}.");
+        }
+
+        return $destinationFileName;
     }
 }

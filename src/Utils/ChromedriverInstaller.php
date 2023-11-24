@@ -35,6 +35,7 @@ class ChromedriverInstaller
     private string $platform;
     private string $binary;
     private string $milestone;
+    private bool $useEnvZipFile = true;
 
     public function __construct(
         string $version = null,
@@ -83,26 +84,28 @@ class ChromedriverInstaller
 
         $this->output->writeln("Fetching Chromedriver version URL ...");
 
-        $downloadUrl = $this->fetchChromedriverVersionUrl();
-
+        $zipFilePathname = $this->useEnvZipFile ?
+            Env::get('WPBROWSER_CHROMEDRIVER_ZIP_FILE', null)
+            : null;
         $cacheDir = FS::cacheDir() . '/chromedriver';
-
-        if (!is_dir($cacheDir) && !(mkdir($cacheDir, 0777, true) && is_dir($cacheDir))) {
-            throw new RuntimeException("Could not create Chromedriver cache directory $cacheDir.");
-        }
-
-        $zipFilePathname = rtrim($cacheDir, '\\/') . '/' . basename($downloadUrl);
         $executableFileName = $dir . '/' . $this->getExecutableFileName();
 
-        if (is_file($zipFilePathname) && !unlink($zipFilePathname)) {
-            throw new RuntimeException(
-                "Could not remove existing zip file $zipFilePathname",
-                self::ERR_REMOVE_EXISTING_ZIP_FILE
-            );
+        if (!(is_string($zipFilePathname) && is_file($zipFilePathname))) {
+            $downloadUrl = $this->fetchChromedriverVersionUrl();
+            if (!is_dir($cacheDir) && !(mkdir($cacheDir, 0777, true) && is_dir($cacheDir))) {
+                throw new RuntimeException("Could not create Chromedriver cache directory $cacheDir.");
+            }
+            $zipFilePathname = rtrim($cacheDir, '\\/') . '/chromedriver.zip';
+            if (is_file($zipFilePathname) && !unlink($zipFilePathname)) {
+                throw new RuntimeException(
+                    "Could not remove existing zip file $zipFilePathname",
+                    self::ERR_REMOVE_EXISTING_ZIP_FILE
+                );
+            }
+            $this->output->writeln('Downloading Chromedriver to ' . $zipFilePathname . ' ...');
+            $zipFilePathname = Download::fileFromUrl($downloadUrl, $zipFilePathname);
+            $this->output->writeln('Downloaded Chromedriver to ' . $zipFilePathname);
         }
-
-        $zipFilePathname = Download::fileFromUrl($downloadUrl, $zipFilePathname);
-        $this->output->writeln('Downloaded Chromedriver to ' . $zipFilePathname);
 
         if (is_file($executableFileName) && !unlink($executableFileName)) {
             throw new RuntimeException(
@@ -111,19 +114,9 @@ class ChromedriverInstaller
             );
         }
 
-        Zip::extractTo($zipFilePathname, $cacheDir);
+        Zip::extractFile($zipFilePathname, $this->getExecutableFileName(), $executableFileName);
 
-        if (!rename(
-            "$cacheDir/chromedriver-$this->platform/" . $this->getExecutableFileName(),
-            $executableFileName
-        )) {
-            throw new RuntimeException(
-                "Could not copy Chromedriver to $executableFileName",
-                self::ERR_MOVE_BINARY
-            );
-        }
-
-        if (chmod($executableFileName, 0755) === false) {
+        if (!chmod($executableFileName, 0755)) {
             throw new RuntimeException(
                 "Could not make Chromedriver executable",
                 self::ERR_BINARY_CHMOD
@@ -366,5 +359,10 @@ class ChromedriverInstaller
     public function getPlatform(): string
     {
         return $this->platform;
+    }
+
+    public function useEnvZipFile(bool $useEnvZipFile): void
+    {
+        $this->useEnvZipFile = $useEnvZipFile;
     }
 }

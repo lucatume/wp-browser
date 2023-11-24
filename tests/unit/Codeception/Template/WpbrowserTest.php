@@ -95,7 +95,9 @@ EOT;
             'wpbrowser',
             '--path=' . $projectDir . '/plugin_89'
         ];
-        $process = new Process($command, null, ['COMPOSER_BIN_DIR' => $projectDir . '/plugin_89/vendor/bin']);
+        $process = new Process($command, null, [
+            'COMPOSER_BIN_DIR' => $projectDir . '/plugin_89/vendor/bin'
+        ]);
 
         $process->setInput(
             "yes\n" // Yes, use recommended setup.
