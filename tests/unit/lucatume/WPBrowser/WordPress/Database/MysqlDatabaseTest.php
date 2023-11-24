@@ -25,19 +25,6 @@ class MysqlDatabaseTest extends Unit
     use TmpFilesCleanup;
 
     /**
-     * It should throw when building with invalid db name
-     *
-     * @test
-     */
-    public function should_throw_when_building_with_invalid_db_name(): void
-    {
-        $this->expectException(DbException::class);
-        $this->expectExceptionCode(DbException::INVALID_DB_NAME);
-
-        new MysqlDatabase('!invalid~db-name', 'root', 'root', 'localhost');
-    }
-
-    /**
      * It should allow getting the db credentials and DSN
      *
      * @test
@@ -52,8 +39,10 @@ class MysqlDatabaseTest extends Unit
         $this->assertEquals('192.1.2.3:4415', $db->getDbHost());
         $this->assertEquals('test_', $db->getTablePrefix());
         $this->assertEquals('mysql:host=192.1.2.3;port=4415;dbname=test', $db->getDsn());
-        $this->assertEquals('mysql://bob:secret@192.1.2.3:4415/test',
-            $db->getDbUrl());
+        $this->assertEquals(
+            'mysql://bob:secret@192.1.2.3:4415/test',
+            $db->getDbUrl()
+        );
     }
 
     /**
@@ -77,8 +66,10 @@ class MysqlDatabaseTest extends Unit
         $this->assertEquals('192.1.2.3:4415', $db->getDbHost());
         $this->assertEquals('test_', $db->getTablePrefix());
         $this->assertEquals('mysql:host=192.1.2.3;port=4415;dbname=test', $db->getDsn());
-        $this->assertEquals('mysql://bob:secret@192.1.2.3:4415/test',
-            $db->getDbUrl());
+        $this->assertEquals(
+            'mysql://bob:secret@192.1.2.3:4415/test',
+            $db->getDbUrl()
+        );
     }
 
     /**
@@ -126,21 +117,24 @@ class MysqlDatabaseTest extends Unit
                 'admin',
                 'password',
                 'admin@wp.local',
-                'Test');
+                'Test'
+            );
 
         new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
         $this->assertEquals('lorem', $db->getOption('non-existent-option', 'lorem'));
-        foreach ([
-                     'foo' => 'bar',
-                     'bar' => 2389,
-                     'object' => (object)['foo' => 'bar'],
-                     'array' => ['foo' => 'bar'],
-                     'associative array' => ['foo' => 'bar', 'bar' => 'foo'],
-                     'null' => null,
-                     'true' => true,
-                     'false' => false,
-                 ] as $name => $value) {
+        foreach (
+            [
+                'foo' => 'bar',
+                'bar' => 2389,
+                'object' => (object)['foo' => 'bar'],
+                'array' => ['foo' => 'bar'],
+                'associative array' => ['foo' => 'bar', 'bar' => 'foo'],
+                'null' => null,
+                'true' => true,
+                'false' => false,
+            ] as $name => $value
+        ) {
             $this->assertEquals(1, $db->updateOption($name, $value));
             $this->assertEquals($value, $db->getOption($name));
         }

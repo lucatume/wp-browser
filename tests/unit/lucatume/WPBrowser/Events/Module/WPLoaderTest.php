@@ -1873,4 +1873,59 @@ PHP
             Assert::assertEquals('theme-1', wp_get_theme()->get_stylesheet());
         });
     }
+
+    public function differentDbNamesProvider(): array
+    {
+        return [
+            'with dashes, underscores and dots' => ['test-db_db.db'],
+            'only words and numbers' => ['testdb1234567890'],
+            'all together' => ['test-db_db.db1234567890'],
+            'mydatabase.dev' => ['mydatabase.dev'],
+            'my_dbname_n8h96prxar4r' => ['my_dbname_n8h96prxar4r'],
+            '!funny~db-name' => ['!funny~db-name'],
+        ];
+    }
+
+    /**
+     * It should correctly load with different database names
+     *
+     * @test
+     * @dataProvider differentDbNamesProvider
+     */
+    public function should_correctly_load_with_different_database_names(string $dbName): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $installation = Installation::scaffold($wpRootDir);
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db->drop();
+        $installation->configure($db);
+        $installation->install(
+            'https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test'
+        );
+
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $db->getDbUrl()
+        ];
+        $wpLoader = $this->module();
+
+        $this->assertEquals(
+            $db->getDbName(),
+            $this->assertInIsolation(static function () use ($wpLoader) {
+                $wpLoader->_initialize();
+
+                Assert::assertTrue(function_exists('do_action'));
+                Assert::assertInstanceOf(\WP_User::class, wp_get_current_user());
+
+                return $wpLoader->getInstallation()->getDb()->getDbName();
+            })
+        );
+    }
 }

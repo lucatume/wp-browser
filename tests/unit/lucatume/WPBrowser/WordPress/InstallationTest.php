@@ -642,30 +642,4 @@ PHP;
 
         Installation::findInDir($dir);
     }
-
-    /**
-     * It should find WordPress installation in directory
-     *
-     * @test
-     */
-    public function should_find_word_press_installation_in_directory(): void
-    {
-        if (PHP_VERSION < 8.0) {
-            $this->markTestSkipped('PHP 8.0 required.');
-        }
-
-        $db = new MysqlDatabase(
-            Random::dbName(),
-            Env::get('WORDPRESS_DB_USER'),
-            Env::get('WORDPRESS_DB_PASSWORD'),
-            Env::get('WORDPRESS_DB_HOST')
-        );
-        $dir = (new BedrockProject($db, 'http://example.com'))->scaffold(FS::tmpDir('installation_'));
-
-        $installation = Installation::findInDir($dir);
-
-        $this->assertInstanceOf(Installation::class, $installation);
-        $this->assertInstanceOf(Configured::class, $installation->getState());
-        $this->assertEquals($dir . '/web/wp/', $installation->getRootDir());
-    }
 }

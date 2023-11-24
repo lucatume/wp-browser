@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Correctly activate themes during bootstrap.
+- Remove brittle database name validation, fix #667 and #671.
 
 #### Changed
 

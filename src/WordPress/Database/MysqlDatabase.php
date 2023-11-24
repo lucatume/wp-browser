@@ -30,13 +30,6 @@ class MysqlDatabase implements DatabaseInterface
         private string $dbHost,
         private string $tablePrefix = 'wp_'
     ) {
-        if (!preg_match('/^[a-zA-Z][\w_-]{0,64}$/', $dbName) || str_starts_with('ii', $dbName)) {
-            throw new DbException(
-                "Invalid database name: $dbName",
-                DbException::INVALID_DB_NAME
-            );
-        }
-
         $this->dbName = $dbName;
         $this->dsnWithoutDbName = DbUtil::dbDsnString(DbUtil::dbDsnMap($dbHost));
         $this->dsn = $this->dsnWithoutDbName . ';dbname=' . $dbName;
@@ -154,7 +147,8 @@ class MysqlDatabase implements DatabaseInterface
 
     public function exists(): bool
     {
-        $result = $this->getPDO()->query("SHOW DATABASES LIKE '{$this->dbName}'", PDO::FETCH_COLUMN, 0);
+        $query = "SHOW DATABASES WHERE `Database` = '{$this->dbName}'";
+        $result = $this->getPDO()->query($query, PDO::FETCH_COLUMN, 0);
 
         if ($result === false) {
             return false;
