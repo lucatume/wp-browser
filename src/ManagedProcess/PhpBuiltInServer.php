@@ -2,10 +2,12 @@
 
 namespace lucatume\WPBrowser\ManagedProcess;
 
+use CurlHandle;
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\Utils\Filesystem;
-use Symfony\Component\Process\Process;
+use lucatume\WPBrowser\Utils\Ports;
 
 class PhpBuiltInServer implements ManagedProcessInterface
 {
@@ -14,6 +16,7 @@ class PhpBuiltInServer implements ManagedProcessInterface
     public const ERR_DOC_ROOT_NOT_FOUND = 1;
     public const ERR_PORT_ALREADY_IN_USE = 2;
     public const ERR_ENV = 3;
+    public const ERR_CHECK = 4;
     public const PID_FILE_NAME = 'php-built-in-server.pid';
     private string $prettyName = 'PHP Built-in Server';
 
@@ -52,9 +55,17 @@ class PhpBuiltInServer implements ManagedProcessInterface
             '-S',
             "localhost:$this->port",
             '-t',
-            Filesystem::realpath($this->docRoot),
+            Filesystem::realpath($this->docRoot) ?: $this->docRoot,
             $routerPathname
         ];
+
+        if (Ports::isPortOccupied($this->port)) {
+            throw new RuntimeException(
+                'Port ' . $this->port . ' is already in use.',
+                self::ERR_PORT_ALREADY_IN_USE
+            );
+        }
+
         $process = new Process(
             $command,
             $this->docRoot,
@@ -62,8 +73,7 @@ class PhpBuiltInServer implements ManagedProcessInterface
         );
         $process->setOptions(['create_new_console' => true]);
         $process->start();
-        $confirmPort = $this->readPortFromProcessOutput($process);
-        if ($confirmPort === null || !(is_numeric($confirmPort) && (int)$confirmPort > 0)) {
+        if (!$this->confirmServerRunningOnPort($process)) {
             $error = new RuntimeException(
                 'Could not start PHP Built-in server: ' . $process->getErrorOutput(),
                 ManagedProcessInterface::ERR_START
@@ -71,7 +81,6 @@ class PhpBuiltInServer implements ManagedProcessInterface
             $this->stop();
             throw $error;
         }
-        $this->port = (int)$confirmPort;
         $this->process = $process;
     }
 
@@ -80,29 +89,21 @@ class PhpBuiltInServer implements ManagedProcessInterface
         return $this->port;
     }
 
-    private function readPortFromProcessOutput(Process $process): ?int
+    private function confirmServerRunningOnPort(Process $process): bool
     {
-        for ($attempts = 0; $attempts < 30; $attempts++) {
-            // The Server log is written to STDERR.
-            $output = $process->getErrorOutput();
-            $matches = [];
-            preg_match('/^.*localhost:(?<port>\d+).*$/m', $output, $matches);
-
-            if (!isset($matches['port'])) {
-                usleep(100000);
-                continue;
-            }
-
+        $attempts = 0;
+        do {
             if ($process->getExitCode() !== null) {
-                throw new RuntimeException(
-                    "PHP Built-in server could not start: port already in use.",
-                    self::ERR_PORT_ALREADY_IN_USE
-                );
+                return false;
             }
 
-            return (int)$matches['port'];
-        }
+            if ($process->isRunning() && Ports::isPortOccupied($this->port)) {
+                return true;
+            }
 
-        return null;
+            usleep(100000);
+        } while ($attempts++ < 30);
+
+        return false;
     }
 }

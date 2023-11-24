@@ -2,10 +2,10 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Utils\Download;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
-use Symfony\Component\Process\Process;
 
 class CliProcess extends Process
 {

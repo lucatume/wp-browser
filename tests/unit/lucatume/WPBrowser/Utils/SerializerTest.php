@@ -13,7 +13,7 @@ use SebastianBergmann\Comparator\ComparisonFailure;
 use Serializable;
 use Throwable;
 
-class TestSerializableObject implements Serializable
+class TestSerializableObject
 {
     public string $foo = 'bar';
     public int $number = 23;
@@ -28,16 +28,6 @@ class TestSerializableObject implements Serializable
         foreach ($data as $key => $value) {
             $this->{$key} = $value;
         }
-    }
-
-    public function serialize()
-    {
-        return serialize($this->__serialize());
-    }
-
-    public function unserialize(string $data)
-    {
-        $this->__unserialize(unserialize($data));
     }
 }
 

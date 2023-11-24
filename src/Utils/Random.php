@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace lucatume\WPBrowser\Utils;
 
 use Hoa\Compiler\Llk\Sampler\Exception;
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
-use Symfony\Component\Process\Process;
 use Throwable;
 
 class Random
@@ -52,28 +52,27 @@ class Random
         return $generated;
     }
 
+    /**
+     * @throws \RuntimeException|\Exception
+     */
     public static function openLocalhostPort(): int
     {
-        try {
-            $docRoot = __DIR__;
-            $process = new Process([PHP_BINARY, '-S', 'localhost:0', '-t', $docRoot]);
-            $process->start();
+        $attempts = 0;
+        $testedPorts = [];
+        while ($attempts++ < 10) {
             do {
-                if (!$process->isRunning() && $process->getExitCode() !== 0) {
-                    throw new RuntimeException($process->getErrorOutput() ?: $process->getOutput());
-                }
-                $output = $process->getErrorOutput();
-                $port = preg_match('~localhost:(\d+)~', $output, $matches) ? $matches[1] : null;
-            } while ($port === null);
-            return (int)$port;
-        } catch (Throwable $e) {
-            throw new RuntimeException(
-                'Could not start PHP built-in server to find free localhost port: ' . $e->getMessage()
-            );
-        } finally {
-            if (isset($process)) {
-                $process->stop();
+                $port = random_int(1025, 65535);
+            } while (in_array($port, $testedPorts, true));
+
+            $testedPorts[] = $port;
+
+            if (!Ports::isPortOccupied($port)) {
+                return $port;
             }
         }
+
+        throw new RuntimeException(
+            'Could not start PHP built-in server to find free localhost port after many attempts.'
+        );
     }
 }

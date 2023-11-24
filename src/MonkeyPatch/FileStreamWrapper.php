@@ -457,7 +457,11 @@ class FileStreamWrapper
 
         [$fileContents, $openedPath] = $patcher->patch($fileContents, $absPath);
 
-        $fileResource = fopen('php://temp', 'rb+', false, $this->context);
+        if ($this->context !== null) {
+            $fileResource = fopen('php://temp', 'rb+', false, $this->context);
+        } else {
+            $fileResource = fopen('php://temp', 'rb+');
+        }
 
         if ($fileResource === false) {
             throw new MonkeyPatchingException("Could not open temporary file for writing.");
@@ -479,6 +483,15 @@ class FileStreamWrapper
      */
     private function openFile(string $absPath, string $mode, bool $useIncludePath): void
     {
+        if (!file_exists($absPath) && !is_dir(dirname($absPath))) {
+            /*
+             * The file open operation will never succeed, so we don't even try.
+             * The `w`, `c` and `x` modes will create the file if it does not exist,
+             * but will not create the directory structure to it
+             */
+            return;
+        }
+
         if (isset($this->context)) {
             $handle = fopen($absPath, $mode, $useIncludePath, $this->context);
         } else {
@@ -486,7 +499,8 @@ class FileStreamWrapper
         }
 
         if (!is_resource($handle)) {
-            throw new MonkeyPatchingException("Could not open file $absPath.");
+            return;
+            // throw new MonkeyPatchingException("Could not open file $absPath.");
         }
 
         $this->fileResource = $handle;

@@ -143,6 +143,12 @@ abstract class FileRequest
             if (($errno & $this->errorLevel) === 0) {
                 return true;
             }
+
+            // Ignore E_WARNING from `fopen` calls: they are used by some plugins to try and check if a file exists.
+            if ($errno === E_WARNING && str_starts_with($errstr, 'fopen')) {
+                return true;
+            }
+
             throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
         }, E_ALL);
 

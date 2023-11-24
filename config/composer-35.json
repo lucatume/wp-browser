@@ -1,0 +1,101 @@
+{
+  "name": "lucatume/wp-browser",
+  "type": "library",
+  "description": "A set of Codeception modules to test WordPress projects.",
+  "keywords": [
+    "wordpress",
+    "codeception"
+  ],
+  "homepage": "https://github.com/lucatume/wp-browser",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "theAverageDev (Luca Tumedei)",
+      "email": "luca@theaveragedev.com",
+      "homepage": "https://theaveragedev.com",
+      "role": "Developer"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=7.1 <8.0",
+    "ext-pdo": "*",
+    "ext-mysqli": "*",
+    "ext-fileinfo": "*",
+    "ext-json": "*",
+    "ext-curl": "*",
+    "ext-zip": "*",
+    "composer-runtime-api": "^2.2",
+    "codeception/codeception": "^4",
+    "codeception/module-asserts": "^1.0",
+    "codeception/module-phpbrowser": "^1.0",
+    "codeception/module-webdriver": "^1.0",
+    "codeception/module-db": "^1.0",
+    "codeception/module-filesystem": "^1.0",
+    "codeception/module-cli": "^1.0",
+    "symfony/process": ">=3.4.47 <7.0",
+    "symfony/filesystem": ">=3.4.47 <7.0",
+    "vlucas/phpdotenv": "^4.3",
+    "ifsnop/mysqldump-php": "^2.12"
+  },
+  "require-dev": {
+    "gumlet/php-image-resize": "^1.6",
+    "szepeviktor/phpstan-wordpress": "^0.7",
+    "phpstan/extension-installer": "^1.0",
+    "phpstan/phpstan-symfony": "^0.12.44",
+    "squizlabs/php_codesniffer": "^3.7",
+    "lucatume/codeception-snapshot-assertions": "^0.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "lucatume\\WPBrowser\\": [
+        "src/",
+        "src/Deprecated"
+      ],
+      "Hautelook\\Phpass\\": "includes/Hautelook/Phpass",
+      "lucatume\\WPBrowser\\Opis\\Closure\\" : "includes/opis/closure/src"
+    },
+    "files": [
+      "src/version-4-aliases.php",
+      "src/Deprecated/deprecated-functions.php",
+      "src/functions.php",
+      "src/shim.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "lucatume\\WPBrowser\\Tests\\": "tests/_support"
+    }
+  },
+  "extra": {
+    "_hash": "484f861f69198089cab0e642f27e5653"
+  },
+  "config": {
+    "platform": {
+      "php": "7.1"
+    },
+    "allow-plugins": {
+      "phpstan/extension-installer": true,
+      "webdriver-binary/binary-chromedriver": true
+    }
+  },
+  "scripts": {
+    "stan": [
+      "phpstan analyse --memory-limit=4G --no-progress --no-interaction --ansi -c config/phpstan.neon.dist"
+    ],
+    "stan-pro": [
+      "phpstan analyse --memory-limit=4G --no-progress --no-interaction --ansi -c config/phpstan.neon.dist --pro --watch"
+    ],
+    "cs": [
+      "phpcs --standard=config/phpcs.xml src"
+    ],
+    "cs-fix": [
+      "phpcbf --standard=config/phpcs.xml src"
+    ]
+  },
+  "suggest": {
+    "ext-sqlite3": "For SQLite database support.",
+    "ext-pdo_sqlite": "For SQLite database support."
+  }
+}

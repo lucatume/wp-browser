@@ -8,7 +8,6 @@
 namespace lucatume\WPBrowser\Module;
 
 use Closure;
-use Codeception\Command\Shared\ConfigTrait;
 use Codeception\Events;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
@@ -52,8 +51,6 @@ use Throwable;
  */
 class WPLoader extends Module
 {
-    use ConfigTrait;
-
     public const EVENT_BEFORE_INSTALL = 'wploader.before_install';
     public const EVENT_BEFORE_LOADONLY = 'wploader.before_loadonly';
     public const EVENT_AFTER_LOADONLY = 'wploader.after_loadonly';
@@ -446,6 +443,8 @@ class WPLoader extends Module
         } else {
             $this->installAndBootstrapInstallation();
         }
+
+        wp_cache_flush();
 
         $this->factoryStore = new FactoryStore();
 

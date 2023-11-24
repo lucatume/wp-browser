@@ -47,4 +47,13 @@ clean_procs:
 	pgrep -f 'php -S' | xargs kill
 	pgrep chromedriver | xargs kill
 	rm -f var/_output/*.pid var/_output/*.running
+	set -o allexport && source tests/.env && set +o allexport && docker compose down
 .PHONY: clean_procs
+
+build_35:
+	rm -rf vendor composer.lock
+	composer require --dev rector/rector -W
+	vendor/bin/rector --config=config/rector-35.php
+	rm -rf vendor composer.lock composer.json
+	cp config/composer-35.json composer.json
+.PHONY: build_35

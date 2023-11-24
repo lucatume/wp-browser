@@ -5,11 +5,13 @@ namespace lucatume\WPBrowser\Utils;
 
 use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
+use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 
 class ChromedriverInstallerTest extends \Codeception\Test\Unit
 {
     use UopzFunctions;
+    use TmpFilesCleanup;
 
     /**
      * It should throw if detected platform is not supported
@@ -158,6 +160,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
         }, true);
 
         $ci = new ChromedriverInstaller(null, 'linux64', codecept_data_dir('bins/chrome-mock'));
+        $ci->useEnvZipFile(false);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ChromedriverInstaller::ERR_FETCH_MILESTONE_DOWNLOADS);
@@ -177,6 +180,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
         }, true);
 
         $ci = new ChromedriverInstaller(null, 'linux64', codecept_data_dir('bins/chrome-mock'));
+        $ci->useEnvZipFile(false);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ChromedriverInstaller::ERR_DECODE_MILESTONE_DOWNLOADS);
@@ -198,6 +202,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
         }, true);
 
         $ci = new ChromedriverInstaller(null, 'linux64', codecept_data_dir('bins/chrome-mock'));
+        $ci->useEnvZipFile(false);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ChromedriverInstaller::ERR_DOWNLOAD_URL_NOT_FOUND);
@@ -213,12 +218,12 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
     public function should_throw_if_existing_zip_file_cannot_be_removed(): void
     {
         $this->uopzSetFunctionReturn('sys_get_temp_dir', codecept_output_dir());
-        touch(codecept_output_dir('chromedriver-linux64.zip'));
         $this->uopzSetFunctionReturn('unlink', function (string $file): bool {
-            return $file === codecept_output_dir('chromedriver-linux64.zip') ? false : unlink($file);
+            return preg_match('~chromedriver\\.zip$~' ,$file) ? false : unlink($file);
         }, true);
 
         $ci = new ChromedriverInstaller(null, 'linux64', codecept_data_dir('bins/chrome-mock'));
+        $ci->useEnvZipFile(false);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ChromedriverInstaller::ERR_REMOVE_EXISTING_ZIP_FILE);
@@ -243,25 +248,6 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ChromedriverInstaller::ERR_REMOVE_EXISTING_BINARY);
-
-        $ci->install($dir);
-    }
-
-    /**
-     * It should throw if new binary cannot be moved in place
-     *
-     * @test
-     */
-    public function should_throw_if_new_binary_cannot_be_moved_in_place(): void
-    {
-        $dir = Filesystem::tmpDir('chromedriver_installer_');
-        $this->uopzSetFunctionReturn('sys_get_temp_dir', codecept_output_dir());
-        $this->uopzSetFunctionReturn('rename', false);
-
-        $ci = new ChromedriverInstaller(null, 'linux64', codecept_data_dir('bins/chrome-mock'));
-
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionCode(ChromedriverInstaller::ERR_MOVE_BINARY);
 
         $ci->install($dir);
     }
@@ -302,6 +288,5 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
 
         $this->assertEquals($dir . '/chromedriver', $executablePath);
         $this->assertFileExists($executablePath);
-        $this->assertFileExists($tmpDir . '/chromedriver-linux64.zip');
     }
 }

@@ -38,6 +38,8 @@ class WPTestCase extends Unit
         'wp_meta_keys',
         // WooCommerce.
         'woocommerce',
+        // Additional globals.
+        '_wp_registered_theme_features'
     ];
 
     // Backup, and reset, static class attributes between tests.
@@ -45,11 +47,23 @@ class WPTestCase extends Unit
 
     // A list of static attributes that should not be backed up as they are wired to explode when doing so.
     protected $backupStaticAttributesExcludeList = [
+        // WordPress
+        'WP_Block_Type_Registry' => ['instance'],
+        // wp-browser
+        'lucatume\WPBrowser\Events\Dispatcher' => ['eventDispatcher'],
+        self::class => ['coreTestCaseMap'],
+        // Codeception
+        'Codeception\Util\Annotation' => ['reflectedClasses'],
         // WooCommerce.
         'WooCommerce' => ['_instance'],
         'Automattic\WooCommerce\Internal\Admin\FeaturePlugin' => ['instance'],
         'Automattic\WooCommerce\RestApi\Server' => ['instance']
     ];
+
+    /**
+     * @var array<string,mixed>
+     */
+    protected array $additionalGlobalsBackup = [];
 
     /**
      * @var array<string,WP_UnitTestCase>
@@ -75,15 +89,36 @@ class WPTestCase extends Unit
         self::getCoreTestCase()->set_up_before_class();
     }
 
+    protected function backupAdditionalGlobals(): void
+    {
+        foreach ([
+                '_wp_registered_theme_features'
+            ] as $key
+        ) {
+            if (isset($GLOBALS[$key])) {
+                $this->additionalGlobalsBackup = $GLOBALS[$key];
+            }
+        }
+    }
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->set_up(); //@phpstan-ignore-line magic __call
+        $this->backupAdditionalGlobals();
+    }
+
+    protected function restoreAdditionalGlobals(): void
+    {
+        foreach ($this->additionalGlobalsBackup as $key => $value) {
+            $GLOBALS[$key] = $value;
+            unset($this->additionalGlobalsBackup[$key]);
+        }
     }
 
     protected function tearDown(): void
     {
+        $this->restoreAdditionalGlobals();
         $this->tear_down(); //@phpstan-ignore-line magic __call
         parent::tearDown();
     }

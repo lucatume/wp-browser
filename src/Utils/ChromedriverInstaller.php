@@ -1,13 +1,17 @@
 <?php
 
+
 namespace lucatume\WPBrowser\Utils;
 
 use JsonException;
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
+
+use function lucatume\WPBrowser\useMemoString;
 
 class ChromedriverInstaller
 {
@@ -31,6 +35,7 @@ class ChromedriverInstaller
     private string $platform;
     private string $binary;
     private string $milestone;
+    private bool $useEnvZipFile = true;
 
     public function __construct(
         string $version = null,
@@ -79,20 +84,28 @@ class ChromedriverInstaller
 
         $this->output->writeln("Fetching Chromedriver version URL ...");
 
-        $downloadUrl = $this->fetchChromedriverVersionUrl();
-        $zipFilePathname = rtrim(sys_get_temp_dir(), '\\/') . '/' . basename($downloadUrl);
-
-        if (is_file($zipFilePathname) && !unlink($zipFilePathname)) {
-            throw new RuntimeException(
-                "Could not remove existing zip file $zipFilePathname",
-                self::ERR_REMOVE_EXISTING_ZIP_FILE
-            );
-        }
-
-        $zipFilePathname = Download::fileFromUrl($downloadUrl, $zipFilePathname);
-        $this->output->writeln('Downloaded Chromedriver to ' . $zipFilePathname);
-
+        $zipFilePathname = $this->useEnvZipFile ?
+            Env::get('WPBROWSER_CHROMEDRIVER_ZIP_FILE', null)
+            : null;
+        $cacheDir = FS::cacheDir() . '/chromedriver';
         $executableFileName = $dir . '/' . $this->getExecutableFileName();
+
+        if (!(is_string($zipFilePathname) && is_file($zipFilePathname))) {
+            $downloadUrl = $this->fetchChromedriverVersionUrl();
+            if (!is_dir($cacheDir) && !(mkdir($cacheDir, 0777, true) && is_dir($cacheDir))) {
+                throw new RuntimeException("Could not create Chromedriver cache directory $cacheDir.");
+            }
+            $zipFilePathname = rtrim($cacheDir, '\\/') . '/chromedriver.zip';
+            if (is_file($zipFilePathname) && !unlink($zipFilePathname)) {
+                throw new RuntimeException(
+                    "Could not remove existing zip file $zipFilePathname",
+                    self::ERR_REMOVE_EXISTING_ZIP_FILE
+                );
+            }
+            $this->output->writeln('Downloading Chromedriver to ' . $zipFilePathname . ' ...');
+            $zipFilePathname = Download::fileFromUrl($downloadUrl, $zipFilePathname);
+            $this->output->writeln('Downloaded Chromedriver to ' . $zipFilePathname);
+        }
 
         if (is_file($executableFileName) && !unlink($executableFileName)) {
             throw new RuntimeException(
@@ -101,19 +114,9 @@ class ChromedriverInstaller
             );
         }
 
-        $extractedPath = Zip::extractTo($zipFilePathname, sys_get_temp_dir());
+        Zip::extractFile($zipFilePathname, $this->getExecutableFileName(), $executableFileName);
 
-        if (!rename(
-            "$extractedPath/chromedriver-$this->platform/" . $this->getExecutableFileName(),
-            $executableFileName
-        )) {
-            throw new RuntimeException(
-                "Could not move Chromedriver to $executableFileName",
-                self::ERR_MOVE_BINARY
-            );
-        }
-
-        if (chmod($executableFileName, 0755) === false) {
+        if (!chmod($executableFileName, 0755)) {
             throw new RuntimeException(
                 "Could not make Chromedriver executable",
                 self::ERR_BINARY_CHMOD
@@ -272,10 +275,18 @@ class ChromedriverInstaller
         return $matches['major'];
     }
 
+    private function fetchChromedriverVersionUrl(): string
+    {
+        return useMemoString(
+            fn() => $this->unmemoizedFetchChromedriverVersionUrl(),
+            [$this->platform, $this->milestone]
+        );
+    }
+
     /**
      * @throws JsonException
      */
-    private function fetchChromedriverVersionUrl(): string
+    private function unmemoizedFetchChromedriverVersionUrl(): string
     {
         $milestoneDownloads = file_get_contents(
             'https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json'
@@ -348,5 +359,10 @@ class ChromedriverInstaller
     public function getPlatform(): string
     {
         return $this->platform;
+    }
+
+    public function useEnvZipFile(bool $useEnvZipFile): void
+    {
+        $this->useEnvZipFile = $useEnvZipFile;
     }
 }

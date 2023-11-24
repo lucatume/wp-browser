@@ -100,7 +100,7 @@ class ThemeProject extends ContentProject
     protected function activate(string $wpRootDir, int $serverLocalhostPort): bool
     {
         $codeExec = new CodeExecutionFactory($wpRootDir, 'localhost:' . $serverLocalhostPort);
-        $switchTheme = $codeExec->toSwitchTheme(Strings::slug($this->basename), false);
+        $switchTheme = $codeExec->toSwitchTheme($this->basename, false);
         $activationResult = Loop::executeClosure($switchTheme)->getReturnValue();
         if ($activationResult instanceof Throwable) {
             $message = $activationResult->getMessage();

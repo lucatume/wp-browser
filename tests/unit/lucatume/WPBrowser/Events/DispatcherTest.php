@@ -6,7 +6,6 @@ namespace lucatume\WPBrowser\Events;
 use Codeception\Events;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
-use lucatume\WPBrowser\Utils\Property;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 

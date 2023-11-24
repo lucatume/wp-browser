@@ -45,3 +45,6 @@ extensions:
         - "lucatume\\WPBrowser\\Command\\DevInfo"
         - "lucatume\\WPBrowser\\Command\\DbImport"
         - "lucatume\\WPBrowser\\Command\\DbExport"
+snapshot:
+    refresh: true
+    version: "%WPBROWSER_VERSION%"

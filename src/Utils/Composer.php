@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace lucatume\WPBrowser\Utils;
 
 use JsonException;
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use StdClass;
-use Symfony\Component\Process\Process;
 
 class Composer
 {

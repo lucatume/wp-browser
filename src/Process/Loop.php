@@ -158,11 +158,11 @@ class Loop
             return null;
         }
 
-        $busyResourcesIds = array_merge(
+        $busyResourcesIds = count($this->running) ? array_merge(
             ...array_map(static function (Running $rw): array {
                 return $rw->getRequiredResourcesIds();
             }, array_values($this->running))
-        );
+        ) : [];
 
         foreach ($notStartedWorkers as $w) {
             if (count(array_intersect($w->getRequiredResourcesIds(), $busyResourcesIds)) === 0) {

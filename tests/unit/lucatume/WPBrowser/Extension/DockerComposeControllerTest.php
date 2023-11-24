@@ -3,68 +3,30 @@
 
 namespace lucatume\WPBrowser\Extension;
 
-use Closure;
 use Codeception\Event\SuiteEvent;
 use Codeception\Exception\ExtensionException;
 use Codeception\Lib\Console\Output;
 use Codeception\Suite;
 use Codeception\Test\Unit;
 use Exception;
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
+use lucatume\WPBrowser\Tests\Traits\ClassStubs;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Composer;
 use stdClass;
-use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
-
-class MockDockerComposeProcess extends Process
-{
-    public static array $instances;
-    public static ?Closure $mustRunCallback = null;
-    public static ?Closure $outputCallback = null;
-
-    public function __construct(
-        array $command,
-        string $cwd = null,
-        array $env = null,
-        mixed $input = null,
-        ?float $timeout = 60
-    ) {
-        self::$instances[] = [
-            'command' => $command,
-            'cwd' => $cwd,
-            'env' => $env,
-            'input' => $input,
-            'timeout' => $timeout
-        ];
-    }
-
-    public function mustRun(callable $callback = null, array $env = []): static
-    {
-        return self::$mustRunCallback ? (self::$mustRunCallback)() : $this;
-    }
-
-    public function stop(float $timeout = 10, int $signal = null): ?int
-    {
-        return 0;
-    }
-
-    public function start(callable $callback = null, array $env = [])
-    {
-    }
-
-    public function getOutput(): string
-    {
-        return self::$outputCallback ? (self::$outputCallback)() : '';
-    }
-}
 
 class DockerComposeControllerTest extends Unit
 {
     use UopzFunctions;
     use SnapshotAssertions;
+    use ClassStubs;
 
-    private Output $output;
+    /**
+     * @var \Codeception\Lib\Console\Output
+     */
+    private $output;
 
     /**
      * @before
@@ -86,13 +48,6 @@ class DockerComposeControllerTest extends Unit
         // Silence output.
         $this->output = new Output(['verbosity' => Output::VERBOSITY_QUIET]);
         $this->uopzSetMock(Output::class, $this->output);
-        MockDockerComposeProcess::$instances = [];
-        MockDockerComposeProcess::$mustRunCallback = null;
-    }
-
-    public function _after()
-    {
-        MockDockerComposeProcess::$instances = [];
     }
 
     public function notArrayOfStringsProvider(): array
@@ -113,8 +68,9 @@ class DockerComposeControllerTest extends Unit
      *
      * @test
      * @dataProvider notArrayOfStringsProvider
+     * @param mixed $suites
      */
-    public function should_throw_if_suite_configuration_parameter_is_not_array_of_strings(mixed $suites): void
+    public function should_throw_if_suite_configuration_parameter_is_not_array_of_strings($suites): void
     {
         $config = ['suites' => $suites];
         $options = [];
@@ -135,8 +91,16 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_not_run_any_command_if_already_running(): void
     {
-        $this->uopzSetMock(Process::class, MockDockerComposeProcess::class);
         file_put_contents(DockerComposeController::getRunningFile(), 'yes');
+        $constructed = 0;
+        $this->uopzSetMock(
+            Process::class,
+            $this->makeEmptyClass(Process::class, [
+                '__construct' => static function (...$args) use (&$constructed) {
+                    $constructed++;
+                }
+            ])
+        );
 
         $config = ['suites' => ['end2end']];
         $options = [];
@@ -146,7 +110,7 @@ class DockerComposeControllerTest extends Unit
         $mockSuite = $this->make(Suite::class, ['getName' => 'end2end']);
         $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
 
-        $this->assertCount(0, MockDockerComposeProcess::$instances);
+        $this->assertEquals(0, $constructed);
     }
 
     /**
@@ -156,7 +120,15 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_up_stack_correctly(): void
     {
-        $this->uopzSetMock(Process::class, MockDockerComposeProcess::class);
+        $constructCommands = [];
+        $this->uopzSetMock(
+            Process::class,
+            $this->makeEmptyClass(Process::class, [
+                '__construct' => static function ($command, ...$args) use (&$constructCommands) {
+                    $constructCommands[] = $command;
+                }
+            ])
+        );
 
         $config = ['suites' => ['end2end'], 'compose-file' => 'docker-compose.yml'];
         $options = [];
@@ -168,7 +140,7 @@ class DockerComposeControllerTest extends Unit
 
         $this->assertEquals(
             ['docker', 'compose', '-f', 'docker-compose.yml', 'up', '--wait'],
-            MockDockerComposeProcess::$instances[0]['command']
+            $constructCommands[0]
         );
         $this->assertFileExists(DockerComposeController::getRunningFile());
     }
@@ -180,7 +152,7 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_throw_if_config_compose_file_is_not_valid_existing_file(): void
     {
-        $this->uopzSetMock(Process::class, MockDockerComposeProcess::class);
+        $this->uopzSetMock(Process::class, $this->makeEmptyClass(Process::class, []));
 
         $config = ['suites' => ['end2end'], 'compose-file' => 'not-a-file.yml'];
         $options = [];
@@ -202,7 +174,7 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_throw_if_config_env_file_is_not_valid_file(): void
     {
-        $this->uopzSetMock(Process::class, MockDockerComposeProcess::class);
+        $this->uopzSetMock(Process::class, $this->makeEmptyClass(Process::class, []));
 
         $config = ['suites' => ['end2end'], 'compose-file' => 'docker-compose.yml', 'env-file' => 'not-an-env-file'];
         $options = [];
@@ -224,7 +196,16 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_correctly_handle_stack_lifecycle(): void
     {
-        $this->uopzSetMock(Process::class, MockDockerComposeProcess::class);
+        $constructed = 0;
+        $this->uopzSetMock(
+            Process::class,
+            $this->makeEmptyClass(Process::class, [
+                '__construct' => static function () use (&$constructed) {
+                    $constructed++;
+                },
+                'stop' => 0
+            ])
+        );
         $config = ['suites' => ['end2end'], 'compose-file' => 'docker-compose.yml'];
         $options = [];
 
@@ -234,7 +215,7 @@ class DockerComposeControllerTest extends Unit
 
         $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
 
-        $this->assertCount(1, MockDockerComposeProcess::$instances);
+        $this->assertEquals(1, $constructed);
         $this->assertFileExists(DockerComposeController::getRunningFile());
 
         $extension->stop($this->output);
@@ -251,19 +232,22 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_throw_if_docker_compose_start_fails(): void
     {
-        $this->uopzSetMock(Process::class, MockDockerComposeProcess::class);
+        $this->uopzSetMock(
+            Process::class,
+            $this->makeEmptyClass(Process::class, [
+                'mustRun' => static function () {
+                    throw new Exception('something went wrong');
+                }
+            ])
+        );
         $config = ['suites' => ['end2end'], 'compose-file' => 'docker-compose.yml'];
-        $options = [];
-        MockDockerComposeProcess::$mustRunCallback = static function (): void {
-            throw new Exception('something went wrong');
-        };
 
-        $extension = new DockerComposeController($config, $options);
+        $extension = new DockerComposeController($config, []);
 
         $mockSuite = $this->make(Suite::class, ['getName' => 'end2end']);
 
         $this->expectException(ExtensionException::class);
-        $this->expectExceptionMessageMatches('/Failed to start Docker Compose/');
+        $this->expectExceptionMessageRegExp('/Failed to start Docker Compose/');
 
         $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
     }
@@ -275,7 +259,7 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_throw_if_running_file_cannot_be_written(): void
     {
-        $this->uopzSetMock(Process::class, MockDockerComposeProcess::class);
+        $this->uopzSetMock(Process::class, $this->makeEmptyClass(Process::class, []));
         $config = ['suites' => ['end2end'], 'compose-file' => 'docker-compose.yml'];
         $options = [];
 
@@ -297,7 +281,6 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_throw_if_stack_stopping_fails(): void
     {
-        $this->uopzSetMock(Process::class, MockDockerComposeProcess::class);
         $config = ['suites' => ['end2end'], 'compose-file' => 'docker-compose.yml'];
         $options = [];
 
@@ -307,15 +290,19 @@ class DockerComposeControllerTest extends Unit
 
         $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
 
-        $this->assertCount(1, MockDockerComposeProcess::$instances);
         $this->assertFileExists(DockerComposeController::getRunningFile());
 
-        MockDockerComposeProcess::$mustRunCallback = static function (): void {
-            throw new Exception('something went wrong');
-        };
+        $this->uopzSetMock(
+            Process::class,
+            $this->makeEmptyClass(Process::class, [
+                'mustRun' => static function () {
+                    throw new Exception('something went wrong');
+                }
+            ])
+        );
 
         $this->expectException(ExtensionException::class);
-        $this->expectExceptionMessageMatches('/Failed to stop Docker Compose/');
+        $this->expectExceptionMessageRegExp('/Failed to stop Docker Compose/');
 
         $extension->stop($this->output);
     }
@@ -327,7 +314,12 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_throw_if_running_file_cannot_be_removed_while_stopping(): void
     {
-        $this->uopzSetMock(Process::class, MockDockerComposeProcess::class);
+        $this->uopzSetMock(
+            Process::class,
+            $this->makeEmptyClass(Process::class, [
+                'stop' => 0
+            ])
+        );
         $config = ['suites' => ['end2end'], 'compose-file' => 'docker-compose.yml'];
         $options = [];
 
@@ -337,7 +329,6 @@ class DockerComposeControllerTest extends Unit
 
         $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
 
-        $this->assertCount(1, MockDockerComposeProcess::$instances);
         $this->assertFileExists(DockerComposeController::getRunningFile());
 
         $this->uopzSetFunctionReturn('unlink', false);
@@ -355,7 +346,15 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_produce_information_correctly(): void
     {
-        $this->uopzSetMock(Process::class, MockDockerComposeProcess::class);
+        $this->uopzSetMock(
+            Process::class,
+            $this->makeEmptyClass(Process::class, [
+                'getOutput' => static function () {
+                    return Yaml::dump(['services' => ['foo' => ['ports' => ['8088:80']]]]);
+                },
+                'stop' => 0
+            ])
+        );
         $config = ['suites' => ['end2end'], 'compose-file' => 'docker-compose.yml'];
         $options = [];
 
@@ -367,14 +366,13 @@ class DockerComposeControllerTest extends Unit
 
         $this->assertFileExists(DockerComposeController::getRunningFile());
 
-        MockDockerComposeProcess::$outputCallback = function (): string {
-            return Yaml::dump(['services' => ['foo' => ['ports' => ['8088:80']]]]);
-        };
-
-        $this->assertMatchesStringSnapshot(var_export($extension->getInfo(), true));
+        $this->assertEquals(
+            ['status' => 'up', 'config' => ['services' => ['foo' => ['ports' => [0 => '8088:80']]]]],
+            $extension->getInfo()
+        );
 
         $extension->stop($this->output);
 
-        $this->assertMatchesStringSnapshot(var_export($extension->getInfo(), true));
+        $this->assertEquals(['status' => 'down', 'config' => ''], $extension->getInfo());
     }
 }

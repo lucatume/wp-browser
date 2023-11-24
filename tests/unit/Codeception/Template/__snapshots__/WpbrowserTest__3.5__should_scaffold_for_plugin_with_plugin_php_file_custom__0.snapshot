@@ -1,0 +1,364 @@
+>>> /plugin.php >>>
+<?php
+/* Plugin Name: Plugin 89 */
+<<< /plugin.php <<<
+
+>>> /tests/EndToEnd.suite.yml >>>
+# Integration suite configuration
+#
+# Run integration and "WordPress unit" tests.
+
+actor: EndToEndTester
+bootstrap: _bootstrap.php
+modules:
+    enabled:
+        - lucatume\WPBrowser\Module\WPWebDriver
+        - lucatume\WPBrowser\Module\WPDb
+        - lucatume\WPBrowser\Module\WPFilesystem
+        - lucatume\WPBrowser\Module\WPLoader
+    config:
+        lucatume\WPBrowser\Module\WPWebDriver:
+            url: '%WORDPRESS_URL%'
+            adminUsername: '%WORDPRESS_ADMIN_USER%'
+            adminPassword: '%WORDPRESS_ADMIN_PASSWORD%'
+            adminPath: '/wp-admin'
+            browser: chrome
+            host: '%CHROMEDRIVER_HOST%'
+            port: '%CHROMEDRIVER_PORT%'
+            path: '/'
+            window_size: 1200x1000
+            capabilities:
+              "goog:chromeOptions":
+                args:
+                  - "--headless"
+                  - "--disable-gpu"
+                  - "--disable-dev-shm-usage"
+                  - "--proxy-server='direct://'"
+                  - "--proxy-bypass-list=*"
+                  - "--no-sandbox"
+        lucatume\WPBrowser\Module\WPDb:
+            dbUrl: '%WORDPRESS_DB_URL%'
+            dump: 'tests/Support/Data/dump.sql'
+            populate: true
+            cleanup: true
+            reconnect: false
+            url: '%WORDPRESS_URL%'
+            urlReplacement: false
+            tablePrefix: '%WORDPRESS_TABLE_PREFIX%'
+        lucatume\WPBrowser\Module\WPFilesystem:
+            wpRootFolder: '%WORDPRESS_ROOT_DIR%'
+        lucatume\WPBrowser\Module\WPLoader:
+            loadOnly: true
+            wpRootFolder: "%WORDPRESS_ROOT_DIR%" 
+            dbUrl: '%WORDPRESS_DB_URL%'
+            domain: '%WORDPRESS_DOMAIN%'
+            
+<<< /tests/EndToEnd.suite.yml <<<
+
+>>> /tests/Integration/SampleTest.php >>>
+<?php
+
+namespace Tests;
+
+use lucatume\WPBrowser\TestCase\WPTestCase;
+
+class SampleTest extends WPTestCase
+{
+    public function setUp(): void
+    {
+        // Before...
+        parent::setUp();
+
+        // Your set-up methods here.
+    }
+
+    public function tearDown(): void
+    {
+        // Your tear down methods here.
+
+        // Then...
+        parent::tearDown();
+    }
+
+    // Tests
+    public function test_factory(): void
+    {
+        $post = static::factory()->post->create_and_get();
+
+        $this->assertInstanceOf(\WP_Post::class, $post);
+    }
+
+    public function test_plugin_active(): void
+    {
+        $this->assertTrue(is_plugin_active('plugin_89/plugin.php'));
+    }
+}
+<<< /tests/Integration/SampleTest.php <<<
+
+>>> /tests/Integration/_bootstrap.php >>>
+<?php
+/*
+ * Integration suite bootstrap file.
+ * 
+ * This file is loaded AFTER the suite modules are initialized, WordPress, plugins and themes are loaded.
+ * 
+ * If you need to load plugins or themes, add them to the Integration suite configuration file, in the 
+ * "modules.config.WPLoader.plugins" and "modules.config.WPLoader.theme" settings.
+ * 
+ * If you need to load one or more database dump file(s) to set up the test database, add the path to the dump file to
+ * the "modules.config.WPLoader.dump" setting.
+ */
+<<< /tests/Integration/_bootstrap.php <<<
+
+>>> /tests/_support/IntegrationTester.php >>>
+<?php
+
+
+/**
+ * Inherited Methods
+ * @method void wantToTest($text)
+ * @method void wantTo($text)
+ * @method void execute($callable)
+ * @method void expectTo($prediction)
+ * @method void expect($prediction)
+ * @method void amGoingTo($argumentation)
+ * @method void am($role)
+ * @method void lookForwardTo($achieveValue)
+ * @method void comment($description)
+ * @method void pause()
+ *
+ * @SuppressWarnings(PHPMD)
+*/
+class IntegrationTester extends \Codeception\Actor
+{
+    use _generated\IntegrationTesterActions;
+
+    /**
+     * Define custom actions here
+     */
+}
+
+<<< /tests/_support/IntegrationTester.php <<<
+
+>>> /tests/_support/EndToEndTester.php >>>
+<?php
+
+
+/**
+ * Inherited Methods
+ * @method void wantToTest($text)
+ * @method void wantTo($text)
+ * @method void execute($callable)
+ * @method void expectTo($prediction)
+ * @method void expect($prediction)
+ * @method void amGoingTo($argumentation)
+ * @method void am($role)
+ * @method void lookForwardTo($achieveValue)
+ * @method void comment($description)
+ * @method void pause()
+ *
+ * @SuppressWarnings(PHPMD)
+*/
+class EndToEndTester extends \Codeception\Actor
+{
+    use _generated\EndToEndTesterActions;
+
+    /**
+     * Define custom actions here
+     */
+}
+
+<<< /tests/_support/EndToEndTester.php <<<
+
+>>> /tests/_support/Helper/EndToEnd.php >>>
+<?php
+namespace Helper;
+
+// here you can define custom actions
+// all public methods declared in helper class will be available in $I
+
+class EndToEnd extends \Codeception\Module
+{
+
+}
+
+<<< /tests/_support/Helper/EndToEnd.php <<<
+
+>>> /tests/_support/Helper/Integration.php >>>
+<?php
+namespace Helper;
+
+// here you can define custom actions
+// all public methods declared in helper class will be available in $I
+
+class Integration extends \Codeception\Module
+{
+
+}
+
+<<< /tests/_support/Helper/Integration.php <<<
+
+>>> /tests/Integration.suite.yml >>>
+# Integration suite configuration
+#
+# Run integration and "WordPress unit" tests.
+
+actor: IntegrationTester
+bootstrap: _bootstrap.php
+modules:
+    enabled:
+        - lucatume\WPBrowser\Module\WPLoader
+    config:
+        lucatume\WPBrowser\Module\WPLoader:
+           wpRootFolder: "%WORDPRESS_ROOT_DIR%" 
+           dbUrl: '%WORDPRESS_DB_URL%'
+           wpDebug: true
+           tablePrefix: '%TEST_TABLE_PREFIX%'
+           domain: '%WORDPRESS_DOMAIN%'
+           adminEmail: 'admin@%WORDPRESS_DOMAIN%'
+           title: 'Integration Tests'
+           plugins: ['plugin_89/plugin.php']
+           theme: ''
+<<< /tests/Integration.suite.yml <<<
+
+>>> /tests/EndToEnd/_bootstrap.php >>>
+<?php
+/*
+ * EndToEnd suite bootstrap file.
+ * 
+ * This file is loaded AFTER the suite modules are initialized and WordPress has been loaded by the WPLoader module.
+ * 
+ * The initial state of the WordPress site is the one set up by the dump file(s) loaded by the WPDb module, look for the
+ * "modules.config.WPDb.dump" setting in the suite configuration file. The database will be dropped after each test
+ * and re-created from the dump file(s).
+ * 
+ * You can modify and create new dump files using the `vendor/bin/codecept wp:cli EndToEnd <wp-cli command>` command
+ * to run WP-CLI commands on the WordPress site and database used by the EndToEnd suite.
+ * E.g.:
+ * `vendor/bin/codecept wp:cli EndToEnd db import tests/Support/Data/dump.sql` to load  dump file.
+ * `vendor/bin/codecept wp:cli EndToEnd plugin activate woocommerce` to activate the WooCommerce plugin.
+ * `vendor/bin/codecept wp:cli EndToEnd user create alice alice@example.com --role=administrator` to create a new user.
+ * `vendor/bin/codecept wp:cli EndToEnd db export tests/Support/Data/dump.sql` to update the dump file.
+ */
+<<< /tests/EndToEnd/_bootstrap.php <<<
+
+>>> /tests/EndToEnd/ActivationCest.php >>>
+<?php
+
+namespace Tests\EndToEnd;
+
+use Tests\Support\EndToEndTester;
+
+class ActivationCest
+{
+    public function test_it_deactivates_activates_correctly(EndToEndTester $I): void
+    {
+        $I->loginAsAdmin();
+        $I->amOnPluginsPage();
+
+        $I->seePluginActivated('plugin-89');
+
+        $I->deactivatePlugin('plugin-89');
+
+        $I->seePluginDeactivated('plugin-89');
+
+        $I->activatePlugin('plugin-89');
+
+        $I->seePluginActivated('plugin-89');
+    }
+}
+
+<<< /tests/EndToEnd/ActivationCest.php <<<
+
+>>> /tests/.env >>>
+# The path to the WordPress root directory, the one containing the wp-load.php file.
+# This can be a relative path from the directory that contains the codeception.yml file,
+# or an absolute path.
+WORDPRESS_ROOT_DIR=tests/_wordpress
+
+# Tests will require a MySQL database to run.
+# The database will be created if it does not exist.
+# Do not use a database that contains important data!
+WORDPRESS_DB_URL=sqlite://%codecept_root_dir%/tests/_wordpress/data/db.sqlite
+
+# The Integration suite will use this table prefix for the WordPress tables.
+TEST_TABLE_PREFIX=test_
+
+# This table prefix used by the WordPress site in end-to-end tests.
+WORDPRESS_TABLE_PREFIX=wp_
+
+# The URL and domain of the WordPress site used in end-to-end tests.
+WORDPRESS_URL=http://localhost:24026
+WORDPRESS_DOMAIN=localhost:24026
+
+# The username and password of the administrator user of the WordPress site used in end-to-end tests.
+WORDPRESS_ADMIN_USER=admin
+WORDPRESS_ADMIN_PASSWORD=password
+
+# The host and port of the ChromeDriver server that will be used in end-to-end tests.
+CHROMEDRIVER_HOST=localhost
+CHROMEDRIVER_PORT=36951
+
+# The port on which the PHP built-in server will serve the WordPress installation.
+BUILTIN_SERVER_PORT=24026
+
+<<< /tests/.env <<<
+
+>>> /tests/_output/.gitkeep >>>
+
+<<< /tests/_output/.gitkeep <<<
+
+>>> /tests/_data/.gitkeep >>>
+
+<<< /tests/_data/.gitkeep <<<
+
+>>> /codeception.yml >>>
+support_namespace: Support
+paths:
+    tests: tests
+    output: tests/_output
+    data: tests/_data
+    support: tests/_support
+    envs: tests/_envs
+actor_suffix: Tester
+params:
+    - tests/.env
+extensions:
+    enabled:
+        - Codeception\Extension\RunFailed
+        - lucatume\WPBrowser\Extension\ChromeDriverController
+        - lucatume\WPBrowser\Extension\BuiltInServerController
+    config:
+        lucatume\WPBrowser\Extension\ChromeDriverController:
+            port: '%CHROMEDRIVER_PORT%'
+        lucatume\WPBrowser\Extension\BuiltInServerController:
+            workers: 5
+            port: '%BUILTIN_SERVER_PORT%'
+            docroot: '%WORDPRESS_ROOT_DIR%'
+            env:
+                DATABASE_TYPE: sqlite
+                DB_ENGINE: sqlite
+                DB_DIR: '%codecept_root_dir%/tests/_data'
+                DB_FILE: db.sqlite
+    commands:
+        - lucatume\WPBrowser\Command\RunOriginal
+        - lucatume\WPBrowser\Command\RunAll
+        - lucatume\WPBrowser\Command\GenerateWPUnit
+        - lucatume\WPBrowser\Command\DbExport
+        - lucatume\WPBrowser\Command\DbImport
+        - lucatume\WPBrowser\Command\DevStart
+        - lucatume\WPBrowser\Command\DevStop
+        - lucatume\WPBrowser\Command\DevInfo
+        - lucatume\WPBrowser\Command\DevRestart
+        - lucatume\WPBrowser\Command\ChromedriverUpdate
+
+<<< /codeception.yml <<<
+
+>>> /composer.json >>>
+{
+  "name": "acme/plugin-89",
+  "type": "wordpress-plugin",
+  "require": {},
+  "require-dev": {}
+}
+<<< /composer.json <<<

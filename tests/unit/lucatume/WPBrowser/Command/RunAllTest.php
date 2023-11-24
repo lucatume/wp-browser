@@ -6,13 +6,13 @@ namespace Unit\lucatume\WPBrowser\Command;
 use Codeception\Configuration;
 use Codeception\Test\Unit;
 use Exception;
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Command\RunAll;
 use lucatume\WPBrowser\Tests\Traits\ClassStubs;
 use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Process\Process;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 class RunAllTest extends Unit

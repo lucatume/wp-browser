@@ -5,9 +5,9 @@ namespace lucatume\WPBrowser\Command;
 use Codeception\Command\Run;
 use Codeception\CustomCommandInterface;
 use Exception;
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 
 class RunAll extends Run implements CustomCommandInterface
 {

@@ -87,8 +87,25 @@ class Dispatcher
      */
     public static function dispatch(string $name, mixed $origin = null, array $context = []): ?object
     {
+        $eventDispatcher = self::getEventDispatcher();
+
+        if (!$eventDispatcher) {
+            return null;
+        }
+
         $event = new Event($name, $context, $origin);
 
-        return self::getEventDispatcher()?->dispatch($event, $name);
+        try {
+            $dispatchMethodReflection = new \ReflectionMethod($eventDispatcher, 'dispatch');
+            $firstParameterReflection = $dispatchMethodReflection->getParameters()[0] ?? null;
+            $firstParameterType = $firstParameterReflection ? $firstParameterReflection->getType() : null;
+            if ($firstParameterType instanceof \ReflectionNamedType && $firstParameterType->getName() === 'object') {
+                return $eventDispatcher->dispatch($event, $name);
+            }
+
+            return $eventDispatcher->dispatch($name, $event); //@phpstan-ignore-line
+        } catch (\ReflectionException $e) {
+            return null;
+        }
     }
 }

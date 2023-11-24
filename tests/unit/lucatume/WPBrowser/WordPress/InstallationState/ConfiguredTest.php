@@ -46,7 +46,7 @@ class ConfiguredTest extends Unit
      */
     public function should_throw_when_building_on_empty_root_directory(): void
     {
-        $wpRootDir = Fs::tmpDir('configured_',);
+        $wpRootDir = Fs::tmpDir('configured_');
 
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::STATE_EMPTY);
@@ -336,7 +336,7 @@ class ConfiguredTest extends Unit
 
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::INSTALLATION_FAIL);
-        $this->expectExceptionMessageMatches('/errors occurred/');
+        $this->expectExceptionMessageRegExp('/errors occurred/');
 
         $configured->install('https://wp.local',
             'admin',
@@ -368,7 +368,7 @@ class ConfiguredTest extends Unit
 
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::INSTALLATION_FAIL);
-        $this->expectExceptionMessageMatches('/Something is amiss/');
+        $this->expectExceptionMessageRegExp('/Something is amiss/');
 
         $configured->install('https://wp.local',
             'admin',

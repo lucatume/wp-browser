@@ -12,13 +12,13 @@ namespace lucatume\WPBrowser\Utils;
 
 use Closure;
 use InvalidArgumentException;
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Utils\Db as DbUtils;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use PDO;
 use PDOException;
 use PDOStatement;
 use RuntimeException;
-use Symfony\Component\Process\Process;
 use function array_replace;
 
 class Db

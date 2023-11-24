@@ -1,5 +1,0 @@
-array (
-  'running' => 'no',
-  'pidFile' => 'var/_output/chromedriver.pid',
-  'port' => 4444,
-)

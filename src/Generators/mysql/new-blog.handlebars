@@ -8,7 +8,7 @@ PRIMARY KEY (`meta_id`),
 KEY `comment_id` (`comment_id`),
 KEY `meta_key` (`meta_key`(191))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+-- break --
 -- Create syntax for TABLE '{{prefix}}{{blog_id}}_comments'
 CREATE TABLE `{{prefix}}{{blog_id}}_comments` (
 `comment_ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -33,7 +33,7 @@ KEY `comment_date_gmt` (`comment_date_gmt`),
 KEY `comment_parent` (`comment_parent`),
 KEY `comment_author_email` (`comment_author_email`(10))
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+-- break --
 -- Create syntax for TABLE '{{prefix}}{{blog_id}}_links'
 CREATE TABLE `{{prefix}}{{blog_id}}_links` (
 `link_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -52,7 +52,7 @@ CREATE TABLE `{{prefix}}{{blog_id}}_links` (
 PRIMARY KEY (`link_id`),
 KEY `link_visible` (`link_visible`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+-- break --
 -- Create syntax for TABLE '{{prefix}}{{blog_id}}_options'
 CREATE TABLE `{{prefix}}{{blog_id}}_options` (
 `option_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -62,7 +62,7 @@ CREATE TABLE `{{prefix}}{{blog_id}}_options` (
 PRIMARY KEY (`option_id`),
 UNIQUE KEY `option_name` (`option_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=128 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+-- break --
 -- Create syntax for TABLE '{{prefix}}{{blog_id}}_postmeta'
 CREATE TABLE `{{prefix}}{{blog_id}}_postmeta` (
 `meta_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -73,7 +73,7 @@ PRIMARY KEY (`meta_id`),
 KEY `post_id` (`post_id`),
 KEY `meta_key` (`meta_key`(191))
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+-- break --
 -- Create syntax for TABLE '{{prefix}}{{blog_id}}_posts'
 CREATE TABLE `{{prefix}}{{blog_id}}_posts` (
 `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -105,7 +105,7 @@ KEY `type_status_date` (`post_type`,`post_status`,`post_date`,`ID`),
 KEY `post_parent` (`post_parent`),
 KEY `post_author` (`post_author`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+-- break --
 -- Create syntax for TABLE '{{prefix}}{{blog_id}}_term_relationships'
 CREATE TABLE `{{prefix}}{{blog_id}}_term_relationships` (
 `object_id` bigint(20) unsigned NOT NULL DEFAULT '0',
@@ -114,7 +114,7 @@ CREATE TABLE `{{prefix}}{{blog_id}}_term_relationships` (
 PRIMARY KEY (`object_id`,`term_taxonomy_id`),
 KEY `term_taxonomy_id` (`term_taxonomy_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+-- break --
 -- Create syntax for TABLE '{{prefix}}{{blog_id}}_term_taxonomy'
 CREATE TABLE `{{prefix}}{{blog_id}}_term_taxonomy` (
 `term_taxonomy_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -127,7 +127,7 @@ PRIMARY KEY (`term_taxonomy_id`),
 UNIQUE KEY `term_id_taxonomy` (`term_id`,`taxonomy`),
 KEY `taxonomy` (`taxonomy`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+-- break --
 -- Create syntax for TABLE '{{prefix}}{{blog_id}}_terms'
 CREATE TABLE `{{prefix}}{{blog_id}}_terms` (
 `term_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -138,7 +138,7 @@ PRIMARY KEY (`term_id`),
 KEY `slug` (`slug`(191)),
 KEY `name` (`name`(191))
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+-- break --
 CREATE TABLE `{{prefix}}{{blog_id}}_termmeta` (
 `meta_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 `term_id` bigint(20) unsigned NOT NULL DEFAULT '0',
@@ -148,7 +148,7 @@ PRIMARY KEY (`meta_id`),
 KEY `term_id` (`term_id`),
 KEY `meta_key` (`meta_key`(191))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+-- break --
 INSERT INTO `{{prefix}}{{blog_id}}_options` (`option_id`, `option_name`, `option_value`, `autoload`)
 VALUES
 (1, 'siteurl', '{{siteurl}}', 'yes'),
