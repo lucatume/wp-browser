@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Correctly activate themes during bootstrap.
+
+#### Changed
+
+- Lay the groundwork for version 3.5 automated building.
+
 ## [4.0.10] 2023-10-14;
 
 ### Added
