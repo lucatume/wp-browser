@@ -1124,7 +1124,7 @@ class WPLoaderTest extends Unit
                 'akismet/akismet.php',
                 'hello-dolly/hello.php'
             ];
-            if(PHP_VERSION >= 7.4){
+            if (PHP_VERSION >= 7.4) {
                 $expectedActivePlugins[] = 'woocommerce/woocommerce.php';
             }
             Assert::assertEquals($expectedActivePlugins, array_keys(get_site_option('active_sitewide_plugins')));
@@ -1391,7 +1391,7 @@ class WPLoaderTest extends Unit
             ],
             'theme' => 'some-child-theme'
         ];
-        if(PHP_VERSION >= 7.4){
+        if (PHP_VERSION >= 7.4) {
             // WooCommerce has a minimum PHP version of 7.4.0 required.
             $this->config['plugins'][] = 'woocommerce/woocommerce.php';
         }
@@ -1461,7 +1461,7 @@ class WPLoaderTest extends Unit
             'theme' => 'twentytwenty-child',
             'multisite' => true,
         ];
-        if(PHP_VERSION >= 7.4){
+        if (PHP_VERSION >= 7.4) {
             // WooCommerce has a minimum PHP version of 7.4.0 required.
             $this->config['plugins'][] = 'woocommerce/woocommerce.php';
         }
@@ -1804,7 +1804,9 @@ class WPLoaderTest extends Unit
      */
     public function should_correctly_load_the_module_on_a_bedrock_installation(): void
     {
-        $this->markTestSkipped();
+        if (PHP_VERSION < 8.0) {
+            $this->markTestSkipped();
+        }
         $wpRootDir = FS::tmpDir('wploader_');
         $dbName = Random::dbName();
         $dbHost = Env::get('WORDPRESS_DB_HOST');
