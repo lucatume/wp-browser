@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.0.12] 2023-11-25;
+
 ### Added
 
 - Added the `backupGlobals`, `backupGlobalsExcludeList`, `backupStaticAttributes`, `backupStaticAttributesExcludeList` to the `WPLoader` module configuration file to provide a sweeping control over the state snapshot of test cases extending the `WPTestCase` class. Test cases overriding those properties explicitly will have their values respected.
@@ -2031,4 +2033,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.9]: https://github.com/lucatume/wp-browser/compare/4.0.8...4.0.9
 [4.0.10]: https://github.com/lucatume/wp-browser/compare/4.0.9...4.0.10
 [4.0.11]: https://github.com/lucatume/wp-browser/compare/4.0.10...4.0.11
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.11...HEAD
+[4.0.12]: https://github.com/lucatume/wp-browser/compare/4.0.11...4.0.12
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.12...HEAD
