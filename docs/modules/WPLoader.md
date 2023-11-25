@@ -82,6 +82,10 @@ When used in this mode, the module supports the following configuration paramete
 * `WP_HTTP_BLOCK_EXTERNAL` - the `WP_HTTP_BLOCK_EXTERNAL` constant value to use when loading WordPress. If
   the `wpRootFolder` path points at a configured installation, containing the `wp-config.php` file, then the value of
   the constant in the configuration file will be used, else it will be randomly generated.
+* `backupGlobals` - a boolean value to indicate if the global environment should be backed up before each test. Defaults to `true`. The globals' backup involves serialization of the global state, plugins or themes that define classes developed to prevent serialization of the global state will cause the tests to fail. Set this parameter to `false` to disable the global environment backup, or use a more refined approach setting the `backupGlobalsExcludeList` parameter below. Note that a test case that is explicitly setting the `backupGlobals` property will override this configuration parameter.
+* `backupGlobalsExcludeList` - a list of global variables to exclude from the global environment backup. The list must be in the form of array, and it will be merged to the list of globals excluded by default.
+* `backupStaticAttributes` - a boolean value to indicate if static attributes of classes should be backed up before each test. Defaults to `true`. The static attributes' backup involves serialization of the global state, plugins or themes that define classes developed to prevent serialization of the global state will cause the tests to fail. Set this parameter to `false` to disable the static attributes backup, or use a more refined approanch setting the `backupStaticAttributesExcludeList` parameter below. Note that a test case that is explicitly setting the `backupStaticAttributes` property will override this configuration parameter.
+* `backupStaticAttributesExcludeList` - a list of classes to exclude from the static attributes backup. The list must be in the form of map from class names to the array of method names to exclude from the backup. See an example below.
 
 This is an example of an integration suite configured to use the module:
 
@@ -151,6 +155,70 @@ modules:
           - woocommerce/woocommerce.php
           - my-plugin/my-plugin.php
         theme: twentytwentythree
+```
+
+The follow example configuration prevents the backup of globals and static attributes in all the tests of the suite that are not explicitly overriding the `backupGlobals` and `backupStaticAttributes` properties:
+
+```yaml
+actor: IntegrationTester
+bootstrap: _bootstrap.php
+modules:
+  enabled:
+    - \Helper\Integration
+    - lucatume\WPBrowser\Module\WPLoader:
+        wpRootFolder: /var/wordpress
+        dbUrl: sqlite:///var/wordpress/wp-tests.sqlite
+        dump:
+          - tests/_data/products.sql
+          - tests/_data/users.sql
+          - tests/_data/orders.sql
+        tablePrefix: test_
+        domain: wordpress.test
+        adminEmail: admin@wordpress.test
+        title: 'Integration Tests'
+        plugins:
+          - hello.php
+          - woocommerce/woocommerce.php
+          - my-plugin/my-plugin.php
+        theme: twentytwentythree
+        backupGlobals: false
+        backupStaticAttributes: false 
+```
+
+The following configuration prevents the backup of *some* globals and static attributes:
+
+```yaml
+actor: IntegrationTester
+bootstrap: _bootstrap.php
+modules:
+  enabled:
+    - \Helper\Integration
+    - lucatume\WPBrowser\Module\WPLoader:
+        wpRootFolder: /var/wordpress
+        dbUrl: sqlite:///var/wordpress/wp-tests.sqlite
+        dump:
+          - tests/_data/products.sql
+          - tests/_data/users.sql
+          - tests/_data/orders.sql
+        tablePrefix: test_
+        domain: wordpress.test
+        adminEmail: admin@wordpress.test
+        title: 'Integration Tests'
+        plugins:
+          - hello.php
+          - woocommerce/woocommerce.php
+          - my-plugin/my-plugin.php
+        theme: twentytwentythree
+        backupGlobalsExcludeList:
+          - my_plugin_will_explode_on_wakeup
+          - another_problematic_global
+        backupStaticAttributesExcludeList:
+          - MyPlugin\MyClass:
+              - instance
+              - anotherStaticAttributeThatWillExplodeOnWakeup
+          - AnotherPlugin\AnotherClass:
+                - instance
+                - yetAnotherStaticAttributeThatWillExplodeOnWakeup
 ```
 
 ### Handling a custom site structure

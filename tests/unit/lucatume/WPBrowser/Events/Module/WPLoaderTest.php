@@ -7,11 +7,13 @@ use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
+use Codeception\Test\TestCaseWrapper;
 use Codeception\Test\Unit;
 use Exception;
 use Generator;
 use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
+use lucatume\WPBrowser\TestCase\WPTestCase;
 use lucatume\WPBrowser\Tests\FSTemplates\BedrockProject;
 use lucatume\WPBrowser\Tests\Traits\DatabaseAssertions;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
@@ -28,10 +30,16 @@ use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use lucatume\WPBrowser\WordPress\InstallationState\Scaffolded;
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\TestResult;
 use RuntimeException;
+use stdClass;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use UnitTester;
 use WP_Theme;
+
+use WP_UnitTestCase;
+
+use function PHPUnit\Framework\assertEquals;
 
 use const ABSPATH;
 use const WP_DEBUG;
@@ -1927,5 +1935,436 @@ PHP
                 return $wpLoader->getInstallation()->getDb()->getDbName();
             })
         );
+    }
+
+    /**
+     * It should allow controlling the backup of global variables in the WPTestCase
+     *
+     * @test
+     */
+    public function should_allow_controlling_the_backup_of_global_variables_in_the_wp_test_case(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $installation = Installation::scaffold($wpRootDir);
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db->drop();
+        $installation->configure($db);
+        $installation->install(
+            'https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test'
+        );
+        $testcaseFile = codecept_data_dir('files/BackupControlTestCase.php');
+        $overridingTestCaseFile = codecept_data_dir('files/BackupControlTestCaseOverridingTestCase.php');
+
+        // Set`WPLoader.backupGlobals` to `false`.
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $db->getDbUrl(),
+            'backupGlobals' => false,
+        ];
+        $wpLoader = $this->module();
+
+        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
+            $wpLoader->_initialize();
+
+            Assert::assertTrue(function_exists('do_action'));
+
+            require_once $testcaseFile;
+
+            $testCase = new \BackupControlTestCase('testBackupGlobalsIsFalse');
+            /** @var TestResult $result */
+            $result = $testCase->run();
+
+            Assert::assertTrue($result->wasSuccessful());
+        });
+
+        // Set `WPLoader.backupGlobals` to `true`.
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $db->getDbUrl(),
+            'backupGlobals' => true,
+        ];
+        $wpLoader = $this->module();
+
+        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
+            $wpLoader->_initialize();
+
+            Assert::assertTrue(function_exists('do_action'));
+
+            require_once $testcaseFile;
+
+            $testCase = new \BackupControlTestCase('testBackupGlobalsIsTrue');
+            /** @var TestResult $result */
+            $result = $testCase->run();
+
+            Assert::assertTrue($result->wasSuccessful());
+        });
+
+        // Do not set `WPLoader.backupGlobals`, but use the default value.
+        // Set `WPLoader.backupGlobals` to `true`.
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $db->getDbUrl(),
+        ];
+        $wpLoader = $this->module();
+
+        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
+            $wpLoader->_initialize();
+
+            Assert::assertTrue(function_exists('do_action'));
+
+            require_once $testcaseFile;
+
+            $testCase = new \BackupControlTestCase('testBackupGlobalsIsTrue');
+            /** @var TestResult $result */
+            $result = $testCase->run();
+
+            Assert::assertTrue($result->wasSuccessful());
+        });
+
+        // Set `WPLoader.backupGlobals` to `true`, but use a use-case that sets it explicitly to `false`.
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $db->getDbUrl(),
+            'backupGlobals' => true,
+        ];
+        $wpLoader = $this->module();
+
+        $this->assertInIsolation(static function () use ($wpLoader, $overridingTestCaseFile) {
+            $wpLoader->_initialize();
+
+            Assert::assertTrue(function_exists('do_action'));
+
+            require_once $overridingTestCaseFile;
+
+            $testCase = new \BackupControlTestCaseOverridingTestCase('testBackupGlobalsIsFalse');
+            /** @var TestResult $result */
+            $result = $testCase->run();
+
+            Assert::assertTrue($result->wasSuccessful());
+        });
+
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $db->getDbUrl(),
+        ];
+        $wpLoader = $this->module();
+
+        // Test that globals defined before the test runs should be backed up by default.
+        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
+            $wpLoader->_initialize();
+
+            Assert::assertTrue(function_exists('do_action'));
+
+            // Set the initial value of the global variable.
+            global $_wpbrowser_test_global_var;
+            $_wpbrowser_test_global_var = 'initial_value';
+
+            require_once $testcaseFile;
+
+            $testCase = new \BackupControlTestCase('testWillUpdateTheValueOfGlobalVar');
+            /** @var TestResult $result */
+            $result = $testCase->run();
+
+            Assert::assertTrue($result->wasSuccessful());
+
+            // Check that the value of the global variable has been updated.
+            Assert::assertEquals('initial_value', $_wpbrowser_test_global_var);
+        });
+
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $db->getDbUrl(),
+            'backupGlobalsExcludeList' => ['_wpbrowser_test_global_var'],
+        ];
+        $wpLoader = $this->module();
+
+        // Test that adding a global to the list of `backupGlobalsExcludeList` will not back it up.
+        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
+            $wpLoader->_initialize();
+
+            Assert::assertTrue(function_exists('do_action'));
+
+            // Set the initial value of the global variable.
+            global $_wpbrowser_test_global_var;
+            $_wpbrowser_test_global_var = 'initial_value';
+
+            require_once $testcaseFile;
+
+            $testCase = new \BackupControlTestCase('testWillUpdateTheValueOfGlobalVar');
+            /** @var TestResult $result */
+            $result = $testCase->run();
+
+            Assert::assertTrue($result->wasSuccessful());
+
+            // Check that the value of the global variable has been updated.
+            Assert::assertEquals('updated_value', $_wpbrowser_test_global_var);
+        });
+    }
+
+    /**
+     * It should allow controlling the backup of static attributes in the WPTestCase
+     *
+     * @test
+     */
+    public function should_allow_controlling_the_backup_of_static_attributes_in_the_wp_test_case(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $installation = Installation::scaffold($wpRootDir);
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $db->drop();
+        $installation->configure($db);
+        $installation->install(
+            'https://wp.local',
+            'admin',
+            'password',
+            'admin@wp.local',
+            'Test'
+        );
+        $testcaseFile = codecept_data_dir('files/BackupControlTestCase.php');
+        $overridingTestCaseFile = codecept_data_dir('files/BackupControlTestCaseOverridingTestCase.php');
+
+        // Set`WPLoader.backupStaticAttributes` to `false`.
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $db->getDbUrl(),
+            'backupStaticAttributes' => false,
+        ];
+        $wpLoader = $this->module();
+
+        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
+            $wpLoader->_initialize();
+
+            Assert::assertTrue(function_exists('do_action'));
+
+            require_once $testcaseFile;
+
+            $testCase = new \BackupControlTestCase('testWillAlterStoreStaticAttribute');
+            /** @var TestResult $result */
+            $result = $testCase->run();
+
+            Assert::assertTrue($result->wasSuccessful());
+
+            Assert::assertEquals('updated_value', \BackupControlTestCaseStore::$staticAttribute);
+        });
+
+        // Don't set`WPLoader.backupStaticAttributes`, it should be `true` by default.
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $db->getDbUrl()
+        ];
+        $wpLoader = $this->module();
+
+        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
+            $wpLoader->_initialize();
+
+            Assert::assertTrue(function_exists('do_action'));
+
+            require_once $testcaseFile;
+
+            $testCase = new \BackupControlTestCase('testWillAlterStoreStaticAttribute');
+            /** @var TestResult $result */
+            $result = $testCase->run();
+
+            Assert::assertTrue($result->wasSuccessful());
+
+            Assert::assertEquals('initial_value', \BackupControlTestCaseStore::$staticAttribute);
+        });
+
+        // Set the value of `WPLoader.backupStaticAttributes` to `true`, but use a use-case that sets it explicitly to `false`.
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $db->getDbUrl(),
+            'backupStaticAttributes' => true,
+        ];
+        $wpLoader = $this->module();
+
+        $this->assertInIsolation(static function () use ($wpLoader, $overridingTestCaseFile) {
+            $wpLoader->_initialize();
+
+            Assert::assertTrue(function_exists('do_action'));
+
+            require_once $overridingTestCaseFile;
+
+            $testCase = new \BackupControlTestCaseOverridingTestCase('testWillAlterStoreStaticAttribute');
+            /** @var TestResult $result */
+            $result = $testCase->run();
+
+            Assert::assertTrue($result->wasSuccessful());
+
+            Assert::assertEquals('updated_value', \BackupControlTestCaseOverridingStore::$staticAttribute);
+        });
+
+        // Set the value of the `WPLoader.backupStaticAttributesExcludeList` to not back up the static attribute.
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $db->getDbUrl(),
+            'backupStaticAttributesExcludeList' => [
+                \BackupControlTestCaseStore::class => ['staticAttribute', 'staticAttributeThree'],
+                \BackupControlTestCaseStoreTwo::class => ['staticAttributeFour'],
+            ]
+        ];
+        $wpLoader = $this->module();
+
+        $this->assertInIsolation(
+            static function () use ($wpLoader, $testcaseFile) {
+                $wpLoader->_initialize();
+
+                Assert::assertTrue(function_exists('do_action'));
+
+                require_once $testcaseFile;
+
+                $testCase = new \BackupControlTestCase('testWillAlterStoreStaticAttribute');
+                /** @var TestResult $result */
+                $result = $testCase->run();
+
+                Assert::assertTrue($result->wasSuccessful());
+
+                Assert::assertEquals('updated_value', \BackupControlTestCaseStore::$staticAttribute);
+                Assert::assertEquals('initial_value', \BackupControlTestCaseStore::$staticAttributeTwo);
+                Assert::assertEquals('updated_value', \BackupControlTestCaseStore::$staticAttributeThree);
+                Assert::assertEquals('initial_value', \BackupControlTestCaseStore::$staticAttributeFour);
+                Assert::assertEquals('initial_value', \BackupControlTestCaseStoreTwo::$staticAttribute);
+                Assert::assertEquals('initial_value', \BackupControlTestCaseStoreTwo::$staticAttributeTwo);
+                Assert::assertEquals('initial_value', \BackupControlTestCaseStoreTwo::$staticAttributeThree);
+                Assert::assertEquals('updated_value', \BackupControlTestCaseStoreTwo::$staticAttributeFour);
+            }
+        );
+    }
+
+    public function notABooleanProvider(): array
+    {
+        return [
+            'string' => ['string'],
+            'integer' => [1],
+            'float' => [1.1],
+            'array' => [[]],
+            'object' => [new stdClass()],
+        ];
+    }
+
+    /**
+     * It should throw if backupGlobals is not a boolean
+     *
+     * @test
+     * @dataProvider notABooleanProvider
+     */
+    public function should_throw_if_backup_globals_is_not_a_boolean($notABoolean): void
+    {
+        $wpRootDir = Env::get('WORDPRESS_ROOT_DIR');
+        $db = (new Installation($wpRootDir))->getDb();
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $db->getDbUrl(),
+            'backupGlobals' => $notABoolean,
+        ];
+
+        $this->expectException(ModuleConfigException::class);
+
+        $this->module();
+    }
+
+    public function notArrayOfStringsProvider(): array
+    {
+        return [
+            'string' => ['string'],
+            'integer' => [1],
+            'float' => [1.1],
+            'object' => [new stdClass()],
+            'array of integers' => [[1, 2, 3]],
+            'array of floats' => [[1.1, 2.2, 3.3]],
+            'array of objects' => [[new stdClass(), new stdClass(), new stdClass()]],
+            'array of arrays' => [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]],
+            'array of mixed' => [[1, 2.2, new stdClass(), [1, 2, 3]]],
+        ];
+    }
+
+    /**
+     * It should throw if backupGlobalsExcludeList is not an array of strings
+     *
+     * @test
+     * @dataProvider notArrayOfStringsProvider
+     */
+    public function should_throw_if_backup_globals_exclude_list_is_not_an_array_of_strings($input): void
+    {
+        $wpRootDir = Env::get('WORDPRESS_ROOT_DIR');
+        $db = (new Installation($wpRootDir))->getDb();
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $db->getDbUrl(),
+            'backupGlobalsExcludeList' => $input,
+        ];
+
+        $this->expectException(ModuleConfigException::class);
+
+        $this->module();
+    }
+
+    /**
+     * It should throw if backupStaticAttributes is not a boolean
+     *
+     * @test
+     * @dataProvider notABooleanProvider
+     */
+    public function should_throw_if_backup_static_attributes_is_not_a_boolean($notABoolean): void
+    {
+        $wpRootDir = Env::get('WORDPRESS_ROOT_DIR');
+        $db = (new Installation($wpRootDir))->getDb();
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $db->getDbUrl(),
+            'backupStaticAttributes' => $notABoolean,
+        ];
+
+        $this->expectException(ModuleConfigException::class);
+
+        $this->module();
+    }
+
+    public function notStaticAttributeExcludeListProvider(): array
+    {
+        return [
+            'string' => ['string'],
+            'integer' => [1],
+            'float' => [1.1],
+            'object' => [new stdClass()],
+            'array of integers' => [[1, 2, 3]],
+            'array of floats' => [[1.1, 2.2, 3.3]],
+            'array of objects' => [[new stdClass(), new stdClass(), new stdClass()]],
+            'array of arrays' => [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]],
+            'array of mixed' => [[1, 2.2, new stdClass(), [1, 2, 3]]],
+        ];
+    }
+
+    /**
+     * It should throw if backupStaticAttributesExcludeList is not in the correct format
+     *
+     * @test
+     * @dataProvider notStaticAttributeExcludeListProvider
+     */
+    public function should_throw_if_backup_static_attributes_exclude_list_is_not_in_the_correct_format($input): void
+    {
+        $wpRootDir = Env::get('WORDPRESS_ROOT_DIR');
+        $db = (new Installation($wpRootDir))->getDb();
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $db->getDbUrl(),
+            'backupStaticAttributesExcludeList' => $input,
+        ];
+
+        $this->expectException(ModuleConfigException::class);
+
+        $this->module();
     }
 }

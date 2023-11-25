@@ -19,6 +19,7 @@ use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
 use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
+use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\Utils\CorePHPUnit;
 use lucatume\WPBrowser\Utils\Db as DbUtils;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
@@ -118,7 +119,11 @@ class WPLoader extends Module
      *     WP_PLUGIN_DIR?: ?string,
      *     WPMU_PLUGIN_DIR?: ?string,
      *     dump: string|string[],
-     *     dbUrl?: string
+     *     dbUrl?: string,
+     *     backupGlobals?: bool,
+     *     backupGlobalsExcludeList?: string[],
+     *     backupStaticAttributes?: bool,
+     *     backupStaticAttributesExcludeList?: array<string,string[]>,
      * }
      */
     protected array $config = [
@@ -150,7 +155,11 @@ class WPLoader extends Module
         'WP_CONTENT_DIR' => null,
         'WP_PLUGIN_DIR' => null,
         'WPMU_PLUGIN_DIR' => null,
-        'dump' => ''
+        'dump' => '',
+        'backupGlobals' => true,
+        'backupGlobalsExcludeList' => [],
+        'backupStaticAttributes' => true,
+        'backupStaticAttributesExcludeList' => [],
     ];
 
     private string $wpBootstrapFile;
@@ -220,6 +229,48 @@ class WPLoader extends Module
             }
         }
 
+        if (isset($this->config['backupGlobals']) && !is_bool($this->config['backupGlobals'])) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                'The `backupGlobals` configuration parameter must be a boolean.'
+            );
+        }
+
+        if (isset($this->config['backupGlobalsExcludeList'])
+            && !(
+                is_array($this->config['backupGlobalsExcludeList'])
+                && Arr::containsOnly($this->config['backupGlobalsExcludeList'], 'string')
+            )
+        ) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                'The `backupGlobalsExcludeList` configuration parameter an array of strings.'
+            );
+        }
+
+        if (isset($this->config['backupStaticAttributes']) && !is_bool($this->config['backupStaticAttributes'])) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                'The `backupStaticAttributes` configuration parameter must be a boolean.'
+            );
+        }
+
+        if (isset($this->config['backupStaticAttributesExcludeList'])
+            && !(
+                is_array($this->config['backupStaticAttributesExcludeList'])
+                && Arr::isAssociative($this->config['backupStaticAttributesExcludeList'])
+                && Arr::containsOnly(
+                    $this->config['backupStaticAttributesExcludeList'],
+                    static fn($v) => Arr::containsOnly($v, 'string')
+                )
+            )
+        ) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                'The `backupStaticAttributesExcludeList` configuration parameter an array of strings.'
+            );
+        }
+
         parent::validateConfig();
     }
 
@@ -274,11 +325,22 @@ class WPLoader extends Module
          *     tablePrefix: string,
          *     WP_CONTENT_DIR?: string,
          *     WP_PLUGIN_DIR?: string,
-         *     WPMU_PLUGIN_DIR?: string
+         *     WPMU_PLUGIN_DIR?: string,
+         *     backupGlobals: bool,
+         *     backupGlobalsExcludeList: string[],
+         *     backupStaticAttributes: bool,
+         *     backupStaticAttributesExcludeList: array<string,string[]>,
          * } $config
          */
         $config = $this->config;
         try {
+            global $_wpTestsBackupGlobals, $_wpTestsBackupGlobalsExcludeList,
+                   $_wpTestsBackupStaticAttributes, $_wpTestsBackupStaticAttributesExcludeList;
+            $_wpTestsBackupGlobals = (bool)$config['backupGlobals'];
+            $_wpTestsBackupGlobalsExcludeList = (array)$config['backupGlobalsExcludeList'];
+            $_wpTestsBackupStaticAttributes = (bool)$config['backupStaticAttributes'];
+            $_wpTestsBackupStaticAttributesExcludeList = (array)$config['backupStaticAttributesExcludeList'];
+
             if (empty($config['dbHost']) && str_starts_with($config['dbName'], codecept_root_dir())) {
                 $dbFile = (array_reverse(explode(DIRECTORY_SEPARATOR, $config['dbName']))[0]);
                 $dbDir = rtrim(str_replace($dbFile, '', $config['dbName']), DIRECTORY_SEPARATOR);

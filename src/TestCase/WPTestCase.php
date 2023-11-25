@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser\TestCase;
 
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Module\WPLoader;
 use lucatume\WPBrowser\Module\WPQueries;
 use ReflectionException;
 use ReflectionMethod;
@@ -39,7 +40,12 @@ class WPTestCase extends Unit
         // WooCommerce.
         'woocommerce',
         // Additional globals.
-        '_wp_registered_theme_features'
+        '_wp_registered_theme_features',
+        // wp-browser
+        '_wpTestsBackupGlobals',
+        '_wpTestsBackupGlobalsExcludeList',
+        '_wpTestsBackupStaticAttributes',
+        '_wpTestsBackupStaticAttributesExcludeList'
     ];
 
     // Backup, and reset, static class attributes between tests.
@@ -59,6 +65,61 @@ class WPTestCase extends Unit
         'Automattic\WooCommerce\Internal\Admin\FeaturePlugin' => ['instance'],
         'Automattic\WooCommerce\RestApi\Server' => ['instance']
     ];
+
+    /**
+     * @param array<mixed> $data
+     */
+    public function __construct(?string $name = null, array $data = [], $dataName = '')
+    {
+        global $_wpTestsBackupGlobals,
+               $_wpTestsBackupGlobalsExcludeList,
+               $_wpTestsBackupStaticAttributes,
+               $_wpTestsBackupStaticAttributesExcludeList;
+
+        $backupGlobalsReflectionProperty = new \ReflectionProperty($this, 'backupGlobals');
+        $isDefinedInThis = $backupGlobalsReflectionProperty->getDeclaringClass()->getName() !== WPTestCase::class;
+        if (!$isDefinedInThis && isset($_wpTestsBackupGlobals) && is_bool($_wpTestsBackupGlobals)) {
+            $this->backupGlobals = $_wpTestsBackupGlobals;
+        }
+
+        $backupGlobalsExcludeListReflectionProperty = new \ReflectionProperty($this, 'backupGlobalsExcludeList');
+        $isDefinedInThis = $backupGlobalsExcludeListReflectionProperty->getDeclaringClass()
+                ->getName() !== WPTestCase::class;
+        if (!$isDefinedInThis
+            && isset($_wpTestsBackupGlobalsExcludeList)
+            && is_array($_wpTestsBackupGlobalsExcludeList)
+        ) {
+            $this->backupGlobalsExcludeList = array_merge(
+                $this->backupGlobalsExcludeList,
+                $_wpTestsBackupGlobalsExcludeList
+            );
+        }
+
+        $backupStaticAttributesReflectionProperty = new \ReflectionProperty($this, 'backupStaticAttributes');
+        $isDefinedInThis = $backupStaticAttributesReflectionProperty->getDeclaringClass()
+                ->getName() !== WPTestCase::class;
+        if (!$isDefinedInThis && isset($_wpTestsBackupStaticAttributes) && is_bool($_wpTestsBackupStaticAttributes)) {
+            $this->backupStaticAttributes = $_wpTestsBackupStaticAttributes;
+        }
+
+        $backupStaticAttributesExcludeListReflectionProperty = new \ReflectionProperty(
+            $this,
+            'backupStaticAttributesExcludeList'
+        );
+        $isDefinedInThis = $backupStaticAttributesExcludeListReflectionProperty->getDeclaringClass()
+                ->getName() !== WPTestCase::class;
+        if (!$isDefinedInThis
+            && isset($_wpTestsBackupStaticAttributesExcludeList)
+            && is_array($_wpTestsBackupStaticAttributesExcludeList)
+        ) {
+            $this->backupStaticAttributesExcludeList = array_merge_recursive(
+                $this->backupStaticAttributesExcludeList,
+                $_wpTestsBackupStaticAttributesExcludeList
+            );
+        }
+
+        parent::__construct($name, $data, $dataName);
+    }
 
     /**
      * @var array<string,mixed>
