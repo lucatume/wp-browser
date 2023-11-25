@@ -77,12 +77,19 @@ class WPTestCase extends Unit
                $_wpTestsBackupStaticAttributesExcludeList;
 
         $backupGlobalsReflectionProperty = new \ReflectionProperty($this, 'backupGlobals');
+        $backupGlobalsReflectionProperty->setAccessible(true);
         $isDefinedInThis = $backupGlobalsReflectionProperty->getDeclaringClass()->getName() !== WPTestCase::class;
         if (!$isDefinedInThis && isset($_wpTestsBackupGlobals) && is_bool($_wpTestsBackupGlobals)) {
             $this->backupGlobals = $_wpTestsBackupGlobals;
         }
 
-        $backupGlobalsExcludeListReflectionProperty = new \ReflectionProperty($this, 'backupGlobalsExcludeList');
+        if (property_exists($this, 'backupGlobalsExcludeList')) {
+            $backupGlobalsExcludeListReflectionProperty = new \ReflectionProperty($this, 'backupGlobalsExcludeList');
+        } else {
+            // Older versions of PHPUnit.
+            $backupGlobalsExcludeListReflectionProperty = new \ReflectionProperty($this, 'backupGlobalsBlacklist');
+        }
+        $backupGlobalsExcludeListReflectionProperty->setAccessible(true);
         $isDefinedInThis = $backupGlobalsExcludeListReflectionProperty->getDeclaringClass()
                 ->getName() !== WPTestCase::class;
         if (!$isDefinedInThis
@@ -96,16 +103,26 @@ class WPTestCase extends Unit
         }
 
         $backupStaticAttributesReflectionProperty = new \ReflectionProperty($this, 'backupStaticAttributes');
+        $backupStaticAttributesReflectionProperty->setAccessible(true);
         $isDefinedInThis = $backupStaticAttributesReflectionProperty->getDeclaringClass()
                 ->getName() !== WPTestCase::class;
         if (!$isDefinedInThis && isset($_wpTestsBackupStaticAttributes) && is_bool($_wpTestsBackupStaticAttributes)) {
             $this->backupStaticAttributes = $_wpTestsBackupStaticAttributes;
         }
 
-        $backupStaticAttributesExcludeListReflectionProperty = new \ReflectionProperty(
-            $this,
-            'backupStaticAttributesExcludeList'
-        );
+        if (property_exists($this, 'backupStaticAttributesExcludeList')) {
+            $backupStaticAttributesExcludeListReflectionProperty = new \ReflectionProperty(
+                $this,
+                'backupStaticAttributesExcludeList'
+            );
+        } else {
+            // Older versions of PHPUnit.
+            $backupStaticAttributesExcludeListReflectionProperty = new \ReflectionProperty(
+                $this,
+                'backupStaticAttributesBlacklist'
+            );
+        }
+        $backupStaticAttributesExcludeListReflectionProperty->setAccessible(true);
         $isDefinedInThis = $backupStaticAttributesExcludeListReflectionProperty->getDeclaringClass()
                 ->getName() !== WPTestCase::class;
         if (!$isDefinedInThis
