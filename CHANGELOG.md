@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- Added the `backupGlobals`, `backupGlobalsExcludeList`, `backupStaticAttributes`, `backupStaticAttributesExcludeList` to the `WPLoader` module configuration file to provide a sweeping control over the state snapshot of test cases extending the `WPTestCase` class. Test cases overriding those properties explicitly will have their values respected.
+
 ## [4.0.11] 2023-11-24;
 
 ### Fixed
