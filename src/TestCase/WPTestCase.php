@@ -42,6 +42,7 @@ class WPTestCase extends Unit
         // Additional globals.
         '_wp_registered_theme_features',
         // wp-browser
+        '_wpBrowserWorkerClosure',
         '_wpTestsBackupGlobals',
         '_wpTestsBackupGlobalsExcludeList',
         '_wpTestsBackupStaticAttributes',
