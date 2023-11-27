@@ -4,11 +4,10 @@ use lucatume\WPBrowser\Process\Protocol\Request;
 use lucatume\WPBrowser\Process\Protocol\Response;
 use lucatume\WPBrowser\Process\SerializableThrowable;
 
-$processSrcRoot = __DIR__ . '/..';
-require_once $processSrcRoot . '/Protocol/Parser.php';
-require_once $processSrcRoot . '/Protocol/Control.php';
-require_once $processSrcRoot . '/Protocol/Request.php';
-require_once $processSrcRoot . '/Protocol/ProtocolException.php';
+require_once __DIR__ . '/../Protocol/Parser.php';
+require_once __DIR__ . '/../Protocol/Control.php';
+require_once __DIR__ . '/../Protocol/Request.php';
+require_once __DIR__ . '/../Protocol/ProtocolException.php';
 
 try {
     if (!isset($argv[1])) {
@@ -22,8 +21,9 @@ try {
     }
 
     $request = Request::fromPayload($payload);
-    $serializableClosure = $request->getSerializableClosure();
-    $returnValue = $serializableClosure();
+    $_wpBrowserWorkerClosure = $request->getSerializableClosure();
+    unset($payload, $request);
+    $returnValue = $_wpBrowserWorkerClosure();
 } catch (Throwable $throwable) {
     $returnValue = new SerializableThrowable($throwable);
 }

@@ -130,7 +130,9 @@ class Loop
             }
         }
 
-        array_push($this->workers, ...$builtWorkers);
+        if (count($builtWorkers)) {
+            array_push($this->workers, ...$builtWorkers);
+        }
         $this->sortWorkersByResource();
 
         return $this;
