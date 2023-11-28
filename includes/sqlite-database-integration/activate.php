@@ -39,8 +39,10 @@ function sqlite_activation() {
 
 		// Handle upgrading from the performance-lab plugin.
 		if ( isset( $_GET['upgrade-from-pl'] ) ) {
+			global $wp_filesystem;
+			require_once ABSPATH . '/wp-admin/includes/file.php';
 			// Delete the previous db.php file.
-			unlink( WP_CONTENT_DIR . '/db.php' );
+			$wp_filesystem->delete( WP_CONTENT_DIR . '/db.php' );
 			// Deactivate the performance-lab SQLite module.
 			$pl_option_name = defined( 'PERFLAB_MODULES_SETTING' ) ? PERFLAB_MODULES_SETTING : 'perflab_modules_settings';
 			$pl_option      = get_option( $pl_option_name, array() );

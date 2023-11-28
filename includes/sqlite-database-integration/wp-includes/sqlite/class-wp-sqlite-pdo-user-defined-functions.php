@@ -446,11 +446,11 @@ class WP_SQLite_PDO_User_Defined_Functions {
 	 *
 	 * As 'IF' is a reserved word for PHP, function name must be changed.
 	 *
-	 * @param unknonw $expression the statement to be evaluated as true or false.
-	 * @param unknown $true statement or value returned if $expression is true.
-	 * @param unknown $false statement or value returned if $expression is false.
+	 * @param mixed $expression the statement to be evaluated as true or false.
+	 * @param mixed $true statement or value returned if $expression is true.
+	 * @param mixed $false statement or value returned if $expression is false.
 	 *
-	 * @return unknown
+	 * @return mixed
 	 */
 	public function _if( $expression, $true, $false ) {
 		return ( true === $expression ) ? $true : $false;
