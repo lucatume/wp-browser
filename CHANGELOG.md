@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Updated Core PHPUnit test suite
+- Updated SQLite plugin from version 2.1.1 to 2.1.2
+
 ## [4.0.12] 2023-11-25;
 
 ### Added
