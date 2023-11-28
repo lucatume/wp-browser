@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.0.13] 2023-11-28;
+
 ### Changed
 
 - Updated Core PHPUnit test suite
@@ -2039,4 +2041,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.10]: https://github.com/lucatume/wp-browser/compare/4.0.9...4.0.10
 [4.0.11]: https://github.com/lucatume/wp-browser/compare/4.0.10...4.0.11
 [4.0.12]: https://github.com/lucatume/wp-browser/compare/4.0.11...4.0.12
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.12...HEAD
+[4.0.13]: https://github.com/lucatume/wp-browser/compare/4.0.12...4.0.13
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.13...HEAD
