@@ -9,22 +9,27 @@ use RuntimeException;
 
 trait MainInstallationAccess
 {
-    protected function copyOverContentFromTheMainInstallation(Installation $installation): void
+    protected function copyOverContentFromTheMainInstallation(Installation $installation, array $options = []): void
     {
         $mainWPInstallationRootDir = Env::get('WORDPRESS_ROOT_DIR');
-        foreach ([
-                     'hello-dolly',
-                     'akismet',
-                     'woocommerce',
-                 ] as $plugin) {
-            if (!FS::recurseCopy($mainWPInstallationRootDir . '/wp-content/plugins/' . $plugin,
-                $installation->getPluginsDir($plugin))) {
+        $plugins = $options['plugins'] ?? [
+            'hello-dolly',
+            'akismet',
+            'woocommerce',
+        ];
+        foreach ($plugins as $plugin) {
+            if (!FS::recurseCopy(
+                $mainWPInstallationRootDir . '/wp-content/plugins/' . $plugin,
+                $installation->getPluginsDir($plugin)
+            )) {
                 throw new RuntimeException(sprintf('Could not copy plugin %s', $plugin));
             }
         }
         // Copy over theme from the main installation.
-        if (!FS::recurseCopy($mainWPInstallationRootDir . '/wp-content/themes/twentytwenty',
-            $installation->getThemesDir('twentytwenty'))) {
+        if (!FS::recurseCopy(
+            $mainWPInstallationRootDir . '/wp-content/themes/twentytwenty',
+            $installation->getThemesDir('twentytwenty')
+        )) {
             throw new RuntimeException('Could not copy theme twentytwenty');
         }
     }

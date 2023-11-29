@@ -99,13 +99,8 @@ $table_prefix = $wpLoaderConfig['tablePrefix'];
  * The `WP_MULTISITE` constant should not be defined at this stage: it will be picked up by the scripts from
  * environment variables and defined in the tests bootstrap scripts.
  */
-foreach ([
-             'WP_MULTISITE' => (int)$wpLoaderConfig['multisite'],
-             'WP_TESTS_SKIP_INSTALL' => 0
-         ] as $envVar => $value) {
-    putenv($envVar . '=' . $value);
-}
-unset($envVar);
+$value = (int)$wpLoaderConfig['multisite'];
+putenv('WP_MULTISITE' . '=' . $value);
 
 /*
  * This file will be included a first time by the Core PHPUnit suite bootstrap file, and then
