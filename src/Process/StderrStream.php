@@ -288,7 +288,7 @@ class StderrStream
             'message' => $sourceError->message,
             'file' => $sourceError->file,
             'line' => $sourceError->line,
-            'trace' => $sourceError->trace,
+            'trace' => array_map(static fn(TraceEntry $t)=> $t->toArray(), $sourceError->trace),
             'code' => 0, // The code is not available in the error log.
         ]);
 

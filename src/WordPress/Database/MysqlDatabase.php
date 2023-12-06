@@ -330,7 +330,14 @@ class MysqlDatabase implements DatabaseInterface
     public function dump(string $dumpFile): void
     {
         try {
-            $dump = new Mysqldump($this->dsn, $this->dbUser, $this->dbPassword);
+            $dump = new class($this->dsn, $this->dbUser, $this->dbPassword) extends Mysqldump {
+                public function start($filename = '')
+                {
+                    $this->dumpSettings['add-drop-table'] = true;
+                    $this->dumpSettings['add-drop-database'] = true;
+                    return parent::start($filename);
+                }
+            };
             $dump->start($dumpFile);
         } catch (\Exception $e) {
             throw new  DbException("Failed to dump database: " . $e->getMessage(), DbException::FAILED_DUMP);

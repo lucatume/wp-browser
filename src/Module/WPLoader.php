@@ -124,6 +124,7 @@ class WPLoader extends Module
      *     backupGlobalsExcludeList?: string[],
      *     backupStaticAttributes?: bool,
      *     backupStaticAttributesExcludeList?: array<string,string[]>,
+     *     skipInstall?: bool,
      * }
      */
     protected array $config = [
@@ -160,6 +161,7 @@ class WPLoader extends Module
         'backupGlobalsExcludeList' => [],
         'backupStaticAttributes' => true,
         'backupStaticAttributesExcludeList' => [],
+        'skipInstall' => false
     ];
 
     private string $wpBootstrapFile;
@@ -169,6 +171,7 @@ class WPLoader extends Module
     private string $installationOutput = '';
     private bool $earlyExit = true;
     private ?DatabaseInterface $db = null;
+    private ?CodeExecutionFactory $codeExecutionFactory = null;
 
     public function _getBootstrapOutput(): string
     {
@@ -271,6 +274,14 @@ class WPLoader extends Module
             );
         }
 
+        if (isset($this->config['skipInstall'])
+            && !is_bool($this->config['skipInstall'])) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                'The `skipInstall` configuration parameter must be a boolean.'
+            );
+        }
+
         parent::validateConfig();
     }
 
@@ -330,6 +341,7 @@ class WPLoader extends Module
          *     backupGlobalsExcludeList: string[],
          *     backupStaticAttributes: bool,
          *     backupStaticAttributesExcludeList: array<string,string[]>,
+         *     skipInstall: bool
          * } $config
          */
         $config = $this->config;
@@ -526,16 +538,16 @@ class WPLoader extends Module
      * The value will first look at the `WP_PLUGIN_DIR` constant, then the `pluginsFolder` configuration parameter
      * and will, finally, look in the default path from the WordPress root directory.
      *
-     * @param string $path A relative path to append to te plugins directory absolute path.
-     *
-     * @return string The absolute path to the `pluginsFolder` path or the same with a relative path appended if `$path`
-     *                is provided.
      * @example
      * ```php
      * $plugins = $this->getPluginsFolder();
      * $hello = $this->getPluginsFolder('hello.php');
      * ```
      *
+     * @param string $path A relative path to append to te plugins directory absolute path.
+     *
+     * @return string The absolute path to the `pluginsFolder` path or the same with a relative path appended if `$path`
+     *                is provided.
      */
     public function getPluginsFolder(string $path = ''): string
     {
@@ -545,16 +557,16 @@ class WPLoader extends Module
     /**
      * Returns the absolute path to the themes directory.
      *
-     * @param string $path A relative path to append to te themes directory absolute path.
-     *
-     * @return string The absolute path to the `themesFolder` path or the same with a relative path appended if `$path`
-     *                is provided.
      * @example
      * ```php
      * $themes = $this->getThemesFolder();
      * $twentytwenty = $this->getThemesFolder('/twentytwenty');
      * ```
      *
+     * @param string $path A relative path to append to te themes directory absolute path.
+     *
+     * @return string The absolute path to the `themesFolder` path or the same with a relative path appended if `$path`
+     *                is provided.
      */
     public function getThemesFolder(string $path = ''): string
     {
@@ -573,30 +585,39 @@ class WPLoader extends Module
     {
         $GLOBALS['wpLoaderConfig'] = $this->config;
 
+        $skipInstall = ($this->config['skipInstall'] ?? false)
+            && !Debug::isEnabled()
+            && $this->isWordPressInstalled();
+
         Dispatcher::dispatch(self::EVENT_BEFORE_INSTALL, $this);
 
-        $isMultisite = $this->config['multisite'];
-        $plugins = (array)$this->config['plugins'];
+        if (!$skipInstall) {
+            putenv('WP_TESTS_SKIP_INSTALL=0');
+            $isMultisite = $this->config['multisite'];
+            $plugins = (array)$this->config['plugins'];
 
-        /*
-         * The bootstrap file will load the `wp-settings.php` one that will load plugins and the theme.
-         * Hook on the option to get the the active plugins to run the plugins' and theme activation
-         * in a separate process.
-         */
-        if ($isMultisite) {
-            // Activate plugins and enable theme network-wide.
-            $activate = function () use (&$activate, $plugins): array {
-                remove_filter('pre_site_option_active_sitewide_plugins', $activate);
-                return $this->muActivatePluginsTheme($plugins);
-            };
-            PreloadFilters::addFilter('pre_site_option_active_sitewide_plugins', $activate);
+            /*
+             * The bootstrap file will load the `wp-settings.php` one that will load plugins and the theme.
+             * Hook on the option to get the the active plugins to run the plugins' and theme activation
+             * in a separate process.
+             */
+            if ($isMultisite) {
+                // Activate plugins and enable theme network-wide.
+                $activate = function () use (&$activate, $plugins): array {
+                    remove_filter('pre_site_option_active_sitewide_plugins', $activate);
+                    return $this->muActivatePluginsTheme($plugins);
+                };
+                PreloadFilters::addFilter('pre_site_option_active_sitewide_plugins', $activate);
+            } else {
+                // Activate plugins and theme.
+                $activate = function () use (&$activate, $plugins): array {
+                    remove_filter('pre_option_active_plugins', $activate);
+                    return $this->activatePluginsTheme($plugins);
+                };
+                PreloadFilters::addFilter('pre_option_active_plugins', $activate);
+            }
         } else {
-            // Activate plugins and theme.
-            $activate = function () use (&$activate, $plugins): array {
-                remove_filter('pre_option_active_plugins', $activate);
-                return $this->activatePluginsTheme($plugins);
-            };
-            PreloadFilters::addFilter('pre_option_active_plugins', $activate);
+            putenv('WP_TESTS_SKIP_INSTALL=1');
         }
 
         $this->includeCorePHPUniteSuiteBootstrapFile();
@@ -605,7 +626,9 @@ class WPLoader extends Module
 
         $this->disableUpdates();
 
-        $this->importDumps();
+        if (!$skipInstall) {
+            $this->importDumps();
+        }
 
         Dispatcher::dispatch(self::EVENT_AFTER_BOOTSTRAP, $this);
 
@@ -623,7 +646,7 @@ class WPLoader extends Module
         /** @var array<string> $plugins */
         $plugins = (array)($this->config['plugins'] ?: []);
         $multisite = (bool)($this->config['multisite'] ?? false);
-        $closuresFactory = $this->getClosuresFactory();
+        $closuresFactory = $this->getCodeExecutionFactory();
 
         $jobs = array_combine(
             array_map(static fn(string $plugin): string => 'plugin::' . $plugin, $plugins),
@@ -696,14 +719,14 @@ class WPLoader extends Module
      * This method gives access to the same factories provided by the
      * [Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/).
      *
-     * @return FactoryStore A factory store, proxy to get hold of the Core suite object
-     *                                                     factories.
-     *
      * @example
      * ```php
      * $postId = $I->factory()->post->create();
      * $userId = $I->factory()->user->create(['role' => 'administrator']);
      * ```
+     *
+     * @return FactoryStore A factory store, proxy to get hold of the Core suite object
+     *                                                     factories.
      *
      * @link https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/
      */
@@ -742,9 +765,6 @@ class WPLoader extends Module
     /**
      * Returns the absolute path to the WordPress content directory.
      *
-     * @param string $path An optional path to append to the content directory absolute path.
-     *
-     * @return string The content directory absolute path, or a path in it.
      * @example
      * ```php
      * $content = $this->getContentFolder();
@@ -752,20 +772,27 @@ class WPLoader extends Module
      * $twentytwenty = $this->getContentFolder('themes/twentytwenty');
      * ```
      *
+     * @param string $path An optional path to append to the content directory absolute path.
+     *
+     * @return string The content directory absolute path, or a path in it.
      */
     public function getContentFolder(string $path = ''): string
     {
         return $this->installation->getContentDir($path);
     }
 
-    private function getClosuresFactory(): CodeExecutionFactory
+    private function getCodeExecutionFactory(): CodeExecutionFactory
     {
+        if ($this->codeExecutionFactory !== null) {
+            return $this->codeExecutionFactory;
+        }
+
         $installationState = $this->installation->getState();
         $wpConfigFilePath = $installationState instanceof Scaffolded ?
             $installationState->getWpRootDir('/wp-config.php')
             : $installationState->getWpConfigPath();
 
-        return new CodeExecutionFactory(
+        $this->codeExecutionFactory =  new CodeExecutionFactory(
             $this->getWpRootFolder(),
             $this->config['domain'] ?: 'localhost',
             [$wpConfigFilePath => CorePHPUnit::path('/wp-tests-config.php')],
@@ -774,6 +801,8 @@ class WPLoader extends Module
                 'wpLoaderConfig' => $this->config
             ]
         );
+
+        return $this->codeExecutionFactory;
     }
 
     public function getInstallation(): Installation
@@ -940,20 +969,18 @@ class WPLoader extends Module
     {
         $this->activatePluginsSwitchThemeInSeparateProcess();
 
-        /** @var DatabaseInterface $database */
         $database = $this->db;
 
-        if ($this->config['theme']) {
-            // Refresh the theme related options.
-            if ($database === null) {
-                throw new ModuleException(
-                    __CLASS__,
-                    'Could not get database instance from installation.'
-                );
-            }
+        if ($database === null) {
+            throw new ModuleException(
+                __CLASS__,
+                'Could not get database instance from installation.'
+            );
+        }
 
-            update_option('template', $database->getOption('template'));
-            update_option('stylesheet', $database->getOption('stylesheet'));
+        if ($this->config['theme']) {
+            $database->updateOption('template', $database->getOption('template'));
+            $database->updateOption('stylesheet', $database->getOption('stylesheet'));
         }
 
         // Flush the cache to force the refetch of the options' value.
@@ -994,5 +1021,18 @@ class WPLoader extends Module
 
         // Format for site-wide active plugins is `[ 'plugin-slug/plugin.php' => timestamp ]`.
         return array_combine($plugins, array_fill(0, count($plugins), time()));
+    }
+
+    private function isWordPressInstalled(): bool
+    {
+        if (!$this->db instanceof DatabaseInterface) {
+            return false;
+        }
+
+        try {
+            return !empty($this->db->getOption('siteurl'));
+        } catch (Throwable) {
+            return false;
+        }
     }
 }
