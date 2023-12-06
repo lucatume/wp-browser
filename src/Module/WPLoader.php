@@ -103,6 +103,7 @@ class WPLoader extends Module
      *     configFile: string|string[],
      *     pluginsFolder: string,
      *     plugins: string[],
+     *     silentlyActivatePlugins: string[],
      *     bootstrapActions: string|string[],
      *     theme: string,
      *     AUTH_KEY: string,
@@ -141,6 +142,7 @@ class WPLoader extends Module
         'configFile' => '',
         'pluginsFolder' => '',
         'plugins' => [],
+        'silentlyActivatePlugins' => [],
         'bootstrapActions' => '',
         'theme' => '',
         'AUTH_KEY' => '',
@@ -193,6 +195,37 @@ class WPLoader extends Module
         $this->config['dbCharset'] = $this->config['DB_CHARSET'] ?? $this->config['dbCharset'] ?? '';
         $this->config['dbCollate'] = $this->config['DB_COLLATE'] ?? $this->config['dbCollate'] ?? '';
         $this->config['multisite'] = (bool)($this->config['WP_TESTS_MULTISITE'] ?? $this->config['multisite'] ?? false);
+
+        if (!(
+            is_array($this->config['plugins'])
+            && Arr::containsOnly($this->config['plugins'], 'string'))
+        ) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                'The `plugins` configuration parameter must be an array of plugin names ' .
+                'in the my-plugin/plugin.php or plugin.php format.'
+            );
+        }
+
+        if (!(
+            is_array($this->config['silentlyActivatePlugins'])
+            && Arr::containsOnly($this->config['silentlyActivatePlugins'], 'string'))
+        ) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                'The `silentlyActivatePlugins` configuration parameter must be an array of plugin names ' .
+                'in the my-plugin/plugin.php or plugin.php format.'
+            );
+        }
+
+        if (count(array_intersect($this->config['plugins'], $this->config['silentlyActivatePlugins']))) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                'The `plugins` and `silentlyActivatePlugins` configuration parameters must not contain the ' .
+                'same plugins.'
+            );
+        }
+
         $this->config['theme'] = $this->config['WP_TESTS_MULTISITE'] ?? $this->config['theme'] ?? '';
 
         if (!is_string($this->config['theme'])) {
@@ -314,6 +347,7 @@ class WPLoader extends Module
          *     configFile: string|string[],
          *     pluginsFolder: string,
          *     plugins: string[],
+         *     silentlyActivatePlugins: string[],
          *     bootstrapActions: string|string[],
          *     theme: string,
          *     AUTH_KEY: string,
@@ -645,14 +679,23 @@ class WPLoader extends Module
     {
         /** @var array<string> $plugins */
         $plugins = (array)($this->config['plugins'] ?: []);
+        $silentlyActivatePlugins = (array)($this->config['silentlyActivatePlugins'] ?: []);
+        $allPlugins = array_merge($plugins, $silentlyActivatePlugins);
         $multisite = (bool)($this->config['multisite'] ?? false);
         $closuresFactory = $this->getCodeExecutionFactory();
+        $silentFlags = array_merge(
+            array_fill(0, count($plugins), false),
+            array_fill(0, count($silentlyActivatePlugins), true)
+        );
 
         $jobs = array_combine(
-            array_map(static fn(string $plugin): string => 'plugin::' . $plugin, $plugins),
+            array_map(static fn(string $plugin): string => 'plugin::' . $plugin, $allPlugins),
             array_map(
-                static fn(string $plugin): Closure => $closuresFactory->toActivatePlugin($plugin, $multisite),
-                $plugins
+                static function (string $plugin, bool $silent) use ($closuresFactory, $multisite): Closure {
+                    return $closuresFactory->toActivatePlugin($plugin, $multisite, $silent);
+                },
+                $allPlugins,
+                $silentFlags
             )
         );
 

@@ -38,14 +38,14 @@ class CodeExecutionFactory
             ->getClosure();
     }
 
-    public function toActivatePlugin(string $plugin, bool $multisite): Closure
+    public function toActivatePlugin(string $plugin, bool $multisite, bool $silent = false): Closure
     {
         $request = $this->requestFactory->buildGetRequest()
             ->blockHttpRequests()
             ->setRedirectFiles($this->redirectFiles)
             ->addPresetGlobalVars($this->presetGlobalVars);
 
-        return (new ActivatePluginAction($request, $this->wpRootDir, $plugin, $multisite))
+        return (new ActivatePluginAction($request, $this->wpRootDir, $plugin, $multisite, $silent))
             ->getClosure();
     }
 

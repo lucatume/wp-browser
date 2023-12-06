@@ -17,22 +17,23 @@ class ActivatePluginAction implements CodeExecutionActionInterface
         FileRequest $request,
         string $wpRootDir,
         string $plugin,
-        bool $multisite
+        bool $multisite,
+        bool $silent = false
     ) {
         $request->setTargetFile($wpRootDir . '/wp-load.php')
             ->runInFastMode($wpRootDir)
             ->defineConstant('MULTISITE', $multisite)
-            ->addAfterLoadClosure(fn() => $this->activatePlugin($plugin, $multisite));
+            ->addAfterLoadClosure(fn() => $this->activatePlugin($plugin, $multisite, $silent));
         $this->request = $request;
     }
 
     /**
      * @throws InstallationException
      */
-    private function activatePlugin(string $plugin, bool $multisite): void
+    private function activatePlugin(string $plugin, bool $multisite, bool $silent = false): void
     {
         require_once ABSPATH . 'wp-admin/includes/plugin.php';
-        $activated = activate_plugin($plugin, '', $multisite);
+        $activated = activate_plugin($plugin, '', $multisite, $silent);
         $activatedString = $multisite ? 'network activated' : 'activated';
         $message = "Plugin $plugin could not be $activatedString.";
 
