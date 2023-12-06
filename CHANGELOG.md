@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- The `WPLoader::skipInstall` configuration parameter to skip the WordPress installation when already installed.
+
 ## [4.0.13] 2023-11-28;
 
 ### Changed
