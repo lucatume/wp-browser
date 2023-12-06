@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.0.15] 2023-12-06;
+
 ### Added
 
 - The `WPLoader::silentlyActivatePlugins` configuration parameter to activate plugins without firing the `activated_plugin` action.
@@ -2053,4 +2055,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.12]: https://github.com/lucatume/wp-browser/compare/4.0.11...4.0.12
 [4.0.13]: https://github.com/lucatume/wp-browser/compare/4.0.12...4.0.13
 [4.0.14]: https://github.com/lucatume/wp-browser/compare/4.0.13...4.0.14
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.14...HEAD
+[4.0.15]: https://github.com/lucatume/wp-browser/compare/4.0.14...4.0.15
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.15...HEAD
