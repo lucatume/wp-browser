@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.0.14] 2023-12-06;
+
 ### Added
 
 - The `WPLoader::skipInstall` configuration parameter to skip the WordPress installation when already installed.
@@ -2046,4 +2048,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.11]: https://github.com/lucatume/wp-browser/compare/4.0.10...4.0.11
 [4.0.12]: https://github.com/lucatume/wp-browser/compare/4.0.11...4.0.12
 [4.0.13]: https://github.com/lucatume/wp-browser/compare/4.0.12...4.0.13
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.13...HEAD
+[4.0.14]: https://github.com/lucatume/wp-browser/compare/4.0.13...4.0.14
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.14...HEAD
