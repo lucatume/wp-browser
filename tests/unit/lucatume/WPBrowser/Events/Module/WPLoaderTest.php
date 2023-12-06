@@ -28,6 +28,7 @@ use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use lucatume\WPBrowser\WordPress\InstallationState\Scaffolded;
+use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\TestResult;
 use stdClass;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
@@ -2396,16 +2397,7 @@ PHP
                 'woocommerce'
             ]
         ]);
-        if (!mkdir($wpRootDir . '/tests/some_test_suite', 0777, true)) {
-            throw new \RuntimeException('Failed to create the test suite folder.');
-        }
-        $moduleContainerConfig = [
-            'config' => [
-                'suite' => 'some_test_suite',
-                'path' => $wpRootDir . '/tests/some_test_suite'
-            ]
-        ];
-        $moduleConfig = [
+        $this->config = [
             'wpRootFolder' => $wpRootDir,
             'dbUrl' => $installationDb->getDbUrl(),
             'tablePrefix' => 'test_',
@@ -2415,7 +2407,7 @@ PHP
         ];
 
         // Run the module a first time: it should create the flag file indicating the database was installed.
-        $wpLoader = $this->module($moduleContainerConfig, $moduleConfig);
+        $wpLoader = $this->module();
         $moduleSplObjectHash = spl_object_hash($wpLoader);
         $this->assertInIsolation(
             static function () use ($wpLoader, $moduleSplObjectHash) {
@@ -2463,7 +2455,7 @@ PHP
         $this->assertEquals('twentytwenty', $checkDb->getOption('stylesheet'));
 
         // Run a second time, this time the installation should be skipped.
-        $wpLoader = $this->module($moduleContainerConfig, $moduleConfig);
+        $wpLoader = $this->module();
         $this->assertInIsolation(
             static function () use ($moduleSplObjectHash, $wpLoader) {
                 $beforeInstallCalled = false;
@@ -2499,9 +2491,9 @@ PHP
         );
 
         // Now run in --debug mode, the installation should run again.
-        $wpLoader = $this->module($moduleContainerConfig, $moduleConfig);
+        $wpLoader = $this->module();
         $this->assertInIsolation(
-            static function () use ($moduleSplObjectHash, $wpLoader) {
+            static function () use ($wpLoader) {
                 $beforeInstallCalled = false;
                 $afterInstallCalled = false;
                 $afterBootstrapCalled = false;
@@ -2536,6 +2528,163 @@ PHP
                     get_option('canary'),
                     'The value set in the previous installation should be gone.'
                 );
+            }
+        );
+    }
+
+    /**
+     * It should throw if silentlyActivatePlugins config parameter is not a list of strings
+     *
+     * @test
+     * @dataProvider notArrayOfStringsProvider
+     */
+    public function should_throw_if_silently_activate_plugins_config_parameter_is_not_a_list_of_strings($input): void
+    {
+        $wpRootDir = Env::get('WORDPRESS_ROOT_DIR');
+        $db = (new Installation($wpRootDir))->getDb();
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $db->getDbUrl(),
+            'silentlyActivatePlugins' => $input,
+        ];
+
+        $this->expectException(ModuleConfigException::class);
+
+        $this->module();
+    }
+
+    /**
+     * It should throw if plugin appears in both plugins and silentlyActivatePlugins config parameters
+     *
+     * @test
+     */
+    public function should_throw_if_plugin_appears_in_both_plugins_and_silently_activate_plugins_config_parameters(
+    ): void
+    {
+        $wpRootDir = Env::get('WORDPRESS_ROOT_DIR');
+        $db = (new Installation($wpRootDir))->getDb();
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $db->getDbUrl(),
+            'plugins' => ['woocommerce/woocommerce.php', 'my-plugin/plugin.php'],
+            'silentlyActivatePlugins' => ['foo-plugin/plugin.php', 'woocommerce/woocommerce.php'],
+        ];
+
+        $this->expectException(ModuleConfigException::class);
+
+        $this->module();
+    }
+
+    /**
+     * It should fail to activate when plugins generate unexpected output
+     *
+     * @test
+     */
+    public function should_fail_to_activate_when_plugins_generate_unexpected_output(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $installation = Installation::scaffold($wpRootDir);
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $installationDb = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $installation->configure($installationDb);
+        $this->copyOverContentFromTheMainInstallation($installation, [
+            'plugins' => [
+                'woocommerce'
+            ]
+        ]);
+        // Create a plugin that will raise a doing_it_wrong error on activation.
+        FS::mkdirp($wpRootDir . '/wp-content/plugins', [
+            'my-plugin' => [
+                'plugin.php' => <<< PHP
+<?php
+/** Plugin Name: DIW Plugin */
+
+function activate_my_plugin(){
+    echo 'Something went wrong';
+}
+
+register_activation_hook( __FILE__, 'activate_my_plugin' );
+PHP
+            ]
+        ]);
+
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $installationDb->getDbUrl(),
+            'tablePrefix' => 'test_',
+            'plugins' => ['woocommerce/woocommerce.php', 'my-plugin/plugin.php'],
+        ];
+
+        // Run a first initialization that should fail due to the doing_it_wrong error.
+        $wpLoader = $this->module();
+
+        $this->expectException(ModuleException::class);
+
+        $this->assertInIsolation(
+            static function () use ($wpLoader) {
+                $wpLoader->_initialize();
+            }
+        );
+    }
+
+    /**
+     * It should allow activating plugins silently
+     *
+     * @test
+     */
+    public function should_allow_activating_plugins_silently(): void
+    {
+        $wpRootDir = FS::tmpDir('wploader_');
+        $installation = Installation::scaffold($wpRootDir);
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $installationDb = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $installation->configure($installationDb);
+        $this->copyOverContentFromTheMainInstallation($installation, [
+            'plugins' => [
+                'woocommerce'
+            ]
+        ]);
+        // Create a plugin that will raise a doing_it_wrong error on activation.
+        FS::mkdirp($wpRootDir . '/wp-content/plugins', [
+            'my-plugin' => [
+                'plugin.php' => <<< PHP
+<?php
+/** Plugin Name: DIW Plugin */
+
+function activate_my_plugin(){
+    echo 'Something went wrong';
+    update_option('my_plugin_activated', '__activated__');
+}
+
+register_activation_hook( __FILE__, 'activate_my_plugin' );
+update_option('my_plugin_loaded', '__loaded__');
+PHP
+            ]
+        ]);
+
+        $this->config = [
+            'wpRootFolder' => $wpRootDir,
+            'dbUrl' => $installationDb->getDbUrl(),
+            'tablePrefix' => 'test_',
+            'plugins' => ['woocommerce/woocommerce.php'],
+            'silentlyActivatePlugins' => ['my-plugin/plugin.php'],
+        ];
+
+        // Run a first initialization that should fail due to the doing_it_wrong error.
+        $wpLoader = $this->module();
+
+        $this->assertInIsolation(
+            static function () use ($wpLoader) {
+                $wpLoader->_initialize();
+
+                assertEquals('', get_option('my_plugin_activated'));
+                assertEquals('__loaded__', get_option('my_plugin_loaded'));
             }
         );
     }
