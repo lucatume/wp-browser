@@ -45,7 +45,7 @@ $db = new MysqlDatabase(
     $env['WORDPRESS_DB_USER'],
     $env['WORDPRESS_DB_PASSWORD'],
     $env['WORDPRESS_DB_HOST'],
-    $env['WORDPRESS_TABLE_PREFIX'],
+    $env['WORDPRESS_TABLE_PREFIX']
 );
 $db->create();
 
@@ -75,7 +75,7 @@ if ($installation->getState() instanceof Configured) {
         $env['WORDPRESS_ADMIN_USER'],
         $env['WORDPRESS_ADMIN_PASSWORD'],
         $env['WORDPRESS_ADMIN_USER'] . '@example.com',
-        'TEST',
+        'TEST'
     );
 }
 
