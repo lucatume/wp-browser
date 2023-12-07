@@ -6,7 +6,7 @@ on: # yamllint disable-line rule:truthy
   pull_request: null
   push:
     branches:
-      - "master"
+      - "v3.5"
 
 permissions:
   contents: "read"
@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   typos_check:
-    name: "文A Typos check"
+    name: "v3.5 文A Typos check"
     runs-on: "ubuntu-22.04"
     timeout-minutes: 1
     steps:

@@ -18,7 +18,7 @@ on: # yamllint disable-line rule:truthy
       - 'composer.json'
       - '.github/workflows/test.yaml'
     branches:
-      - "master"
+      - "v3.5"
 
 permissions:
   contents: "read"
@@ -31,7 +31,7 @@ jobs:
   test:
     strategy:
       matrix:
-        php_version: [ '8.0', '8.1', '8.2' ]
+        php_version: [ '7.1', '7.2', '7.3', '7.4' ]
         suite:
           - acceptance
           - climodule
@@ -43,7 +43,7 @@ jobs:
           - wploader_multisite
           - wploader_wpdb_interaction
           - wploadersuite
-    name: ${{ matrix.suite }} php@${{ matrix.php_version }}
+    name: v3.5 ${{ matrix.suite }} php@${{ matrix.php_version }}
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
@@ -93,7 +93,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ failure() }}
         with:
-          name: ${{ matrix.suite }}-php@${{ matrix.php_version }}-screenshots
+          name: v3.5-${{ matrix.suite }}-php@${{ matrix.php_version }}-screenshots
           path: |
             var/_output/*.html
             var/_output/*.png

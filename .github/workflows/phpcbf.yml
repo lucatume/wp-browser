@@ -14,11 +14,11 @@ on: # yamllint disable-line rule:truthy
       - 'includes/**'
       - '.github/workflows/phpcbf.yml'
     branches:
-      - master
+      - v3.5
 
 jobs:
   php-codesniffer:
-    name: "PHPCBF automatically fix violations"
+    name: "v3.5 PHPCBF automatically fix violations"
     runs-on: "ubuntu-22.04"
     permissions:
       contents: write
@@ -26,7 +26,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.0"
+          php-version: "7.4"
           coverage: "none"
       - name: "Checkout repository"
         uses: "actions/checkout@v3"

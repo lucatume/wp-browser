@@ -18,7 +18,7 @@ on: # yamllint disable-line rule:truthy
       - 'composer.json'
       - '.github/workflows/static-analysis.yml'
     branches:
-      - "master"
+      - "v3.5"
 
 permissions:
   contents: "read"
@@ -29,13 +29,13 @@ concurrency:
 
 jobs:
   static_analysis:
-    name: "Static Analysis"
+    name: "v3.5 Static Analysis"
     runs-on: "ubuntu-22.04"
     steps:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.0"
+          php-version: "7.4"
           coverage: "none"
       - name: "Checkout repository"
         uses: "actions/checkout@v3"
