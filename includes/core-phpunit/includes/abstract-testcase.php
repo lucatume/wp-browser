@@ -19,7 +19,8 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	protected $caught_deprecated       = array();
 	protected $expected_doing_it_wrong = array();
 	protected $caught_doing_it_wrong   = array();
-	private static ?string $calledClass = null;
+
+    private static ?string $calledClass = null;
 
 	protected static $hooks_saved = array();
 	protected static $ignore_files;
@@ -73,7 +74,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 		$class = self::$calledClass ?? get_called_class();
 
 		if ( method_exists( $class, 'wpSetUpBeforeClass' ) ) {
-			call_user_func( array( $class, 'wpSetUpBeforeClass' ), self::factory() );
+			call_user_func( array( $class, 'wpSetUpBeforeClass' ), static::factory() );
 		}
 
 		self::commit_transaction();
@@ -83,7 +84,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	 * Runs the routine after all tests have been run.
 	 */
 	public static function tear_down_after_class() {
-		$class = self::$calledClass ?? get_called_class();
+        $class = self::$calledClass ?? get_called_class();
 
 		if ( method_exists( $class, 'wpTearDownAfterClass' ) ) {
 			call_user_func( array( $class, 'wpTearDownAfterClass' ) );
@@ -103,7 +104,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	public function set_up() {
 		set_time_limit( 0 );
 
-		$this->factory = self::factory();
+		$this->factory = static::factory();
 
 		if ( ! self::$ignore_files ) {
 			self::$ignore_files = $this->scan_user_uploads();
