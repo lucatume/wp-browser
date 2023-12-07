@@ -14,7 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- The `WPLoader::silentlyActivatePlugins` configuration parameter to activate plugins without firing the `activated_plugin` action.
+- The `WPLoader::silentlyActivatePlugins` configuration parameter to activate plugins without firing their activation hook.
 
 ## [4.0.14] 2023-12-06;
 
