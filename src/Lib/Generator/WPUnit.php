@@ -21,19 +21,26 @@ use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
  */
 class WPUnit
 {
+    /**
+     * @var string
+     */
+    protected $baseClass;
     use Classname;
     use Namespaces;
 
     /**
      * @var array{namespace: string, actor: string}
      */
-    private array $settings;
-    private string $name;
+    private $settings;
+    /**
+     * @var string
+     */
+    private $name;
 
     /**
      * @var string
      */
-    protected string $template = <<<EOF
+    protected $template = <<<EOF
 <?php
 {{namespace}}
 class {{name}}Test extends {{baseClass}}
@@ -73,8 +80,9 @@ EOF;
      * @param string $name                                      The template name.
      * @param string $baseClass                                 The base class.
      */
-    public function __construct(array $settings, string $name, protected string $baseClass)
+    public function __construct(array $settings, string $name, string $baseClass)
     {
+        $this->baseClass = $baseClass;
         $this->settings = $settings;
         $this->name = $this->removeSuffix($name, 'Test');
     }
@@ -112,7 +120,7 @@ EOF;
             $propertyName = isset($config['actor_suffix']) ?
                 lcfirst($config['actor_suffix'])
                 : '';
-        } catch (Exception) {
+        } catch (Exception $exception) {
             $propertyName = '';
         }
 

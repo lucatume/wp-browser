@@ -22,7 +22,7 @@ class QueriesCallerBasedKeepingFilterIterator extends FilterIterator
      *
      * @var array<string>
      */
-    protected array $needles = [];
+    protected $needles = [];
 
     /**
      * Check whether the current element of the iterator is acceptable.

@@ -15,8 +15,14 @@ use Throwable;
 
 class TestSerializableObject
 {
-    public string $foo = 'bar';
-    public int $number = 23;
+    /**
+     * @var string
+     */
+    public $foo = 'bar';
+    /**
+     * @var int
+     */
+    public $number = 23;
 
     public function __serialize(): array
     {
@@ -134,8 +140,9 @@ class SerializerTest extends Unit
 
     /**
      * @dataProvider isSerializedDataProvider
+     * @param mixed $input
      */
-    public function test_isSerialized(mixed $input, bool $expected): void
+    public function test_isSerialized($input, bool $expected): void
     {
         $this->assertEquals($expected, Serializer::isSerialized($input));
     }
@@ -194,8 +201,10 @@ class SerializerTest extends Unit
 
     /**
      * @dataProvider maybeSerializeDataProvider
+     * @param mixed $input
+     * @param mixed $expected
      */
-    public function test_maybeSerialize(mixed $input, mixed $expected): void
+    public function test_maybeSerialize($input, $expected): void
     {
         $this->assertEquals($expected, Serializer::maybeSerialize($input));
     }

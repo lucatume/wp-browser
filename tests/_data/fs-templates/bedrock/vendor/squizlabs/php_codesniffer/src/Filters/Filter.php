@@ -136,12 +136,7 @@ class Filter extends \RecursiveFilterIterator
     public function getChildren()
     {
         $filterClass = get_called_class();
-        $children    = new $filterClass(
-            new \RecursiveDirectoryIterator($this->current(), (\RecursiveDirectoryIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS)),
-            $this->basedir,
-            $this->config,
-            $this->ruleset
-        );
+        $children    = new $filterClass(new \RecursiveDirectoryIterator($this->current(), (\RecursiveDirectoryIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS)), $this->basedir, $this->config, $this->ruleset);
 
         // Set the ignore patterns so we don't have to generate them again.
         $children->ignoreDirPatterns  = $this->ignoreDirPatterns;

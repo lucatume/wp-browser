@@ -11,13 +11,31 @@ use Throwable;
 
 class Random
 {
-    private static string $saltChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' .
+    /**
+     * @var string
+     */
+    private static $saltChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' .
     '!"#$%&()*+,-./:;<=>?@[]^_`{|}~';
-    private static int $saltCharsCount = 92;
-    private static string $alphaChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    private static int $alphaCharsCount = 52;
-    private static string $dbNameChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_';
-    private static int $dbNameCharsCount = 63;
+    /**
+     * @var int
+     */
+    private static $saltCharsCount = 92;
+    /**
+     * @var string
+     */
+    private static $alphaChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    /**
+     * @var int
+     */
+    private static $alphaCharsCount = 52;
+    /**
+     * @var string
+     */
+    private static $dbNameChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_';
+    /**
+     * @var int
+     */
+    private static $dbNameCharsCount = 63;
 
     public static function salt(int $length = 64): string
     {

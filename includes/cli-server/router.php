@@ -12,13 +12,13 @@ define('DB_ENGINE', getenv('DB_ENGINE') ?: 'mysql');
 if ( file_exists( $root.$path ) ) {
 
 	// Enforces trailing slash, keeping links tidy in the admin
-	if ( is_dir( $root.$path ) && ! str_ends_with( $path, '/' ) ) {
+	if ( is_dir( $root.$path ) && substr_compare($path, '/', -strlen('/')) !== 0 ) {
 		header( "Location: $path/" );
 		exit;
 	}
 
 	// Runs PHP file if it exists
-	if ( str_contains( $path, '.php' ) ) {
+	if ( strpos($path, '.php') !== false ) {
 		chdir( dirname( $root.$path ) );
 		require_once $root.$path;
 	} else {

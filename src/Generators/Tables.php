@@ -23,19 +23,25 @@ class Tables
 {
     /**
      * The absolute path to the templates directory.
+     * @var string
      */
-    private string $templatesDir;
+    private $templatesDir;
 
     /**
      * Tables constructor.
      */
     public function __construct(string $driverClass)
     {
-        $dir = match ($driverClass) {
-            Sqlite::class => 'sqlite',
-            MySql::class => 'mysql',
-            default => throw new InvalidArgumentException('Unsupported database type ' . $driverClass)
-        };
+        switch ($driverClass) {
+            case Sqlite::class:
+                $dir = 'sqlite';
+                break;
+            case MySql::class:
+                $dir = 'mysql';
+                break;
+            default:
+                throw new InvalidArgumentException('Unsupported database type ' . $driverClass);
+        }
         $this->templatesDir = __DIR__ . '/' . $dir;
     }
 

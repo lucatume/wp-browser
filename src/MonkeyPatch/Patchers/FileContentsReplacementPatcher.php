@@ -7,8 +7,13 @@ use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 class FileContentsReplacementPatcher implements PatcherInterface
 {
-    public function __construct(private string $fileContents)
+    /**
+     * @var string
+     */
+    private $fileContents;
+    public function __construct(string $fileContents)
     {
+        $this->fileContents = $fileContents;
     }
 
     /**
@@ -46,7 +51,7 @@ class FileContentsReplacementPatcher implements PatcherInterface
      *     blocks: int
      * }|false
      */
-    public function stat(string $pathname): array|false
+    public function stat(string $pathname)
     {
         return stat($pathname);
     }

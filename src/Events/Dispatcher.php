@@ -12,7 +12,10 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Dispatcher
 {
-    private static ?EventDispatcherInterface $eventDispatcher = null;
+    /**
+     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface|null
+     */
+    private static $eventDispatcher;
 
     public static function setEventDispatcher(EventDispatcherInterface $eventDispatcher = null): void
     {
@@ -66,10 +69,10 @@ class Dispatcher
      */
     public static function addListener(string $eventName, callable $listener, int $priority = 0): Closure
     {
-        self::getEventDispatcher()?->addListener($eventName, $listener, $priority);
+        ($nullsafeVariable1 = self::getEventDispatcher()) ? $nullsafeVariable1->addListener($eventName, $listener, $priority) : null;
 
         return static function () use ($eventName, $listener): void {
-            self::getEventDispatcher()?->removeListener($eventName, $listener);
+            ($nullsafeVariable2 = self::getEventDispatcher()) ? $nullsafeVariable2->removeListener($eventName, $listener) : null;
         };
     }
 
@@ -79,13 +82,13 @@ class Dispatcher
      * The method name recalls the WordPress framework `do_action` function as it works pretty much the same.
      *
      * @param string $name                   The name of the event to dispatch.
-     * @param mixed|null $origin             The event origin: an object, a string or null.
+     * @param mixed $origin The event origin: an object, a string or null.
      * @param array<string,mixed> $context   A map of the event context that will set as context of the dispatched
      *                                       event.
      *
      * @return object|null The dispatched event, or `null` if no event was dispatched.
      */
-    public static function dispatch(string $name, mixed $origin = null, array $context = []): ?object
+    public static function dispatch(string $name, $origin = null, array $context = [])
     {
         $eventDispatcher = self::getEventDispatcher();
 
@@ -100,7 +103,7 @@ class Dispatcher
             $firstParameterReflection = $dispatchMethodReflection->getParameters()[0] ?? null;
             $firstParameterType = $firstParameterReflection ? $firstParameterReflection->getType() : null;
             if ($firstParameterType instanceof \ReflectionNamedType && $firstParameterType->getName() === 'object') {
-                return $eventDispatcher->dispatch($event, $name);
+                return $eventDispatcher->dispatch($name, $event);
             }
 
             return $eventDispatcher->dispatch($name, $event); //@phpstan-ignore-line

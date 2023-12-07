@@ -14,23 +14,27 @@ class Strings
      */
     public static function andList(array $elements): string
     {
-        if (!Arr::containsOnly($elements, static fn($v) => is_scalar($v))) {
+        if (!Arr::containsOnly($elements, static function ($v) {
+            return is_scalar($v);
+        })) {
             throw new InvalidArgumentException('The elements of the list must be scalars.');
         }
 
-        /** @var array<string|int|float|bool> $elements */
-        return match (count($elements)) {
-            0 => '',
-            1 => (string)reset($elements),
-            default => implode(', ', array_slice($elements, 0, -1)) . ' and ' . end($elements)
-        };
+        switch (count($elements)) {
+            case 0:
+                return '';
+            case 1:
+                return (string)reset($elements);
+            default:
+                return implode(', ', array_slice($elements, 0, -1)) . ' and ' . end($elements);
+        }
     }
 
     public static function isRegex(string $string): bool
     {
         try {
             return @preg_match($string, '') !== false;
-        } catch (Exception) {
+        } catch (Exception $exception) {
             return false;
         }
     }
@@ -101,11 +105,15 @@ class Strings
         $fnArgs = array_values($fnArgs);
 
         $replace = array_map(
-            static fn($value) => is_callable($value) ? $value(...$fnArgs) : $value,
+            static function ($value) use ($fnArgs) {
+                return is_callable($value) ? $value(...$fnArgs) : $value;
+            },
             $data
         );
 
-        $search = array_map(static fn($k): string => '{{' . $k . '}}', array_keys($data));
+        $search = array_map(static function ($k) : string {
+            return '{{' . $k . '}}';
+        }, array_keys($data));
 
         return str_replace($search, $replace, $template);
     }

@@ -27,7 +27,7 @@ class AjaxTest extends WPAjaxTestCase
         $response = null;
         try {
             $this->_handleAjax('test_ajax_action');
-        } catch (\WPAjaxDieContinueException) {
+        } catch (\WPAjaxDieContinueException $exception) {
             $response = json_decode($this->_last_response);
         }
 

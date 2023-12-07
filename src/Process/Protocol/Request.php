@@ -7,8 +7,18 @@ use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
 
 class Request
 {
-    private Control $control;
-    private bool $useFilePayloads = false;
+    /**
+     * @var \lucatume\WPBrowser\Opis\Closure\SerializableClosure
+     */
+    private $serializableClosure;
+    /**
+     * @var \lucatume\WPBrowser\Process\Protocol\Control
+     */
+    private $control;
+    /**
+     * @var bool
+     */
+    private $useFilePayloads = false;
 
     /**
      * @param array{
@@ -23,8 +33,9 @@ class Request
      * } $controlArray
      * @throws ConfigurationException
      */
-    public function __construct(array $controlArray, private SerializableClosure $serializableClosure)
+    public function __construct(array $controlArray, SerializableClosure $serializableClosure)
     {
+        $this->serializableClosure = $serializableClosure;
         $this->control = new Control($controlArray);
     }
 

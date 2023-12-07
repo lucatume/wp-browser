@@ -24,7 +24,7 @@ class Parser
             throw new ProtocolException('Missing start char', ProtocolException::MISSING_START_CHAR);
         }
 
-        if (!str_ends_with($input, "\r\n")) {
+        if (substr_compare($input, "\r\n", -strlen("\r\n")) !== 0) {
             throw new ProtocolException('Missing ending CRLF', ProtocolException::MISSING_ENDING_CRLF);
         }
 

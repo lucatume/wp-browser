@@ -848,13 +848,7 @@ class ConfiguredTest extends Unit
 
         $this->assertEquals($sqliteDb, $withSqliteDb->getDb());
 
-        $installedOnSqlite = $withSqliteDb->install(
-            'http://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test Blog',
-        );
+        $installedOnSqlite = $withSqliteDb->install('http://wp.local', 'admin', 'password', 'admin@wp.local', 'Test Blog');
 
         $this->assertFileExists($wpRootDir . '/wp-content/db.sqlite');
         $this->assertEquals('http://wp.local', $sqliteDb->getOption('siteurl'));

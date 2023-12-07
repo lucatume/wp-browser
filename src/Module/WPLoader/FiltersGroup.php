@@ -15,6 +15,10 @@ namespace lucatume\WPBrowser\Module\WPLoader;
 class FiltersGroup
 {
     /**
+     * @var array<array<mixed>>
+     */
+    protected $filters = [];
+    /**
      * The callback that will be used to remove filters.
      *
      * @var callable
@@ -36,13 +40,14 @@ class FiltersGroup
      *                                        the default one.
      * @param callable|null       $addWith    The callable that should be used to add the filters, or `null` to use the
      */
-    public function __construct(/**
-         * An array detailing each filter callback, priority and arguments.
-         */
-        protected array $filters = [],
+    public function __construct(array $filters = [],
         callable $removeWith = null,
         callable $addWith = null
     ) {
+        /**
+         * An array detailing each filter callback, priority and arguments.
+         */
+        $this->filters = $filters;
         $this->removeCallback = $removeWith ?? 'remove_filter';
         $this->addCallback    = $addWith ?? 'add_filter';
     }

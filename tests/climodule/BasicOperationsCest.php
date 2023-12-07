@@ -8,7 +8,10 @@ use lucatume\WPBrowser\WordPress\Installation;
 
 class BasicOperationsCest
 {
-    private array $tmpCleanup = [];
+    /**
+     * @var mixed[]
+     */
+    private $tmpCleanup = [];
 
     public function _after(): void
     {

@@ -20,33 +20,57 @@ use Throwable;
  */
 class Serializer
 {
-    public static function maybeUnserialize(mixed $value): mixed
+    /**
+     * @param mixed $value
+     * @return mixed
+     */
+    public static function maybeUnserialize($value)
     {
         if (!(is_string($value) && self::isSerialized($value))) {
             return $value;
         }
 
-        return match (substr($value, 0, 4)) {
-            'N;' => null,
-            'b:1;' => true,
-            'b:0;' => false,
-            default => @unserialize($value, ['allowed_classes' => true])
-        };
+        switch (substr($value, 0, 4)) {
+            case 'N;':
+                return null;
+            case 'b:1;':
+                return true;
+            case 'b:0;':
+                return false;
+            default:
+                return @unserialize($value, ['allowed_classes' => true]);
+        }
     }
 
-    public static function isSerialized(mixed $value): bool
+    /**
+     * @param mixed $value
+     */
+    public static function isSerialized($value): bool
     {
         if (!is_string($value)) {
             return false;
         }
 
-        return match (substr($value, 0, 2)) {
-            'N;', 'b:', 'i:', 'd:', 's:', 'a:', 'O:', 'C:' => true,
-            default => false
-        };
+        switch (substr($value, 0, 2)) {
+            case 'N;':
+            case 'b:':
+            case 'i:':
+            case 'd:':
+            case 's:':
+            case 'a:':
+            case 'O:':
+            case 'C:':
+                return true;
+            default:
+                return false;
+        }
     }
 
-    public static function maybeSerialize(mixed $value): mixed
+    /**
+     * @param mixed $value
+     * @return mixed
+     */
+    public static function maybeSerialize($value)
     {
         return is_array($value) || is_object($value) || $value === null ? serialize($value) : $value;
     }

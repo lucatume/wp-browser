@@ -139,7 +139,7 @@ class BuiltInServerController extends ServiceExtension
             );
         }
         $env = $config['env'] ?? [];
-        $env = array_map(static function ($value): mixed {
+        $env = array_map(static function ($value) {
             return is_string($value) ?
                 str_replace('%codecept_root_dir%', rtrim(codecept_root_dir(), '\\/'), $value)
                 : $value;

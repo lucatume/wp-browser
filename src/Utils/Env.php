@@ -46,7 +46,7 @@ class Env
         $vars = array_reduce(
             array_filter(explode("\n", $envFileContents)),
             static function (array $lines, $line) use ($pattern): array {
-                if (str_starts_with($line, '#')) {
+                if (strncmp($line, '#', strlen('#')) === 0) {
                     return $lines;
                 }
 
@@ -128,7 +128,10 @@ class Env
         }
     }
 
-    public static function get(string $key, string $default = null): string|false|null
+    /**
+     * @return string|false|null
+     */
+    public static function get(string $key, string $default = null)
     {
         return $_ENV[$key] ?? $_SERVER[$key] ?? (getenv($key) ?: $default);
     }

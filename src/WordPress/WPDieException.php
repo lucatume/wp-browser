@@ -18,13 +18,7 @@ class WPDieException extends Exception
     {
         $lines = [];
         foreach ($trace as $k => $item) {
-            $lines[] = sprintf(
-                '#%d %s(%d): %s',
-                $k,
-                isset($item['file']) && is_string($item['file']) ? $item['file'] : '',
-                isset($item['line']) && is_string($item['line']) ? $item['line'] : '',
-                isset($item['function']) && is_string($item['function']) ? $item['function'] : '',
-            );
+            $lines[] = sprintf('#%d %s(%d): %s', $k, isset($item['file']) && is_string($item['file']) ? $item['file'] : '', isset($item['line']) && is_string($item['line']) ? $item['line'] : '', isset($item['function']) && is_string($item['function']) ? $item['function'] : '');
         }
 
         return implode("\n", $lines);
@@ -33,8 +27,10 @@ class WPDieException extends Exception
     /**
      * @param string|array<string,mixed>|int $args
      * @throws ReflectionException
+     * @param string|\WP_Error $message
+     * @param string|int $title
      */
-    public function __construct(string|WP_Error $message = '', string|int $title = '', string|array|int $args = [])
+    public function __construct($message = '', $title = '', $args = [])
     {
         if ($message instanceof WP_Error) {
             $title = $message->get_error_data('title');
@@ -58,7 +54,7 @@ class WPDieException extends Exception
             return $item['function'] === 'wp_die';
         }, $trace);
         $serializableClosurePos = Arr::searchWithCallback(static function (array $item): bool {
-            return isset($item['file']) && str_starts_with($item['file'], 'closure://');
+            return isset($item['file']) && strncmp($item['file'], 'closure://', strlen('closure://')) === 0;
         }, $trace);
 
         if (is_int($wpDieCallPos)) {

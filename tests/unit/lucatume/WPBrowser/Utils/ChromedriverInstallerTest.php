@@ -49,7 +49,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
     public function should_throw_if_binary_cannot_be_found(): void
     {
         $this->uopzSetFunctionReturn('is_executable', function (string $file): bool {
-            return !str_contains($file, 'chrome') && is_executable($file);
+            return strpos($file, 'chrome') === false && is_executable($file);
         }, true);
 
         $this->expectException(RuntimeException::class);
@@ -66,7 +66,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
     public function should_throw_if_specified_binary_is_not_valid(): void
     {
         $this->uopzSetFunctionReturn('is_executable', function (string $file): bool {
-            return !str_contains($file, 'Chromium') && is_executable($file);
+            return strpos($file, 'Chromium') === false && is_executable($file);
         }, true);
 
         $this->expectException(RuntimeException::class);
@@ -155,8 +155,8 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_it_cannot_get_milestone_downloads(): void
     {
-        $this->uopzSetFunctionReturn('file_get_contents', function (string $file): string|false {
-            return str_contains($file, 'chrome-for-testing') ? false : file_get_contents($file);
+        $this->uopzSetFunctionReturn('file_get_contents', function (string $file) {
+            return strpos($file, 'chrome-for-testing') !== false ? false : file_get_contents($file);
         }, true);
 
         $ci = new ChromedriverInstaller(null, 'linux64', codecept_data_dir('bins/chrome-mock'));
@@ -175,8 +175,8 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_response_is_not_valid_json(): void
     {
-        $this->uopzSetFunctionReturn('file_get_contents', function (string $file): string|false {
-            return str_contains($file, 'chrome-for-testing') ? '{}' : file_get_contents($file);
+        $this->uopzSetFunctionReturn('file_get_contents', function (string $file) {
+            return strpos($file, 'chrome-for-testing') !== false ? '{}' : file_get_contents($file);
         }, true);
 
         $ci = new ChromedriverInstaller(null, 'linux64', codecept_data_dir('bins/chrome-mock'));
@@ -195,8 +195,8 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_download_url_for_chrome_version_cannot_be_found_in_milestone_downloads(): void
     {
-        $this->uopzSetFunctionReturn('file_get_contents', function (string $file): string|false {
-            return str_contains($file, 'chrome-for-testing') ?
+        $this->uopzSetFunctionReturn('file_get_contents', function (string $file) {
+            return strpos($file, 'chrome-for-testing') !== false ?
 	            '{"milestones":{"116": {"downloads":{"chrome":{},"chromedriver":{}}}}}'
 	            : file_get_contents($file);
         }, true);

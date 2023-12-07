@@ -8,7 +8,10 @@ use function wp_slash;
 
 class InstallAction implements CodeExecutionActionInterface
 {
-    private FileRequest $request;
+    /**
+     * @var \lucatume\WPBrowser\WordPress\FileRequests\FileRequest
+     */
+    private $request;
 
     public function __construct(
         FileRequest $request,
@@ -28,7 +31,7 @@ class InstallAction implements CodeExecutionActionInterface
                 // The `MULTISITE` const might be already defined in the `wp-config.php` file.
                 // If that is the case, silence the error.
                 set_error_handler(static function ($errno, $errstr): bool {
-                    if (str_contains($errstr, 'MULTISITE already defined')) {
+                    if (strpos($errstr, 'MULTISITE already defined') !== false) {
                         return true;
                     }
                     return false;
@@ -44,22 +47,22 @@ class InstallAction implements CodeExecutionActionInterface
                     define('WP_SITEURL', $url);
                 }
             })
-            ->addAfterLoadClosure(fn() => $this->installWordPress($title, $adminUser, $adminPassword, $adminEmail));
+            ->addAfterLoadClosure(function () use ($title, $adminUser, $adminPassword, $adminEmail) {
+                return $this->installWordPress($title, $adminUser, $adminPassword, $adminEmail);
+            });
         $this->request = $request;
     }
 
-    private function installWordPress(
-        string $title,
-        string $adminUser,
-        string $adminPassword,
-        string $adminEmail,
-    ): void {
+    private function installWordPress(string $title, string $adminUser, string $adminPassword, string $adminEmail): void
+    {
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         require_once ABSPATH . 'wp-admin/includes/translation-install.php';
         require_once ABSPATH . '/wp-includes/class-wpdb.php';
         // Set the permalink structure to a default one to avoid the `wp_install_maybe_enable_pretty_permalinks` time.
         update_option('permalink_structure', '/%year%/%monthnum%/%day%/%postname%/');
-        $fixPermalinkStructure = fn() => '/%year%/%monthnum%/%day%/%postname%/';
+        $fixPermalinkStructure = function () {
+            return '/%year%/%monthnum%/%day%/%postname%/';
+        };
         add_filter('pre_option_permalink_structure', $fixPermalinkStructure);
         $installed = wp_install($title, $adminUser, $adminEmail, true, '', wp_slash($adminPassword));
         // Update again as it might have been reset during the installation
@@ -71,7 +74,7 @@ class InstallAction implements CodeExecutionActionInterface
     {
         $request = $this->request;
 
-        return static function () use ($request): mixed {
+        return static function () use ($request) {
             return $request->execute();
         };
     }

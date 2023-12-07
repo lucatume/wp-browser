@@ -39,7 +39,7 @@ trait InstallationChecks
 
         try {
             $siteurl = $db->getOption('siteurl');
-        } catch (DbException|PDOException) {
+        } catch (DbException|PDOException $exception) {
             return false;
         }
 

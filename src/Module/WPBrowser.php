@@ -25,7 +25,7 @@ class WPBrowser extends PhpBrowser
      *
      * @var array<string>
      */
-    protected array $requiredFields = ['adminUsername', 'adminPassword', 'adminPath'];
+    protected $requiredFields = ['adminUsername', 'adminPassword', 'adminPath'];
 
     /**
      * Returns all the cookies whose name matches a regex pattern.
@@ -51,7 +51,7 @@ class WPBrowser extends PhpBrowser
         if (!$cookies) {
             return null;
         }
-        $matchingCookies = array_filter($cookies, static function ($cookie) use ($cookiePattern): int|bool {
+        $matchingCookies = array_filter($cookies, static function ($cookie) use ($cookiePattern) {
             return preg_match($cookiePattern, $cookie->getName());
         });
         $cookieList = array_map(static function ($cookie): string {
@@ -82,7 +82,7 @@ class WPBrowser extends PhpBrowser
      *
      * @param  string|array<string> $pluginSlug The plugin slug, like "hello-dolly" or a list of plugin slugs.
      */
-    public function activatePlugin(string|array $pluginSlug): void
+    public function activatePlugin($pluginSlug): void
     {
         foreach ((array)$pluginSlug as $plugin) {
             $this->checkOption('//*[@data-slug="' . $plugin . '"]/th/input');
@@ -110,7 +110,7 @@ class WPBrowser extends PhpBrowser
      *
      * @param  string|array<string> $pluginSlug The plugin slug, like "hello-dolly", or a list of plugin slugs.
      */
-    public function deactivatePlugin(string|array $pluginSlug): void
+    public function deactivatePlugin($pluginSlug): void
     {
         foreach ((array) $pluginSlug as $plugin) {
             $this->checkOption('//*[@data-slug="' . $plugin . '"]/th/input');

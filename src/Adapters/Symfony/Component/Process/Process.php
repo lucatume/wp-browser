@@ -15,12 +15,13 @@ class Process extends SymfonyProcess
      * @param string[] $command
      * @param array<string,mixed>|null $env
      * @param array<string,mixed>|null $options
+     * @param mixed $input
      */
     public function __construct(
         array $command,
         string $cwd = null,
         array $env = null,
-        mixed $input = null,
+        $input = null,
         ?float $timeout = 60,
         array $options = null
     ) {

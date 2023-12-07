@@ -35,12 +35,15 @@ class WPQueries extends Module
      *
      * @var array<array{0: string, 1: float, 2: string, 3: float, 4?: array<int|string,mixed>}>
      */
-    protected array $filteredQueries = [];
+    protected $filteredQueries = [];
     /**
      * @var callable[]
      */
-    protected array $assertions = [];
-    private ?wpdb $wpdb;
+    protected $assertions = [];
+    /**
+     * @var \wpdb|null
+     */
+    private $wpdb;
 
     /**
      * WPQueries constructor.
@@ -614,9 +617,9 @@ class WPQueries extends Module
             $function
         ), $statement);
         Assert::assertCount(
-            expectedCount: $n,
-            haystack: iterator_to_array($statementIterator, false),
-            message: $message
+            $n,
+            iterator_to_array($statementIterator, false),
+            $message
         );
     }
 
@@ -1050,7 +1053,9 @@ class WPQueries extends Module
         $logicQueries = iterator_to_array($this->_getFilteredQueriesIterator($wpdb), false);
         return array_filter(
             $logicQueries,
-            static fn($query) => is_array($query) && Arr::hasShape($query, ['string', 'numeric', 'string', 'numeric'])
+            static function ($query) {
+                return is_array($query) && Arr::hasShape($query, ['string', 'numeric', 'string', 'numeric']);
+            }
         );
     }
 

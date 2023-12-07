@@ -1204,7 +1204,7 @@ class WP_SQLite_Translator {
 
 		// Naive rewriting of DELETE JOIN query.
 		// @TODO: Actually rewrite the query instead of using a hardcoded workaround.
-		if ( str_contains( $updated_query, ' JOIN ' ) ) {
+		if ( strpos($updated_query, ' JOIN ') !== false ) {
 			$table_prefix = isset( $GLOBALS['table_prefix'] ) ? $GLOBALS['table_prefix'] : 'wp_';
 			$this->execute_sqlite_query(
 				"DELETE FROM {$table_prefix}options WHERE option_id IN (SELECT MIN(option_id) FROM {$table_prefix}options GROUP BY option_name HAVING COUNT(*) > 1)"
@@ -1367,7 +1367,7 @@ class WP_SQLite_Translator {
 
 		$updated_query = $this->rewriter->get_updated_query();
 
-		if ( $table_name && str_starts_with( strtolower( $table_name ), 'information_schema' ) ) {
+		if ( $table_name && strncmp(strtolower( $table_name ), 'information_schema', strlen('information_schema')) === 0 ) {
 			$this->is_information_schema_query = true;
 			$updated_query                     = $this->get_information_schema_query( $updated_query );
 			$params                            = array();
@@ -1693,7 +1693,7 @@ class WP_SQLite_Translator {
 		if ( $this->like_expression_nesting > 0 ) {
 			/* Remove the quotes around the name. */
 			$unescaped_value = mb_substr( $token->token, 1, -1, 'UTF-8' );
-			if ( str_contains( $unescaped_value, '\_' ) || str_contains( $unescaped_value, '\%' ) ) {
+			if ( strpos($unescaped_value, '\_') !== false || strpos($unescaped_value, '\%') !== false ) {
 				$this->like_escape_count ++;
 				return str_replace(
 					array( '\_', '\%' ),
@@ -2368,7 +2368,7 @@ class WP_SQLite_Translator {
 	private function get_information_schema_query( $updated_query ) {
 		// @TODO: Actually rewrite the columns.
 		$normalized_query = preg_replace( '/\s+/', ' ', strtolower( $updated_query ) );
-		if ( str_contains( $normalized_query, 'bytes' ) ) {
+		if ( strpos($normalized_query, 'bytes') !== false ) {
 			// Count rows per table.
 			$tables =
 				$this->execute_sqlite_query( "SELECT name as `table_name` FROM sqlite_master WHERE type='table' ORDER BY name" )->fetchAll();
@@ -2383,7 +2383,7 @@ class WP_SQLite_Translator {
 			$rows         .= 'ELSE 0 END) ';
 			$updated_query =
 				"SELECT name as `table_name`, $rows as `rows`, 0 as `bytes` FROM sqlite_master WHERE type='table' ORDER BY name";
-		} elseif ( str_contains( $normalized_query, 'count(*)' ) && ! str_contains( $normalized_query, 'table_name =' ) ) {
+		} elseif ( strpos($normalized_query, 'count(*)') !== false && strpos($normalized_query, 'table_name =') === false ) {
 			// @TODO This is a guess that the caller wants a count of tables.
 			$list = array();
 			foreach ( $this->sqlite_system_tables as $system_table => $name ) {
@@ -2741,7 +2741,7 @@ class WP_SQLite_Translator {
 					 * Skip indexes prefixed with sqlite_autoindex_
 					 * (these are automatically created by SQLite).
 					 */
-					if ( str_starts_with( $row['index']['name'], 'sqlite_autoindex_' ) ) {
+					if ( strncmp($row['index']['name'], 'sqlite_autoindex_', strlen('sqlite_autoindex_')) === 0 ) {
 						continue;
 					}
 
@@ -3024,11 +3024,11 @@ class WP_SQLite_Translator {
 					 * the same as in the original CREATE TABLE. Let's
 					 * translate the name back.
 					 */
-					if ( str_starts_with( $mysql_key_name, 'sqlite_autoindex_' ) ) {
+					if ( strncmp($mysql_key_name, 'sqlite_autoindex_', strlen('sqlite_autoindex_')) === 0 ) {
 						$mysql_key_name = substr( $mysql_key_name, strlen( 'sqlite_autoindex_' ) );
 						$mysql_key_name = preg_replace( '/_[0-9]+$/', '', $mysql_key_name );
 					}
-					if ( str_starts_with( $mysql_key_name, "{$table_name}__" ) ) {
+					if ( strncmp($mysql_key_name, "{$table_name}__", strlen("{$table_name}__")) === 0 ) {
 						$mysql_key_name = substr( $mysql_key_name, strlen( "{$table_name}__" ) );
 					}
 
@@ -3209,7 +3209,7 @@ class WP_SQLite_Translator {
 			)
 		);
 		$mysql_type = $stmt->fetchColumn( 0 );
-		if ( str_ends_with( $mysql_type, ' KEY' ) ) {
+		if ( substr_compare($mysql_type, ' KEY', -strlen(' KEY')) === 0 ) {
 			$mysql_type = substr( $mysql_type, 0, strlen( $mysql_type ) - strlen( ' KEY' ) );
 		}
 		return $mysql_type;

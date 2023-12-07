@@ -143,7 +143,7 @@ PHP;
 
         $placeholder = '/* That\'s all, stop editing! Happy publishing. */';
 
-        if (!str_contains($wpConfigFileContents, $placeholder)) {
+        if (strpos($wpConfigFileContents, $placeholder) === false) {
             throw new InstallationException(
                 "Could not find the placeholder string in $wpConfigFilePath",
                 InstallationException::WP_CONFIG_FILE_MISSING_PLACEHOLDER

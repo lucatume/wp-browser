@@ -80,7 +80,10 @@ final class Some extends Option
         return $this->value;
     }
 
-    public function orElse(Option $else)
+    /**
+     * @param \PhpOption\Option $else
+     */
+    public function orElse($else)
     {
         return $this;
     }

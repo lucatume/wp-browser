@@ -123,7 +123,7 @@ class ChromedriverTest extends Unit
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ManagedProcessInterface::ERR_PID_FILE);
 
-        $this->uopzSetFunctionReturn('file_put_contents', function (string $file): false|int {
+        $this->uopzSetFunctionReturn('file_put_contents', function (string $file) {
             return $file === ChromeDriver::getPidFile() ? false : 0;
         }, true);
 

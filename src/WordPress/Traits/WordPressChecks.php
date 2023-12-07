@@ -34,7 +34,10 @@ trait WordPressChecks
     }
 
 
-    private function findWpConfigFilePath(string $rootDir): string|false
+    /**
+     * @return string|false
+     */
+    private function findWpConfigFilePath(string $rootDir)
     {
         $wpConfigFile = rtrim($rootDir, '\\/') . '/wp-config.php';
 

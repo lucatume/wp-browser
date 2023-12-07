@@ -12,7 +12,10 @@ use function wp_get_theme;
 
 class ThemeSwitchAction implements CodeExecutionActionInterface
 {
-    private FileRequest $request;
+    /**
+     * @var \lucatume\WPBrowser\WordPress\FileRequests\FileRequest
+     */
+    private $request;
 
     public function __construct(
         FileRequest $request,
@@ -23,7 +26,9 @@ class ThemeSwitchAction implements CodeExecutionActionInterface
         $request->setTargetFile($wpRootDir . '/wp-load.php')
             ->runInFastMode($wpRootDir)
             ->defineConstant('MULTISITE', $multisite)
-            ->addAfterLoadClosure(fn() => $this->switchTheme($stylesheet, $multisite));
+            ->addAfterLoadClosure(function () use ($stylesheet, $multisite) {
+                return $this->switchTheme($stylesheet, $multisite);
+            });
         $this->request = $request;
     }
 
@@ -49,7 +54,7 @@ class ThemeSwitchAction implements CodeExecutionActionInterface
     {
         $request = $this->request;
 
-        return static function () use ($request): mixed {
+        return static function () use ($request) {
             return $request->execute();
         };
     }

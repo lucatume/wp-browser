@@ -15,12 +15,15 @@ class EventDispatcherBridge extends Extension
     /**
      * @var array<string,string>
      */
-    public static array $events = [
+    public static $events = [
         Events::MODULE_INIT => 'onModuleInit',
         Events::SUITE_INIT => 'onSuiteInit',
         Events::SUITE_BEFORE => 'onSuiteBefore',
     ];
-    private bool $eventDispatcherCaptured = false;
+    /**
+     * @var bool
+     */
+    private $eventDispatcherCaptured = false;
 
     public function onModuleInit(SuiteEvent $event): void
     {

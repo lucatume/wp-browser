@@ -36,10 +36,22 @@ namespace Hautelook\Phpass;
  */
 class PasswordHash
 {
-    private string $itoa64;
-    private int $iteration_count_log2;
-    private bool $portable_hashes;
-    private string $random_state;
+    /**
+     * @var string
+     */
+    private $itoa64;
+    /**
+     * @var int
+     */
+    private $iteration_count_log2;
+    /**
+     * @var bool
+     */
+    private $portable_hashes;
+    /**
+     * @var string
+     */
+    private $random_state;
 
     /**
      * Constructor

@@ -53,7 +53,7 @@ class User
      *
      * @return int The corresponding user level, an integer.
      */
-    public static function getLevelForRole(string|int $role = 'subscriber'): int
+    public static function getLevelForRole($role = 'subscriber'): int
     {
         $map = [
             'subscriber' => 0,
@@ -77,7 +77,7 @@ class User
      * @return array<string,array<string,bool>> An array of meta keys to insert to correctly represent the desired user
      *     capabilities.
      */
-    public static function buildCapabilities(string|array $role, string $tablePrefix = 'wp_'): array
+    public static function buildCapabilities($role, string $tablePrefix = 'wp_'): array
     {
         $roles = (array)$role;
         $stringKeys = count(array_filter(array_keys($roles), 'is_string')) === count($roles);

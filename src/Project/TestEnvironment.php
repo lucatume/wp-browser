@@ -6,27 +6,66 @@ use Closure;
 
 class TestEnvironment
 {
-    public string $wpRootDir = 'var/wordpress';
-    public string $dbUrl = 'mysql://User:Pa55word@localhost:3306/test';
-    public string $testTablePrefix = 'test_';
-    public string $wpTablePrefix = 'wp_';
-    public string $wpUrl = 'http://wordpress.test';
-    public string $wpDomain = 'wordpress.test';
-    public string $wpAdminUser = 'admin';
-    public string $wpAdminPassword = 'password';
-    public string $chromeDriverHost = 'localhost';
-    public int $chromeDriverPort = 4444;
+    /**
+     * @var string
+     */
+    public $wpRootDir = 'var/wordpress';
+    /**
+     * @var string
+     */
+    public $dbUrl = 'mysql://User:Pa55word@localhost:3306/test';
+    /**
+     * @var string
+     */
+    public $testTablePrefix = 'test_';
+    /**
+     * @var string
+     */
+    public $wpTablePrefix = 'wp_';
+    /**
+     * @var string
+     */
+    public $wpUrl = 'http://wordpress.test';
+    /**
+     * @var string
+     */
+    public $wpDomain = 'wordpress.test';
+    /**
+     * @var string
+     */
+    public $wpAdminUser = 'admin';
+    /**
+     * @var string
+     */
+    public $wpAdminPassword = 'password';
+    /**
+     * @var string
+     */
+    public $chromeDriverHost = 'localhost';
+    /**
+     * @var int
+     */
+    public $chromeDriverPort = 4444;
     /**
      * @var array<string,array<string,mixed>>
      */
-    public array $extensionsEnabled = [];
-    public ?string $dumpFile = null;
-    public ?Closure $afterSuccess = null;
+    public $extensionsEnabled = [];
+    /**
+     * @var string|null
+     */
+    public $dumpFile;
+    /**
+     * @var \Closure|null
+     */
+    public $afterSuccess;
     /**
      * @var array<class-string>
      */
-    public array $customCommands = [];
-    public string $extraEnvFileContents = '';
+    public $customCommands = [];
+    /**
+     * @var string
+     */
+    public $extraEnvFileContents = '';
 
     public function runAfterSuccess(): void
     {

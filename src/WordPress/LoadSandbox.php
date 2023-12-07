@@ -4,15 +4,26 @@ namespace lucatume\WPBrowser\WordPress;
 
 class LoadSandbox
 {
-    private string $wpRootDir;
+    /**
+     * @var string
+     */
+    private $domain;
+    /**
+     * @var string
+     */
+    private $wpRootDir;
     /**
      * @var array{string,int}[]
      */
-    private array $redirects = [];
-    private string $bufferedOutput = '';
+    private $redirects = [];
+    /**
+     * @var string
+     */
+    private $bufferedOutput = '';
 
-    public function __construct(string $wpRootDir, private string $domain)
+    public function __construct(string $wpRootDir, string $domain)
     {
+        $this->domain = $domain;
         $this->wpRootDir = rtrim($wpRootDir, '/\\');
     }
 

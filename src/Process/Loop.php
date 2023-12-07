@@ -14,33 +14,54 @@ use Throwable;
 
 class Loop
 {
+    /**
+     * @var int
+     */
+    private $parallelism = 1;
+    /**
+     * @var bool
+     */
+    private $fastFailure = false;
+    /**
+     * @var float
+     */
+    private $timeout = 30;
     use MemoryUsage;
 
-    private int $peakParallelism = 0;
+    /**
+     * @var int
+     */
+    private $peakParallelism = 0;
     /**
      * @var array<string,Result>
      */
-    private array $results = [];
+    private $results = [];
     /**
      * @var array<string,Running>
      */
-    private array $started = [];
+    private $started = [];
     /**
      * @var array<string,Running>
      */
-    private array $running = [];
+    private $running = [];
     /**
      * @var array<string,Exited>
      */
-    private array $exited = [];
+    private $exited = [];
 
     /**
      * @var array<string,Worker>
      */
-    private array $workers = [];
+    private $workers = [];
 
-    private bool $fastFailureFlagRaised = false;
-    private bool $useFilePayloads = false;
+    /**
+     * @var bool
+     */
+    private $fastFailureFlagRaised = false;
+    /**
+     * @var bool
+     */
+    private $useFilePayloads = false;
 
     /**
      * @param array<int|string,Worker|callable> $workers
@@ -51,11 +72,14 @@ class Loop
      */
     public function __construct(
         array $workers = [],
-        private int $parallelism = 1,
-        private bool $fastFailure = false,
-        private float $timeout = 30,
+        int $parallelism = 1,
+        bool $fastFailure = false,
+        float $timeout = 30,
         array $options = []
     ) {
+        $this->parallelism = $parallelism;
+        $this->fastFailure = $fastFailure;
+        $this->timeout = $timeout;
         if (Debug::isEnabled() || getenv('WPBROWSER_LOOP_DEBUG')) {
             $this->timeout = 10 ** 10;
         }
@@ -358,8 +382,9 @@ class Loop
 
     /**
      * @throws ConfigurationException
+     * @param callable|\lucatume\WPBrowser\Process\Worker\Worker $worker
      */
-    private function ensureWorker(string $id, callable|Worker $worker): Worker
+    private function ensureWorker(string $id, $worker): Worker
     {
         if ($worker instanceof Worker) {
             return $worker;

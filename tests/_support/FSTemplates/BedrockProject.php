@@ -11,8 +11,18 @@ use lucatume\WPBrowser\WordPress\Source;
 
 class BedrockProject
 {
-    public function __construct(private MysqlDatabase $db, private string $home)
+    /**
+     * @var \lucatume\WPBrowser\WordPress\Database\MysqlDatabase
+     */
+    private $db;
+    /**
+     * @var string
+     */
+    private $home;
+    public function __construct(MysqlDatabase $db, string $home)
     {
+        $this->db = $db;
+        $this->home = $home;
     }
 
     public function scaffold(string $dir, string $version = 'latest'): string
@@ -43,7 +53,9 @@ class BedrockProject
         ];
 
         $envContents = str_replace(
-            array_map(fn(string $key) => '{{' . $key . '}}', array_keys($replacements)),
+            array_map(function (string $key) {
+                return '{{' . $key . '}}';
+            }, array_keys($replacements)),
             $replacements,
             $envContents
         );

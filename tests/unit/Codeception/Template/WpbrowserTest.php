@@ -41,7 +41,7 @@ EOT;
 
     private function replaceRandomPorts(array $expected, array $actual, string $file): array
     {
-        if (!str_ends_with($file, 'tests/.env')) {
+        if (substr_compare($file, 'tests/.env', -strlen('tests/.env')) !== 0) {
             return [$expected, $actual];
         }
 
@@ -122,7 +122,9 @@ EOT;
         // Random ports will change: visit the data to replace the random ports with a placeholder.
         $this->assertMatchesDirectorySnapshot(
             $projectDir . '/plugin_89',
-            fn() => $this->replaceRandomPorts(...func_get_args())
+            function () {
+                return $this->replaceRandomPorts(...func_get_args());
+            }
         );
     }
 
@@ -187,7 +189,9 @@ EOT;
         // Random ports will change: visit the data to replace the random ports with a placeholder.
         $this->assertMatchesDirectorySnapshot(
             $projectDir . '/plugin_89',
-            fn() => $this->replaceRandomPorts(...func_get_args())
+            function () {
+                return $this->replaceRandomPorts(...func_get_args());
+            }
         );
     }
 
@@ -245,7 +249,9 @@ EOT;
         // Random ports will change: visit the data to replace the random ports with a placeholder.
         $this->assertMatchesDirectorySnapshot(
             $projectDir . '/plugin_89',
-            fn() => $this->replaceRandomPorts(...func_get_args())
+            function () {
+                return $this->replaceRandomPorts(...func_get_args());
+            }
         );
     }
 
@@ -302,7 +308,9 @@ EOT;
         // Random ports will change: visit the data to replace the random ports with a placeholder.
         $this->assertMatchesDirectorySnapshot(
             $projectDir . '/plugin_89',
-            fn() => $this->replaceRandomPorts(...func_get_args())
+            function () {
+                return $this->replaceRandomPorts(...func_get_args());
+            }
         );
     }
 
@@ -367,7 +375,9 @@ EOT;
         // Random ports will change: visit the data to replace the random ports with a placeholder.
         $this->assertMatchesDirectorySnapshot(
             $projectDir . '/theme_23',
-            fn() => $this->replaceRandomPorts(...func_get_args())
+            function () {
+                return $this->replaceRandomPorts(...func_get_args());
+            }
         );
     }
 
@@ -389,12 +399,13 @@ EOT;
 
         $projectDir = FS::tmpDir('setup_', [
             'theme_23' => [
-                'style.css' => <<< EOT
+                'style.css' => <<<EOT
 /*
 Theme Name: Theme 23
 Template: twentytwenty
 */
-EOT,
+EOT
+,
                 'composer.json' => $composerFileCode,
                 'vendor' => [
                     'bin' => [
@@ -437,7 +448,9 @@ EOT,
         // Random ports will change: visit the data to replace the random ports with a placeholder.
         $this->assertMatchesDirectorySnapshot(
             $projectDir . '/theme_23',
-            fn() => $this->replaceRandomPorts(...func_get_args())
+            function () {
+                return $this->replaceRandomPorts(...func_get_args());
+            }
         );
     }
 
@@ -459,11 +472,12 @@ EOT;
 
         $projectDir = FS::tmpDir('setup_', [
             'theme_23' => [
-                'style.css' => <<< EOT
+                'style.css' => <<<EOT
 /*
 Theme Name: Theme 23
 */
-EOT,
+EOT
+,
                 'composer.json' => $composerFileCode,
                 'vendor' => [
                     'bin' => [
@@ -500,7 +514,9 @@ EOT,
         // Random ports will change: visit the data to replace the random ports with a placeholder.
         $this->assertMatchesDirectorySnapshot(
             $projectDir . '/theme_23',
-            fn() => $this->replaceRandomPorts(...func_get_args())
+            function () {
+                return $this->replaceRandomPorts(...func_get_args());
+            }
         );
     }
 
@@ -535,14 +551,7 @@ EOT;
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($projectDir . '/site')
-            ->configure($db)
-            ->install(
-                'https://the-project.local',
-                'admin',
-                'secret',
-                'admin@the-project.local',
-                'The Project',
-            );
+            ->configure($db)->install('https://the-project.local', 'admin', 'secret', 'admin@the-project.local', 'The Project');
 
         $this->mockComposerBin($projectDir . '/site');
 
@@ -616,14 +625,7 @@ EOT;
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         Installation::scaffold($projectDir . '/site')
-            ->configure($db, InstallationStateInterface::MULTISITE_SUBDOMAIN)
-            ->install(
-                'https://the-project.local',
-                'admin',
-                'secret',
-                'admin@the-project.local',
-                'The Project',
-            );
+            ->configure($db, InstallationStateInterface::MULTISITE_SUBDOMAIN)->install('https://the-project.local', 'admin', 'secret', 'admin@the-project.local', 'The Project');
 
         $this->mockComposerBin($projectDir . '/site');
 
@@ -708,7 +710,9 @@ EOT;
         // Random ports will change: visit the data to replace the random ports with a placeholder.
         $this->assertMatchesDirectorySnapshot(
             $projectDir . '/tests',
-            fn() => $this->replaceRandomPorts(...func_get_args())
+            function () {
+                return $this->replaceRandomPorts(...func_get_args());
+            }
         );
     }
 }

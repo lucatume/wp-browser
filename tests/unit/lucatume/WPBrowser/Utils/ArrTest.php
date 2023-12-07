@@ -52,8 +52,9 @@ class ArrTest extends Unit
 
     /**
      * @dataProvider searchWithCallbackDataProvider
+     * @param int|string|false $expected
      */
-    public function testSearchWithCallback(callable $isNeedle, array $hastack, int|string|false $expected): void
+    public function testSearchWithCallback(callable $isNeedle, array $hastack, $expected): void
     {
         $actual = Arr::searchWithCallback($isNeedle, $hastack);
         $this->assertEquals($expected, $actual);
@@ -92,8 +93,11 @@ class ArrTest extends Unit
 
     /**
      * @dataProvider firstFromDataProvider
+     * @param mixed $value
+     * @param mixed $default
+     * @param mixed $expected
      */
-    public function test_firstFrom(mixed $value, mixed $default, mixed $expected): void
+    public function test_firstFrom($value, $default, $expected): void
     {
         $actual = Arr::firstFrom($value, $default);
         $this->assertEquals($expected, $actual);
@@ -140,27 +144,37 @@ class ArrTest extends Unit
             'array has mixed shape, 3rd type is Closure' => [
                 'array' => [new stdClass, 2, '3'],
                 'expected' => true,
-                ['stdClass', 'int', fn(string $value): bool => $value === '3']
+                ['stdClass', 'int', function (string $value) : bool {
+                    return $value === '3';
+                }]
             ],
             'array has mixed shape, 3rd type is Closure, misses one' => [
                 'array' => [new stdClass, 2],
                 'expected' => false,
-                ['stdClass', 'int', fn(string $value): bool => $value === '3']
+                ['stdClass', 'int', function (string $value) : bool {
+                    return $value === '3';
+                }]
             ],
             'array has mixed shape with associative type' => [
                 'array' => ['a' => new stdClass, 'b' => 2, 'c' => '3'],
                 'expected' => true,
-                ['a' => 'stdClass', 'b' => 'int', 'c' => fn(string $value): bool => $value === '3']
+                ['a' => 'stdClass', 'b' => 'int', 'c' => function (string $value) : bool {
+                    return $value === '3';
+                }]
             ],
             'array shape does not match mixed types' => [
                 'array' => ['a' => new stdClass, 'b' => 2, 'c' => '3'],
                 'expected' => false,
-                ['a' => 'stdClass', 'b' => 'int', 'c' => fn(string $value): bool => $value === '4']
+                ['a' => 'stdClass', 'b' => 'int', 'c' => function (string $value) : bool {
+                    return $value === '4';
+                }]
             ],
             'array shape matches in different order' => [
                 'array' => ['a' => new stdClass, 'b' => 2, 'c' => '3'],
                 'expected' => true,
-                ['b' => 'int', 'c' => fn(string $value): bool => $value === '3', 'a' => 'stdClass']
+                ['b' => 'int', 'c' => function (string $value) : bool {
+                    return $value === '3';
+                }, 'a' => 'stdClass']
             ],
         ];
     }
@@ -204,12 +218,16 @@ class ArrTest extends Unit
             ],
             'array of integers, type is Closure' => [
                 'array' => [1, 2, 3],
-                'type' => fn(int $value) => $value > 0,
+                'type' => function (int $value) {
+                    return $value > 0;
+                },
                 'expected' => true
             ],
             'array of integers, type is Closure, no match' => [
                 'array' => [1, 2, 3],
-                'type' => fn(int $value) => $value > 23,
+                'type' => function (int $value) {
+                    return $value > 23;
+                },
                 'expected' => false
             ],
         ];
@@ -217,8 +235,9 @@ class ArrTest extends Unit
 
     /**
      * @dataProvider containsOnlyDataProvider
+     * @param callable|string $type
      */
-    public function test_containsOnly(array $array, callable|string $type, bool $expected): void
+    public function test_containsOnly(array $array, $type, bool $expected): void
     {
         $actual = Arr::containsOnly($array, $type);
         $this->assertEquals($expected, $actual);

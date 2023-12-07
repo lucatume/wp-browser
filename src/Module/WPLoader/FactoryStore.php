@@ -41,42 +41,42 @@ class FactoryStore
     /**
      * @var ?WP_UnitTest_Factory_For_Post
      */
-    protected ?WP_UnitTest_Factory_For_Post $post = null;
+    protected $post;
 
     /**
      * @var ?WP_UnitTest_Factory_For_Bookmark
      */
-    protected ?WP_UnitTest_Factory_For_Bookmark $bookmark = null;
+    protected $bookmark;
 
     /**
      * @var ?WP_UnitTest_Factory_For_Attachment
      */
-    protected ?WP_UnitTest_Factory_For_Attachment $attachment = null;
+    protected $attachment;
 
     /**
      * @var ?WP_UnitTest_Factory_For_User
      */
-    protected ?WP_UnitTest_Factory_For_User $user = null;
+    protected $user;
 
     /**
      * @var ?WP_UnitTest_Factory_For_Comment
      */
-    protected ?WP_UnitTest_Factory_For_Comment $comment = null;
+    protected $comment;
 
     /**
      * @var ?WP_UnitTest_Factory_For_Blog
      */
-    protected ?WP_UnitTest_Factory_For_Blog $blog = null;
+    protected $blog;
 
     /**
      * @var ?WP_UnitTest_Factory_For_Network
      */
-    protected ?WP_UnitTest_Factory_For_Network $network = null;
+    protected $network;
 
     /**
      * @var ?WP_UnitTest_Factory_For_Term
      */
-    protected ?WP_UnitTest_Factory_For_Term $term = null;
+    protected $term;
 
     /**
      * Lazily instantiate the factories if required.

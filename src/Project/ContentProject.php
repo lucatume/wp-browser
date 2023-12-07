@@ -23,7 +23,10 @@ use Throwable;
 
 abstract class ContentProject extends InitTemplate implements ProjectInterface
 {
-    protected TestEnvironment $testEnvironment;
+    /**
+     * @var \lucatume\WPBrowser\Project\TestEnvironment
+     */
+    protected $testEnvironment;
 
     abstract protected function getProjectType(): string;
 
@@ -38,7 +41,7 @@ abstract class ContentProject extends InitTemplate implements ProjectInterface
     /**
      * @return array<string>|false
      */
-    abstract public static function parseDir(string $workDir): array|false;
+    abstract public static function parseDir(string $workDir);
 
     abstract protected function scaffoldEndToEndActivationCest(): void;
 

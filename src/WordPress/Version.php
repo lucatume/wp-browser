@@ -8,12 +8,30 @@ class Version
 {
     use WordPressChecks;
 
-    private string $versionFile;
-    private string $wpVersion;
-    private string $wpDbVersion;
-    private string $tinymceVersion;
-    private string $requiredPhpVersion;
-    private string $requiredMySqlVersion;
+    /**
+     * @var string
+     */
+    private $versionFile;
+    /**
+     * @var string
+     */
+    private $wpVersion;
+    /**
+     * @var string
+     */
+    private $wpDbVersion;
+    /**
+     * @var string
+     */
+    private $tinymceVersion;
+    /**
+     * @var string
+     */
+    private $requiredPhpVersion;
+    /**
+     * @var string
+     */
+    private $requiredMySqlVersion;
 
     /**
      * @throws InstallationException

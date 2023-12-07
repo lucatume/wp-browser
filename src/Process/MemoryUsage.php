@@ -5,7 +5,10 @@ namespace lucatume\WPBrowser\Process;
 trait MemoryUsage
 {
 
-    protected ?int $memoryUsage = 0;
+    /**
+     * @var int|null
+     */
+    protected $memoryUsage = 0;
 
     public function getMemoryUsage(): ?int
     {

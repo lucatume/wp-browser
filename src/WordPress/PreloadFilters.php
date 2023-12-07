@@ -10,13 +10,15 @@ class PreloadFilters
     public static function filterWpDieHandlerToExit(): void
     {
         $throwWPDieException = static function (
-            string|WP_Error $message,
-            string|int $title = '',
+            $message,
+            $title = '',
             array $args = []
         ): void {
             throw new WPDieException($message, $title, $args);
         };
-        self::addFilter('wp_die_handler', static fn(): Closure => $throwWPDieException, PHP_INT_MAX);
+        self::addFilter('wp_die_handler', static function () use ($throwWPDieException) : Closure {
+            return $throwWPDieException;
+        }, PHP_INT_MAX);
     }
 
     /**
@@ -24,7 +26,7 @@ class PreloadFilters
      */
     public static function addFilter(
         string $hookName,
-        callable|string|array $callback,
+        $callback,
         int $priority = 10,
         int $acceptedArgs = 1
     ): void {
@@ -43,7 +45,7 @@ class PreloadFilters
 
     public static function spoofDnsWildcardCheck(): void
     {
-        $callback = static function (bool $preempt, array $parsedArgs, string $url): bool|array {
+        $callback = static function (bool $preempt, array $parsedArgs, string $url) {
             if (($parsedArgs['method'] ?? 'GET') !== 'GET') {
                 return $preempt;
             }
@@ -61,7 +63,7 @@ class PreloadFilters
                 return $preempt;
             }
 
-            if (!str_ends_with($requestHost, $siteHost)) {
+            if (substr_compare($requestHost, $siteHost, -strlen($siteHost)) !== 0) {
                 return $preempt;
             }
 

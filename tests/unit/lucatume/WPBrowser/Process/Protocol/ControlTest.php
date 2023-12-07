@@ -13,8 +13,14 @@ class ControlTest extends Unit
 {
     use UopzFunctions;
 
-    private ?string $composerAutoloadPath = null;
-    private ?string $composerBinDir = null;
+    /**
+     * @var string|null
+     */
+    private $composerAutoloadPath;
+    /**
+     * @var string|null
+     */
+    private $composerBinDir;
 
     /**
      * @before

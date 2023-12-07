@@ -24,7 +24,7 @@ class Date
     /**
      * @var ?int An injectable time value, used in tests.
      */
-    protected static ?int $time = null;
+    protected static $time;
 
     /**
      * Returns the current time in WordPress specific format.
@@ -32,7 +32,7 @@ class Date
      * @return string|false The current time in WordPress specific format like "2014-06-16 08:27:21" or
      *                      `false` on failure.
      */
-    public static function now(): string|false
+    public static function now()
     {
         return date(self::DATE_FORMAT, self::_time());
     }
@@ -62,7 +62,7 @@ class Date
      *
      * @return false|string The formatted date or `false` on failure.
      */
-    public static function gmtNow(): false|string
+    public static function gmtNow()
     {
         return gmdate(self::DATE_FORMAT, self::_time());
     }

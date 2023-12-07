@@ -9,8 +9,9 @@ use lucatume\WPBrowser\Utils\Memo;
 /**
  * @param callable|array{0: string, 1: string}|string $callback
  * @param array<scalar> $dependencies
+ * @return mixed
  */
-function useMemo(callable|array|string $callback, array $dependencies = []): mixed
+function useMemo($callback, array $dependencies = [])
 {
     if (!is_callable($callback)) {
         throw new InvalidArgumentException('The callback is not callable.');
@@ -37,7 +38,7 @@ function useMemo(callable|array|string $callback, array $dependencies = []): mix
  * @param callable|array{0: string, 1: string}|string $callback
  * @param array<scalar> $dependencies
  */
-function useMemoString(callable|array|string $callback, array $dependencies = []): string
+function useMemoString($callback, array $dependencies = []): string
 {
     $result = useMemo($callback, $dependencies);
     if (!is_string($result)) {

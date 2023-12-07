@@ -46,8 +46,12 @@ class RunAllTest extends Unit
                 ];
                 Assert::assertEquals($expectedCommand, $command);
             },
-            'getIterator' => fn() => yield from ["Running suite\n", "Done\n"],
-            'isSuccessful' => fn() => true,
+            'getIterator' => function () {
+                return yield from ["Running suite\n", "Done\n"];
+            },
+            'isSuccessful' => function () {
+                return true;
+            },
         ];
         $this->uopzSetMock(Process::class, $this->makeEmptyClass(Process::class, $mockParams));
         $this->uopzSetStaticMethodReturn(Configuration::class, 'suites', ['suite-1', 'suite-2', 'suite-3']);
@@ -79,7 +83,9 @@ class RunAllTest extends Unit
     {
         $currentSuite = 1;
         $mockParams = [
-            'getIterator' => fn() => yield from ['.', '.', '.'],
+            'getIterator' => function () {
+                return yield from ['.', '.', '.'];
+            },
             // Fail on the 2nd call.
             'isSuccessful' => function () use ($failingSuite, &$currentSuite) {
                 return $currentSuite++ !== $failingSuite;
@@ -105,7 +111,9 @@ class RunAllTest extends Unit
     {
         $this->uopzSetMock(Process::class,
             $this->makeEmptyClass(Process::class, [
-                '__construct' => fn() => throw new Exception('Failed to build process.')
+                '__construct' => function () {
+                    throw new Exception('Failed to build process.');
+                }
             ]));
         $this->uopzSetStaticMethodReturn(Configuration::class, 'suites', ['suite-1', 'suite-2', 'suite-3']);
 

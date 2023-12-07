@@ -158,8 +158,9 @@ namespace tad\WPBrowser {
 
     /**
      * @deprecated Use `lucatume\WPBrowser\Utils\Filesystem::resolvePath` instead.
+     * @return bool|string
      */
-    function resolvePath(string $path, string $root = null): bool|string
+    function resolvePath(string $path, string $root = null)
     {
         return Filesystem::resolvePath($path, $root);
     }
@@ -198,16 +199,18 @@ namespace tad\WPBrowser {
 
     /**
      * @deprecated Use `lucatume\WPBrowser\Utils\Filesystem::findHereOrInParentrmdir` instead.
+     * @return bool|string
      */
-    function findHereOrInParent(string $path, string $root): bool|string
+    function findHereOrInParent(string $path, string $root)
     {
         return Filesystem::findHereOrInParent($path, $root);
     }
 
     /**
      * @deprecated Use `lucatume\WPBrowser\Utils\Filesystem::realpathish` instead.
+     * @return bool|string
      */
-    function realpathish(string $path): bool|string
+    function realpathish(string $path)
     {
         return Filesystem::realpath($path);
     }
@@ -216,7 +219,7 @@ namespace tad\WPBrowser {
      * @deprecated Use `lucatume\WPBrowser\Utils\Filesystem::mkdirp` instead.
      * @param array<string,string|array<string,mixed>>|string $contents
      */
-    function mkdirp(string $pathname, array|string $contents = [], int $mode = 0777): void
+    function mkdirp(string $pathname, $contents = [], int $mode = 0777): void
     {
         Filesystem::mkdirp($pathname, $contents, $mode);
     }
@@ -232,8 +235,9 @@ namespace tad\WPBrowser {
     /**
      * @param array<string, mixed> $context
      * @deprecated Use `lucatume\WPBrowser\Events\Dispatcher::dispatch` instead.
+     * @param mixed $origin
      */
-    function dispatch(string $eventName, mixed $origin = null, ?array $context = []): void
+    function dispatch(string $eventName, $origin = null, ?array $context = []): void
     {
         Dispatcher::dispatch($eventName, $origin, $context ?? []);
     }
@@ -243,8 +247,10 @@ namespace tad\WPBrowser {
      * @param array<string, mixed> $props
      * @throws ReflectionException
      * @deprecated Use `lucatume\WPBrowser\Utils\Property::setPropertiesForClass` instead.
+     * @param object $object
+     * @return object
      */
-    function setPropertiesForClass(object $object, string $class, array $props): object
+    function setPropertiesForClass($object, string $class, array $props)
     {
         return Property::setPropertiesForClass($object, $class, $props);
     }
@@ -253,8 +259,9 @@ namespace tad\WPBrowser {
      * @param array<string, mixed> $props
      * @throws ReflectionException
      * @deprecated Use `lucatume\WPBrowser\Utils\Property::setPrivateProperties` instead.
+     * @param object|string $object
      */
-    function setPrivateProperties(object|string $object, array $props): void
+    function setPrivateProperties($object, array $props): void
     {
         Property::setPrivateProperties($object, $props);
     }
@@ -262,8 +269,10 @@ namespace tad\WPBrowser {
     /**
      * @throws ReflectionException
      * @deprecated Use `lucatume\WPBrowser\Utils\Property::readPrivate` instead.
+     * @param object|string $object
+     * @return mixed
      */
-    function readPrivateProperty(object|string $object, string $prop): mixed
+    function readPrivateProperty($object, string $prop)
     {
         return Property::readPrivate($object, $prop);
     }
@@ -347,16 +356,18 @@ namespace tad\WPBrowser {
 
     /**
      * @deprecated Use `codecept_debug` instead.
+     * @param mixed $message
      */
-    function debug(mixed $message): void
+    function debug($message): void
     {
         codecept_debug($message);
     }
 
     /**
      * @deprecated Use `PHPUnit\Framework\Assert:assertTrue` instead.
+     * @param mixed $condition
      */
-    function ensure(mixed $condition, string $message): void
+    function ensure($condition, string $message): void
     {
         Assert::assertTrue((bool)$condition, $message);
     }

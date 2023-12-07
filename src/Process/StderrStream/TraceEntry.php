@@ -4,13 +4,34 @@ namespace lucatume\WPBrowser\Process\StderrStream;
 
 class TraceEntry
 {
-    public string $date = '';
-    public string $time = '';
-    public string $timezone = '';
-    public string $call = '';
-    public string $args = '';
-    public string $file = '';
-    public int $line = 0;
+    /**
+     * @var string
+     */
+    public $date = '';
+    /**
+     * @var string
+     */
+    public $time = '';
+    /**
+     * @var string
+     */
+    public $timezone = '';
+    /**
+     * @var string
+     */
+    public $call = '';
+    /**
+     * @var string
+     */
+    public $args = '';
+    /**
+     * @var string
+     */
+    public $file = '';
+    /**
+     * @var int
+     */
+    public $line = 0;
 
     /**
      * @return array{

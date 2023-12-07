@@ -59,13 +59,16 @@ interface DatabaseInterface
 
     /**
      * @throws DbException
+     * @param mixed $value
      */
-    public function updateOption(string $name, mixed $value): int;
+    public function updateOption(string $name, $value): int;
 
     /**
      * @throws DbException
+     * @param mixed $default
+     * @return mixed
      */
-    public function getOption(string $name, mixed $default = null): mixed;
+    public function getOption(string $name, $default = null);
 
     /**
      * @throws DbException

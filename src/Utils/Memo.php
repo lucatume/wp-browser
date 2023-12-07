@@ -10,7 +10,11 @@ class Memo
      */
     private static $cache = [];
 
-    public static function get(string $key, string $subKey, mixed $default = null): mixed
+    /**
+     * @param mixed $default
+     * @return mixed
+     */
+    public static function get(string $key, string $subKey, $default = null)
     {
         if (isset(self::$cache[$key])
             && is_array(self::$cache[$key])
@@ -21,7 +25,10 @@ class Memo
         return $default;
     }
 
-    public static function set(string $key, string $subKey, mixed $result): void
+    /**
+     * @param mixed $result
+     */
+    public static function set(string $key, string $subKey, $result): void
     {
         self::$cache[$key] = [];
         self::$cache[$key][$subKey] = $result;

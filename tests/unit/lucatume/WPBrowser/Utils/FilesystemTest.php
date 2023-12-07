@@ -165,9 +165,15 @@ class FilesystemTest extends Unit
 
     public function relativePathDataSet(): Generator
     {
-        yield 'empty' => [fn() => ['', '', '/', '']];
-        yield 'empty from, absolute to' => [fn() => ['', __DIR__, '/', __DIR__]];
-        yield 'empty to' => [fn() => [__DIR__, '', '/', '']];
+        yield 'empty' => [function () {
+            return ['', '', '/', ''];
+        }];
+        yield 'empty from, absolute to' => [function () {
+            return ['', __DIR__, '/', __DIR__];
+        }];
+        yield 'empty to' => [function () {
+            return [__DIR__, '', '/', ''];
+        }];
 
         $makeTmpDir = static function (): string {
             $tmpDir = Filesystem::tmpDir();

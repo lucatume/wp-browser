@@ -16,9 +16,15 @@ use Throwable;
 
 trait InstalledTrait
 {
-    protected CodeExecutionFactory $codeExecutionFactory;
+    /**
+     * @var \lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory
+     */
+    protected $codeExecutionFactory;
 
-    public function updateOption(string $option, mixed $value): int
+    /**
+     * @param mixed $value
+     */
+    public function updateOption(string $option, $value): int
     {
         $db = $this->getDb();
         $options = $this->db->getTablePrefix() . 'options';
@@ -93,8 +99,9 @@ trait InstalledTrait
      * @throws WorkerException
      * @throws Throwable
      * @throws ProcessException
+     * @return mixed
      */
-    public function executeClosureInWordPress(Closure $closure): mixed
+    public function executeClosureInWordPress(Closure $closure)
     {
         $reflectionClosure = new ReflectionClosure($closure);
 

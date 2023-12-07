@@ -7,19 +7,46 @@ use lucatume\WPBrowser\Utils\Random;
 
 class ConfigurationData
 {
-    private ?string $authKey = null;
-    private ?string $secureAuthKey = null;
-    private ?string $loggedInKey = null;
-    private ?string $nonceKey = null;
-    private ?string $authSalt = null;
-    private ?string $secureAuthSalt = null;
-    private ?string $loggedInSalt = null;
-    private ?string $nonceSalt = null;
-    private ?string $extraPHP = null;
+    /**
+     * @var string|null
+     */
+    private $authKey;
+    /**
+     * @var string|null
+     */
+    private $secureAuthKey;
+    /**
+     * @var string|null
+     */
+    private $loggedInKey;
+    /**
+     * @var string|null
+     */
+    private $nonceKey;
+    /**
+     * @var string|null
+     */
+    private $authSalt;
+    /**
+     * @var string|null
+     */
+    private $secureAuthSalt;
+    /**
+     * @var string|null
+     */
+    private $loggedInSalt;
+    /**
+     * @var string|null
+     */
+    private $nonceSalt;
+    /**
+     * @var string|null
+     */
+    private $extraPHP;
     /**
      * @var array<string,int|float|string|bool|null>
      */
-    private array $extraConstants = [];
+    private $extraConstants = [];
 
     /**
      * @param array<string,mixed> $array
@@ -182,7 +209,7 @@ class ConfigurationData
         $extraConstants = implode(
             PHP_EOL,
             array_map(
-                static function ($const, string|int|float|bool|null $value) {
+                static function ($const, $value) {
                     if (is_bool($value)) {
                         $value = $value ? 'true' : 'false';
                     } elseif (is_null($value)) {
@@ -199,7 +226,10 @@ class ConfigurationData
         return $extraConstants . PHP_EOL . $this->extraPHP;
     }
 
-    public function setConst(string $const, string|int|float|bool|null $value): self
+    /**
+     * @param string|int|float|bool|null $value
+     */
+    public function setConst(string $const, $value): self
     {
         $this->extraConstants[$const] = $value;
 

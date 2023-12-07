@@ -23,7 +23,10 @@ class Scaffolded implements InstallationStateInterface
     use WordPressChecks;
     use ScaffoldedStateTrait;
 
-    private string $wpRootDir;
+    /**
+     * @var string
+     */
+    private $wpRootDir;
 
     /**
      * @throws InstallationException
@@ -284,8 +287,9 @@ class Scaffolded implements InstallationStateInterface
 
     /**
      * @throws InstallationException
+     * @return mixed
      */
-    public function getConstant(string $constant): mixed
+    public function getConstant(string $constant)
     {
         throw new InstallationException(
             'The WordPress installation has not been configured yet.',
@@ -344,8 +348,9 @@ class Scaffolded implements InstallationStateInterface
 
     /**
      * @throws InstallationException
+     * @param mixed $value
      */
-    public function updateOption(string $option, mixed $value): int
+    public function updateOption(string $option, $value): int
     {
         throw new InstallationException(
             'The WordPress installation has not been configured yet.',
@@ -356,8 +361,9 @@ class Scaffolded implements InstallationStateInterface
 
     /**
      * @throws InstallationException
+     * @return mixed
      */
-    public function executeClosureInWordPress(Closure $closure): mixed
+    public function executeClosureInWordPress(Closure $closure)
     {
         throw new InstallationException(
             'The WordPress installation has not been configured yet.',

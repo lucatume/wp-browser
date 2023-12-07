@@ -10,19 +10,37 @@ use Throwable;
 
 class Response
 {
-    private mixed $returnValue;
-    private int $exitValue;
-    public static string $stderrValueSeparator = "\r\n\r\n#|worker-stderr-output|#\r\n\r\n";
-    private int $stderrLength = 0;
+    /**
+     * @var array{memoryPeakUsage: int}
+     */
+    private $telemetry = ['memoryPeakUsage' => 0];
+    /**
+     * @var mixed
+     */
+    private $returnValue;
+    /**
+     * @var int
+     */
+    private $exitValue;
+    /**
+     * @var string
+     */
+    public static $stderrValueSeparator = "\r\n\r\n#|worker-stderr-output|#\r\n\r\n";
+    /**
+     * @var int
+     */
+    private $stderrLength = 0;
 
     /**
      * @param array{memoryPeakUsage: int} $telemetry
+     * @param mixed $returnValue
      */
     public function __construct(
-        mixed $returnValue,
+        $returnValue,
         ?int $exitValue = null,
-        private array $telemetry = ['memoryPeakUsage' => 0]
+        array $telemetry = ['memoryPeakUsage' => 0]
     ) {
+        $this->telemetry = $telemetry;
         if ($exitValue === null) {
             $this->exitValue = $returnValue instanceof Throwable || $returnValue instanceof SerializableThrowable ?
                 1
@@ -97,7 +115,10 @@ class Response
         return $this->exitValue;
     }
 
-    public function getReturnValue(): mixed
+    /**
+     * @return mixed
+     */
+    public function getReturnValue()
     {
         return $this->returnValue;
     }

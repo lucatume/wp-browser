@@ -4,17 +4,44 @@ namespace lucatume\WPBrowser\Process\StderrStream;
 
 class Error
 {
-    public bool $isException = false;
-    public string $exceptionClass = '';
-    public string $date = '';
-    public string $time = '';
-    public string $timezone = '';
-    public string $type = '';
-    public string $message = '';
-    public string $file = '';
-    public int $line = 0;
+    /**
+     * @var bool
+     */
+    public $isException = false;
+    /**
+     * @var string
+     */
+    public $exceptionClass = '';
+    /**
+     * @var string
+     */
+    public $date = '';
+    /**
+     * @var string
+     */
+    public $time = '';
+    /**
+     * @var string
+     */
+    public $timezone = '';
+    /**
+     * @var string
+     */
+    public $type = '';
+    /**
+     * @var string
+     */
+    public $message = '';
+    /**
+     * @var string
+     */
+    public $file = '';
+    /**
+     * @var int
+     */
+    public $line = 0;
     /**
      * @var array<TraceEntry>
      */
-    public array $trace = [];
+    public $trace = [];
 }

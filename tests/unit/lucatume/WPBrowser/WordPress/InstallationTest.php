@@ -47,7 +47,9 @@ class InstallationTest extends Unit
     {
         $tmpDir = FS::tmpDir('installation_');
         $this->uopzSetFunctionReturn('is_writable',
-            fn(string $dir) => !($dir === $tmpDir . '/') && is_writable($dir),
+            function (string $dir) use ($tmpDir) {
+                return !($dir === $tmpDir . '/') && is_writable($dir);
+            },
             true
         );
 
@@ -66,7 +68,9 @@ class InstallationTest extends Unit
     {
         $tmpDir = FS::tmpDir('installation_');
         $this->uopzSetFunctionReturn('is_readable',
-            fn(string $dir) => !($dir === $tmpDir . '/') && is_readable($dir),
+            function (string $dir) use ($tmpDir) {
+                return !($dir === $tmpDir . '/') && is_readable($dir);
+            },
             true
         );
 

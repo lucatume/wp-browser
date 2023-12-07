@@ -9,8 +9,13 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class DockerCompose
 {
-    public function __construct(private string $composeFile)
+    /**
+     * @var string
+     */
+    private $composeFile;
+    public function __construct(string $composeFile)
     {
+        $this->composeFile = $composeFile;
         if (!is_file($this->composeFile)) {
             throw new InvalidArgumentException("Docker Compose file {$this->composeFile} does not exist.");
         }
@@ -28,7 +33,7 @@ class DockerCompose
      */
     private function mustRun(array $command): void
     {
-        $process = new Process(['docker', 'compose', '-f', $this->composeFile, ...$command]);
+        $process = new Process(array_merge(['docker', 'compose', '-f', $this->composeFile], $command));
         $process->mustRun();
     }
 
@@ -39,7 +44,7 @@ class DockerCompose
         while ($timeout > 0) {
             $process = new Process(['docker', 'inspect', '--format', '{{json .State.Health}}', $dockerServiceId]);
             $process->run();
-            if ($process->isSuccessful() && str_contains($process->getOutput(), '"Status":"healthy"')) {
+            if ($process->isSuccessful() && strpos($process->getOutput(), '"Status":"healthy"') !== false) {
                 // Sleep an additional 250ms to allow the service to become fully healthy.
                 usleep(250000);
                 return;

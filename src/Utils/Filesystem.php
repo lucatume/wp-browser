@@ -26,8 +26,11 @@ class Filesystem
     /**
      * @var array<string>
      */
-    private static array $tmpFiles = [];
-    private static ?SymfonyFilesystem $symfonyFilesystem = null;
+    private static $tmpFiles = [];
+    /**
+     * @var SymfonyFilesystem|null
+     */
+    private static $symfonyFilesystem;
 
     /**
      * Recursively removes a directory and all its content.
@@ -110,7 +113,7 @@ class Filesystem
      *
      * @throws InvalidArgumentException If the root or path cannot be resolved.
      */
-    public static function resolvePath(string $path, string $root = null): bool|string
+    public static function resolvePath(string $path, string $root = null)
     {
         $root = $root ?? getcwd();
 
@@ -229,7 +232,7 @@ class Filesystem
      *
      * @return string|false The full path to the found result, or `false` to indicate the fragment was not found.
      */
-    public static function findHereOrInParent(string $path, string $root): bool|string
+    public static function findHereOrInParent(string $path, string $root)
     {
         if (file_exists($path)) {
             return self::realpath($path);
@@ -262,7 +265,7 @@ class Filesystem
      *
      * @return false|string The realpath, or `false` if it could not be resolved.
      */
-    public static function realpath(string $path): bool|string
+    public static function realpath(string $path)
     {
         $realpath = realpath($path);
 
@@ -287,7 +290,7 @@ class Filesystem
      *
      * @throws RuntimeException If the creation of a directory or file fails.
      */
-    public static function mkdirp(string $pathname, array|string $contents = [], int $mode = 0777): string
+    public static function mkdirp(string $pathname, $contents = [], int $mode = 0777): string
     {
         if (is_array($contents)) {
             if (!is_dir($pathname) && !mkdir($pathname, $mode, true) && !is_dir($pathname)) {
@@ -416,7 +419,7 @@ class Filesystem
         }
         try {
             return codecept_output_dir('cache');
-        } catch (Exception) {
+        } catch (Exception $exception) {
         }
 
         return sys_get_temp_dir();
@@ -424,7 +427,7 @@ class Filesystem
 
     private static function symfonyFilesystem(): SymfonyFilesystem
     {
-        self::$symfonyFilesystem ??= new SymfonyFilesystem();
+        self::$symfonyFilesystem = self::$symfonyFilesystem ?? new SymfonyFilesystem();
         return self::$symfonyFilesystem;
     }
 }

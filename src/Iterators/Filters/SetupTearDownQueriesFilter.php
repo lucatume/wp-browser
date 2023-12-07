@@ -20,7 +20,7 @@ class SetupTearDownQueriesFilter extends QueriesCallerBasedFilterIterator
      *
      * @var array<string>
      */
-    protected array $needles = [
+    protected $needles = [
         'lucatume\WPBrowser\TestCase\WPTestCase->setUp',
         'lucatume\WPBrowser\TestCase\WPTestCase->tearDown'
     ];
