@@ -19,6 +19,7 @@ on: # yamllint disable-line rule:truthy
       - '.github/workflows/test.yaml'
     branches:
       - "v3.5"
+  workflow_dispatch: # yamllint disable-line rule:truthy
 
 permissions:
   contents: "read"
