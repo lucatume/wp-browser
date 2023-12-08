@@ -100,7 +100,24 @@ if (!is_dir($wpRootDir . '/wp-content/themes/twentytwentyone')) {
 }
 
 echo "Installing required test plugins in $wpRootDir ...\n";
-$installation->runWpCliCommandOrThrow(['plugin', 'install', 'woocommerce', 'akismet', 'hello-dolly']);
+$plugins = ['akismet', 'hello-dolly'];
+$installation->runWpCliCommandOrThrow(array_merge(['plugin', 'install'], $plugins));
+// Depending on the PHP version, install a different version of WooCommerce.
+$phpVersion = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
+switch ($phpVersion) {
+    case '7.1':
+        $installation->runWpCliCommandOrThrow(['plugin', 'install', 'woocommerce', '--force', '--version=6.4.1']);
+        break;
+    case '7.2':
+        $installation->runWpCliCommandOrThrow(['plugin', 'install', 'woocommerce', '--force', '--version=7.6.1']);
+        break;
+    case '7.3':
+        $installation->runWpCliCommandOrThrow(['plugin', 'install', 'woocommerce', '--force', '--version=8.1.1']);
+        break;
+    case '7.4':
+        $installation->runWpCliCommandOrThrow(['plugin', 'install', 'woocommerce', '--force']);
+        break;
+}
 
 echo "Blocking external connections in $wpRootDir ...\n";
 $installation->runWpCliCommandOrThrow(['config', 'set', 'WP_HTTP_BLOCK_EXTERNAL', 'true']);
