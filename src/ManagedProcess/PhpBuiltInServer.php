@@ -71,7 +71,7 @@ class PhpBuiltInServer implements ManagedProcessInterface
             $this->docRoot,
             $this->env
         );
-        $process->setOptions(['create_new_console' => true]);
+        $process->createNewConsole();
         $process->start();
         if (!$this->confirmServerRunningOnPort($process)) {
             $error = new RuntimeException(

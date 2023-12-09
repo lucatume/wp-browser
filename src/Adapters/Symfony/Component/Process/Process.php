@@ -3,14 +3,16 @@
 namespace lucatume\WPBrowser\Adapters\Symfony\Component\Process;
 
 use Symfony\Component\Process\Exception\LogicException;
+use Symfony\Component\Process\Pipes\PipesInterface;
 use Symfony\Component\Process\Process as SymfonyProcess;
 
 class Process extends SymfonyProcess
 {
     /**
-     * @var array<string,mixed>
+     * @var bool
      */
-    private $options = [];
+    private $createNewConsole = false;
+
     /**
      * @param string[] $command
      * @param array<string,mixed>|null $env
@@ -50,28 +52,31 @@ class Process extends SymfonyProcess
         return $startTime;
     }
 
-    /**
-     * @param string $name
-     * @param array<mixed> $arguments
-     * @return void
-     */
-    public function __call(string $name, array $arguments)
-    {
-        if ($name === 'setOptions') {
-            $this->options = $arguments[0] ?? [];
-        }
-        return;
-    }
-
     public function __destruct()
     {
-        if (($this->options['create_new_console'] ?? false) || method_exists($this, 'setOptions')) {
-            parent::__destruct();
+        if ($this->createNewConsole) {
+            $processPipesProperty = new \ReflectionProperty(SymfonyProcess::class, 'processPipes');
+            $processPipesProperty->setAccessible(true);
+            /** @var PipesInterface $processPipes */
+            $processPipes = $processPipesProperty->getValue($this);
+            $processPipes->close();
+
             return;
         }
 
-        $closeMethodReflection = new \ReflectionMethod(SymfonyProcess::class, 'close');
-        $closeMethodReflection->setAccessible(true);
-        $closeMethodReflection->invoke($this);
+        $this->stop(0);
+    }
+
+    public function createNewConsole(): void
+    {
+        $this->createNewConsole = true;
+
+        $optionsReflectionProperty = new \ReflectionProperty(SymfonyProcess::class, 'options');
+        $optionsReflectionProperty->setAccessible(true);
+        $options = $optionsReflectionProperty->getValue($this);
+        $options = is_array($options) ? $options : [];
+        $options['create_new_console'] = true;
+        $options['bypass_shell'] = true;
+        $optionsReflectionProperty->setValue($this, $options);
     }
 }
