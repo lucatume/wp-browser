@@ -4,6 +4,10 @@
  * Extracted from the `wp-cli` project: https://wp-cli.org/
  */
 
+if (function_exists('uopz_allow_exit')) {
+    uopz_allow_exit(true);
+}
+
 $root = $_SERVER['DOCUMENT_ROOT'];
 $path = '/'. ltrim( parse_url( urldecode( $_SERVER['REQUEST_URI'] ),PHP_URL_PATH ), '/' );
 
