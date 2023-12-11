@@ -26,10 +26,14 @@ class AjaxTest extends WPAjaxTestCase
     {
         $response = null;
         try {
+            global $wpdb;
+            $wpdb->suppress_errors = true; // Due to a WooCommerce activation issue in older versions.
             $this->_handleAjax('test_ajax_action');
         } catch (\WPAjaxDieContinueException) {
             $response = json_decode($this->_last_response);
         }
+
+        $wpdb->suppress_errors = false;
 
         $this->assertNotNull($response);
         $this->assertFalse($response->success);
