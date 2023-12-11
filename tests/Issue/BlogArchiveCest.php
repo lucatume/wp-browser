@@ -1,6 +1,0 @@
-<?php
-/**
- * ${CARET}
- *
- * @since TBD
- */
