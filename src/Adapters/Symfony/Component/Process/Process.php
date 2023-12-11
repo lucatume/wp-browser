@@ -80,4 +80,23 @@ class Process extends SymfonyProcess
         $options['bypass_shell'] = true;
         $optionsReflectionProperty->setValue($this, $options);
     }
+
+    /**
+     * @param array<mixed> $arguments
+     * @return mixed
+     */
+    public static function __callStatic(string $name, array $arguments)
+    {
+        if ($name === 'fromShellCommandline') {
+            $command = array_shift($arguments);
+            $process = new self([], ...$arguments); // @phpstan-ignore-line
+            $processCommandLineProperty = new \ReflectionProperty(SymfonyProcess::class, 'commandline');
+            $processCommandLineProperty->setAccessible(true);
+            $processCommandLineProperty->setValue($process, $command);
+
+            return $process;
+        }
+
+        return null;
+    }
 }
