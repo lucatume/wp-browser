@@ -29,7 +29,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  test_without_uopz:
     strategy:
       matrix:
         php_version: [ '7.1', '7.2', '7.3', '7.4' ]
@@ -38,7 +38,6 @@ jobs:
           - climodule
           - functional
           - muloader
-          - unit
           - webdriver
           - wpcli_module
           - wploader_multisite
@@ -54,7 +53,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php_version }}
-          extensions: uopz, sqlite3, gd
+          extensions: sqlite3, gd
           ini-values: post_max_size=256M, max_execution_time=180, uopz.exit=1
           tools: composer
 
@@ -99,3 +98,53 @@ jobs:
             var/_output/*.html
             var/_output/*.png
           retention-days: 3
+
+  test_with_uopz:
+    strategy:
+      matrix:
+        php_version: [ '7.1', '7.2', '7.3', '7.4' ]
+    name: v3.5 unit php@${{ matrix.php_version }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php_version }}
+          extensions: uopz, sqlite3, gd
+          ini-values: post_max_size=256M, max_execution_time=180, uopz.exit=1
+          tools: composer
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Restore Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ matrix.php_version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer update
+
+      - name: Update ChromeDriver
+        run: vendor/bin/codecept chromedriver:update --binary /usr/bin/google-chrome
+
+      - name: Create var/wordpress directory
+        run: mkdir -p var/wordpress
+
+      - name: Start services
+        run: vendor/bin/codecept dev:start
+
+      - name: Setup WordPress
+        run: php bin/setup-wp.php
+
+      - name: Run tests
+        id: test
+        run: vendor/bin/codecept run unit
