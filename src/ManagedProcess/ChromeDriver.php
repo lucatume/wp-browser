@@ -64,7 +64,7 @@ class ChromeDriver implements ManagedProcessInterface
     {
         $command = array_merge([$this->chromeDriverBinary, '--port=' . $this->port], $this->arguments);
         $process = new Process($command);
-        $process->setOptions(['create_new_console' => true]);
+        $process->createNewConsole();
         $process->start();
         $this->confirmStart($process);
         $this->pid = $process->getPid();
