@@ -9,28 +9,35 @@ if (function_exists('uopz_allow_exit')) {
 }
 
 $root = $_SERVER['DOCUMENT_ROOT'];
-$path = '/'. ltrim( parse_url( urldecode( $_SERVER['REQUEST_URI'] ),PHP_URL_PATH ), '/' );
+$path = '/' . ltrim(parse_url(urldecode($_SERVER['REQUEST_URI']), PHP_URL_PATH), '/');
 
 define('DB_ENGINE', getenv('DB_ENGINE') ?: 'mysql');
 
-if ( file_exists( $root.$path ) ) {
+// The self-call will slow down the response handling and will not benefit the test environment.
+global $wp_filter;
+$wp_filter['do_mu_upgrade'][10][] = [
+    'accepted_args' => 0,
+    'function' => static function () {
+        return false;
+    }
+];
 
-	// Enforces trailing slash, keeping links tidy in the admin
-	if ( is_dir( $root.$path ) && substr_compare($path, '/', -strlen('/')) !== 0 ) {
-		header( "Location: $path/" );
-		exit;
-	}
+if (file_exists($root . $path)) {
+    // Enforces trailing slash, keeping links tidy in the admin
+    if (is_dir($root . $path) && substr_compare($path, '/', -strlen('/')) !== 0) {
+        header("Location: $path/");
+        exit;
+    }
 
-	// Runs PHP file if it exists
-	if ( strpos($path, '.php') !== false ) {
-		chdir( dirname( $root.$path ) );
-		require_once $root.$path;
-	} else {
-		return false;
-	}
+    // Runs PHP file if it exists
+    if (strpos($path, '.php') !== false) {
+        chdir(dirname($root . $path));
+        require_once $root . $path;
+    } else {
+        return false;
+    }
 } else {
-
-	// Otherwise, run `index.php`
-	chdir( $root );
-	require_once 'index.php';
+    // Otherwise, run `index.php`
+    chdir($root);
+    require_once 'index.php';
 }
