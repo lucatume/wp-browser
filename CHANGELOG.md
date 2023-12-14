@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed 
+
+- Improve router script to speed up localhost server.
+
 ## [4.0.16] 2023-12-07;
 
 ### Changed
