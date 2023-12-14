@@ -1,0 +1,44 @@
+name: Automated v3.5 build
+
+on:
+  workflow_dispatch: # yamllint disable-line rule:truthy
+
+jobs:
+  build_v3_5:
+    name: v3.5 Build
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          coverage: "none"
+      - name: Validate Composer configuration
+        run: composer validate --no-interaction --strict
+      - name: Install dependencies
+        uses: ramsey/composer-install@v2
+      - name: "Check PSR-4 mapping"
+        run: "composer dump-autoload --no-interaction --optimize --strict-psr"
+      - name: "Require rector"
+        run: "composer require --dev rector/rector"
+      - name: Build v3.5
+        run: |
+          vendor/bin/rector --config=config/rector-35.php
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          base: "v3.5"
+          token: ${{ secrets.V35_BUILD_TOKEN }}
+          commit-message: "v3.5 automated build change"
+          committer: "lucatume <luca@theaveragedev.com>"
+          branch: "v3.5-automated-build"
+          delete-branch: true
+          title: "v3.5 automated build"
+          body: "v3.5 automated build changes created by the v3.5 automated build workflow"
+          assignees: "lucatume"
+          add-paths: |
+            includes/*.php
+            src/*.php
+            tests/*.php
