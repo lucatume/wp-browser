@@ -19,13 +19,22 @@ jobs:
         run: composer validate --no-interaction --strict
       - name: Install dependencies
         uses: ramsey/composer-install@v2
-      - name: "Check PSR-4 mapping"
-        run: "composer dump-autoload --no-interaction --optimize --strict-psr"
-      - name: "Require rector"
-        run: "composer require --dev rector/rector"
+      - name: Check PSR-4 mapping"
+        run: composer dump-autoload --no-interaction --optimize --strict-psr
+      - name: Require rector
+        run: composer require --dev rector/rector
+      - name: Get changed files
+        id: changed-files
+        uses: yumemi-inc/changed-files@v3
+        with:
+          separator: " "
+          patterns: |
+            src/**/*.php
+            includes/**/*.php
+            tests/**/*.php
       - name: Build v3.5
         run: |
-          vendor/bin/rector --config=config/rector-35.php
+          vendor/bin/rector process --config=config/rector-35.php -- ${{ steps.changed-files.outputs.files }}
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
