@@ -35,19 +35,20 @@ jobs:
       - name: Build v3.5
         run: |
           vendor/bin/rector process --config=config/rector-35.php -- ${{ steps.changed-files.outputs.files }}
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          base: "v3.5"
-          token: ${{ secrets.V35_BUILD_TOKEN }}
-          commit-message: "v3.5 automated build change"
-          committer: "lucatume <luca@theaveragedev.com>"
-          branch: "v3.5-automated-build"
-          delete-branch: true
-          title: "v3.5 automated build"
-          body: "v3.5 automated build changes created by the v3.5 automated build workflow"
-          assignees: "lucatume"
-          add-paths: |
-            includes/*.php
-            src/*.php
-            tests/*.php
+      - name: Create Pull Request on v3.5
+        run: |
+          git reset HEAD 
+          git status
+          git add 'src/*.php'
+          git add 'includes/*.php'
+          git add 'tests/*.php'
+          gh pr create \
+            --assignee lucatume \
+            --base v3.5 \
+            --draft \
+            --title "v3.5 automated build" \
+            --body "v3.5 automated build changes" \
+            --label "auto-build" \
+            --label "v3.5"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
