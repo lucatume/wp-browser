@@ -52,6 +52,7 @@ class Process extends SymfonyProcess
         return $startTime;
     }
 
+    /** @noinspection MagicMethodsValidityInspection */
     public function __destruct()
     {
         if ($this->createNewConsole) {
