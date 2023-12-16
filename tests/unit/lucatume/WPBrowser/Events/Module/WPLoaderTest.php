@@ -197,8 +197,8 @@ class WPLoaderTest extends Unit
         $this->assertInIsolation(static function () use ($rootDir, $wpLoader1) {
             chdir($rootDir);
             $wpLoader1->_initialize();
-            Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader1->_getConfig('wpRootFolder'));
-            Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader1->getWpRootFolder());
+        Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader1->_getConfig('wpRootFolder'));
+        Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader1->getWpRootFolder());
         }, $rootDir);
 
         $this->config = [
@@ -214,8 +214,8 @@ class WPLoaderTest extends Unit
         $this->assertInIsolation(static function () use ($rootDir, $wpLoader2) {
             chdir($rootDir);
             $wpLoader2->_initialize();
-            Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader2->_getConfig('wpRootFolder'));
-            Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader2->getWpRootFolder());
+        Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader2->_getConfig('wpRootFolder'));
+        Assert::assertEquals($rootDir . '/test/wordpress/', $wpLoader2->getWpRootFolder());
         }, $rootDir);
     }
 
@@ -244,8 +244,8 @@ class WPLoaderTest extends Unit
             $_SERVER['HOME'] = $homeDir;
             $wpLoader->_initialize();
 
-            Assert::assertEquals($homeDir . '/projects/work/acme/wordpress/', $wpLoader->_getConfig('wpRootFolder'));
-            Assert::assertEquals($homeDir . '/projects/work/acme/wordpress/', $wpLoader->getWpRootFolder());
+        Assert::assertEquals($homeDir . '/projects/work/acme/wordpress/', $wpLoader->_getConfig('wpRootFolder'));
+        Assert::assertEquals($homeDir . '/projects/work/acme/wordpress/', $wpLoader->getWpRootFolder());
         });
     }
 
@@ -271,8 +271,8 @@ class WPLoaderTest extends Unit
         $this->assertInIsolation(static function () use ($wpRootDir, $wpLoader) {
             $wpLoader->_initialize();
 
-            Assert::assertEquals($wpRootDir . '/', $wpLoader->_getConfig('wpRootFolder'));
-            Assert::assertEquals($wpRootDir . '/', $wpLoader->getWpRootFolder());
+        Assert::assertEquals($wpRootDir . '/', $wpLoader->_getConfig('wpRootFolder'));
+        Assert::assertEquals($wpRootDir . '/', $wpLoader->getWpRootFolder());
         });
     }
 
@@ -298,8 +298,8 @@ class WPLoaderTest extends Unit
         $this->assertInIsolation(static function () use ($wpRootDir, $wpLoader) {
             $wpLoader->_initialize();
 
-            Assert::assertEquals($wpRootDir . '/Word Press/', $wpLoader->_getConfig('wpRootFolder'));
-            Assert::assertEquals($wpRootDir . '/Word Press/', $wpLoader->getWpRootFolder());
+        Assert::assertEquals($wpRootDir . '/Word Press/', $wpLoader->_getConfig('wpRootFolder'));
+        Assert::assertEquals($wpRootDir . '/Word Press/', $wpLoader->getWpRootFolder());
         });
     }
 
@@ -324,7 +324,7 @@ class WPLoaderTest extends Unit
         $this->assertInIsolation(static function () use ($wpLoader) {
             $wpLoader->_initialize();
 
-            Assert::assertInstanceOf(Scaffolded::class, $wpLoader->getInstallation()->getState());
+        Assert::assertInstanceOf(Scaffolded::class, $wpLoader->getInstallation()->getState());
         });
     }
 
@@ -356,14 +356,14 @@ class WPLoaderTest extends Unit
             $wpLoader->_initialize();
             $installation = $wpLoader->getInstallation();
 
-            Assert::assertEquals($installation->getAuthKey(), $wpLoader->_getConfig('AUTH_KEY'));
-            Assert::assertEquals($installation->getSecureAuthKey(), $wpLoader->_getConfig('SECURE_AUTH_KEY'));
-            Assert::assertEquals($installation->getLoggedInKey(), $wpLoader->_getConfig('LOGGED_IN_KEY'));
-            Assert::assertEquals($installation->getNonceKey(), $wpLoader->_getConfig('NONCE_KEY'));
-            Assert::assertEquals($installation->getAuthSalt(), $wpLoader->_getConfig('AUTH_SALT'));
-            Assert::assertEquals($installation->getSecureAuthSalt(), $wpLoader->_getConfig('SECURE_AUTH_SALT'));
-            Assert::assertEquals($installation->getLoggedInSalt(), $wpLoader->_getConfig('LOGGED_IN_SALT'));
-            Assert::assertEquals($installation->getNonceSalt(), $wpLoader->_getConfig('NONCE_SALT'));
+        Assert::assertEquals($installation->getAuthKey(), $wpLoader->_getConfig('AUTH_KEY'));
+        Assert::assertEquals($installation->getSecureAuthKey(), $wpLoader->_getConfig('SECURE_AUTH_KEY'));
+        Assert::assertEquals($installation->getLoggedInKey(), $wpLoader->_getConfig('LOGGED_IN_KEY'));
+        Assert::assertEquals($installation->getNonceKey(), $wpLoader->_getConfig('NONCE_KEY'));
+        Assert::assertEquals($installation->getAuthSalt(), $wpLoader->_getConfig('AUTH_SALT'));
+        Assert::assertEquals($installation->getSecureAuthSalt(), $wpLoader->_getConfig('SECURE_AUTH_SALT'));
+        Assert::assertEquals($installation->getLoggedInSalt(), $wpLoader->_getConfig('LOGGED_IN_SALT'));
+        Assert::assertEquals($installation->getNonceSalt(), $wpLoader->_getConfig('NONCE_SALT'));
         });
     }
 
@@ -389,9 +389,9 @@ class WPLoaderTest extends Unit
         $this->assertInIsolation(static function () use ($wpRootDir, $wpLoader) {
             $wpLoader->_initialize();
 
-            Assert::assertEquals($wpRootDir . '/foo-bar', $wpLoader->getWpRootFolder('foo-bar'));
-            Assert::assertEquals($wpRootDir . '/foo-bar/baz', $wpLoader->getWpRootFolder('foo-bar/baz'));
-            Assert::assertEquals($wpRootDir . '/wp-config.php', $wpLoader->getWpRootFolder('wp-config.php'));
+        Assert::assertEquals($wpRootDir . '/foo-bar', $wpLoader->getWpRootFolder('foo-bar'));
+        Assert::assertEquals($wpRootDir . '/foo-bar/baz', $wpLoader->getWpRootFolder('foo-bar/baz'));
+        Assert::assertEquals($wpRootDir . '/wp-config.php', $wpLoader->getWpRootFolder('wp-config.php'));
         });
     }
 
@@ -428,9 +428,9 @@ class WPLoaderTest extends Unit
             ];
             foreach ($var as $i => $key) {
                 if ($i > 0) {
-                    Assert::assertNotEquals($var[$i - 1], $wpLoader->_getConfig($key));
+                Assert::assertNotEquals($var[$i - 1], $wpLoader->_getConfig($key));
                 }
-                Assert::assertEquals(64, strlen($wpLoader->_getConfig($key)));
+            Assert::assertEquals(64, strlen($wpLoader->_getConfig($key)));
             }
         });
     }
@@ -456,7 +456,7 @@ class WPLoaderTest extends Unit
 
         $this->assertInIsolation(static function () use ($wpLoader) {
             $wpLoader->_initialize();
-            Assert::assertEquals('test_file_001.php', getenv('LOADED'));
+        Assert::assertEquals('test_file_001.php', getenv('LOADED'));
         });
 
         $this->config = [
@@ -476,8 +476,8 @@ class WPLoaderTest extends Unit
 
         $this->assertInIsolation(static function () use ($wpLoader) {
             $wpLoader->_initialize();
-            Assert::assertEquals(getenv('LOADED_2'), 'test_file_002.php');
-            Assert::assertEquals(getenv('LOADED_3'), 'test_file_003.php');
+        Assert::assertEquals(getenv('LOADED_2'), 'test_file_002.php');
+        Assert::assertEquals(getenv('LOADED_3'), 'test_file_003.php');
         });
     }
 
@@ -505,10 +505,10 @@ class WPLoaderTest extends Unit
             try {
                 $wpLoader->_initialize();
             } catch (Exception $e) {
-                Assert::assertInstanceOf(ModuleConfigException::class, $e);
+            Assert::assertInstanceOf(ModuleConfigException::class, $e);
                 $captured = true;
             }
-            Assert::assertTrue($captured);
+        Assert::assertTrue($captured);
         });
 
         $this->config = [
@@ -693,8 +693,8 @@ class WPLoaderTest extends Unit
         $this->assertInIsolation(static function () use ($wpRootDir, $wpLoader) {
             $wpLoader->_initialize();
 
-            Assert::assertEquals('', getenv('LOADED_2'));
-            Assert::assertFalse(defined('ABSPATH'));
+        Assert::assertEquals('', getenv('LOADED_2'));
+        Assert::assertFalse(defined('ABSPATH'));
 
             $actions = [];
             Dispatcher::addListener(WPLoader::EVENT_BEFORE_LOADONLY, static function () use (&$actions) {
@@ -706,13 +706,13 @@ class WPLoaderTest extends Unit
 
             Dispatcher::dispatch(Events::SUITE_BEFORE);
 
-            Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
-            Assert::assertEquals($wpRootDir . '/', ABSPATH);
-            Assert::assertEquals([
+        Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
+        Assert::assertEquals($wpRootDir . '/', ABSPATH);
+        Assert::assertEquals([
                 WPLoader::EVENT_BEFORE_LOADONLY,
                 WPLoader::EVENT_AFTER_LOADONLY,
             ], $actions);
-            Assert::assertInstanceOf(FactoryStore::class, $wpLoader->factory());
+        Assert::assertInstanceOf(FactoryStore::class, $wpLoader->factory());
         });
     }
 
@@ -796,7 +796,7 @@ class WPLoaderTest extends Unit
 
             Dispatcher::dispatch(Events::SUITE_BEFORE);
 
-            Assert::assertEquals($wpRootDir . '/', ABSPATH);
+        Assert::assertEquals($wpRootDir . '/', ABSPATH);
         });
     }
 
@@ -937,11 +937,11 @@ class WPLoaderTest extends Unit
         $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
             $wpLoader->_initialize();
 
-            Assert::assertEquals('test_file_001.php', getenv('LOADED'));
-            Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
-            Assert::assertEquals($wpRootDir . '/', ABSPATH);
-            Assert::assertTrue(defined('WP_DEBUG'));
-            Assert::assertTrue(WP_DEBUG);
+        Assert::assertEquals('test_file_001.php', getenv('LOADED'));
+        Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
+        Assert::assertEquals($wpRootDir . '/', ABSPATH);
+        Assert::assertTrue(defined('WP_DEBUG'));
+        Assert::assertTrue(WP_DEBUG);
         });
     }
 
@@ -1031,31 +1031,31 @@ class WPLoaderTest extends Unit
             if (PHP_VERSION >= 7.4) {
                 $expectedActivePlugins[] = 'woocommerce/woocommerce.php';
             }
-            Assert::assertEquals($expectedActivePlugins, get_option('active_plugins'));
-            Assert::assertEquals([
+        Assert::assertEquals($expectedActivePlugins, get_option('active_plugins'));
+        Assert::assertEquals([
                 'before_install',
                 'after_install',
             ], $actions);
-            Assert::assertEquals('twentytwenty', get_option('template'));
-            Assert::assertEquals('twentytwenty', get_option('stylesheet'));
-            Assert::assertEquals('test_file_001.php', getenv('LOADED'));
-            Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
-            Assert::assertEquals($wpRootDir . '/', ABSPATH);
-            Assert::assertTrue(defined('WP_DEBUG'));
-            Assert::assertTrue(WP_DEBUG);
-            Assert::assertInstanceOf(\wpdb::class, $GLOBALS['wpdb']);
-            Assert::assertFalse(is_multisite());
-            Assert::assertEquals($wpRootDir . '/wp-content/', $wpLoader->getContentFolder());
-            Assert::assertEquals($wpRootDir . '/wp-content/some/path', $wpLoader->getContentFolder('some/path'));
-            Assert::assertEquals(
+        Assert::assertEquals('twentytwenty', get_option('template'));
+        Assert::assertEquals('twentytwenty', get_option('stylesheet'));
+        Assert::assertEquals('test_file_001.php', getenv('LOADED'));
+        Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
+        Assert::assertEquals($wpRootDir . '/', ABSPATH);
+        Assert::assertTrue(defined('WP_DEBUG'));
+        Assert::assertTrue(WP_DEBUG);
+        Assert::assertInstanceOf(\wpdb::class, $GLOBALS['wpdb']);
+        Assert::assertFalse(is_multisite());
+        Assert::assertEquals($wpRootDir . '/wp-content/', $wpLoader->getContentFolder());
+        Assert::assertEquals($wpRootDir . '/wp-content/some/path', $wpLoader->getContentFolder('some/path'));
+       Assert::assertEquals(
                 $wpRootDir . '/wp-content/some/path/some-file.php',
                 $wpLoader->getContentFolder('some/path/some-file.php')
             );
-            Assert::assertEquals(
+       Assert::assertEquals(
                 $wpRootDir . '/wp-content/plugins/some-file.php',
                 $wpLoader->getPluginsFolder('/some-file.php')
             );
-            Assert::assertEquals(
+       Assert::assertEquals(
                 $wpRootDir . '/wp-content/themes/some-file.php',
                 $wpLoader->getThemesFolder('/some-file.php')
             );
@@ -1122,32 +1122,32 @@ class WPLoaderTest extends Unit
             if (PHP_VERSION >= 7.4) {
                 $expectedActivePlugins[] = 'woocommerce/woocommerce.php';
             }
-            Assert::assertEquals($expectedActivePlugins, array_keys(get_site_option('active_sitewide_plugins')));
-            Assert::assertEquals([
+        Assert::assertEquals($expectedActivePlugins, array_keys(get_site_option('active_sitewide_plugins')));
+        Assert::assertEquals([
                 'before_install',
                 'after_install',
             ], $actions);
-            Assert::assertEquals('twentytwenty', get_option('template'));
-            Assert::assertEquals('twentytwenty', get_option('stylesheet'));
-            Assert::assertEquals(['twentytwenty' => true], WP_Theme::get_allowed());
-            Assert::assertEquals('test_file_001.php', getenv('LOADED'));
-            Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
-            Assert::assertEquals($wpRootDir . '/', ABSPATH);
-            Assert::assertTrue(defined('WP_DEBUG'));
-            Assert::assertTrue(WP_DEBUG);
-            Assert::assertInstanceOf(\wpdb::class, $GLOBALS['wpdb']);
-            Assert::assertTrue(is_multisite());
-            Assert::assertEquals($wpRootDir . '/wp-content/', $wpLoader->getContentFolder());
-            Assert::assertEquals($wpRootDir . '/wp-content/some/path', $wpLoader->getContentFolder('some/path'));
-            Assert::assertEquals(
+        Assert::assertEquals('twentytwenty', get_option('template'));
+        Assert::assertEquals('twentytwenty', get_option('stylesheet'));
+        Assert::assertEquals(['twentytwenty' => true], WP_Theme::get_allowed());
+        Assert::assertEquals('test_file_001.php', getenv('LOADED'));
+        Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
+        Assert::assertEquals($wpRootDir . '/', ABSPATH);
+        Assert::assertTrue(defined('WP_DEBUG'));
+        Assert::assertTrue(WP_DEBUG);
+        Assert::assertInstanceOf(\wpdb::class, $GLOBALS['wpdb']);
+        Assert::assertTrue(is_multisite());
+        Assert::assertEquals($wpRootDir . '/wp-content/', $wpLoader->getContentFolder());
+        Assert::assertEquals($wpRootDir . '/wp-content/some/path', $wpLoader->getContentFolder('some/path'));
+       Assert::assertEquals(
                 $wpRootDir . '/wp-content/some/path/some-file.php',
                 $wpLoader->getContentFolder('some/path/some-file.php')
             );
-            Assert::assertEquals(
+       Assert::assertEquals(
                 $wpRootDir . '/wp-content/plugins/some-file.php',
                 $wpLoader->getPluginsFolder('/some-file.php')
             );
-            Assert::assertEquals(
+       Assert::assertEquals(
                 $wpRootDir . '/wp-content/themes/some-file.php',
                 $wpLoader->getThemesFolder('/some-file.php')
             );
@@ -1413,8 +1413,8 @@ class WPLoaderTest extends Unit
         $installationOutput = $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
             $wpLoader->_initialize();
 
-            Assert::assertEquals('twentytwenty', get_option('template'));
-            Assert::assertEquals('some-child-theme', get_option('stylesheet'));
+        Assert::assertEquals('twentytwenty', get_option('template'));
+        Assert::assertEquals('some-child-theme', get_option('stylesheet'));
 
             return [
                 'bootstrapOutput' => $wpLoader->_getBootstrapOutput(),
@@ -1481,8 +1481,8 @@ class WPLoaderTest extends Unit
         $installationOutput = $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
             $wpLoader->_initialize();
 
-            Assert::assertEquals('twentytwenty', get_option('template'));
-            Assert::assertEquals('twentytwenty-child', get_option('stylesheet'));
+        Assert::assertEquals('twentytwenty', get_option('template'));
+        Assert::assertEquals('twentytwenty-child', get_option('stylesheet'));
 
             return [
                 'bootstrapOutput' => $wpLoader->_getBootstrapOutput(),
@@ -1613,7 +1613,7 @@ class WPLoaderTest extends Unit
         $this->assertInIsolation(static function () use ($wpLoader) {
             $wpLoader->_initialize();
 
-            Assert::assertEquals('value_1', get_option('option_1'));
+        Assert::assertEquals('value_1', get_option('option_1'));
         });
     }
 
@@ -1648,9 +1648,9 @@ class WPLoaderTest extends Unit
         $this->assertInIsolation(static function () use ($wpLoader) {
             $wpLoader->_initialize();
 
-            Assert::assertEquals('value_1', get_option('option_1'));
-            Assert::assertEquals('value_2', get_option('option_2'));
-            Assert::assertEquals('value_3', get_option('option_3'));
+        Assert::assertEquals('value_1', get_option('option_1'));
+        Assert::assertEquals('value_2', get_option('option_2'));
+        Assert::assertEquals('value_3', get_option('option_3'));
         });
     }
 
@@ -1716,7 +1716,7 @@ class WPLoaderTest extends Unit
 
         $this->assertInIsolation(static function () use ($wpRootDir, $wpLoader) {
             $wpLoader->_initialize();
-            Assert::assertFileExists($wpRootDir . '/wp-content/db.php');
+        Assert::assertFileExists($wpRootDir . '/wp-content/db.php');
         });
     }
 
@@ -1743,8 +1743,8 @@ class WPLoaderTest extends Unit
         $this->assertInIsolation(static function () use ($wpLoader) {
             $wpLoader->_initialize();
 
-            Assert::assertTrue(function_exists('do_action'));
-            Assert::assertInstanceOf(\WP_User::class, wp_get_current_user());
+        Assert::assertTrue(function_exists('do_action'));
+        Assert::assertInstanceOf(\WP_User::class, wp_get_current_user());
         });
     }
 
@@ -1781,8 +1781,8 @@ class WPLoaderTest extends Unit
             $wpLoader->_initialize();
             Dispatcher::dispatch(Events::SUITE_BEFORE);
 
-            Assert::assertTrue(function_exists('do_action'));
-            Assert::assertInstanceOf(\WP_User::class, wp_get_current_user());
+        Assert::assertTrue(function_exists('do_action'));
+        Assert::assertInstanceOf(\WP_User::class, wp_get_current_user());
         });
     }
 
@@ -1854,12 +1854,12 @@ PHP
         $this->assertInIsolation(static function () use ($wpLoader) {
             $wpLoader->_initialize();
 
-            Assert::assertTrue(function_exists('do_action'));
-            Assert::assertTrue(function_exists('plugin_1_canary'));
-            Assert::assertTrue(is_plugin_active('plugin-1/plugin.php'));
-            Assert::assertTrue(function_exists('plugin_2_canary'));
-            Assert::assertTrue(is_plugin_active('plugin-2/plugin.php'));
-            Assert::assertEquals('theme-1', wp_get_theme()->get_stylesheet());
+        Assert::assertTrue(function_exists('do_action'));
+        Assert::assertTrue(function_exists('plugin_1_canary'));
+        Assert::assertTrue(is_plugin_active('plugin-1/plugin.php'));
+        Assert::assertTrue(function_exists('plugin_2_canary'));
+        Assert::assertTrue(is_plugin_active('plugin-2/plugin.php'));
+        Assert::assertEquals('theme-1', wp_get_theme()->get_stylesheet());
         });
     }
 
@@ -1910,8 +1910,8 @@ PHP
             $this->assertInIsolation(static function () use ($wpLoader) {
                 $wpLoader->_initialize();
 
-                Assert::assertTrue(function_exists('do_action'));
-                Assert::assertInstanceOf(\WP_User::class, wp_get_current_user());
+            Assert::assertTrue(function_exists('do_action'));
+            Assert::assertInstanceOf(\WP_User::class, wp_get_current_user());
 
                 return $wpLoader->getInstallation()->getDb()->getDbName();
             })
@@ -1955,7 +1955,7 @@ PHP
         $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
             $wpLoader->_initialize();
 
-            Assert::assertTrue(function_exists('do_action'));
+        Assert::assertTrue(function_exists('do_action'));
 
             require_once $testcaseFile;
 
@@ -1963,7 +1963,7 @@ PHP
             /** @var TestResult $result */
             $result = $testCase->run();
 
-            Assert::assertTrue($result->wasSuccessful());
+        Assert::assertTrue($result->wasSuccessful());
         });
 
         // Set `WPLoader.backupGlobals` to `true`.
@@ -1977,7 +1977,7 @@ PHP
         $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
             $wpLoader->_initialize();
 
-            Assert::assertTrue(function_exists('do_action'));
+        Assert::assertTrue(function_exists('do_action'));
 
             require_once $testcaseFile;
 
@@ -1985,7 +1985,7 @@ PHP
             /** @var TestResult $result */
             $result = $testCase->run();
 
-            Assert::assertTrue($result->wasSuccessful());
+        Assert::assertTrue($result->wasSuccessful());
         });
 
         // Do not set `WPLoader.backupGlobals`, but use the default value.
@@ -1999,7 +1999,7 @@ PHP
         $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
             $wpLoader->_initialize();
 
-            Assert::assertTrue(function_exists('do_action'));
+        Assert::assertTrue(function_exists('do_action'));
 
             require_once $testcaseFile;
 
@@ -2007,7 +2007,7 @@ PHP
             /** @var TestResult $result */
             $result = $testCase->run();
 
-            Assert::assertTrue($result->wasSuccessful());
+        Assert::assertTrue($result->wasSuccessful());
         });
 
         // Set `WPLoader.backupGlobals` to `true`, but use a use-case that sets it explicitly to `false`.
@@ -2021,7 +2021,7 @@ PHP
         $this->assertInIsolation(static function () use ($wpLoader, $overridingTestCaseFile) {
             $wpLoader->_initialize();
 
-            Assert::assertTrue(function_exists('do_action'));
+        Assert::assertTrue(function_exists('do_action'));
 
             require_once $overridingTestCaseFile;
 
@@ -2029,7 +2029,7 @@ PHP
             /** @var TestResult $result */
             $result = $testCase->run();
 
-            Assert::assertTrue($result->wasSuccessful());
+        Assert::assertTrue($result->wasSuccessful());
         });
 
         $this->config = [
@@ -2042,7 +2042,7 @@ PHP
         $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
             $wpLoader->_initialize();
 
-            Assert::assertTrue(function_exists('do_action'));
+        Assert::assertTrue(function_exists('do_action'));
 
             // Set the initial value of the global variable.
             global $_wpbrowser_test_global_var;
@@ -2054,10 +2054,10 @@ PHP
             /** @var TestResult $result */
             $result = $testCase->run();
 
-            Assert::assertTrue($result->wasSuccessful());
+        Assert::assertTrue($result->wasSuccessful());
 
             // Check that the value of the global variable has been updated.
-            Assert::assertEquals('initial_value', $_wpbrowser_test_global_var);
+        Assert::assertEquals('initial_value', $_wpbrowser_test_global_var);
         });
 
         $this->config = [
@@ -2071,7 +2071,7 @@ PHP
         $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
             $wpLoader->_initialize();
 
-            Assert::assertTrue(function_exists('do_action'));
+        Assert::assertTrue(function_exists('do_action'));
 
             // Set the initial value of the global variable.
             global $_wpbrowser_test_global_var;
@@ -2083,10 +2083,10 @@ PHP
             /** @var TestResult $result */
             $result = $testCase->run();
 
-            Assert::assertTrue($result->wasSuccessful());
+        Assert::assertTrue($result->wasSuccessful());
 
             // Check that the value of the global variable has been updated.
-            Assert::assertEquals('updated_value', $_wpbrowser_test_global_var);
+        Assert::assertEquals('updated_value', $_wpbrowser_test_global_var);
         });
     }
 
@@ -2127,7 +2127,7 @@ PHP
         $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
             $wpLoader->_initialize();
 
-            Assert::assertTrue(function_exists('do_action'));
+        Assert::assertTrue(function_exists('do_action'));
 
             require_once $testcaseFile;
 
@@ -2135,9 +2135,9 @@ PHP
             /** @var TestResult $result */
             $result = $testCase->run();
 
-            Assert::assertTrue($result->wasSuccessful());
+        Assert::assertTrue($result->wasSuccessful());
 
-            Assert::assertEquals('updated_value', \BackupControlTestCaseStore::$staticAttribute);
+        Assert::assertEquals('updated_value', \BackupControlTestCaseStore::$staticAttribute);
         });
 
         // Don't set`WPLoader.backupStaticAttributes`, it should be `true` by default.
@@ -2150,7 +2150,7 @@ PHP
         $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
             $wpLoader->_initialize();
 
-            Assert::assertTrue(function_exists('do_action'));
+        Assert::assertTrue(function_exists('do_action'));
 
             require_once $testcaseFile;
 
@@ -2158,9 +2158,9 @@ PHP
             /** @var TestResult $result */
             $result = $testCase->run();
 
-            Assert::assertTrue($result->wasSuccessful());
+        Assert::assertTrue($result->wasSuccessful());
 
-            Assert::assertEquals('initial_value', \BackupControlTestCaseStore::$staticAttribute);
+        Assert::assertEquals('initial_value', \BackupControlTestCaseStore::$staticAttribute);
         });
 
         // Set the value of `WPLoader.backupStaticAttributes` to `true`, but use a use-case that sets it explicitly to `false`.
@@ -2174,7 +2174,7 @@ PHP
         $this->assertInIsolation(static function () use ($wpLoader, $overridingTestCaseFile) {
             $wpLoader->_initialize();
 
-            Assert::assertTrue(function_exists('do_action'));
+        Assert::assertTrue(function_exists('do_action'));
 
             require_once $overridingTestCaseFile;
 
@@ -2182,9 +2182,9 @@ PHP
             /** @var TestResult $result */
             $result = $testCase->run();
 
-            Assert::assertTrue($result->wasSuccessful());
+        Assert::assertTrue($result->wasSuccessful());
 
-            Assert::assertEquals('updated_value', \BackupControlTestCaseOverridingStore::$staticAttribute);
+        Assert::assertEquals('updated_value', \BackupControlTestCaseOverridingStore::$staticAttribute);
         });
 
         // Set the value of the `WPLoader.backupStaticAttributesExcludeList` to not back up the static attribute.
@@ -2202,7 +2202,7 @@ PHP
             static function () use ($wpLoader, $testcaseFile) {
                 $wpLoader->_initialize();
 
-                Assert::assertTrue(function_exists('do_action'));
+            Assert::assertTrue(function_exists('do_action'));
 
                 require_once $testcaseFile;
 
@@ -2210,16 +2210,16 @@ PHP
                 /** @var TestResult $result */
                 $result = $testCase->run();
 
-                Assert::assertTrue($result->wasSuccessful());
+            Assert::assertTrue($result->wasSuccessful());
 
-                Assert::assertEquals('updated_value', \BackupControlTestCaseStore::$staticAttribute);
-                Assert::assertEquals('initial_value', \BackupControlTestCaseStore::$staticAttributeTwo);
-                Assert::assertEquals('updated_value', \BackupControlTestCaseStore::$staticAttributeThree);
-                Assert::assertEquals('initial_value', \BackupControlTestCaseStore::$staticAttributeFour);
-                Assert::assertEquals('initial_value', \BackupControlTestCaseStoreTwo::$staticAttribute);
-                Assert::assertEquals('initial_value', \BackupControlTestCaseStoreTwo::$staticAttributeTwo);
-                Assert::assertEquals('initial_value', \BackupControlTestCaseStoreTwo::$staticAttributeThree);
-                Assert::assertEquals('updated_value', \BackupControlTestCaseStoreTwo::$staticAttributeFour);
+            Assert::assertEquals('updated_value', \BackupControlTestCaseStore::$staticAttribute);
+            Assert::assertEquals('initial_value', \BackupControlTestCaseStore::$staticAttributeTwo);
+            Assert::assertEquals('updated_value', \BackupControlTestCaseStore::$staticAttributeThree);
+            Assert::assertEquals('initial_value', \BackupControlTestCaseStore::$staticAttributeFour);
+            Assert::assertEquals('initial_value', \BackupControlTestCaseStoreTwo::$staticAttribute);
+            Assert::assertEquals('initial_value', \BackupControlTestCaseStoreTwo::$staticAttributeTwo);
+            Assert::assertEquals('initial_value', \BackupControlTestCaseStoreTwo::$staticAttributeThree);
+            Assert::assertEquals('updated_value', \BackupControlTestCaseStoreTwo::$staticAttributeFour);
             }
         );
     }
@@ -2424,14 +2424,14 @@ PHP
                 $activePlugins = $wpdb->get_var(
                     "SELECT option_value FROM {$wpdb->options} WHERE option_name = 'active_plugins'"
                 );
-                Assert::assertEquals(['woocommerce/woocommerce.php'], unserialize($activePlugins));
-                Assert::assertNotEquals('1', getenv('WP_TESTS_SKIP_INSTALL'));
-                Assert::assertTrue(function_exists('do_action'));
-                Assert::assertTrue($beforeInstallCalled);
-                Assert::assertTrue($afterInstallCalled);
-                Assert::assertTrue($afterBootstrapCalled);
-                Assert::assertTrue(function_exists('wc_get_product'));
-                Assert::assertEquals('twentytwenty', wp_get_theme()->get_stylesheet());
+            Assert::assertEquals(['woocommerce/woocommerce.php'], unserialize($activePlugins));
+            Assert::assertNotEquals('1', getenv('WP_TESTS_SKIP_INSTALL'));
+            Assert::assertTrue(function_exists('do_action'));
+            Assert::assertTrue($beforeInstallCalled);
+            Assert::assertTrue($afterInstallCalled);
+            Assert::assertTrue($afterBootstrapCalled);
+            Assert::assertTrue(function_exists('wc_get_product'));
+            Assert::assertEquals('twentytwenty', wp_get_theme()->get_stylesheet());
 
                 // Set a canary value.
                 update_option('canary', $moduleSplObjectHash);
@@ -2471,15 +2471,15 @@ PHP
                 $activePlugins = $wpdb->get_var(
                     "SELECT option_value FROM {$wpdb->options} WHERE option_name = 'active_plugins'"
                 );
-                Assert::assertEquals(['woocommerce/woocommerce.php'], unserialize($activePlugins));
-                Assert::assertEquals('1', getenv('WP_TESTS_SKIP_INSTALL'));
-                Assert::assertTrue(function_exists('do_action'));
-                Assert::assertTrue($beforeInstallCalled);
-                Assert::assertTrue($afterInstallCalled);
-                Assert::assertTrue($afterBootstrapCalled);
-                Assert::assertTrue(function_exists('wc_get_product'));
-                Assert::assertEquals('twentytwenty', wp_get_theme()->get_stylesheet());
-                Assert::assertEquals($moduleSplObjectHash, get_option('canary'));
+            Assert::assertEquals(['woocommerce/woocommerce.php'], unserialize($activePlugins));
+            Assert::assertEquals('1', getenv('WP_TESTS_SKIP_INSTALL'));
+            Assert::assertTrue(function_exists('do_action'));
+            Assert::assertTrue($beforeInstallCalled);
+            Assert::assertTrue($afterInstallCalled);
+            Assert::assertTrue($afterBootstrapCalled);
+            Assert::assertTrue(function_exists('wc_get_product'));
+            Assert::assertEquals('twentytwenty', wp_get_theme()->get_stylesheet());
+            Assert::assertEquals($moduleSplObjectHash, get_option('canary'));
             }
         );
 
@@ -2508,15 +2508,15 @@ PHP
                 $activePlugins = $wpdb->get_var(
                     "SELECT option_value FROM {$wpdb->options} WHERE option_name = 'active_plugins'"
                 );
-                Assert::assertEquals(['woocommerce/woocommerce.php'], unserialize($activePlugins));
-                Assert::assertNotEquals('1', getenv('WP_TESTS_SKIP_INSTALL'));
-                Assert::assertTrue(function_exists('do_action'));
-                Assert::assertTrue($beforeInstallCalled);
-                Assert::assertTrue($afterInstallCalled);
-                Assert::assertTrue($afterBootstrapCalled);
-                Assert::assertTrue(function_exists('wc_get_product'));
-                Assert::assertEquals('twentytwenty', wp_get_theme()->get_stylesheet());
-                Assert::assertEquals(
+            Assert::assertEquals(['woocommerce/woocommerce.php'], unserialize($activePlugins));
+            Assert::assertNotEquals('1', getenv('WP_TESTS_SKIP_INSTALL'));
+            Assert::assertTrue(function_exists('do_action'));
+            Assert::assertTrue($beforeInstallCalled);
+            Assert::assertTrue($afterInstallCalled);
+            Assert::assertTrue($afterBootstrapCalled);
+            Assert::assertTrue(function_exists('wc_get_product'));
+            Assert::assertEquals('twentytwenty', wp_get_theme()->get_stylesheet());
+           Assert::assertEquals(
                     '',
                     get_option('canary'),
                     'The value set in the previous installation should be gone.'
@@ -2676,8 +2676,8 @@ PHP
             static function () use ($wpLoader) {
                 $wpLoader->_initialize();
 
-                Assert::assertEquals('', get_option('my_plugin_activated'));
-                Assert::assertEquals('__loaded__', get_option('my_plugin_loaded'));
+            Assert::assertEquals('', get_option('my_plugin_activated'));
+            Assert::assertEquals('__loaded__', get_option('my_plugin_loaded'));
             }
         );
     }
