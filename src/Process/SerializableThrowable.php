@@ -11,34 +11,16 @@ class SerializableThrowable
 {
     public const RELATIVE_PAHTNAMES = 1;
 
-    /**
-     * @var \Throwable
-     */
-    private $throwable;
+    private Throwable $throwable;
     /**
      * @var array<int,array<string,mixed>>
      */
-    private $trace;
-    /**
-     * @var string
-     */
-    private $file;
-    /**
-     * @var int
-     */
-    private $line;
-    /**
-     * @var int
-     */
-    private $code;
-    /**
-     * @var string
-     */
-    private $message;
-    /**
-     * @var bool
-     */
-    private $colorize = true;
+    private array $trace;
+    private string $file;
+    private int $line;
+    private int $code;
+    private string $message;
+    private bool $colorize = true;
 
     public function __construct(Throwable $throwable)
     {
@@ -131,26 +113,11 @@ class SerializableThrowable
     private function prettyPrintTrace(array $trace): array
     {
         $updatedTrace = [];
-        $streamIsatty = function ($stream) {
-            if (\function_exists('stream_isatty')) {
-                return stream_isatty($stream);
-            }
-            if (!\is_resource($stream)) {
-                trigger_error('stream_isatty() expects parameter 1 to be resource, ' . \gettype($stream) . ' given', \E_USER_WARNING);
-                return false;
-            }
-            if ('\\' === \DIRECTORY_SEPARATOR) {
-                $stat = @fstat($stream);
-                // Check if formatted mode is S_IFCHR
-                return $stat ? 020000 === ($stat['mode'] & 0170000) : false;
-            }
-            return \function_exists('posix_isatty') && @posix_isatty($stream);
-        };
-        $colorize = $this->colorize && $streamIsatty(STDOUT);
+        $colorize = $this->colorize && stream_isatty(STDOUT);
         // Detect whether to use colors or not depending on the TTY.
         foreach ($trace as $k => $traceEntry) {
             if (!(isset($traceEntry['file']) && is_string($traceEntry['file'])
-                && strpos($traceEntry['file'], 'closure://') !== false)) {
+                && str_contains($traceEntry['file'], 'closure://'))) {
                 $updatedTrace[$k] = $traceEntry;
                 continue;
             }
@@ -190,7 +157,7 @@ class SerializableThrowable
         $cwd = getcwd() ?: '';
         $relativeFile = str_replace($cwd, '', $this->throwable->getFile());
         foreach ($this->throwable->getTrace() as $k => $traceEntry) {
-            if (!isset($traceEntry['file']) || strpos($traceEntry['file'], 'closure://') !== false) {
+            if (!isset($traceEntry['file']) || str_contains($traceEntry['file'], 'closure://')) {
                 $relativePathnameTrace[$k] = $traceEntry;
                 continue;
             }

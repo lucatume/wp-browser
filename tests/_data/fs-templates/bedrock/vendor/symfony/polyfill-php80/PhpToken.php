@@ -16,24 +16,28 @@ namespace Symfony\Polyfill\Php80;
  *
  * @internal
  */
-class PhpToken
+class PhpToken implements \Stringable
 {
     /**
      * @var int
      */
     public $id;
+
     /**
      * @var string
      */
     public $text;
+
     /**
      * @var int
      */
     public $line;
+
     /**
      * @var int
      */
     public $pos;
+
     public function __construct(int $id, string $text, int $line = -1, int $position = -1)
     {
         $this->id = $id;
@@ -41,6 +45,7 @@ class PhpToken
         $this->line = $line;
         $this->pos = $position;
     }
+
     public function getTokenName(): ?string
     {
         if ('UNKNOWN' === $name = token_name($this->id)) {
@@ -49,6 +54,7 @@ class PhpToken
 
         return $name;
     }
+
     /**
      * @param int|string|array $kind
      */
@@ -62,14 +68,17 @@ class PhpToken
 
         return false;
     }
+
     public function isIgnorable(): bool
     {
         return \in_array($this->id, [\T_WHITESPACE, \T_COMMENT, \T_DOC_COMMENT, \T_OPEN_TAG], true);
     }
+
     public function __toString(): string
     {
         return (string) $this->text;
     }
+
     /**
      * @return static[]
      */

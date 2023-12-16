@@ -74,7 +74,7 @@ class WPLoader extends Module
      *
      * @var array<string>
      */
-    protected $requiredFields = [
+    protected array $requiredFields = [
         'wpRootFolder',
         'dbName',
         'dbHost',
@@ -128,7 +128,7 @@ class WPLoader extends Module
      *     skipInstall?: bool,
      * }
      */
-    protected $config = [
+    protected array $config = [
         'loadOnly' => false,
         'multisite' => false,
         'dbCharset' => 'utf8',
@@ -166,38 +166,14 @@ class WPLoader extends Module
         'skipInstall' => false
     ];
 
-    /**
-     * @var string
-     */
-    private $wpBootstrapFile;
-    /**
-     * @var \lucatume\WPBrowser\Module\WPLoader\FactoryStore
-     */
-    private $factoryStore;
-    /**
-     * @var \lucatume\WPBrowser\WordPress\Installation
-     */
-    private $installation;
-    /**
-     * @var string
-     */
-    private $bootstrapOutput = '';
-    /**
-     * @var string
-     */
-    private $installationOutput = '';
-    /**
-     * @var bool
-     */
-    private $earlyExit = true;
-    /**
-     * @var \lucatume\WPBrowser\WordPress\Database\DatabaseInterface|null
-     */
-    private $db;
-    /**
-     * @var \lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory|null
-     */
-    private $codeExecutionFactory;
+    private string $wpBootstrapFile;
+    private FactoryStore $factoryStore;
+    private Installation $installation;
+    private string $bootstrapOutput = '';
+    private string $installationOutput = '';
+    private bool $earlyExit = true;
+    private ?DatabaseInterface $db = null;
+    private ?CodeExecutionFactory $codeExecutionFactory = null;
 
     public function _getBootstrapOutput(): string
     {
@@ -321,9 +297,7 @@ class WPLoader extends Module
                 && Arr::isAssociative($this->config['backupStaticAttributesExcludeList'])
                 && Arr::containsOnly(
                     $this->config['backupStaticAttributesExcludeList'],
-                    static function ($v) {
-                        return Arr::containsOnly($v, 'string');
-                    }
+                    static fn($v) => Arr::containsOnly($v, 'string')
                 )
             )
         ) {
@@ -413,7 +387,7 @@ class WPLoader extends Module
             $_wpTestsBackupStaticAttributes = (bool)$config['backupStaticAttributes'];
             $_wpTestsBackupStaticAttributesExcludeList = (array)$config['backupStaticAttributesExcludeList'];
 
-            if (empty($config['dbHost']) && strncmp($config['dbName'], codecept_root_dir(), strlen(codecept_root_dir())) === 0) {
+            if (empty($config['dbHost']) && str_starts_with($config['dbName'], codecept_root_dir())) {
                 $dbFile = (array_reverse(explode(DIRECTORY_SEPARATOR, $config['dbName']))[0]);
                 $dbDir = rtrim(str_replace($dbFile, '', $config['dbName']), DIRECTORY_SEPARATOR);
                 $db = new SqliteDatabase($dbDir, $dbFile);
@@ -586,7 +560,7 @@ class WPLoader extends Module
             codecept_debug(
                 'WordPress status: ' . json_encode(
                     $this->installation->report(),
-                    JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+                    JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
                 )
             );
         }
@@ -715,9 +689,7 @@ class WPLoader extends Module
         );
 
         $jobs = array_combine(
-            array_map(static function (string $plugin) : string {
-                return 'plugin::' . $plugin;
-            }, $allPlugins),
+            array_map(static fn(string $plugin): string => 'plugin::' . $plugin, $allPlugins),
             array_map(
                 static function (string $plugin, bool $silent) use ($closuresFactory, $multisite): Closure {
                     return $closuresFactory->toActivatePlugin($plugin, $multisite, $silent);
@@ -902,7 +874,7 @@ class WPLoader extends Module
         // Set Core, plugins and themes updates to right now to avoid external requests during tests.
         $updateCheckTransient = (object)[
             'last_checked' => time(),
-            'version_checked' => ($nullsafeVariable1 = $this->installation->getVersion()) ? $nullsafeVariable1->getWpVersion() : null,
+            'version_checked' => $this->installation->getVersion()?->getWpVersion(),
         ];
         set_site_transient('update_core', $updateCheckTransient);
         set_site_transient('update_plugins', $updateCheckTransient);
@@ -1010,7 +982,7 @@ class WPLoader extends Module
             }
 
             $buffer = trim($buffer);
-            if ($buffer === '' || strncmp($buffer, 'Not running', strlen('Not running')) === 0) {
+            if ($buffer === '' || str_starts_with($buffer, 'Not running')) {
                 // Do not print empty lines or the lines about skipped test groups.
                 return '';
             }
@@ -1102,7 +1074,7 @@ class WPLoader extends Module
 
         try {
             return !empty($this->db->getOption('siteurl'));
-        } catch (Throwable $exception) {
+        } catch (Throwable) {
             return false;
         }
     }

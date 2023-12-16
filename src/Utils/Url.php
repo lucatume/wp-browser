@@ -20,7 +20,7 @@ class Url
      *     fragment: string
      * }
      */
-    private static $parserUrlDefaults = [
+    private static array $parserUrlDefaults = [
         'scheme' => '',
         'host' => '',
         'port' => 0,

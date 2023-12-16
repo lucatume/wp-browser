@@ -118,7 +118,7 @@ class Db
                         'pass' => $pass,
                         'query' => $query,
                         'error' => $pdo->errorInfo(),
-                    ], JSON_PRETTY_PRINT));
+                    ], JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
             }
 
             return $result;
@@ -214,7 +214,7 @@ class Db
                 // Socket, `localhost:<socket>` or socket and port and socket: just keep the socket.
                 $map['type'] = $type ?: 'mysql';
                 $unixSocket = $unixSocketMatches['socket'];
-                if (strncmp($unixSocket, '~', strlen('~')) === 0) {
+                if (str_starts_with($unixSocket, '~')) {
                     $unixSocket = str_replace('~', FS::homeDir(), $unixSocket);
                 }
                 $map['unix_socket'] = $unixSocket;
@@ -401,7 +401,7 @@ class Db
      */
     public static function parseDbUrl(string $dbUrl): array
     {
-        if (strpos($dbUrl, '%codecept_root_dir%') !== false) {
+        if (str_contains($dbUrl, '%codecept_root_dir%')) {
             $dbUrl = str_replace('%codecept_root_dir%', rtrim(codecept_root_dir(), '\\/'), $dbUrl);
         }
 

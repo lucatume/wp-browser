@@ -8,26 +8,18 @@ use Symfony\Component\Yaml\Exception\DumpException;
 class DbDump
 {
     /**
-     * @var string
-     */
-    protected $url = 'http://wordpress.test';
-    /**
-     * @var string
-     */
-    protected $tablePrefix = 'wp_';
-    /**
      * A static array cache implementation to store database dumps replaced in the context of this request.
      *
      * @var array<string,string>
      */
-    protected static $urlReplacementCache = [];
+    protected static array $urlReplacementCache = [];
     /**
      * The site original URL, the URL of the site on single site installations, or the URL of the first site on
      * multi-site installations.
      *
      * @var string|false|null
      */
-    protected $originalUrl = null;
+    protected string|null|false $originalUrl = null;
 
     /**
      * Replaces the WordPress domains in an array of SQL dump string.
@@ -237,10 +229,8 @@ class DbDump
      * @param string $url         The URL to replace, `null` to have it inferred.
      * @param string $tablePrefix The table prefix to use.
      */
-    public function __construct(string $url = 'http://wordpress.test', string $tablePrefix = 'wp_')
+    public function __construct(protected string $url = 'http://wordpress.test', protected string $tablePrefix = 'wp_')
     {
-        $this->url = $url;
-        $this->tablePrefix = $tablePrefix;
     }
 
     public function getTablePrefix(): string
@@ -285,7 +275,7 @@ class DbDump
      *
      * @return string|false The first site URL or `false` if the first site URL could not be found.
      */
-    public function getOriginalUrlFromSqlString(string $sql)
+    public function getOriginalUrlFromSqlString(string $sql): string|false
     {
         $matches = [];
         $urlPattern = sprintf(

@@ -9,20 +9,15 @@ use Throwable;
 class ThrowAction implements CodeExecutionActionInterface
 {
 
-    /**
-     * @var \Throwable
-     */
-    private $exception;
-    public function __construct(Throwable $exception)
+    public function __construct(private Throwable $exception)
     {
-        $this->exception = $exception;
     }
 
     public function getClosure(): Closure
     {
         $serializedException = Serializer::makeThrowableSerializable($this->exception);
 
-        return static function () use ($serializedException) {
+        return static function () use ($serializedException): mixed {
             throw $serializedException;
         };
     }

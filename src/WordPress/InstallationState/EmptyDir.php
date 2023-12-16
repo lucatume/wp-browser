@@ -16,10 +16,7 @@ class EmptyDir implements InstallationStateInterface
 {
     use WordPressChecks;
 
-    /**
-     * @var string
-     */
-    private $wpRootDir;
+    private string $wpRootDir;
 
     /**
      * @throws InstallationException
@@ -269,9 +266,8 @@ class EmptyDir implements InstallationStateInterface
 
     /**
      * @throws InstallationException
-     * @return mixed
      */
-    public function getConstant(string $constant)
+    public function getConstant(string $constant): mixed
     {
         throw new InstallationException(
             'The WordPress installation is empty.',
@@ -338,9 +334,8 @@ class EmptyDir implements InstallationStateInterface
 
     /**
      * @throws InstallationException
-     * @param mixed $value
      */
-    public function updateOption(string $option, $value): int
+    public function updateOption(string $option, mixed $value): int
     {
         throw new InstallationException(
             'The WordPress installation is empty.',
@@ -372,9 +367,8 @@ class EmptyDir implements InstallationStateInterface
 
     /**
      * @throws InstallationException
-     * @return mixed
      */
-    public function executeClosureInWordPress(Closure $closure)
+    public function executeClosureInWordPress(Closure $closure): mixed
     {
         throw new InstallationException(
             'The WordPress installation is empty.',

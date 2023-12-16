@@ -17,32 +17,18 @@ use Throwable;
 
 class PluginProject extends ContentProject
 {
-    /**
-     * @var string
-     */
-    protected $workDir;
     public const ERR_PLUGIN_NOT_FOUND = 1;
-    /**
-     * @var string
-     */
-    private $pluginFile;
-    /**
-     * @var string
-     */
-    private $pluginName;
-    /**
-     * @var string
-     */
-    private $pluginDir;
+    private string $pluginFile;
+    private string $pluginName;
+    private string $pluginDir;
 
     protected function getProjectType(): string
     {
         return 'plugin';
     }
 
-    public function __construct(InputInterface $input, OutputInterface $output, string $workDir)
+    public function __construct(InputInterface $input, OutputInterface $output, protected string $workDir)
     {
-        $this->workDir = $workDir;
         parent::__construct($input, $output);
         $pluginNameAndFile = self::parseDir($workDir);
         $this->pluginDir = basename($this->workDir);
@@ -71,7 +57,7 @@ class PluginProject extends ContentProject
     /**
      * @return array{0: string, 1: string}|false
      */
-    public static function parseDir(string $workDir)
+    public static function parseDir(string $workDir): array|false
     {
         $pluginFile = null;
         $pluginName = null;
@@ -141,12 +127,12 @@ class PluginProject extends ContentProject
     protected function scaffoldEndToEndActivationCest(): void
     {
         $cestCode = Strings::renderString(
-            <<<EOT
+            <<< EOT
 <?php
 
-namespace Tests\\EndToEnd;
+namespace Tests\EndToEnd;
 
-use Tests\\Support\\EndToEndTester;
+use Tests\Support\EndToEndTester;
 
 class ActivationCest
 {
@@ -167,8 +153,7 @@ class ActivationCest
     }
 }
 
-EOT
-            ,
+EOT,
             [
                 'slug' => Strings::slug($this->getName())
             ]
@@ -182,12 +167,12 @@ EOT
     protected function scaffoldIntegrationActivationTest(): void
     {
         $testCode = Strings::renderString(
-            <<<EOT
+            <<< EOT
 <?php
 
 namespace Tests;
 
-use lucatume\\WPBrowser\\TestCase\\WPTestCase;
+use lucatume\WPBrowser\TestCase\WPTestCase;
 
 class SampleTest extends WPTestCase
 {
@@ -212,7 +197,7 @@ class SampleTest extends WPTestCase
     {
         \$post = static::factory()->post->create_and_get();
 
-        \$this->assertInstanceOf(\\WP_Post::class, \$post);
+        \$this->assertInstanceOf(\WP_Post::class, \$post);
     }
 
     public function test_plugin_active(): void
@@ -220,8 +205,7 @@ class SampleTest extends WPTestCase
         \$this->assertTrue(is_plugin_active('{{pluginString}}'));
     }
 }
-EOT
-            ,
+EOT,
             [
                 'pluginString' => $this->getActivationString()
             ]

@@ -69,7 +69,7 @@ function sqlite_make_db_sqlite() {
 	if ( defined( 'SQLITE_DEBUG_CROSSCHECK' ) && SQLITE_DEBUG_CROSSCHECK ) {
 		$host = DB_HOST;
 		$port = 3306;
-		if ( strpos($host, ':') !== false ) {
+		if ( str_contains( $host, ':' ) ) {
 			$host_parts = explode( ':', $host );
 			$host       = $host_parts[0];
 			$port       = $host_parts[1];

@@ -35,6 +35,6 @@ if (function_exists('uopz_allow_exit')) {
 
 // This is here to test the EventDispatcherBridge extension.
 Dispatcher::addListener(Events::MODULE_INIT, function (SuiteEvent $suiteEvent) {
-    $suiteName = ($nullsafeVariable1 = $suiteEvent->getSuite()) ? $nullsafeVariable1->getName() : null;
+    $suiteName = $suiteEvent->getSuite()?->getName();
     codecept_debug('Suite name: ' . $suiteName);
 });

@@ -92,10 +92,7 @@ final class LazyOption extends Option
         return $this->option()->getOrThrow($ex);
     }
 
-    /**
-     * @param \PhpOption\Option $else
-     */
-    public function orElse($else)
+    public function orElse(Option $else)
     {
         return $this->option()->orElse($else);
     }

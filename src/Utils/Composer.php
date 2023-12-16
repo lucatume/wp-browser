@@ -16,14 +16,11 @@ class Composer
     public const ERR_FILE_WRITE_FAILED = 3;
     public const ERR_UPDATE_FAILED = 4;
     const ERR_DECODING_FAILED = 5;
-    /**
-     * @var string
-     */
-    private $composerJsonFile;
+    private string $composerJsonFile;
     /**
      * @var StdClass
      */
-    private $decoded;
+    private stdClass $decoded;
 
     public static function vendorDir(?string $path = null): string
     {
@@ -62,10 +59,7 @@ class Composer
             throw new RuntimeException('Composer file not readable.', self::ERR_FILE_UNREADABLE);
         }
 
-        $decoded = json_decode($json, false, 512, 0);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception(json_last_error_msg());
-        }
+        $decoded = json_decode($json, false, 512, JSON_THROW_ON_ERROR);
 
         if (!$decoded instanceof StdClass) {
             throw new RuntimeException('Composer file decoding failed.', self::ERR_DECODING_FAILED);
@@ -149,10 +143,7 @@ class Composer
      */
     public function getContents(): string
     {
-        $encoded = json_encode($this->decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception(json_last_error_msg());
-        }
+        $encoded = json_encode($this->decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
         /** @var string $encoded */
         return $encoded;
     }

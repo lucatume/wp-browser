@@ -76,10 +76,7 @@ interface InstallationStateInterface
 
     public function getVersion(): Version;
 
-    /**
-     * @return mixed
-     */
-    public function getConstant(string $constant);
+    public function getConstant(string $constant): mixed;
 
     public function getDb(): DatabaseInterface;
 
@@ -101,15 +98,9 @@ interface InstallationStateInterface
 
     public function getContentDir(string $path = ''): string;
 
-    /**
-     * @param mixed $value
-     */
-    public function updateOption(string $option, $value): int;
+    public function updateOption(string $option, mixed $value): int;
 
-    /**
-     * @return mixed
-     */
-    public function executeClosureInWordPress(Closure $closure);
+    public function executeClosureInWordPress(Closure $closure): mixed;
 
     public function setDb(DatabaseInterface $db): InstallationStateInterface;
 }

@@ -28,7 +28,7 @@ class DockerComposeController extends ServiceExtension
         $command = $this->getCommand($config);
 
         $output->write("Starting compose stack ...", false);
-        $process = new Process(array_merge($command, ['up', '--wait']));
+        $process = new Process([...$command, 'up', '--wait']);
         try {
             $process->mustRun(function () use ($output) {
                 $output->write('.', false);
@@ -145,7 +145,10 @@ class DockerComposeController extends ServiceExtension
         $runningFile = self::getRunningFile();
         if (is_file($runningFile)) {
             // Run the docker compose config command and return the output.
-            $process = new Process(array_merge($this->getCommand($this->config), ['config']));
+            $process = new Process([
+                ...$this->getCommand($this->config),
+                'config'
+            ]);
             $process->mustRun();
             $dockerComposeConfig = $process->getOutput();
 

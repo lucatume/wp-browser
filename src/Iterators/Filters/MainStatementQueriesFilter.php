@@ -19,18 +19,13 @@ use lucatume\WPBrowser\Utils\Strings;
 class MainStatementQueriesFilter extends FilterIterator
 {
     /**
-     * @var string
-     */
-    protected $statement = 'SELECT';
-    /**
      * MainStatementQueriesFilter constructor.
      *
      * @param Iterator<array{0: string, 1: float, 2: string, 3: float, 4?: array<int|string,mixed>}> $iterator
      * @param string $statement The statement to keep queries for.
      */
-    public function __construct(Iterator $iterator, $statement = 'SELECT')
+    public function __construct(Iterator $iterator, protected $statement = 'SELECT')
     {
-        $this->statement = $statement;
         parent::__construct($iterator);
     }
 

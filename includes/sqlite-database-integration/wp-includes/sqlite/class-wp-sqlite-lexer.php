@@ -2288,7 +2288,7 @@ class WP_SQLite_Lexer {
 			$token .= $this->str[ $this->last ];
 
 			// Test if end of token equals the current delimiter. If so, remove it from the token.
-			if ( substr_compare($token, $this->delimiter, -strlen($this->delimiter)) === 0 ) {
+			if ( str_ends_with( $token, $this->delimiter ) ) {
 				$token       = substr( $token, 0, -$this->delimiter_length );
 				$this->last -= $this->delimiter_length - 1;
 				break;

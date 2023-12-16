@@ -11,18 +11,6 @@ use lucatume\WPBrowser\Utils\Ports;
 
 class PhpBuiltInServer implements ManagedProcessInterface
 {
-    /**
-     * @var string
-     */
-    private $docRoot;
-    /**
-     * @var int
-     */
-    private $port = 0;
-    /**
-     * @var array<string, mixed>
-     */
-    private $env = [];
     use ManagedProcessTrait;
 
     public const ERR_DOC_ROOT_NOT_FOUND = 1;
@@ -30,19 +18,13 @@ class PhpBuiltInServer implements ManagedProcessInterface
     public const ERR_ENV = 3;
     public const ERR_CHECK = 4;
     public const PID_FILE_NAME = 'php-built-in-server.pid';
-    /**
-     * @var string
-     */
-    private $prettyName = 'PHP Built-in Server';
+    private string $prettyName = 'PHP Built-in Server';
 
     /**
      * @param array<string,mixed> $env
      */
-    public function __construct(string $docRoot, int $port = 0, array $env = [])
+    public function __construct(private string $docRoot, private int $port = 0, private array $env = [])
     {
-        $this->docRoot = $docRoot;
-        $this->port = $port;
-        $this->env = $env;
         if (!(is_dir($docRoot) && is_readable($docRoot))) {
             throw new RuntimeException(
                 "Document root directory '$docRoot' not found.",

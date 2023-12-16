@@ -11,64 +11,25 @@ use lucatume\WPBrowser\WordPress\WPConfigFile;
 
 abstract class FileRequest
 {
-    /**
-     * @var string
-     */
-    private $domain;
-    /**
-     * @var string
-     */
-    private $requestUri;
-    /**
-     * @var string
-     */
-    private $targetFile;
-    /**
-     * @var array<string, (int | string | float | bool)>
-     */
-    private $requestVars = [];
-    /**
-     * @var array<string, string>
-     */
-    private $cookieJar = [];
-    /**
-     * @var array<string, string>
-     */
-    private $redirectFiles = [];
-    /**
-     * @var array<string, mixed>
-     */
-    private $presetGlobalVars = [];
-    /**
-     * @var array<string, mixed>
-     */
-    private $presetLocalVars = [];
-    /**
-     * @var array<(bool | int | string | float)>
-     */
-    private $constants = [];
     use WordPressChecks;
 
     /**
      * @var array<string,mixed>
      */
-    private $serverVars = [];
+    private array $serverVars = [];
     /**
      * @var array<Closure>
      */
-    private $preloadClosures = [];
+    private array $preloadClosures = [];
     /**
      * @var array<array{string, (callable(): mixed)|string, int, int}>
      */
-    private $preloadFilters = [];
+    private array $preloadFilters = [];
     /**
      * @var array<Closure>
      */
-    private $afterLoadClosures = [];
-    /**
-     * @var int
-     */
-    private $errorLevel = E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_ERROR | E_WARNING | E_PARSE
+    private array $afterLoadClosures = [];
+    private int $errorLevel = E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_ERROR | E_WARNING | E_PARSE
     | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR;
 
     /**
@@ -79,17 +40,17 @@ abstract class FileRequest
      * @param array<string, mixed> $presetLocalVars
      * @param array<bool|int|string|float> $constants
      */
-    public function __construct(string $domain, string $requestUri, string $targetFile, array $requestVars = [], array $cookieJar = [], array $redirectFiles = [], array $presetGlobalVars = [], array $presetLocalVars = [], array $constants = [])
-    {
-        $this->domain = $domain;
-        $this->requestUri = $requestUri;
-        $this->targetFile = $targetFile;
-        $this->requestVars = $requestVars;
-        $this->cookieJar = $cookieJar;
-        $this->redirectFiles = $redirectFiles;
-        $this->presetGlobalVars = $presetGlobalVars;
-        $this->presetLocalVars = $presetLocalVars;
-        $this->constants = $constants;
+    public function __construct(
+        private string $domain,
+        private string $requestUri,
+        private string $targetFile,
+        private array $requestVars = [],
+        private array $cookieJar = [],
+        private array $redirectFiles = [],
+        private array $presetGlobalVars = [],
+        private array $presetLocalVars = [],
+        private array $constants = []
+    ) {
     }
 
     abstract protected function getMethod(): string;
@@ -184,7 +145,7 @@ abstract class FileRequest
             }
 
             // Ignore E_WARNING from `fopen` calls: they are used by some plugins to try and check if a file exists.
-            if ($errno === E_WARNING && strncmp($errstr, 'fopen', strlen('fopen')) === 0) {
+            if ($errno === E_WARNING && str_starts_with($errstr, 'fopen')) {
                 return true;
             }
 
@@ -297,20 +258,14 @@ abstract class FileRequest
         return $this;
     }
 
-    /**
-     * @param int|string|float|bool $value
-     */
-    public function defineConstant(string $constant, $value): FileRequest
+    public function defineConstant(string $constant, int|string|float|bool $value): FileRequest
     {
         $this->constants[$constant] = $value;
 
         return $this;
     }
 
-    /**
-     * @param bool|int|float|string $value
-     */
-    public function setConstant(string $constant, $value): FileRequest
+    public function setConstant(string $constant, bool|int|float|string $value): FileRequest
     {
         $this->constants[$constant] = $value;
 

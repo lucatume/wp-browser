@@ -17,13 +17,12 @@ class Process extends SymfonyProcess
      * @param string[] $command
      * @param array<string,mixed>|null $env
      * @param array<string,mixed>|null $options
-     * @param mixed $input
      */
     public function __construct(
         array $command,
         string $cwd = null,
         array $env = null,
-        $input = null,
+        mixed $input = null,
         ?float $timeout = 60,
         array $options = null
     ) {
@@ -83,9 +82,8 @@ class Process extends SymfonyProcess
 
     /**
      * @param array<mixed> $arguments
-     * @return mixed
      */
-    public static function __callStatic(string $name, array $arguments)
+    public static function __callStatic(string $name, array $arguments):mixed
     {
         if ($name === 'fromShellCommandline') {
             $command = array_shift($arguments);

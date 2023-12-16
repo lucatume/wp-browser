@@ -70,10 +70,7 @@ final class None extends Option
         return false;
     }
 
-    /**
-     * @param \PhpOption\Option $else
-     */
-    public function orElse($else)
+    public function orElse(Option $else)
     {
         return $else;
     }

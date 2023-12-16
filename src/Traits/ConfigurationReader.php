@@ -24,8 +24,7 @@ trait ConfigurationReader
             $enabledModules,
             static function (array $carry, $module) use ($modules): array {
                 if (is_array($module)) {
-                    reset($module);
-                    $firstKey = key($module);
+                    $firstKey = array_key_first($module);
                     if (in_array($firstKey, $modules, true)) {
                         $carry[$firstKey] = $module[$firstKey];
                     }

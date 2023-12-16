@@ -25,25 +25,14 @@ use Throwable;
 
 class SiteProject extends InitTemplate implements ProjectInterface
 {
-    /**
-     * @var string
-     */
-    protected $workDir;
-    /**
-     * @var \lucatume\WPBrowser\WordPress\Installation
-     */
-    private $installation;
-    /**
-     * @var \lucatume\WPBrowser\Project\TestEnvironment
-     */
-    private $testEnvironment;
+    private Installation $installation;
+    private TestEnvironment $testEnvironment;
 
     /**
      * @throws RuntimeException
      */
-    public function __construct(InputInterface $input, OutputInterface $output, string $workDir)
+    public function __construct(InputInterface $input, OutputInterface $output, protected string $workDir)
     {
-        $this->workDir = $workDir;
         parent::__construct($input, $output);
 
         try {

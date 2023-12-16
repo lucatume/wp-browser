@@ -11,36 +11,19 @@ use SQLite3;
 
 class SQLiteDatabase implements DatabaseInterface
 {
-    /**
-     * @var string
-     */
-    private $tablePrefix = 'wp_';
     public const ERR_DIR_NOT_FOUND = 1;
     public const ERR_DROP_DB_FAILED = 2;
     public const ERR_CONST_NOT_FOUND = 3;
-    /**
-     * @var string
-     */
-    private $directory;
-    /**
-     * @var string
-     */
-    private $file;
-    /**
-     * @var string
-     */
-    private $dbPathname;
-    /**
-     * @var \PDO|null
-     */
-    private $pdo;
+    private string $directory;
+    private string $file;
+    private string $dbPathname;
+    private ?PDO $pdo = null;
 
     /**
      * @throws DbException
      */
-    public function __construct(string $directory, string $file = 'db.sqlite', string $tablePrefix = 'wp_')
+    public function __construct(string $directory, string $file = 'db.sqlite', private string $tablePrefix = 'wp_')
     {
-        $this->tablePrefix = $tablePrefix;
         if (!(is_dir($directory) && is_writable($directory))) {
             throw new DbException(
                 "Directory $directory does not exist or is not writable.",
@@ -52,10 +35,7 @@ class SQLiteDatabase implements DatabaseInterface
         $this->dbPathname = $this->directory . DIRECTORY_SEPARATOR . $this->file;
     }
 
-    /**
-     * @return $this
-     */
-    public static function fromWpConfigFile(WPConfigFile $wpConfigFile): \lucatume\WPBrowser\WordPress\Database\DatabaseInterface
+    public static function fromWpConfigFile(WPConfigFile $wpConfigFile): self
     {
         $dbDir = $wpConfigFile->getConstant('DB_DIR');
         $dbFile = $wpConfigFile->getConstant('DB_FILE');
@@ -183,9 +163,8 @@ class SQLiteDatabase implements DatabaseInterface
 
     /**
      * @throws DbException
-     * @param mixed $value
      */
-    public function updateOption(string $name, $value): int
+    public function updateOption(string $name, mixed $value): int
     {
         $query = "INSERT OR REPLACE INTO {$this->tablePrefix}options (option_name, option_value, autoload)"
             . " VALUES (:name, :value, :autoload)";
@@ -204,10 +183,8 @@ class SQLiteDatabase implements DatabaseInterface
 
     /**
      * @throws DbException
-     * @param mixed $default
-     * @return mixed
      */
-    public function getOption(string $name, $default = null)
+    public function getOption(string $name, mixed $default = null): mixed
     {
         $query = "SELECT option_value FROM {$this->tablePrefix}options WHERE option_name = :name";
         $stmt = $this->getPDO()->prepare($query);

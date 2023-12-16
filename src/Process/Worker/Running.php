@@ -13,45 +13,24 @@ use lucatume\WPBrowser\Process\Protocol\Response;
 
 class Running implements WorkerInterface
 {
-    /**
-     * @var string
-     */
-    private $id;
-    /**
-     * @var \lucatume\WPBrowser\Process\Worker\WorkerProcess
-     */
-    private $proc;
-    /**
-     * @var string[]
-     */
-    private $requiredResourcesIds = [];
     use MemoryUsage;
 
     /**
      * @var mixed|null
      */
-    private $returnValue = null;
-    /**
-     * @var string
-     */
-    private $stdoutBuffer = '';
-    /**
-     * @var string
-     */
-    private $stderrBuffer = '';
-    /**
-     * @var bool
-     */
-    private $didExtractReturnValueFromStderr = false;
+    private mixed $returnValue = null;
+    private string $stdoutBuffer = '';
+    private string $stderrBuffer = '';
+    private bool $didExtractReturnValueFromStderr = false;
 
     /**
      * @param string[] $requiredResourcesIds
      */
-    public function __construct(string $id, WorkerProcess $proc, array $requiredResourcesIds = [])
-    {
-        $this->id = $id;
-        $this->proc = $proc;
-        $this->requiredResourcesIds = $requiredResourcesIds;
+    public function __construct(
+        private string $id,
+        private WorkerProcess $proc,
+        private array $requiredResourcesIds = []
+    ) {
     }
 
     /**
@@ -217,7 +196,7 @@ class Running implements WorkerInterface
     /**
      * @return mixed|null
      */
-    public function getReturnValue()
+    public function getReturnValue(): mixed
     {
         $this->extractReturnValueFromStderr();
 

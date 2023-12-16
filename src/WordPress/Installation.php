@@ -31,15 +31,9 @@ class Installation
     /**
      * @var array<string>
      */
-    private static $scaffoldedInstallations = [];
-    /**
-     * @var string
-     */
-    private $wpRootDir;
-    /**
-     * @var \lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface
-     */
-    private $installationState;
+    private static array $scaffoldedInstallations = [];
+    private string $wpRootDir;
+    private InstallationState\InstallationStateInterface $installationState;
 
     /**
      * @throws DbException
@@ -163,13 +157,16 @@ class Installation
         $wpDir = null;
 
         // Recursively look into the wpDir to find the directory that contains the wp-load.php file.
-        $files = new \RegexIterator(new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator(
-                $searchDir,
-                FilesystemIterator::UNIX_PATHS | FilesystemIterator::CURRENT_AS_PATHNAME
+        $files = new \RegexIterator(
+            new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator(
+                    $searchDir,
+                    FilesystemIterator::UNIX_PATHS | FilesystemIterator::CURRENT_AS_PATHNAME
+                ),
+                RecursiveIteratorIterator::SELF_FIRST
             ),
-            RecursiveIteratorIterator::SELF_FIRST
-        ), '/^.+\/wp-load\.php$/i');
+            '/^.+\/wp-load\.php$/i',
+        );
         /** @var string $file */
         foreach ($files as $file) {
             $wpDir = dirname($file);
@@ -362,18 +359,10 @@ class Installation
     public function report(array $checkKeys = null): array
     {
         $map = [
-            'rootDir' => function () : string {
-                return $this->installationState->getWpRootDir();
-            },
-            'version' => function () : array {
-                return $this->installationState->getVersion()->toArray();
-            },
-            'constants' => function () : array {
-                return $this->installationState->getConstants();
-            },
-            'globals' => function () : array {
-                return $this->installationState->getGlobals();
-            }
+            'rootDir' => fn(): string => $this->installationState->getWpRootDir(),
+            'version' => fn(): array => $this->installationState->getVersion()->toArray(),
+            'constants' => fn(): array => $this->installationState->getConstants(),
+            'globals' => fn(): array => $this->installationState->getGlobals()
         ];
 
         $checksMap = $checkKeys === null ? $map : array_intersect_key($map, array_flip($checkKeys));
@@ -390,10 +379,7 @@ class Installation
         return $this->installationState->getPluginsDir($path);
     }
 
-    /**
-     * @param mixed $value
-     */
-    public function updateOption(string $option, $value): int
+    public function updateOption(string $option, mixed $value): int
     {
         return $this->installationState->updateOption($option, $value);
     }
@@ -482,7 +468,7 @@ class Installation
 
         fclose($file);
 
-        return strpos($contents, 'Plugin Name: SQLite integration (Drop-in)') !== false;
+        return str_contains($contents, 'Plugin Name: SQLite integration (Drop-in)');
     }
 
     /**
@@ -495,7 +481,7 @@ class Installation
         if ($this->installationState instanceof Multisite) {
             $hasUrlOption = false;
             foreach ($command as $arg) {
-                if (strncmp($arg, '--url', strlen('--url')) === 0) {
+                if (str_starts_with($arg, '--url')) {
                     $hasUrlOption = true;
                     break;
                 }

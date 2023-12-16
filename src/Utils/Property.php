@@ -12,12 +12,10 @@ class Property
 
     /**
      * @throws ReflectionException
-     * @param object|string $object
-     * @return mixed
      */
-    public static function readPrivate($object, string $property)
+    public static function readPrivate(object|string $object, string $property): mixed
     {
-        $originalClass = is_object($object) ? get_class($object) : $object;
+        $originalClass = is_object($object) ? $object::class : $object;
         $reflectionObject = is_object($object) ? $object : null;
         $class = $originalClass;
 
@@ -55,7 +53,7 @@ class Property
      * @throws ReflectionException If there's an issue reflecting on the object or its properties.
      * @throws InvalidArgumentException If the class does not exists or the constructor parameters are missing.
      */
-    public static function setPropertiesForClass($object, string $class, array $props)
+    public static function setPropertiesForClass(?object $object, string $class, array $props): object
     {
         if (!class_exists($class)) {
             throw new InvalidArgumentException(
@@ -106,13 +104,13 @@ class Property
      *
      * @throws ReflectionException
      */
-    public static function setPrivateProperties($object, array $props): void
+    public static function setPrivateProperties(object|string $object, array $props): void
     {
         if (is_string($object)) {
             $class = $object;
             $object = null;
         } else {
-            $class = get_class($object);
+            $class = $object::class;
         }
 
         do {

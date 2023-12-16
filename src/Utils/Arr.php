@@ -7,9 +7,8 @@ class Arr
 
     /**
      * @param array<int|string,mixed> $haystack
-     * @return int|string|false
      */
-    public static function searchWithCallback(callable $isNeedle, array $haystack)
+    public static function searchWithCallback(callable $isNeedle, array $haystack): int|string|false
     {
         foreach ($haystack as $key => $value) {
             if ($isNeedle($value, $key)) {
@@ -19,12 +18,7 @@ class Arr
         return false;
     }
 
-    /**
-     * @param mixed $value
-     * @param mixed $default
-     * @return mixed
-     */
-    public static function firstFrom($value, $default = null)
+    public static function firstFrom(mixed $value, mixed $default = null): mixed
     {
         if ($value && is_array($value)) {
             return reset($value);
@@ -61,9 +55,8 @@ class Arr
 
     /**
      * @param array<string|int,mixed> $array
-     * @param string|callable $type
      */
-    public static function containsOnly(array $array, $type): bool
+    public static function containsOnly(array $array, string|callable $type): bool
     {
         if (is_string($type)) {
             $check = function_exists('is_' . $type) ? 'is_' . $type : 'is_a';

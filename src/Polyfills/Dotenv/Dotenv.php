@@ -33,9 +33,8 @@ class Dotenv
 
     /**
      * The absolute path to the env file to load.
-     * @var string
      */
-    protected $envFilePath;
+    protected string $envFilePath;
 
     /**
      * Dotenv constructor.

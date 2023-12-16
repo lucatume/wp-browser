@@ -207,9 +207,8 @@ class ParserTest extends Unit
 
     /**
      * @dataProvider decodePartialDataProvider
-     * @param mixed $expected
      */
-    public function testDecodePartial(string $input, int $offset, int $count, $expected): void
+    public function testDecodePartial(string $input, int $offset, int $count, mixed $expected): void
     {
         $parsed = Parser::decode($input, $offset, $count);
         $this->assertEquals($expected, $parsed);

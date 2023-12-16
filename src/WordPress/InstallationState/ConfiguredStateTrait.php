@@ -18,18 +18,9 @@ trait ConfiguredStateTrait
 {
     use InstallationChecks;
 
-    /**
-     * @var \lucatume\WPBrowser\WordPress\WPConfigFile
-     */
-    private $wpConfigFile;
-    /**
-     * @var string
-     */
-    private $wpRootDir;
-    /**
-     * @var \lucatume\WPBrowser\WordPress\Database\DatabaseInterface
-     */
-    private $db;
+    private WPConfigFile $wpConfigFile;
+    private string $wpRootDir;
+    private DatabaseInterface $db;
 
     /**
      * @throws InstallationException
@@ -262,7 +253,7 @@ trait ConfiguredStateTrait
     /**
      * @return int|float|string|bool|array<int|string,mixed>|null
      */
-    public function getConstant(string $constant)
+    public function getConstant(string $constant): int|float|string|bool|null|array
     {
         return $this->wpConfigFile->getConstant($constant);
     }

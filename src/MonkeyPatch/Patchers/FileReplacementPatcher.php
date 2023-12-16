@@ -6,13 +6,8 @@ use lucatume\WPBrowser\MonkeyPatch\MonkeyPatchingException;
 
 class FileReplacementPatcher implements PatcherInterface
 {
-    /**
-     * @var string
-     */
-    private $replacementFile;
-    public function __construct(string $replacementFile)
+    public function __construct(private string $replacementFile)
     {
-        $this->replacementFile = $replacementFile;
     }
 
     /**
@@ -46,7 +41,7 @@ class FileReplacementPatcher implements PatcherInterface
      *     blocks: int
      * }|false
      */
-    public function stat(string $pathname)
+    public function stat(string $pathname): array|false
     {
         return stat($this->replacementFile);
     }

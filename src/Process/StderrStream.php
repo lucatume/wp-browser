@@ -21,12 +21,9 @@ class StderrStream
     /**
      * @var array<Error>
      */
-    private $parsed = [];
+    private array $parsed = [];
 
-    /**
-     * @var \DateTimeInterface
-     */
-    private $currentDatetime;
+    private DateTimeInterface $currentDatetime;
 
     public function __construct(string $streamContents, int $options = 0, DateTimeInterface $currentDateTime = null)
     {
@@ -34,11 +31,7 @@ class StderrStream
         $this->parse($streamContents, $options);
     }
 
-    /**
-     * @param \lucatume\WPBrowser\Process\StderrStream\Error|\lucatume\WPBrowser\Process\StderrStream\TraceEntry $traceItem
-     * @return \lucatume\WPBrowser\Process\StderrStream\TraceEntry|\lucatume\WPBrowser\Process\StderrStream\Error
-     */
-    private function applyItemOptions($traceItem, int $options)
+    private function applyItemOptions(Error|TraceEntry $traceItem, int $options): TraceEntry|Error
     {
         if ($options & self::RELATIVE_PATHNAMES) {
             $cwd = (getcwd() ?: codecept_root_dir());
@@ -295,9 +288,7 @@ class StderrStream
             'message' => $sourceError->message,
             'file' => $sourceError->file,
             'line' => $sourceError->line,
-            'trace' => array_map(static function (TraceEntry $t) {
-                return $t->toArray();
-            }, $sourceError->trace),
+            'trace' => array_map(static fn(TraceEntry $t)=> $t->toArray(), $sourceError->trace),
             'code' => 0, // The code is not available in the error log.
         ]);
 
@@ -314,51 +305,31 @@ class StderrStream
 
     private function mapTypeToThrowableClass(string $type): string
     {
-        switch ($type) {
-            case 'Parse error':
-                return ParseError::class;
-            case 'Compile error':
-                return CompileError::class;
-            default:
-                return ErrorException::class;
-        }
+        return match ($type) {
+            'Parse error' => ParseError::class,
+            'Compile error' => CompileError::class,
+            default => ErrorException::class,
+        };
     }
 
     private function mapTypeToSeverity(string $type): int
     {
-        switch ($type) {
-            case 'Runtime warning':
-            case 'Warning':
-                return E_WARNING;
-            case 'Parse error':
-                return E_PARSE;
-            case 'Runtime notice':
-            case 'Notice':
-                return E_NOTICE;
-            case 'Strict Standards':
-                return E_STRICT;
-            case 'Recoverable error':
-                return E_RECOVERABLE_ERROR;
-            case 'Deprecated':
-                return E_DEPRECATED;
-            case 'Core error':
-                return E_CORE_ERROR;
-            case 'Core warning':
-                return E_CORE_WARNING;
-            case 'Compile error':
-                return E_COMPILE_ERROR;
-            case 'Compile warning':
-                return E_COMPILE_WARNING;
-            case 'User error':
-                return E_USER_ERROR;
-            case 'User warning':
-                return E_USER_WARNING;
-            case 'User notice':
-                return E_USER_NOTICE;
-            case 'User deprecated':
-                return E_USER_DEPRECATED;
-            default:
-                return E_ERROR;
-        }
+        return match ($type) {
+            'Runtime warning', 'Warning' => E_WARNING,
+            'Parse error' => E_PARSE,
+            'Runtime notice', 'Notice' => E_NOTICE,
+            'Strict Standards' => E_STRICT,
+            'Recoverable error' => E_RECOVERABLE_ERROR,
+            'Deprecated' => E_DEPRECATED,
+            'Core error' => E_CORE_ERROR,
+            'Core warning' => E_CORE_WARNING,
+            'Compile error' => E_COMPILE_ERROR,
+            'Compile warning' => E_COMPILE_WARNING,
+            'User error' => E_USER_ERROR,
+            'User warning' => E_USER_WARNING,
+            'User notice' => E_USER_NOTICE,
+            'User deprecated' => E_USER_DEPRECATED,
+            default => E_ERROR,
+        };
     }
 }

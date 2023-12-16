@@ -16,23 +16,12 @@ use Throwable;
 
 class ThemeProject extends ContentProject
 {
-    /**
-     * @var string
-     */
-    protected $workDir;
     public const ERR_INVALID_THEME_DIR = 1;
-    /**
-     * @var string
-     */
-    private $basename;
-    /**
-     * @var string
-     */
-    private $name;
+    private string $basename;
+    private string $name;
 
-    public function __construct(InputInterface $input, OutputInterface $output, string $workDir)
+    public function __construct(InputInterface $input, OutputInterface $output, protected string $workDir)
     {
-        $this->workDir = $workDir;
         parent::__construct($input, $output);
         $this->basename = basename($workDir);
         $themeInfo = self::parseDir($workDir);
@@ -75,7 +64,7 @@ class ThemeProject extends ContentProject
      * @return array{0: string}|false
      * @throws RuntimeException
      */
-    public static function parseDir(string $workDir)
+    public static function parseDir(string $workDir): array|false
     {
         if (!is_file($workDir . '/style.css')) {
             return false;
@@ -130,12 +119,12 @@ class ThemeProject extends ContentProject
     protected function scaffoldEndToEndActivationCest(): void
     {
         $cestCode = Strings::renderString(
-            <<<EOT
+            <<< EOT
 <?php
 
-namespace Tests\\EndToEnd;
+namespace Tests\EndToEnd;
 
-use Tests\\Support\\EndToEndTester;
+use Tests\Support\EndToEndTester;
 
 class ActivationCest
 {
@@ -148,8 +137,7 @@ class ActivationCest
     }
 }
 
-EOT
-            ,
+EOT,
             [
                 'basename' => Strings::slug($this->basename)
             ]
@@ -163,12 +151,12 @@ EOT
     protected function scaffoldIntegrationActivationTest(): void
     {
         $testCode = Strings::renderString(
-            <<<EOT
+            <<< EOT
 <?php
 
 namespace Tests;
 
-use lucatume\\WPBrowser\\TestCase\\WPTestCase;
+use lucatume\WPBrowser\TestCase\WPTestCase;
 
 class SampleTest extends WPTestCase
 {
@@ -193,7 +181,7 @@ class SampleTest extends WPTestCase
     {
         \$post = static::factory()->post->create_and_get();
 
-        \$this->assertInstanceOf(\\WP_Post::class, \$post);
+        \$this->assertInstanceOf(\WP_Post::class, \$post);
     }
 
     public function test_theme_active(): void
@@ -201,8 +189,7 @@ class SampleTest extends WPTestCase
         \$this->assertTrue(wp_get_theme()->stylesheet === '{{stylesheet}}');
     }
 }
-EOT
-            ,
+EOT,
             [
                 'stylesheet' => $this->getActivationString()
             ]

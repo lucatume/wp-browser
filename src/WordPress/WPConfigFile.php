@@ -13,22 +13,16 @@ class WPConfigFile
 {
     use WordPressChecks;
 
-    /**
-     * @var string
-     */
-    private $wpConfigFilePath;
-    /**
-     * @var string
-     */
-    private $wpSettingsFilePath;
+    private string $wpConfigFilePath;
+    private string $wpSettingsFilePath;
     /**
      * @var array<string,int|float|string|bool|null>
      */
-    private $constants = [];
+    private array $constants = [];
     /**
      * @var array<string,mixed>
      */
-    private $variables = [];
+    private array $variables = [];
 
     /**
      * @throws InstallationException|ProcessException|Throwable
@@ -72,7 +66,7 @@ class WPConfigFile
     /**
      * @return int|float|string|bool|array<int|string,mixed>|null
      */
-    public function getConstant(string $constant)
+    public function getConstant(string $constant): int|float|string|bool|array|null
     {
         return $this->constants[$constant] ?? null;
     }
@@ -85,10 +79,7 @@ class WPConfigFile
         return $this->constants;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getVariable(string $varName)
+    public function getVariable(string $varName): mixed
     {
         return $this->variables[$varName] ?? null;
     }
@@ -161,10 +152,7 @@ class WPConfigFile
         }
     }
 
-    /**
-     * @return mixed
-     */
-    public function getVar(string $varName)
+    public function getVar(string $varName): mixed
     {
         return $this->variables[$varName] ?? null;
     }
@@ -184,9 +172,8 @@ class WPConfigFile
 
     /**
      * @throws WpConfigFileException
-     * @return int|float|string|bool|null
      */
-    public function getConstantOrThrow(string $string)
+    public function getConstantOrThrow(string $string): int|float|string|bool|null
     {
         if (!isset($this->constants[$string])) {
             throw new WpConfigFileException(
@@ -200,9 +187,8 @@ class WPConfigFile
 
     /**
      * @throws WpConfigFileException
-     * @return mixed
      */
-    public function getVariableOrThrow(string $string)
+    public function getVariableOrThrow(string $string): mixed
     {
         if (!isset($this->variables[$string])) {
             throw new WpConfigFileException(

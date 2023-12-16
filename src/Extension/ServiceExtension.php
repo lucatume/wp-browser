@@ -14,7 +14,7 @@ abstract class ServiceExtension extends Extension
     /**
      * @var array<string,string>
      */
-    public static $events = [
+    public static array $events = [
         Events::MODULE_INIT => 'onModuleInit',
     ];
 
@@ -33,7 +33,7 @@ abstract class ServiceExtension extends Extension
         /** @var string[] $suites */
         $suites = $config['suites'] ?? [];
 
-        $suiteName = ($nullsafeVariable1 = $event->getSuite()) ? $nullsafeVariable1->getName() : null;
+        $suiteName = $event->getSuite()?->getName();
         $start = !isset($this->config['suites']) || in_array($suiteName, $suites, true);
 
         if (!$start) {

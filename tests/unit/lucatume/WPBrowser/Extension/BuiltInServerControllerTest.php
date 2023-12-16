@@ -18,10 +18,7 @@ use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 class PhpBuiltInServerMock extends PhpBuiltInServer
 {
-    /**
-     * @var mixed[]
-     */
-    public static $lastInstanceArgs;
+    public static array $lastInstanceArgs;
 
     public function __construct(string $docRoot, int $port = 0, array $env = [])
     {
@@ -43,10 +40,7 @@ class BuiltInServerControllerTest extends Unit
     use UopzFunctions;
     use SnapshotAssertions;
 
-    /**
-     * @var \Codeception\Lib\Console\Output
-     */
-    private $output;
+    private Output $output;
 
     /**
      * @before
@@ -88,9 +82,8 @@ class BuiltInServerControllerTest extends Unit
      *
      * @test
      * @dataProvider notArrayOfStringsProvider
-     * @param mixed $suites
      */
-    public function should_throw_if_suite_configuration_parameter_is_not_array_of_strings($suites): void
+    public function should_throw_if_suite_configuration_parameter_is_not_array_of_strings(mixed $suites): void
     {
         $config = ['suites' => $suites];
         $options = [];
@@ -121,9 +114,8 @@ class BuiltInServerControllerTest extends Unit
      *
      * @test
      * @dataProvider notIntGreaterThanZeroProvider
-     * @param mixed $port
      */
-    public function should_throw_if_config_port_is_not_int_greater_than_0($port): void
+    public function should_throw_if_config_port_is_not_int_greater_than_0(mixed $port): void
     {
         $config = [
             'docroot' => __DIR__,
@@ -158,9 +150,8 @@ class BuiltInServerControllerTest extends Unit
      *
      * @test
      * @dataProvider notValidDirectoryProvider
-     * @param mixed $docroot
      */
-    public function should_throw_if_config_docroot_is_not_existing_directory($docroot): void
+    public function should_throw_if_config_docroot_is_not_existing_directory(mixed $docroot): void
     {
         $config = ['docroot' => $docroot];
         $options = [];
@@ -179,9 +170,8 @@ class BuiltInServerControllerTest extends Unit
      *
      * @test
      * @dataProvider notIntGreaterThanZeroProvider
-     * @param mixed $workers
      */
-    public function should_throw_if_config_workers_is_not_int_greater_than_0($workers): void
+    public function should_throw_if_config_workers_is_not_int_greater_than_0(mixed $workers): void
     {
         $config = [
             'docroot' => __DIR__,
@@ -218,9 +208,8 @@ class BuiltInServerControllerTest extends Unit
      *
      * @test
      * @dataProvider notAssociativeArrayWithStringsProvider
-     * @param mixed $env
      */
-    public function should_throw_if_config_env_is_not_associative_array_with_string_keys($env): void
+    public function should_throw_if_config_env_is_not_associative_array_with_string_keys(mixed $env): void
     {
         $config = [
             'docroot' => __DIR__,

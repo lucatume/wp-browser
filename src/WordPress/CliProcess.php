@@ -31,16 +31,14 @@ class CliProcess extends Process
 
     /**
      * @param array<string,mixed>|null $env
-     * @param mixed $input
-     * @return static
      */
     public static function fromShellCommandline(
         string $command,
         string $cwd = null,
         array $env = null,
-        $input = null,
+        mixed $input = null,
         ?float $timeout = 60
-    ) {
+    ): static {
         $command = implode(' ', [
             escapeshellarg(PHP_BINARY),
             escapeshellarg(self::getWpCliPharPath()),

@@ -26,5 +26,5 @@ interface PatcherInterface
      *     blocks: int
      * }|false
      */
-    public function stat(string $pathname);
+    public function stat(string $pathname): array|false;
 }

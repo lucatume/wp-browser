@@ -11,14 +11,8 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
  */
 trait ManagedProcessTrait
 {
-    /**
-     * @var \lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process|null
-     */
-    private $process;
-    /**
-     * @var int|null
-     */
-    private $pid;
+    private ?Process $process = null;
+    private ?int $pid = null;
 
     private function writePidFile(): void
     {

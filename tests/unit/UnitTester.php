@@ -35,7 +35,7 @@ class UnitTester extends Actor
 	 * @return mixed
 	 * @see \Codeception\Module\Asserts::assertEquals()
 	 */
-	public function assertEquals($expected, $actual, $message = null)
+	public function assertEquals($expected, $actual, $message = null): mixed
     {
 		return $this->scenario->runStep(new Action('assertEquals', func_get_args()));
 	}

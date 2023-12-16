@@ -20,7 +20,7 @@ class FactoryQueriesFilter extends QueriesCallerBasedFilterIterator
      *
      * @var array<string>
      */
-    protected $needles = [
+    protected array $needles = [
         'WP_UnitTest_Factory_For_Thing->create'
     ];
 }

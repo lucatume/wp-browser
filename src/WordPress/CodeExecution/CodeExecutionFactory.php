@@ -7,37 +7,21 @@ use lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory;
 
 class CodeExecutionFactory
 {
-    /**
-     * @var mixed[]
-     */
-    private $redirectFiles = [];
-    /**
-     * @var mixed[]
-     */
-    private $presetGlobalVars = [];
-    /**
-     * @var string
-     */
-    private $wpRootDir;
-    /**
-     * @var \lucatume\WPBrowser\WordPress\FileRequests\FileRequestFactory
-     */
-    private $requestFactory;
+    private string $wpRootDir;
+    private FileRequestFactory $requestFactory;
 
     public function __construct(
         string $wpRootDir,
         string $domain,
-        array $redirectFiles = [],
-        array $presetGlobalVars = []
-    ) {
         /**
          * @var array<string,string>
          */
-        $this->redirectFiles = $redirectFiles;
+        private array $redirectFiles = [],
         /**
          * @var array<string,mixed>
          */
-        $this->presetGlobalVars = $presetGlobalVars;
+        private array $presetGlobalVars = []
+    ) {
         $this->wpRootDir = rtrim($wpRootDir, '\\/');
         $this->requestFactory = new FileRequestFactory($wpRootDir, $domain);
     }

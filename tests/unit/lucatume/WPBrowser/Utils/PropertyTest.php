@@ -7,58 +7,25 @@ use InvalidArgumentException;
 
 class PropertyAccessTestTarget
 {
-    /**
-     * @var int
-     */
-    private $private = 23;
-    /**
-     * @var int
-     */
-    protected $protected = 89;
-    /**
-     * @var int
-     */
-    public $public = 2389;
-    /**
-     * @var int
-     */
-    private static $privateStatic = 23;
-    /**
-     * @var int
-     */
-    protected static $protectedStatic = 89;
-    /**
-     * @var int
-     */
-    public static $publicStatic = 2389;
+    private int $private = 23;
+    protected int $protected = 89;
+    public int $public = 2389;
+    private static int $privateStatic = 23;
+    protected static int $protectedStatic = 89;
+    public static int $publicStatic = 2389;
 }
 
 class PropertyAccessTestTargetChild extends PropertyAccessTestTarget
 {
-    /**
-     * @var int
-     */
-    private $private = 42;
-    /**
-     * @var int
-     */
-    protected $protected = 0;
-    /**
-     * @var int
-     */
-    public static $publicStatic = 0;
+    private int $private = 42;
+    protected int $protected = 0;
+    public static int $publicStatic = 0;
 }
 
 class PropertyAccessTestTargetGrandchild extends PropertyAccessTestTargetChild
 {
-    /**
-     * @var int
-     */
-    private $private = 17;
-    /**
-     * @var int
-     */
-    public static $publicStatic = 1731;
+    private int $private = 17;
+    public static int $publicStatic = 1731;
 }
 
 class PropertyTest extends Unit

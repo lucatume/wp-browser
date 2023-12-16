@@ -8,18 +8,13 @@ use lucatume\WPBrowser\WordPress\WPConfigFile;
 
 class CheckWordPressInstalledAction implements CodeExecutionActionInterface
 {
-    /**
-     * @var \lucatume\WPBrowser\WordPress\FileRequests\FileRequest
-     */
-    private $request;
+    private FileRequest $request;
 
     public function __construct(FileRequest $request, string $wpRootDir, bool $multisite)
     {
         $request->setTargetFile($wpRootDir . '/wp-load.php')
             ->runInFastMode($wpRootDir)
-            ->addAfterLoadClosure(function () use ($multisite) : bool {
-                return $this->isBlogInstalled($multisite);
-            });
+            ->addAfterLoadClosure(fn(): bool => $this->isBlogInstalled($multisite));
         $this->request = $request;
     }
 
@@ -32,7 +27,7 @@ class CheckWordPressInstalledAction implements CodeExecutionActionInterface
     {
         $request = $this->request;
 
-        return static function () use ($request) {
+        return static function () use ($request): mixed {
             return $request->execute();
         };
     }

@@ -11,10 +11,7 @@ use function install_network;
 
 class InstallNetworkAction implements CodeExecutionActionInterface
 {
-    /**
-     * @var \lucatume\WPBrowser\WordPress\FileRequests\FileRequest
-     */
-    private $request;
+    private FileRequest $request;
 
     public function __construct(
         FileRequest $request,
@@ -32,7 +29,7 @@ class InstallNetworkAction implements CodeExecutionActionInterface
                 // The `MULTISITE` const might be already defined in the `wp-config.php` file.
                 // If that is the case, silence the error.
                 set_error_handler(static function ($errno, $errstr): bool {
-                    if (strpos($errstr, 'MULTISITE already defined') !== false) {
+                    if (str_contains($errstr, 'MULTISITE already defined')) {
                         return true;
                     }
                     return false;
@@ -45,9 +42,7 @@ class InstallNetworkAction implements CodeExecutionActionInterface
                     PreloadFilters::spoofDnsWildcardCheck();
                 }
             })
-            ->addAfterLoadClosure(function () use ($adminEmail, $title, $subdomain) {
-                return $this->installWordPressNetwork($adminEmail, $title, $subdomain);
-            });
+            ->addAfterLoadClosure(fn() => $this->installWordPressNetwork($adminEmail, $title, $subdomain));
 
         $this->request = $request;
     }
@@ -56,7 +51,7 @@ class InstallNetworkAction implements CodeExecutionActionInterface
     {
         $request = $this->request;
 
-        return static function () use ($request) {
+        return static function () use ($request): mixed {
             return $request->execute();
         };
     }

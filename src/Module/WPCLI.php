@@ -27,7 +27,7 @@ class WPCLI extends Module
     /**
      * @var array<string,bool>
      */
-    private static $globalArgs = [
+    private static array $globalArgs = [
         // 'path' => false, // Already part of the required configuration.
         'url' => false,
         'user' => false,
@@ -45,14 +45,14 @@ class WPCLI extends Module
     /**
      * @var array<string>
      */
-    private static $arrayArgs = ['require', 'exec'];
+    private static array $arrayArgs = ['require', 'exec'];
 
     /**
      * A list of the module required fields.
      *
      * @var array<string>
      */
-    protected $requiredFields = ['path'];
+    protected array $requiredFields = ['path'];
 
     /**
      * An array of configuration variables and their default values.
@@ -78,15 +78,12 @@ class WPCLI extends Module
      *    packages-dir?: string
      * }
      */
-    protected $config = [
+    protected array $config = [
         'throw' => true,
         'timeout' => 60,
     ];
 
-    /**
-     * @var \lucatume\WPBrowser\WordPress\CliProcess|null
-     */
-    private $lastCliProcess;
+    private ?CliProcess $lastCliProcess = null;
 
     /**
      * Executes a wp-cli command targeting the test WordPress installation.
@@ -101,14 +98,14 @@ class WPCLI extends Module
      *
      * @param string|array<string> $command        The command to execute.
      * @param array<string,string|false>|null $env An array of environment variables to pass to the command.
-     * @param mixed $input The input to pass to the command, a stream resource or a \Traversable
+     * @param mixed|null $input                    The input to pass to the command, a stream resource or a \Traversable
      *                                             instance.
      *
      * @return int The command exit value; `0` usually means success.
      *
      * @throws ModuleException If the command execution fails and the `throw` configuration option is set to `true`.
      */
-    public function cli($command = ['core', 'version'], ?array $env = null, $input = null): int
+    public function cli(string|array $command = ['core', 'version'], ?array $env = null, mixed $input = null): int
     {
         /**
          * The config is now validated and the values are defined.
@@ -150,7 +147,7 @@ class WPCLI extends Module
 
         try {
             $cliProcess->run();
-        } catch (ProcessTimedOutException $exception) {
+        } catch (ProcessTimedOutException) {
             throw new ModuleException(
                 __CLASS__,
                 sprintf(
@@ -270,7 +267,7 @@ class WPCLI extends Module
         array $command,
         callable $splitCallback = null,
         ?array $env = null,
-        $input = null
+        mixed $input = null
     ): array {
         $this->cli($command, $env, $input);
 
@@ -311,7 +308,7 @@ class WPCLI extends Module
      *
      * @throws ModuleException
      */
-    public function cliToString(array $command, ?array $env = null, $input = null): string
+    public function cliToString(array $command, ?array $env = null, mixed $input = null): string
     {
         $this->cli($command, $env, $input);
 
@@ -520,7 +517,7 @@ class WPCLI extends Module
         $timeout = $this->config['timeout'] ?? static::DEFAULT_TIMEOUT;
 
         if (!(is_numeric($timeout) && $timeout > 0)) {
-            throw new ModuleConfigException($this, 'Timeout [' . print_r($timeout, true) . '] is not valid.');
+            throw new ModuleConfigException($this, message: 'Timeout [' . print_r($timeout, true) . '] is not valid.');
         }
 
         $this->config['timeout'] = (float)$timeout;
@@ -610,7 +607,7 @@ class WPCLI extends Module
         $prepend = [];
         /** @var false|int $commandPos */
         $commandPos = Arr::searchWithCallback(static function (string $arg): bool {
-            return strncmp($arg, '--', strlen('--')) !== 0;
+            return !str_starts_with($arg, '--');
         }, $command);
         if ($commandPos !== false) {
             $inlineStrictArgs = array_slice($command, 0, $commandPos);
@@ -624,7 +621,7 @@ class WPCLI extends Module
             static function (string $globalArg) use (
                 $inlineStrictArgsStrings
             ) {
-                if (strncmp($globalArg, 'no-', strlen('no-')) === 0) {
+                if (str_starts_with($globalArg, 'no-')) {
                     $globalArg = substr($globalArg, 3);
                 }
                 return empty(preg_match('/--(no-)*' . $globalArg . '(=|\\s+|$)/', $inlineStrictArgsStrings));
@@ -633,7 +630,7 @@ class WPCLI extends Module
         );
 
         foreach ($notOverriddenGlobalArgs as $globalArg => $isFlag) {
-            if (strpos($inlineStrictArgsStrings, '--' . $globalArg) !== false) {
+            if (str_contains($inlineStrictArgsStrings, '--' . $globalArg)) {
                 // Overridden by inline value.
                 continue;
             }

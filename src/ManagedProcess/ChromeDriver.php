@@ -8,27 +8,13 @@ use lucatume\WPBrowser\Utils\Composer;
 
 class ChromeDriver implements ManagedProcessInterface
 {
-    /**
-     * @var int
-     */
-    private $port = self::PORT_DEFAULT;
-    /**
-     * @var array<string>
-     */
-    private $arguments = ['--url-base=/wd/hub'];
     use ManagedProcessTrait;
 
     public const PID_FILE_NAME = 'chromedriver.pid';
     public const PORT_DEFAULT = 9515;
 
-    /**
-     * @var string
-     */
-    private $chromeDriverBinary;
-    /**
-     * @var string
-     */
-    private $prettyName = 'ChromeDriver';
+    private string $chromeDriverBinary;
+    private string $prettyName = 'ChromeDriver';
 
     /**
      * @param array<string> $arguments
@@ -36,12 +22,10 @@ class ChromeDriver implements ManagedProcessInterface
      * @throws RuntimeException
      */
     public function __construct(
-        int $port = self::PORT_DEFAULT,
-        array $arguments = ['--url-base=/wd/hub'],
+        private int $port = self::PORT_DEFAULT,
+        private array $arguments = ['--url-base=/wd/hub'],
         ?string $chromeDriverBinary = null
     ) {
-        $this->port = $port;
-        $this->arguments = $arguments;
         if ($chromeDriverBinary === null) {
             $chromedriverBinaryFile = DIRECTORY_SEPARATOR === '\\' ? 'chromedriver.exe' : 'chromedriver';
             $chromeDriverBinary = Composer::binDir($chromedriverBinaryFile);
@@ -62,7 +46,7 @@ class ChromeDriver implements ManagedProcessInterface
      */
     public function doStart(): void
     {
-        $command = array_merge([$this->chromeDriverBinary, '--port=' . $this->port], $this->arguments);
+        $command = [$this->chromeDriverBinary, '--port=' . $this->port, ...$this->arguments];
         $process = new Process($command);
         $process->createNewConsole();
         $process->start();
@@ -79,7 +63,7 @@ class ChromeDriver implements ManagedProcessInterface
         $start = time();
         $output = $process->getOutput();
         while (time() < $start + 30) {
-            if (strpos($output, 'ChromeDriver was started successfully.') !== false) {
+            if (str_contains($output, 'ChromeDriver was started successfully.')) {
                 return;
             }
             if ($process->getExitCode() !== null) {

@@ -59,9 +59,7 @@ trait ServiceExtensionsTrait
 
             if (is_array($value)) {
                 // Configured inline.
-                reset($value);
-                // Configured inline.
-                $extensionClass = key($value);
+                $extensionClass = array_key_first($value);
 
                 if (!is_string($extensionClass)) {
                     continue;
@@ -109,8 +107,7 @@ trait ServiceExtensionsTrait
                 }
 
                 if (is_array($value)) {
-                    reset($value);
-                    $extensionClass = key($value);
+                    $extensionClass = array_key_first($value);
 
                     if ($extensionClass !== $serviceExtension) {
                         continue;

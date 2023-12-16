@@ -15,21 +15,21 @@ trait WPBrowserMethods
      *
      * @var string|null
      */
-    protected $pluginsPath;
+    protected ?string $pluginsPath = null;
 
     /**
      * The admin UI path, relative to the WordPress installation root URL.
      *
      * @var string
      */
-    protected $adminPath = '/wp-admin';
+    protected string $adminPath = '/wp-admin';
 
     /**
      * The login screen absolute URL
      *
      * @var string
      */
-    protected $loginUrl;
+    protected string $loginUrl;
 
     /**
      * Navigate to the default WordPress logout page and click the logout link.
@@ -48,7 +48,7 @@ trait WPBrowserMethods
      *
      * @throws ModuleException IF the current URI cannot be retrieved from the inner browser.
      */
-    public function logOut($redirectTo = false): void
+    public function logOut(bool|string $redirectTo = false): void
     {
         $previousUri = $this->_getCurrentUri();
         $loginUri = $this->getLoginUrl();
@@ -132,7 +132,7 @@ trait WPBrowserMethods
      *
      * @return FacebookWebdriverCookie|Cookie|null The WordPress authorization cookie or `null` if not found.
      */
-    protected function grabWordPressAuthCookie(string $pattern = null)
+    protected function grabWordPressAuthCookie(string $pattern = null): Cookie|FacebookWebdriverCookie|null
     {
         $pattern = $pattern ?: '/^wordpress_[a-z0-9]{32}$/';
         $cookies = $this->grabCookiesWithPattern($pattern);
@@ -147,7 +147,7 @@ trait WPBrowserMethods
      *
      * @return FacebookWebdriverCookie|Cookie|null The WordPress login cookie or `null` if not found.
      */
-    protected function grabWordPressLoginCookie(string $pattern = null)
+    protected function grabWordPressLoginCookie(string $pattern = null): Cookie|FacebookWebdriverCookie|null
     {
         $pattern = $pattern ?: '/^wordpress_logged_in_[a-z0-9]{32}$/';
         $cookies = $this->grabCookiesWithPattern($pattern);
@@ -299,7 +299,7 @@ trait WPBrowserMethods
      *
      * @throws JsonException If there's any issue stringifying the selector.
      */
-    public function seeErrorMessage($classes = ''): void
+    public function seeErrorMessage(string|array $classes = ''): void
     {
         $classes = (array)$classes;
         $classes = implode('.', $classes);
@@ -342,7 +342,7 @@ trait WPBrowserMethods
      *
      * @throws JsonException If there's any issue stringifying the selector.
      */
-    public function seeMessage($classes = ''): void
+    public function seeMessage(array|string $classes = ''): void
     {
         $classes = (array)$classes;
         $classes = implode('.', $classes);
@@ -410,7 +410,7 @@ trait WPBrowserMethods
      *
      * @param string|array<string,mixed> $queryVars A string or array of query variables to append to the AJAX path.
      */
-    public function amOnAdminAjaxPage($queryVars = null): void
+    public function amOnAdminAjaxPage(string|array $queryVars = null): void
     {
         $path = 'admin-ajax.php';
         if ($queryVars !== null) {
@@ -431,7 +431,7 @@ trait WPBrowserMethods
      *
      * @param string|array<string,mixed> $queryVars A string or array of query variables to append to the Cron path.
      */
-    public function amOnCronPage($queryVars = null): void
+    public function amOnCronPage(string|array $queryVars = null): void
     {
         $path = 'wp-cron.php';
         if ($queryVars !== null) {

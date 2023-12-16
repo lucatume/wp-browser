@@ -30,24 +30,12 @@ class ChromedriverInstaller
     public const ERR_MOVE_BINARY = 15;
     public const ERR_DETECT_PLATFORM = 16;
     public const ERR_BINARY_CHMOD = 17;
-    /**
-     * @var \Symfony\Component\Console\Output\OutputInterface
-     */
-    private $output;
+    private OutputInterface $output;
     /** @var 'linux64'|'mac-x64'|'mac-arm64'|'win32'|'win64' */
-    private $platform;
-    /**
-     * @var string
-     */
-    private $binary;
-    /**
-     * @var string
-     */
-    private $milestone;
-    /**
-     * @var bool
-     */
-    private $useEnvZipFile = true;
+    private string $platform;
+    private string $binary;
+    private string $milestone;
+    private bool $useEnvZipFile = true;
 
     public function __construct(
         string $version = null,
@@ -145,19 +133,12 @@ class ChromedriverInstaller
      */
     private function detectVersion(): string
     {
-        switch ($this->platform) {
-            case 'linux64':
-            case 'mac-x64':
-            case 'mac-arm64':
-                $process = new Process([$this->binary, ' --version']);
-                break;
-            case 'win32':
-            case 'win64':
-                $process = Process::fromShellCommandline(
-                    'reg query "HKEY_CURRENT_USER\Software\Google\Chrome\BLBeacon" /v version'
-                );
-                break;
-        }
+        $process = match ($this->platform) {
+            'linux64', 'mac-x64', 'mac-arm64' => new Process([$this->binary, ' --version']),
+            'win32', 'win64' => Process::fromShellCommandline(
+                'reg query "HKEY_CURRENT_USER\Software\Google\Chrome\BLBeacon" /v version'
+            )
+        };
 
         $process->run();
         $chromeVersion = $process->getOutput();
@@ -205,7 +186,7 @@ class ChromedriverInstaller
         }
 
         if ($system === 'Windows NT') {
-            if (strpos($arch, '64') !== false) {
+            if (str_contains($arch, '64')) {
                 return 'win64';
             }
 
@@ -219,9 +200,8 @@ class ChromedriverInstaller
      * @return 'linux64'|'mac-x64'|'mac-arm64'|'win32'|'win64'
      *
      * @throws RuntimeException
-     * @param mixed $platform
      */
-    private function checkPlatform($platform): string
+    private function checkPlatform(mixed $platform): string
     {
         if (!(is_string($platform) && in_array($platform, [
                 'linux64',
@@ -262,22 +242,14 @@ class ChromedriverInstaller
      */
     private function detectBinary(): string
     {
-        switch ($this->platform) {
-            case 'linux64':
-                return '/usr/bin/google-chrome';
-            case 'mac-x64':
-            case 'mac-arm64':
-                return '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-            case 'win32':
-            case 'win64':
-                return $this->detectWindowsBinaryPath();
-        }
+        return match ($this->platform) {
+            'linux64' => '/usr/bin/google-chrome',
+            'mac-x64', 'mac-arm64' => '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+            'win32', 'win64' => $this->detectWindowsBinaryPath()
+        };
     }
 
-    /**
-     * @param mixed $binary
-     */
-    private function checkBinary($binary): string
+    private function checkBinary(mixed $binary): string
     {
         // Replace escaped spaces with spaces to check the binary.
         if (!(is_string($binary) && is_executable(str_replace('\ ', ' ', $binary)))) {
@@ -290,10 +262,7 @@ class ChromedriverInstaller
         return $binary;
     }
 
-    /**
-     * @param mixed $version
-     */
-    private function checkVersion($version): string
+    private function checkVersion(mixed $version): string
     {
         $matches = [];
         if (!(is_string($version) && preg_match('/^.*?(?<major>\d+)(\.\d+\.\d+\.\d+)*$/', $version, $matches))) {
@@ -309,9 +278,7 @@ class ChromedriverInstaller
     private function fetchChromedriverVersionUrl(): string
     {
         return useMemoString(
-            function () {
-                return $this->unmemoizedFetchChromedriverVersionUrl();
-            },
+            fn() => $this->unmemoizedFetchChromedriverVersionUrl(),
             [$this->platform, $this->milestone]
         );
     }
@@ -332,10 +299,7 @@ class ChromedriverInstaller
             );
         }
 
-        $decoded = json_decode($milestoneDownloads, true, 512, 0);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception(json_last_error_msg());
-        }
+        $decoded = json_decode($milestoneDownloads, true, 512, JSON_THROW_ON_ERROR);
 
         if (!(
             is_array($decoded)
@@ -376,15 +340,10 @@ class ChromedriverInstaller
 
     private function getExecutableFileName(): string
     {
-        switch ($this->platform) {
-            case 'linux64':
-            case 'mac-x64':
-            case 'mac-arm64':
-                return 'chromedriver';
-            case 'win32':
-            case 'win64':
-                return 'chromedriver.exe';
-        }
+        return match ($this->platform) {
+            'linux64', 'mac-x64', 'mac-arm64' => 'chromedriver',
+            'win32', 'win64' => 'chromedriver.exe'
+        };
     }
 
     public function getVersion(): string

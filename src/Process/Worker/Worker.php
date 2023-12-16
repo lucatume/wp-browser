@@ -10,14 +10,6 @@ use ReflectionFunction;
 class Worker implements WorkerInterface
 {
     /**
-     * @var string
-     */
-    private $id;
-    /**
-     * @var string[]
-     */
-    private $requiredResourcesIds = [];
-    /**
      * @var callable
      */
     private $callable;
@@ -33,7 +25,7 @@ class Worker implements WorkerInterface
      *     env: array<string, string|int|float|bool>
      * }
      */
-    private $control;
+    private array $control;
 
     /**
      * @param string[] $requiredResourcesIds
@@ -50,13 +42,11 @@ class Worker implements WorkerInterface
      * @throws ConfigurationException
      */
     public function __construct(
-        string $id,
+        private string $id,
         callable $callable,
-        array $requiredResourcesIds = [],
+        private array $requiredResourcesIds = [],
         array $control = []
     ) {
-        $this->id = $id;
-        $this->requiredResourcesIds = $requiredResourcesIds;
         $this->callable = $callable;
         $defaultControl = Control::getDefault();
         if (!empty($control['cwd'])) {

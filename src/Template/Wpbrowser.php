@@ -21,10 +21,7 @@ use Throwable;
 
 class Wpbrowser extends Bootstrap
 {
-    /**
-     * @var \lucatume\WPBrowser\Project\TestEnvironment|null
-     */
-    private $testEnvironment;
+    private ?TestEnvironment $testEnvironment = null;
 
     /**
      * @throws RuntimeException
@@ -99,9 +96,16 @@ class Wpbrowser extends Bootstrap
             'actor_suffix' => 'Tester',
             'params' => ['tests/.env'],
             'extensions' => [
-                'enabled' => array_merge([RunFailed::class], array_keys($testEnv->extensionsEnabled)),
+                'enabled' => [RunFailed::class, ...array_keys($testEnv->extensionsEnabled)],
                 'config' => $testEnv->extensionsEnabled,
-                'commands' => array_merge([RunOriginal::class, RunAll::class, GenerateWPUnit::class, DbExport::class, DbImport::class], $testEnv->customCommands)
+                'commands' => [
+                    RunOriginal::class,
+                    RunAll::class,
+                    GenerateWPUnit::class,
+                    DbExport::class,
+                    DbImport::class,
+                    ...$testEnv->customCommands
+                ]
             ]
         ];
 

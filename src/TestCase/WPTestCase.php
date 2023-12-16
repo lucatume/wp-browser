@@ -15,7 +15,7 @@ class WPTestCase extends Unit
     protected $backupGlobals = true;
 
     // A list of globals that should not be backed up: they are handled by the Core test case.
-    protected $backupGlobalsBlacklist = [
+    protected $backupGlobalsExcludeList = [
         'wpdb',
         'wp_query',
         'wp',
@@ -53,7 +53,7 @@ class WPTestCase extends Unit
     protected $backupStaticAttributes = true;
 
     // A list of static attributes that should not be backed up as they are wired to explode when doing so.
-    protected $backupStaticAttributesBlacklist = [
+    protected $backupStaticAttributesExcludeList = [
         // WordPress
         'WP_Block_Type_Registry' => ['instance'],
         // wp-browser
@@ -86,11 +86,9 @@ class WPTestCase extends Unit
 
         if (property_exists($this, 'backupGlobalsExcludeList')) {
             $backupGlobalsExcludeListReflectionProperty = new \ReflectionProperty($this, 'backupGlobalsExcludeList');
-            $backupGlobalsExcludeListReflectionProperty->setAccessible(true);
         } else {
             // Older versions of PHPUnit.
             $backupGlobalsExcludeListReflectionProperty = new \ReflectionProperty($this, 'backupGlobalsBlacklist');
-            $backupGlobalsExcludeListReflectionProperty->setAccessible(true);
         }
         $backupGlobalsExcludeListReflectionProperty->setAccessible(true);
         $isDefinedInThis = $backupGlobalsExcludeListReflectionProperty->getDeclaringClass()
@@ -99,8 +97,8 @@ class WPTestCase extends Unit
             && isset($_wpTestsBackupGlobalsExcludeList)
             && is_array($_wpTestsBackupGlobalsExcludeList)
         ) {
-            $this->backupGlobalsBlacklist = array_merge(
-                $this->backupGlobalsBlacklist,
+            $this->backupGlobalsExcludeList = array_merge(
+                $this->backupGlobalsExcludeList,
                 $_wpTestsBackupGlobalsExcludeList
             );
         }
@@ -118,14 +116,12 @@ class WPTestCase extends Unit
                 $this,
                 'backupStaticAttributesExcludeList'
             );
-            $backupStaticAttributesExcludeListReflectionProperty->setAccessible(true);
         } else {
             // Older versions of PHPUnit.
             $backupStaticAttributesExcludeListReflectionProperty = new \ReflectionProperty(
                 $this,
                 'backupStaticAttributesBlacklist'
             );
-            $backupStaticAttributesExcludeListReflectionProperty->setAccessible(true);
         }
         $backupStaticAttributesExcludeListReflectionProperty->setAccessible(true);
         $isDefinedInThis = $backupStaticAttributesExcludeListReflectionProperty->getDeclaringClass()
@@ -134,8 +130,8 @@ class WPTestCase extends Unit
             && isset($_wpTestsBackupStaticAttributesExcludeList)
             && is_array($_wpTestsBackupStaticAttributesExcludeList)
         ) {
-            $this->backupStaticAttributesBlacklist = array_merge_recursive(
-                $this->backupStaticAttributesBlacklist,
+            $this->backupStaticAttributesExcludeList = array_merge_recursive(
+                $this->backupStaticAttributesExcludeList,
                 $_wpTestsBackupStaticAttributesExcludeList
             );
         }
@@ -146,12 +142,12 @@ class WPTestCase extends Unit
     /**
      * @var array<string,mixed>
      */
-    protected $additionalGlobalsBackup = [];
+    protected array $additionalGlobalsBackup = [];
 
     /**
      * @var array<string,WP_UnitTestCase>
      */
-    private static $coreTestCaseMap = [];
+    private static array $coreTestCaseMap = [];
 
     private static function getCoreTestCase(): WP_UnitTestCase
     {
@@ -228,9 +224,8 @@ class WPTestCase extends Unit
     /**
      * @param array<string,mixed> $arguments
      * @throws ReflectionException
-     * @return mixed
      */
-    public static function __callStatic(string $name, array $arguments)
+    public static function __callStatic(string $name, array $arguments): mixed
     {
         $coreTestCase = self::getCoreTestCase();
         $reflectionMethod = new ReflectionMethod($coreTestCase, $name);
@@ -241,9 +236,8 @@ class WPTestCase extends Unit
     /**
      * @param array<string,mixed> $arguments
      * @throws ReflectionException
-     * @return mixed
      */
-    public function __call(string $name, array $arguments)
+    public function __call(string $name, array $arguments): mixed
     {
         $coreTestCase = self::getCoreTestCase();
         $reflectionMethod = new ReflectionMethod($coreTestCase, $name);

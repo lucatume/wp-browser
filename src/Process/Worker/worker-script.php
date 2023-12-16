@@ -14,7 +14,7 @@ try {
         throw new RuntimeException('Payload empty.');
     }
 
-    if (strncmp($argv[1], '$', strlen('$')) === 0) {
+    if (str_starts_with($argv[1], '$')) {
         $payload = $argv[1];
     } elseif (($payload = @file_get_contents($argv[1])) === false) {
         throw new RuntimeException("Could not read payload from file $argv[1]");

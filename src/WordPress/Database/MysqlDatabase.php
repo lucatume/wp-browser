@@ -14,57 +14,22 @@ use PDOException;
 
 class MysqlDatabase implements DatabaseInterface
 {
-    /**
-     * @var string
-     */
-    private $dbUser;
-    /**
-     * @var string
-     */
-    private $dbPassword;
-    /**
-     * @var string
-     */
-    private $dbHost;
-    /**
-     * @var string
-     */
-    private $tablePrefix = 'wp_';
-    /**
-     * @var \PDO|null
-     */
-    private $pdo;
-    /**
-     * @var string
-     */
-    private $dbName;
-    /**
-     * @var string
-     */
-    private $dsnWithoutDbName;
-    /**
-     * @var string
-     */
-    private $dsn;
-    /**
-     * @var string
-     */
-    private $dbUrl;
+    private ?PDO $pdo = null;
+    private string $dbName;
+    private string $dsnWithoutDbName;
+    private string $dsn;
+    private string $dbUrl;
 
     /**
      * @throws DbException
      */
     public function __construct(
         string $dbName,
-        string $dbUser,
-        string $dbPassword,
-        string $dbHost,
-        string $tablePrefix = 'wp_'
+        private string $dbUser,
+        private string $dbPassword,
+        private string $dbHost,
+        private string $tablePrefix = 'wp_'
     ) {
-        $this->dbUser = $dbUser;
-        $this->dbPassword = $dbPassword;
-        $this->dbHost = $dbHost;
-        $this->tablePrefix = $tablePrefix;
         $this->dbName = $dbName;
         $this->dsnWithoutDbName = DbUtil::dbDsnString(DbUtil::dbDsnMap($dbHost));
         $this->dsn = $this->dsnWithoutDbName . ';dbname=' . $dbName;
@@ -79,9 +44,8 @@ class MysqlDatabase implements DatabaseInterface
 
     /**
      * @throws DbException|WpConfigFileException
-     * @return $this
      */
-    public static function fromWpConfigFile(WPConfigFile $wpConfigFile): \lucatume\WPBrowser\WordPress\Database\DatabaseInterface
+    public static function fromWpConfigFile(WPConfigFile $wpConfigFile): self
     {
         $dbName = (string)$wpConfigFile->getConstantOrThrow('DB_NAME');
         $dbUser = (string)$wpConfigFile->getConstantOrThrow('DB_USER');
@@ -150,9 +114,8 @@ class MysqlDatabase implements DatabaseInterface
 
     /**
      * @throws DbException
-     * @return $this
      */
-    public function create(): \lucatume\WPBrowser\WordPress\Database\DatabaseInterface
+    public function create(): self
     {
         $pdo = $this->getPDO();
         if ($pdo->query("CREATE DATABASE IF NOT EXISTS `{$this->dbName}`") === false) {
@@ -168,9 +131,8 @@ class MysqlDatabase implements DatabaseInterface
 
     /**
      * @throws DbException
-     * @return $this
      */
-    public function drop(): \lucatume\WPBrowser\WordPress\Database\DatabaseInterface
+    public function drop(): self
     {
         $pdo = $this->getPDO();
         if ($pdo->query("DROP DATABASE IF EXISTS `{$this->dbName}`") === false) {
@@ -198,9 +160,8 @@ class MysqlDatabase implements DatabaseInterface
 
     /**
      * @throws DbException
-     * @return $this
      */
-    public function useDb(string $dbName): \lucatume\WPBrowser\WordPress\Database\DatabaseInterface
+    public function useDb(string $dbName): self
     {
         $pdo = $this->getPDO();
         if ($pdo->query("USE `{$dbName}`") === false) {
@@ -246,9 +207,8 @@ class MysqlDatabase implements DatabaseInterface
 
     /**
      * @throws DbException
-     * @param mixed $value
      */
-    public function updateOption(string $name, $value): int
+    public function updateOption(string $name, mixed $value): int
     {
         $table = $this->getTablePrefix() . 'options';
         return $this->query(
@@ -260,10 +220,8 @@ class MysqlDatabase implements DatabaseInterface
 
     /**
      * @throws DbException
-     * @param mixed $default
-     * @return mixed
      */
-    public function getOption(string $name, $default = null)
+    public function getOption(string $name, mixed $default = null): mixed
     {
         $table = $this->getTablePrefix() . 'options';
         $query = "SELECT option_value FROM $table WHERE option_name = :name";
@@ -276,10 +234,8 @@ class MysqlDatabase implements DatabaseInterface
      *
      * @throws DbException
      * @throws PDOException
-     * @param mixed $default
-     * @return mixed
      */
-    private function fetchFirst(string $query, array $parameters = [], $default = null)
+    private function fetchFirst(string $query, array $parameters = [], mixed $default = null): mixed
     {
         $statement = $this->getPDO()->prepare($query);
         $executed = $statement->execute($parameters);
@@ -331,24 +287,24 @@ class MysqlDatabase implements DatabaseInterface
                 continue;
             }
 
-            if ($ingestingMultilineComment && substr_compare($read, '*/', -strlen('*/')) !== 0) {
+            if ($ingestingMultilineComment && !str_ends_with($read, '*/')) {
                 continue;
             }
 
             // MySQL `-- ` comment.
-            if ($read === '--' || strncmp($read, '-- ', strlen('-- ')) === 0) {
+            if ($read === '--' || str_starts_with($read, '-- ')) {
                 continue;
             }
 
             // MySQL multi-line comment.
-            if (strncmp($read, '/*', strlen('/*')) === 0) {
+            if (str_starts_with($read, '/*')) {
                 // Might be closed on the same line.
-                $ingestingMultilineComment = substr_compare($read, '*/', -strlen('*/')) === 0;
+                $ingestingMultilineComment = str_ends_with($read, '*/');
                 continue;
             }
 
             $line .= $read;
-            if (substr_compare($line, ';', -strlen(';')) === 0) {
+            if (str_ends_with($line, ';')) {
                 try {
                     $modified = $pdo->exec($line);
                     if ($modified === false) {

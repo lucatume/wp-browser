@@ -20,7 +20,7 @@ class Control
      *     env: array<string, string|int|float|bool>
      * }
      */
-    private $control;
+    private array $control;
 
     /**
      * @param array{

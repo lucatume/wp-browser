@@ -46,14 +46,11 @@ class Source
 
     public static function getWPDownloadUrl(string $version): string
     {
-        switch ($version) {
-            case 'latest':
-                return 'https://wordpress.org/latest.zip';
-            case 'nightly':
-                return 'https://wordpress.org/nightly-builds/wordpress-latest.zip';
-            default:
-                return "https://wordpress.org/wordpress-{$version}.zip";
-        }
+        return match ($version) {
+            'latest' => 'https://wordpress.org/latest.zip',
+            'nightly' => 'https://wordpress.org/nightly-builds/wordpress-latest.zip',
+            default => "https://wordpress.org/wordpress-{$version}.zip",
+        };
     }
 
     public static function getWordPressVersionsCacheDir(): string

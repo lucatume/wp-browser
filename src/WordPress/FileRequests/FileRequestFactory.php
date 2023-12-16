@@ -8,31 +8,15 @@ use lucatume\WPBrowser\Exceptions\RuntimeException;
 class FileRequestFactory
 {
     /**
-     * @var string
-     */
-    private $wpRootDir;
-    /**
-     * @var string
-     */
-    private $domain;
-    /**
-     * @var array<string, string>
-     */
-    private $redirectFiles = [];
-    /**
-     * @var array<string>
-     */
-    private $presetGlobalVars = [];
-    /**
      * @param array<string, string> $redirectFiles
      * @param array<string> $presetGlobalVars
      */
-    public function __construct(string $wpRootDir, string $domain, array $redirectFiles = [], array $presetGlobalVars = [])
-    {
-        $this->wpRootDir = $wpRootDir;
-        $this->domain = $domain;
-        $this->redirectFiles = $redirectFiles;
-        $this->presetGlobalVars = $presetGlobalVars;
+    public function __construct(
+        private string $wpRootDir,
+        private string $domain,
+        private array $redirectFiles = [],
+        private array $presetGlobalVars = []
+    ) {
     }
 
     /**

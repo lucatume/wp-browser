@@ -7,10 +7,7 @@ use lucatume\WPBrowser\WordPress\FileRequests\FileRequest;
 
 class ExecuteClosureAction implements CodeExecutionActionInterface
 {
-    /**
-     * @var \lucatume\WPBrowser\WordPress\FileRequests\FileRequest
-     */
-    private $request;
+    private FileRequest $request;
 
     public function __construct(FileRequest $request, string $wpRootDir, Closure $closure)
     {
@@ -25,7 +22,7 @@ class ExecuteClosureAction implements CodeExecutionActionInterface
     {
         $request = $this->request;
 
-        return static function () use ($request) {
+        return static function () use ($request): mixed {
             $returnValues = $request->execute();
 
             if (count($returnValues)) {

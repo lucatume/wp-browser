@@ -11,14 +11,8 @@ use function preg_match;
 
 class WpConfigFileGenerator
 {
-    /**
-     * @var string
-     */
-    private $wpConfigFileContents;
-    /**
-     * @var string
-     */
-    private $relativePathRoot;
+    private string $wpConfigFileContents;
+    private string $relativePathRoot;
 
     /**
      * @throws InstallationException
@@ -91,34 +85,17 @@ class WpConfigFileGenerator
         $this->wpConfigFileContents = (string)preg_replace_callback(
             $saltDefinitionPattern,
             static function (array $matches) use ($configurationData): string {
-                switch ($matches['const']) {
-                    case 'AUTH_KEY':
-                        $value = $configurationData->getAuthKey();
-                        break;
-                    case 'SECURE_AUTH_KEY':
-                        $value = $configurationData->getSecureAuthKey();
-                        break;
-                    case 'LOGGED_IN_KEY':
-                        $value = $configurationData->getLoggedInKey();
-                        break;
-                    case 'NONCE_KEY':
-                        $value = $configurationData->getNonceKey();
-                        break;
-                    case 'AUTH_SALT':
-                        $value = $configurationData->getAuthSalt();
-                        break;
-                    case 'SECURE_AUTH_SALT':
-                        $value = $configurationData->getSecureAuthSalt();
-                        break;
-                    case 'LOGGED_IN_SALT':
-                        $value = $configurationData->getLoggedInSalt();
-                        break;
-                    case 'NONCE_SALT':
-                        $value = $configurationData->getNonceSalt();
-                        break;
-                    default:
-                        throw new RuntimeException("Unknown constant {$matches['const']}.");
-                }
+                $value = match ($matches['const']) {
+                    'AUTH_KEY' => $configurationData->getAuthKey(),
+                    'SECURE_AUTH_KEY' => $configurationData->getSecureAuthKey(),
+                    'LOGGED_IN_KEY' => $configurationData->getLoggedInKey(),
+                    'NONCE_KEY' => $configurationData->getNonceKey(),
+                    'AUTH_SALT' => $configurationData->getAuthSalt(),
+                    'SECURE_AUTH_SALT' => $configurationData->getSecureAuthSalt(),
+                    'LOGGED_IN_SALT' => $configurationData->getLoggedInSalt(),
+                    'NONCE_SALT' => $configurationData->getNonceSalt(),
+                    default => throw new RuntimeException("Unknown constant {$matches['const']}.")
+                };
                 return str_replace('put your unique phrase here', $value, $matches[0]);
             },
             $this->wpConfigFileContents

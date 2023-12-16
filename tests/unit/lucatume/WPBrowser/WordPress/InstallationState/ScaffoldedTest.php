@@ -657,7 +657,7 @@ PHP;
         $scaffolded = new Scaffolded($wpRootDir);
 
         $this->uopzSetFunctionReturn('file_get_contents', function (string $file) {
-            if (substr_compare($file, 'db.copy', -strlen('db.copy')) === 0) {
+            if (str_ends_with($file, 'db.copy')) {
                 return false;
             }
             return file_get_contents(...func_get_args());
@@ -682,7 +682,7 @@ PHP;
         $scaffolded = new Scaffolded($wpRootDir);
 
         $this->uopzSetFunctionReturn('file_put_contents', function (string $file) {
-            if (substr_compare($file, 'db.php', -strlen('db.php')) === 0) {
+            if (str_ends_with($file, 'db.php')) {
                 return false;
             }
             return file_put_contents(...func_get_args());

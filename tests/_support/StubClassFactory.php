@@ -10,10 +10,7 @@ use ReflectionMethod;
 
 class StubClassFactory
 {
-    /**
-     * @var string
-     */
-    private static $classTemplate = 'class %1$s extends %2$s
+    private static string $classTemplate = 'class %1$s extends %2$s
 {
     public function __construct(%3$s)
     {
@@ -21,14 +18,8 @@ class StubClassFactory
         %4$s::assertConstructorConditions("%1$s", func_get_args());
     }
 }';
-    /**
-     * @var mixed[]
-     */
-    private static $stubParametersByClassName = [];
-    /**
-     * @var mixed[]
-     */
-    private static $constructorAssertions = [];
+    private static array $stubParametersByClassName = [];
+    private static array $constructorAssertions = [];
 
     public static function tearDown(): void
     {
@@ -38,9 +29,8 @@ class StubClassFactory
 
     /**
      * @throws Exception
-     * @param object $mock
      */
-    public static function connectInvocationMocker($mock): void
+    public static function connectInvocationMocker(object $mock): void
     {
         $mockClassName = get_class($mock);
         [$class, $parameters] = self::$stubParametersByClassName[$mockClassName];

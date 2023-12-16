@@ -194,9 +194,8 @@ class Configured implements InstallationStateInterface
 
     /**
      * @throws InstallationException
-     * @param mixed $value
      */
-    public function updateOption(string $option, $value): int
+    public function updateOption(string $option, mixed $value): int
     {
         throw new InstallationException(
             'The WordPress installation has not been installed yet.',
@@ -206,9 +205,8 @@ class Configured implements InstallationStateInterface
 
     /**
      * @throws InstallationException
-     * @return mixed
      */
-    public function executeClosureInWordPress(Closure $closure)
+    public function executeClosureInWordPress(Closure $closure): mixed
     {
         throw new InstallationException(
             'The WordPress installation has not been installed yet.',

@@ -137,12 +137,8 @@ class ComposerTest extends \Codeception\Test\Unit
                     Assert::assertEquals(['composer', 'update', '--no-interaction'], func_get_args()[0]);
                     $built++;
                 },
-                'run' => function () {
-                    return 0;
-                },
-                'getExitCode' => function () {
-                    return 0;
-                },
+                'run' => fn() => 0,
+                'getExitCode' => fn() => 0,
             ]));
         $hash = md5(microtime());
         $testFile = sys_get_temp_dir() . "/$hash-composer.json";
@@ -167,12 +163,8 @@ class ComposerTest extends \Codeception\Test\Unit
                     Assert::assertEquals(['composer', 'update', '--no-interaction', 'foo/baz'], func_get_args()[0]);
                     $built++;
                 },
-                'run' => function () {
-                    return 0;
-                },
-                'getExitCode' => function () {
-                    return 0;
-                },
+                'run' => fn() => 0,
+                'getExitCode' => fn() => 0,
             ]));
         $tmpDir = FS::tmpDir('composer_', [
             'composer.json' => file_get_contents(codecept_data_dir('composer-files/test-1-composer.json')),
@@ -196,12 +188,8 @@ class ComposerTest extends \Codeception\Test\Unit
                 '__construct' => function () {
                     Assert::assertEquals(['composer', 'update', '--no-interaction'], func_get_args()[0]);
                 },
-                'run' => function () {
-                    return 1;
-                },
-                'getExitCode' => function () {
-                    return 1;
-                },
+                'run' => fn() => 1,
+                'getExitCode' => fn() => 1,
             ]));
         $hash = md5(microtime());
         $testFile = sys_get_temp_dir() . "/$hash-composer.json";

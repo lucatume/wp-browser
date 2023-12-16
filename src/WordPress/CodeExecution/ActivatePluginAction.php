@@ -11,10 +11,7 @@ use function activate_plugin;
 
 class ActivatePluginAction implements CodeExecutionActionInterface
 {
-    /**
-     * @var \lucatume\WPBrowser\WordPress\FileRequests\FileRequest
-     */
-    private $request;
+    private FileRequest $request;
 
     public function __construct(
         FileRequest $request,
@@ -26,9 +23,7 @@ class ActivatePluginAction implements CodeExecutionActionInterface
         $request->setTargetFile($wpRootDir . '/wp-load.php')
             ->runInFastMode($wpRootDir)
             ->defineConstant('MULTISITE', $multisite)
-            ->addAfterLoadClosure(function () use ($plugin, $multisite, $silent) {
-                return $this->activatePlugin($plugin, $multisite, $silent);
-            });
+            ->addAfterLoadClosure(fn() => $this->activatePlugin($plugin, $multisite, $silent));
         $this->request = $request;
     }
 
@@ -62,7 +57,7 @@ class ActivatePluginAction implements CodeExecutionActionInterface
     {
         $request = $this->request;
 
-        return static function () use ($request) {
+        return static function () use ($request): mixed {
             return $request->execute();
         };
     }

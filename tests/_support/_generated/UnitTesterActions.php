@@ -1322,9 +1322,8 @@ trait UnitTesterActions
      *
      * Asserts that an object has a specified attribute.
      * @see \Codeception\Module\AbstractAsserts::assertObjectHasAttribute()
-     * @param object $object
      */
-    public function assertObjectHasAttribute(string $attributeName, $object, string $message = "") {
+    public function assertObjectHasAttribute(string $attributeName, object $object, string $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertObjectHasAttribute', func_get_args()));
     }
 
@@ -1334,9 +1333,8 @@ trait UnitTesterActions
      *
      * Asserts that an object does not have a specified attribute.
      * @see \Codeception\Module\AbstractAsserts::assertObjectNotHasAttribute()
-     * @param object $object
      */
-    public function assertObjectNotHasAttribute(string $attributeName, $object, string $message = "") {
+    public function assertObjectNotHasAttribute(string $attributeName, object $object, string $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertObjectNotHasAttribute', func_get_args()));
     }
 

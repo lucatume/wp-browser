@@ -73,9 +73,7 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
         }
 
         $wploaderCorrectLoad = count($wpLoaderConfigs)
-            && array_reduce($wpLoaderConfigs, function ($carry, $config) {
-                return $carry || empty($config['loadOnly']);
-            }, false);
+            && array_reduce($wpLoaderConfigs, fn($carry, $config) => $carry || empty($config['loadOnly']), false);
 
         if (!$wploaderCorrectLoad) {
             $output->writeln("<error>Test suite $suite does not use the WPLoader module or uses it in " .

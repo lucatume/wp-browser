@@ -9,15 +9,12 @@ use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 class FileStreamWrapper
 {
-    /**
-     * @var bool
-     */
-    protected static $isRegistered = false;
+    protected static bool $isRegistered = false;
 
     /**
      * @var array<string,PatcherInterface>
      */
-    private static $fileToPatcherMap = [];
+    private static array $fileToPatcherMap = [];
 
     /**
      * @var resource|null
@@ -104,9 +101,8 @@ class FileStreamWrapper
 
     /**
      * @throws MonkeyPatchingException
-     * @return string|false
      */
-    public function stream_read(int $count)
+    public function stream_read(int $count): string|false
     {
         if ($count < 0) {
             throw new MonkeyPatchingException('Cannot read a negative number of bytes.');
@@ -234,7 +230,7 @@ class FileStreamWrapper
      *     blocks: int
      * }|false
      */
-    public function stream_stat()
+    public function stream_stat(): array|false
     {
         $stat = fstat($this->fileResource);
 
@@ -252,7 +248,7 @@ class FileStreamWrapper
      *
      * @throws MonkeyPatchingException
      */
-    public function stream_metadata(string $path, int $option, $value): bool
+    public function stream_metadata(string $path, int $option, string|int|array|null $value): bool
     {
         static::unregister();
 
@@ -311,10 +307,7 @@ class FileStreamWrapper
         return ftruncate($this->fileResource, max(0, $newSize));
     }
 
-    /**
-     * @return string|false
-     */
-    public function dir_readdir()
+    public function dir_readdir(): string|false
     {
         return readdir($this->fileResource);
     }
@@ -360,7 +353,7 @@ class FileStreamWrapper
      *
      * @throws ErrorException
      */
-    public function url_stat(string $path, int $flags)
+    public function url_stat(string $path, int $flags): array|false
     {
         static::unregister();
 
@@ -386,7 +379,12 @@ class FileStreamWrapper
             return false;
         }
 
-        set_error_handler(static function (int $errno, string $errstr, ?string $errfile = null, ?int $errline = null) : void {
+        set_error_handler(static function (
+            int $errno,
+            string $errstr,
+            ?string $errfile = null,
+            ?int $errline = null,
+        ): void {
             throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
         });
         try {
@@ -471,7 +469,7 @@ class FileStreamWrapper
 
         $this->fileResource = $fileResource;
 
-        if (!fwrite($this->fileResource, $fileContents)) {
+        if (fwrite($this->fileResource, $fileContents) === false) {
             throw new MonkeyPatchingException("Could not write to temporary file.");
         }
 

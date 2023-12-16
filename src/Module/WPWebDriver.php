@@ -27,14 +27,14 @@ class WPWebDriver extends WebDriver
      *
      * @var array<string>
      */
-    protected $requiredFields = ['adminUsername', 'adminPassword', 'adminPath'];
+    protected array $requiredFields = ['adminUsername', 'adminPassword', 'adminPath'];
 
     /**
      * The login attempts counter.
      *
      * @var int
      */
-    protected $loginAttempt = 0;
+    protected int $loginAttempt = 0;
 
     /**
      * Login as the administrator user using the credentials specified in the module configuration.
@@ -142,7 +142,7 @@ class WPWebDriver extends WebDriver
         if (!$cookies) {
             return null;
         }
-        $matchingCookies = array_filter($cookies, static function ($cookie) use ($cookiePattern) {
+        $matchingCookies = array_filter($cookies, static function ($cookie) use ($cookiePattern): int|bool {
             return preg_match($cookiePattern, $cookie->getName());
         });
         $cookieList = array_map(static function ($cookie): string {
@@ -217,7 +217,7 @@ class WPWebDriver extends WebDriver
      *
      * @throws JsonException If there's an issue encoding the debug message.
      */
-    public function deactivatePlugin($pluginSlug): void
+    public function deactivatePlugin(string|array $pluginSlug): void
     {
         foreach ((array)$pluginSlug as $plugin) {
             $option = '//*[@data-slug="' . $plugin . '"]/th/input';
@@ -251,7 +251,7 @@ class WPWebDriver extends WebDriver
      *
      * @throws JsonException If there's an issue encoding the debug message.
      */
-    public function activatePlugin($pluginSlug): void
+    public function activatePlugin(string|array $pluginSlug): void
     {
         $plugins = (array)$pluginSlug;
         foreach ($plugins as $plugin) {

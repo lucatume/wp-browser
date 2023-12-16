@@ -32,7 +32,7 @@ class WPFilesystem extends Filesystem
      *
      * @var array<string>
      */
-    protected $requiredFields = ['wpRootFolder'];
+    protected array $requiredFields = ['wpRootFolder'];
 
     /**
      * The default module configuration.
@@ -44,7 +44,7 @@ class WPFilesystem extends Filesystem
      *     uploads: string,
      * }
      */
-    protected $config = [
+    protected array $config = [
         'themes' => '/wp-content/themes',
         'plugins' => '/wp-content/plugins',
         'mu-plugins' => '/wp-content/mu-plugins',
@@ -56,14 +56,14 @@ class WPFilesystem extends Filesystem
      *
      * @var array<string>
      */
-    private $toClean = [];
+    private array $toClean = [];
 
     /**
      * The current count of generated test plugins.
      *
      * @var int
      */
-    private $testPluginCount = 0;
+    private int $testPluginCount = 0;
 
     /**
      * Runs before each test.
@@ -211,7 +211,7 @@ class WPFilesystem extends Filesystem
      *
      * @return void;
      */
-    public function _failed(TestInterface $test, $fail)
+    public function _failed(TestInterface $test, Exception $fail): void
     {
         $this->_after($test);
     }
@@ -251,7 +251,7 @@ class WPFilesystem extends Filesystem
      *
      * @throws Exception If the path is a date string and is not parsable by the `strtotime` function.
      */
-    public function amInUploadsPath($path = null): void
+    public function amInUploadsPath(string|int $path = null): void
     {
         if (null === $path) {
             $path = $this->config['uploads'];
@@ -282,7 +282,7 @@ class WPFilesystem extends Filesystem
      *
      * @throws ModuleException
      */
-    public function seeUploadedFileFound(string $filename, $date = null): void
+    public function seeUploadedFileFound(string $filename, int|string $date = null): void
     {
         $path = $this->getUploadsPath($filename, $date);
         Assert::assertFileExists($path);
@@ -300,14 +300,14 @@ class WPFilesystem extends Filesystem
      * ```
      *
      * @param string $file                            The file path, relative to the uploads folder.
-     * @param mixed $date A string compatible with `strtotime`, a Unix timestamp or a Date
+     * @param DateTimeInterface|string|int|null $date A string compatible with `strtotime`, a Unix timestamp or a Date
      *                                                object.
      *
      * @return string The absolute path to an uploaded file.
      * @throws ModuleException
      * @throws Exception
      */
-    public function getUploadsPath(string $file = '', $date = null): string
+    public function getUploadsPath(string $file = '', mixed $date = null): string
     {
         $dateFrag = $date !== null ?
             $this->buildDateFrag($date)
@@ -315,7 +315,7 @@ class WPFilesystem extends Filesystem
 
         $uploads = FS::untrailslashit($this->config['uploads']);
         $path = $file;
-        if (strpos($file, $uploads) === false) {
+        if (!str_contains($file, $uploads)) {
             $path = implode(
                 DIRECTORY_SEPARATOR,
                 array_filter([
@@ -339,7 +339,7 @@ class WPFilesystem extends Filesystem
      * @throw InvalidArgumentException
      * @throws Exception
      */
-    private function buildDateFrag($date): string
+    private function buildDateFrag(string|int|DateTimeInterface $date): string
     {
         if (!$date instanceof DateTimeInterface) {
             $timestamp = is_string($date) && !is_numeric($date) ? strtotime($date) : (int)$date;
@@ -372,10 +372,10 @@ class WPFilesystem extends Filesystem
      *
      * @throws ModuleException
      */
-    public function dontSeeUploadedFileFound(string $file, $date = null): void
+    public function dontSeeUploadedFileFound(string $file, int|string $date = null): void
     {
         if (method_exists(Assert::class, 'assertFileDoesNotExist')) {
-            Assert::assertFileNotExists($this->getUploadsPath($file, $date));
+            Assert::assertFileDoesNotExist($this->getUploadsPath($file, $date));
         } else {
             Assert::assertFileNotExists($this->getUploadsPath($file, $date));
         }
@@ -399,7 +399,7 @@ class WPFilesystem extends Filesystem
      *
      * @throws ModuleException
      */
-    public function seeInUploadedFile(string $file, string $contents, $date = null): void
+    public function seeInUploadedFile(string $file, string $contents, int|string $date = null): void
     {
         Assert::assertStringEqualsFile(
             $this->getUploadsPath(
@@ -426,7 +426,7 @@ class WPFilesystem extends Filesystem
      * @param string $contents      The not expected file contents or part of them.
      * @param int|string|null $date A string compatible with `strtotime` or a Unix timestamp.
      */
-    public function dontSeeInUploadedFile(string $file, string $contents, $date = null): void
+    public function dontSeeInUploadedFile(string $file, string $contents, int|string $date = null): void
     {
         Assert::assertStringNotEqualsFile(
             $this->getUploadsPath(
@@ -455,7 +455,7 @@ class WPFilesystem extends Filesystem
      *
      * @throws ModuleException If the destination folder could not be removed.
      */
-    public function deleteUploadedDir(string $dir, $date = null): void
+    public function deleteUploadedDir(string $dir, DateTime|int|string $date = null): void
     {
         $dir = $this->getUploadsPath($dir, $date);
         $this->debug('Deleting folder ' . $dir);
@@ -479,7 +479,7 @@ class WPFilesystem extends Filesystem
      * @param string $file          The file path, relative to the uploads folder or the current folder.
      * @param int|string|null $date A string compatible with `strtotime` or a Unix timestamp.
      */
-    public function deleteUploadedFile(string $file, $date = null): void
+    public function deleteUploadedFile(string $file, int|string $date = null): void
     {
         $file = $this->getUploadsPath($file, $date);
         $this->deleteFile($file);
@@ -501,7 +501,7 @@ class WPFilesystem extends Filesystem
      *
      * @param string|null $dir               The path to the directory to delete, relative to the uploads folder.
      */
-    public function cleanUploadsDir(string $dir = null, $date = null): void
+    public function cleanUploadsDir(string $dir = null, DateTime|int|string $date = null): void
     {
         $dir = null === $dir ? $this->config['uploads'] : $this->getUploadsPath(
             $dir,
@@ -527,7 +527,7 @@ class WPFilesystem extends Filesystem
      *
      * @param string $src                    The path to the source file, relative to the current uploads folder.
      */
-    public function copyDirToUploads(string $src, string $dst, $date = null): void
+    public function copyDirToUploads(string $src, string $dst, DateTime|int|string $date = null): void
     {
         $this->copyDir($src, $this->getUploadsPath($dst, $date));
     }
@@ -554,7 +554,7 @@ class WPFilesystem extends Filesystem
      * @throws ModuleException If the destination folder could not be created or the destination
      *                                                file could not be written.
      */
-    public function writeToUploadedFile(string $filename, string $data, $date = null): string
+    public function writeToUploadedFile(string $filename, string $data, DateTime|int|string $date = null): string
     {
         $filename = $this->getUploadsPath($filename, $date);
         $dir = dirname($filename);
@@ -589,7 +589,7 @@ class WPFilesystem extends Filesystem
      *
      * @param string $filename               The path to the file, relative to the current uploads folder.
      */
-    public function openUploadedFile(string $filename, $date = null): void
+    public function openUploadedFile(string $filename, DateTime|int|string $date = null): void
     {
         $this->openFile($this->getUploadsPath($filename, $date));
     }
@@ -1079,7 +1079,7 @@ class WPFilesystem extends Filesystem
             $fullPath .= '.php';
         }
 
-        if (strpos($path, '/') === false) {
+        if (!str_contains($path, '/')) {
             $slug = pathinfo($fullPath, PATHINFO_FILENAME);
             $toClean = $fullPath;
         } else {
@@ -1300,7 +1300,7 @@ CSS;
     public function getBlogUploadsPath(
         int $blogId,
         string $file = '',
-        $date = null
+        DateTimeImmutable|DateTime|string $date = null
     ): string {
         $dateFrag = $date !== null ?
             $this->buildDateFrag($date)
@@ -1309,7 +1309,7 @@ CSS;
         $uploads = FS::untrailslashit($this->config['uploads']) . "/sites/{$blogId}";
         $path = $file;
 
-        if (strpos($file, $uploads) === false) {
+        if (!str_contains($file, $uploads)) {
             $path = implode(
                 DIRECTORY_SEPARATOR,
                 array_filter([
@@ -1387,7 +1387,7 @@ CSS;
      * @param string $directory The directory to check.
      * @param string $message   An optional message to display if the directory does not exist.
      */
-    public function assertDirectoryExists($directory, $message = '')
+    public function assertDirectoryExists(string $directory, string $message = ''): void
     {
         Assert::assertDirectoryExists($directory, $message);
     }

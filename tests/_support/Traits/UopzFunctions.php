@@ -8,26 +8,11 @@ use RuntimeException;
 
 trait UopzFunctions
 {
-    /**
-     * @var mixed[]
-     */
-    protected static $uopzSetFunctionReturns = [];
-    /**
-     * @var mixed[]
-     */
-    protected static $uopzSetStaticMethodReturns = [];
-    /**
-     * @var mixed[]
-     */
-    protected static $uopzRedefinedConstants = [];
-    /**
-     * @var mixed[]
-     */
-    protected static $uopzRedefinedClassConstants = [];
-    /**
-     * @var mixed[]
-     */
-    protected static $uopzSetMocks = [];
+    protected static array $uopzSetFunctionReturns = [];
+    protected static array $uopzSetStaticMethodReturns = [];
+    protected static array $uopzRedefinedConstants = [];
+    protected static array $uopzRedefinedClassConstants = [];
+    protected static array $uopzSetMocks = [];
 
     protected function replacingWithUopz(array $what, callable $do): void
     {
@@ -76,13 +61,10 @@ trait UopzFunctions
         self::$uopzSetFunctionReturns[] = $function;
     }
 
-    /**
-     * @param mixed $return
-     */
     protected function uopzSetStaticMethodReturn(
         string $class,
         string $method,
-        $return,
+        mixed $return,
         bool $execute = false
     ): void {
         if (!function_exists('uopz_set_return')) {
@@ -93,10 +75,7 @@ trait UopzFunctions
         self::$uopzSetStaticMethodReturns[] = $class . '::' . $method;
     }
 
-    /**
-     * @param string|int|bool|null $value
-     */
-    protected function uopzRedefineConstant(string $constant, $value): void
+    protected function uopzRedefineConstant(string $constant, string|int|bool|null $value): void
     {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -108,10 +87,7 @@ trait UopzFunctions
         self::$uopzRedefinedConstants[$constant] = [$wasDefined, $previousValue];
     }
 
-    /**
-     * @param string|int|bool|null $value
-     */
-    protected function uopzRedefinedClassConstant(string $class, string $constant, $value): void
+    protected function uopzRedefinedClassConstant(string $class, string $constant, string|int|bool|null $value): void
     {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -179,10 +155,7 @@ trait UopzFunctions
         uopz_undefine($constant);
     }
 
-    /**
-     * @param string|object $mock
-     */
-    protected function uopzSetMock(string $class, $mock): void
+    protected function uopzSetMock(string $class, string|object $mock): void
     {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('This test requires the uopz extension');
