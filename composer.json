@@ -30,6 +30,7 @@
     "bordoni/phpass": "^0.3",
     "mikemclin/laravel-wp-password": "~2.0.0",
     "wp-cli/wp-cli": ">=2.0 <3.0.0",
+    "wp-cli/wp-cli-bundle": "*",
     "zordius/lightncandy": "^1.2",
     "vria/nodiacritic": "^0.1.2",
     "codeception/module-asserts": "^1.0",
@@ -47,7 +48,6 @@
     "victorjonsson/markdowndocs": "dev-master",
     "gumlet/php-image-resize": "^1.6",
     "vlucas/phpdotenv": "^3.0",
-    "wp-cli/wp-cli-bundle": "*",
     "symfony/translation": "^3.4"
   },
   "autoload": {
