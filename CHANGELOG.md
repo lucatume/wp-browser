@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## Added
+
+- move `wp-cli/wp-cli-bundle` from `require-dev` to `require` to restore pre-existing support
+
 ## [3.2.2] 2023-11-20;
 
 ## Added
