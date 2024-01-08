@@ -48,7 +48,6 @@
     "victorjonsson/markdowndocs": "dev-master",
     "gumlet/php-image-resize": "^1.6",
     "vlucas/phpdotenv": "^3.0",
-    "wp-cli/wp-cli-bundle": "*",
     "symfony/translation": "^3.4"
   },
   "autoload": {
