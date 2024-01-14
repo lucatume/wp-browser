@@ -7,6 +7,7 @@ use lucatume\WPBrowser\Module\WPLoader;
 use lucatume\WPBrowser\Module\WPQueries;
 use ReflectionException;
 use ReflectionMethod;
+use ReflectionProperty;
 use WP_UnitTestCase;
 
 class WPTestCase extends Unit
@@ -64,7 +65,8 @@ class WPTestCase extends Unit
         // WooCommerce.
         'WooCommerce' => ['_instance'],
         'Automattic\WooCommerce\Internal\Admin\FeaturePlugin' => ['instance'],
-        'Automattic\WooCommerce\RestApi\Server' => ['instance']
+        'Automattic\WooCommerce\RestApi\Server' => ['instance'],
+        'WC_Payment_Gateways' => ['_instance'],
     ];
 
     /**
@@ -77,7 +79,7 @@ class WPTestCase extends Unit
                $_wpTestsBackupStaticAttributes,
                $_wpTestsBackupStaticAttributesExcludeList;
 
-        $backupGlobalsReflectionProperty = new \ReflectionProperty($this, 'backupGlobals');
+        $backupGlobalsReflectionProperty = new ReflectionProperty($this, 'backupGlobals');
         $backupGlobalsReflectionProperty->setAccessible(true);
         $isDefinedInThis = $backupGlobalsReflectionProperty->getDeclaringClass()->getName() !== WPTestCase::class;
         if (!$isDefinedInThis && isset($_wpTestsBackupGlobals) && is_bool($_wpTestsBackupGlobals)) {
@@ -85,10 +87,10 @@ class WPTestCase extends Unit
         }
 
         if (property_exists($this, 'backupGlobalsExcludeList')) {
-            $backupGlobalsExcludeListReflectionProperty = new \ReflectionProperty($this, 'backupGlobalsExcludeList');
+            $backupGlobalsExcludeListReflectionProperty = new ReflectionProperty($this, 'backupGlobalsExcludeList');
         } else {
             // Older versions of PHPUnit.
-            $backupGlobalsExcludeListReflectionProperty = new \ReflectionProperty($this, 'backupGlobalsBlacklist');
+            $backupGlobalsExcludeListReflectionProperty = new ReflectionProperty($this, 'backupGlobalsBlacklist');
         }
         $backupGlobalsExcludeListReflectionProperty->setAccessible(true);
         $isDefinedInThis = $backupGlobalsExcludeListReflectionProperty->getDeclaringClass()
@@ -103,7 +105,7 @@ class WPTestCase extends Unit
             );
         }
 
-        $backupStaticAttributesReflectionProperty = new \ReflectionProperty($this, 'backupStaticAttributes');
+        $backupStaticAttributesReflectionProperty = new ReflectionProperty($this, 'backupStaticAttributes');
         $backupStaticAttributesReflectionProperty->setAccessible(true);
         $isDefinedInThis = $backupStaticAttributesReflectionProperty->getDeclaringClass()
                 ->getName() !== WPTestCase::class;
@@ -112,13 +114,13 @@ class WPTestCase extends Unit
         }
 
         if (property_exists($this, 'backupStaticAttributesExcludeList')) {
-            $backupStaticAttributesExcludeListReflectionProperty = new \ReflectionProperty(
+            $backupStaticAttributesExcludeListReflectionProperty = new ReflectionProperty(
                 $this,
                 'backupStaticAttributesExcludeList'
             );
         } else {
             // Older versions of PHPUnit.
-            $backupStaticAttributesExcludeListReflectionProperty = new \ReflectionProperty(
+            $backupStaticAttributesExcludeListReflectionProperty = new ReflectionProperty(
                 $this,
                 'backupStaticAttributesBlacklist'
             );
@@ -170,7 +172,8 @@ class WPTestCase extends Unit
 
     protected function backupAdditionalGlobals(): void
     {
-        foreach ([
+        foreach (
+            [
                 '_wp_registered_theme_features'
             ] as $key
         ) {
@@ -250,5 +253,38 @@ class WPTestCase extends Unit
         /** @var WPQueries $wpQueries */
         $wpQueries = $this->getModule(WPQueries::class);
         return $wpQueries;
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    public function __get(string $name): mixed
+    {
+        $coreTestCase = self::getCoreTestCase();
+        $reflectionProperty = new ReflectionProperty($coreTestCase, $name);
+        $reflectionProperty->setAccessible(true);
+        return $reflectionProperty->getValue($coreTestCase);
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    public function __set(string $name, mixed $value): void
+    {
+        $coreTestCase = self::getCoreTestCase();
+        $reflectionProperty = new ReflectionProperty($coreTestCase, $name);
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($coreTestCase, $value);
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    public function __isset(string $name): bool
+    {
+        $coreTestCase = self::getCoreTestCase();
+        $reflectionProperty = new ReflectionProperty($coreTestCase, $name);
+        $reflectionProperty->setAccessible(true);
+        return $reflectionProperty->isInitialized($coreTestCase);
     }
 }
