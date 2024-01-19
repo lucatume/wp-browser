@@ -4,7 +4,7 @@ namespace lucatume\Rector;
 
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
-use Rector\Core\Rector\AbstractRector;
+use Rector\Rector\AbstractRector;
 use PHPStan\Type\ObjectType;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;

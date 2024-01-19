@@ -3,6 +3,7 @@
 .DS_Store
 
 .cache
+.build
 
 # Composer files.
 vendor/
