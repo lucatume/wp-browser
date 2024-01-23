@@ -38,20 +38,6 @@ class SiteProject extends InitTemplate implements ProjectInterface
         try {
             $this->installation = Installation::findInDir($this->workDir, false);
             $installationState = $this->installation->getState();
-
-            if ($installationState instanceof EmptyDir) {
-                throw new RuntimeException(
-                    'The WordPress installation directory is empty'
-                );
-            }
-
-            if ($installationState instanceof Scaffolded) {
-                throw new RuntimeException(
-                    'The WordPress installation directory is scaffolded, but not configured.'
-                );
-            }
-
-            $this->testEnvironment = new TestEnvironment();
         } catch (Throwable $t) {
             throw new RuntimeException(
                 'Failed to initialize the WordPress installation: ' . lcfirst($t->getMessage()),
@@ -59,6 +45,23 @@ class SiteProject extends InitTemplate implements ProjectInterface
                 $t
             );
         }
+
+        $suggest = "Make sure you're initializing wp-browser at the root of your site project,".
+            " and that the directory contains the WordPress files and a wp-config.php file.";
+
+        if ($installationState instanceof EmptyDir) {
+            throw new RuntimeException(
+                "The WordPress installation directory is empty.\n{$suggest}"
+            );
+        }
+
+        if ($installationState instanceof Scaffolded) {
+            throw new RuntimeException(
+                "The WordPress installation directory is scaffolded, but not configured.\n{$suggest}"
+            );
+        }
+
+        $this->testEnvironment = new TestEnvironment();
     }
 
     public function getType(): string

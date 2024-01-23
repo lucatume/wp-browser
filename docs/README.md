@@ -3,6 +3,26 @@
 
 The wp-browser library provides a set of [Codeception][4] modules and middleware to enable the testing of WordPress sites, plugins and themes.
 
+## Requirements
+
+Depending on the nature of your project, there are different requirements it will need to satisfy before getting started. 
+
+### Site
+ 
+* Ensure you're running the `vendor/bin/codecept init wpbrowser` command from the root directory of your WordPress site.
+* Ensure the directory contains the WordPress installation files. In a standard scenario you should have extracted WordPress files in this directory.
+* Ensure your installation is configured: it should contain a `wp-config.php` file.
+
+### Plugin
+ 
+* Ensure you're running the `vendor/bin/codecept init wpbrowser` command from the root directory of your plugin; this should be the directory that contains the PHP file defining the [plugin header][6].
+
+### Theme
+
+* Ensure you're running the `vendor/bin/codecept init wpbrowser` command from the root directory of your theme; this should be the directory that contains the `style.css` file defining [the theme header][7].
+
+If you decide to use the quick installation, then your PHP version should have the `sqlite3` extensions installed and activated. You can check this using the `php -m` command and verifying the `sqlite3` extension is among the active extensions.
+
 ## Installation
 
 Add wp-browser to your project as a development dependency using [Composer][1]
@@ -66,3 +86,7 @@ project needs and how wp-browser can help you.
 [4]: https://codeception.com/
 
 [5]: https://github.com/lucatume/wp-browser/issues/new/choose
+
+[6]: https://developer.wordpress.org/plugins/plugin-basics/header-requirements/
+
+[7]: https://developer.wordpress.org/themes/basics/main-stylesheet-style-css/ 
