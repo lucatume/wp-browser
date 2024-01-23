@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed 
 
 - Improve router script to speed up localhost server.
+- Improve messaging and documentation around initialization and setup.
 
 ## [4.0.16] 2023-12-07;
 
