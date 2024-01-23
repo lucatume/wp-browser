@@ -1,9 +1,12 @@
 <?php
 
 use lucatume\WPBrowser\TestCase\WPAjaxTestCase;
+use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 
 class AjaxTest extends WPAjaxTestCase
 {
+    use UopzFunctions;
+
     public function ajaxCallback(): void
     {
         if (
