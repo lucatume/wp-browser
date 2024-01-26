@@ -8,10 +8,8 @@ use Symfony\Component\Process\Process as SymfonyProcess;
 
 class Process extends SymfonyProcess
 {
-    /**
-     * @var bool
-     */
-    private $createNewConsole = false;
+    private static ?bool $inheritEnvironmentVariables = null;
+    private bool $createNewConsole = false;
 
     /**
      * @param string[] $command
@@ -26,8 +24,17 @@ class Process extends SymfonyProcess
         ?float $timeout = 60,
         array $options = null
     ) {
-        if (method_exists($this, 'inheritEnvironmentVariables')) {
-            parent::__construct($command, $cwd, $env, $input, $timeout, $options); //@phpstan-ignore-line
+        parent::__construct($command, $cwd, $env, $input, $timeout, $options); //@phpstan-ignore-line
+
+        if (self::$inheritEnvironmentVariables === null) {
+            self::$inheritEnvironmentVariables = method_exists($this, 'inheritEnvironmentVariables')
+                && !str_contains(
+                    (new \ReflectionMethod($this, 'inheritEnvironmentVariables'))->getDocComment(),
+                    '@deprecated'
+                );
+        }
+
+        if (self::$inheritEnvironmentVariables) {
             $this->inheritEnvironmentVariables(true);
         }
 
