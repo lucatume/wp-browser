@@ -3,7 +3,6 @@
 namespace lucatume\WPBrowser\TestCase;
 
 use Codeception\Test\Unit;
-use lucatume\WPBrowser\Module\WPLoader;
 use lucatume\WPBrowser\Module\WPQueries;
 use ReflectionException;
 use ReflectionMethod;
@@ -12,6 +11,8 @@ use WP_UnitTestCase;
 
 class WPTestCase extends Unit
 {
+    use WPTestCasePHPUnitMethodsTrait;
+
     // Backup, and reset, globals between tests.
     protected $backupGlobals = true;
 
@@ -164,12 +165,6 @@ class WPTestCase extends Unit
         return $coreTestCase;
     }
 
-    public static function setUpBeforeClass(): void
-    {
-        parent::setUpBeforeClass();
-        self::getCoreTestCase()->set_up_before_class();
-    }
-
     protected function backupAdditionalGlobals(): void
     {
         foreach (
@@ -183,33 +178,12 @@ class WPTestCase extends Unit
         }
     }
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->set_up(); //@phpstan-ignore-line magic __call
-        $this->backupAdditionalGlobals();
-    }
-
     protected function restoreAdditionalGlobals(): void
     {
         foreach ($this->additionalGlobalsBackup as $key => $value) {
             $GLOBALS[$key] = $value;
             unset($this->additionalGlobalsBackup[$key]);
         }
-    }
-
-    protected function tearDown(): void
-    {
-        $this->restoreAdditionalGlobals();
-        $this->tear_down(); //@phpstan-ignore-line magic __call
-        parent::tearDown();
-    }
-
-
-    public static function tearDownAfterClass(): void
-    {
-        static::tear_down_after_class();  //@phpstan-ignore-line magic __callStatic
-        parent::tearDownAfterClass();
     }
 
     protected function assertPostConditions(): void
