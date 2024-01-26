@@ -9,6 +9,7 @@ use lucatume\WPBrowser\Command\GenerateWPRestController;
 use lucatume\WPBrowser\Command\GenerateWPRestPostTypeController;
 use lucatume\WPBrowser\Command\GenerateWPUnit;
 use lucatume\WPBrowser\Command\GenerateWPXMLRPC;
+use lucatume\WPBrowser\Extension\EventDispatcherBridge;
 use lucatume\WPBrowser\Module\WPBrowser;
 use lucatume\WPBrowser\Module\WPBrowserMethods;
 use lucatume\WPBrowser\Module\WPCLI;
@@ -61,6 +62,7 @@ $deprecatedAutoloader = static function (string $class) use (&$deprecatedAutoloa
         'Codeception\\TestCase\\WPRestControllerTestCase' => WPRestControllerTestCase::class,
         'Codeception\\TestCase\\WPRestPostTypeControllerTestCase' => WPRestPostTypeControllerTestCase::class,
         'Codeception\\TestCase\\WPXMLRPCTestCase' => WPXMLRPCTestCase::class,
+        'tad\\WPBrowser\\Extension\\Events' => EventDispatcherBridge::class
     ];
     $countDeprecated = count($deprecated);
     static $hits = 0;
