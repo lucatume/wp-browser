@@ -1,10 +1,5 @@
 name: docs
 on:
-  pull_request:
-    paths:
-      - 'docs/**'
-      - 'mkdocs.yml'
-      - '.github/workflows/docs.yml'
   push:
     paths:
       - 'docs/**'

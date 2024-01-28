@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.0.18] 2024-01-23;
+
+- Improve messaging and documentation around initialization and setup.
+
+## [4.0.17] 2023-12-14;
+
 ### Fixed 
 
 - Improve router script to speed up localhost server.
@@ -2067,4 +2073,6 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.14]: https://github.com/lucatume/wp-browser/compare/4.0.13...4.0.14
 [4.0.15]: https://github.com/lucatume/wp-browser/compare/4.0.14...4.0.15
 [4.0.16]: https://github.com/lucatume/wp-browser/compare/4.0.15...4.0.16
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.16...HEAD
+[4.0.17]: https://github.com/lucatume/wp-browser/compare/4.0.16...4.0.17
+[4.0.18]: https://github.com/lucatume/wp-browser/compare/4.0.17...4.0.18
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.18...HEAD
