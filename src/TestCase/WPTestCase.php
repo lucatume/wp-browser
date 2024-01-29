@@ -161,6 +161,7 @@ class WPTestCase extends Unit
             return self::$coreTestCaseMap[static::class];
         }
         $coreTestCase = new class extends WP_UnitTestCase {
+            use WPUnitTestCasePolyfillsTrait;
         };
         $coreTestCase->setCalledClass(static::class);
         self::$coreTestCaseMap[static::class] = $coreTestCase;
@@ -170,14 +171,8 @@ class WPTestCase extends Unit
 
     protected function backupAdditionalGlobals(): void
     {
-        foreach (
-            [
-                '_wp_registered_theme_features'
-            ] as $key
-        ) {
-            if (isset($GLOBALS[$key])) {
-                $this->additionalGlobalsBackup = $GLOBALS[$key];
-            }
+        if (isset($GLOBALS['_wp_registered_theme_features'])) {
+            $this->additionalGlobalsBackup = $GLOBALS['_wp_registered_theme_features'];
         }
     }
 
