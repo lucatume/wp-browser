@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- The `WPTestCase` class will **not** backup globals and static attributes by default. Version `3` of wp-browser did not backup globals and static attributes by default, this change in version `4` is aligned with that behaviour to ease migration from version `3` to version `4`.
+
 ## [4.0.18] 2024-01-23;
 
 - Improve messaging and documentation around initialization and setup.

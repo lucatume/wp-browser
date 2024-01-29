@@ -2,6 +2,7 @@
 
 namespace lucatume\WPBrowser\TestCase;
 
+use Codeception\Actor;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Module\WPQueries;
 use ReflectionException;
@@ -13,8 +14,10 @@ class WPTestCase extends Unit
 {
     use WPTestCasePHPUnitMethodsTrait;
 
+    protected Actor $tester;
+
     // Backup, and reset, globals between tests.
-    protected $backupGlobals = true;
+    protected $backupGlobals = false;
 
     // A list of globals that should not be backed up: they are handled by the Core test case.
     protected $backupGlobalsExcludeList = [
@@ -52,7 +55,7 @@ class WPTestCase extends Unit
     ];
 
     // Backup, and reset, static class attributes between tests.
-    protected $backupStaticAttributes = true;
+    protected $backupStaticAttributes = false;
 
     // A list of static attributes that should not be backed up as they are wired to explode when doing so.
     protected $backupStaticAttributesExcludeList = [
@@ -204,6 +207,11 @@ class WPTestCase extends Unit
      */
     public static function __callStatic(string $name, array $arguments): mixed
     {
+        $name = match ($name) {
+            '_setUpBeforeClass' => 'setUpBeforeClass',
+            '_tearDownAfterClass' => 'tearDownAfterClass',
+            default => $name
+        };
         $coreTestCase = self::getCoreTestCase();
         $reflectionMethod = new ReflectionMethod($coreTestCase, $name);
         $reflectionMethod->setAccessible(true);

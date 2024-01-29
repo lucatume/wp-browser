@@ -159,9 +159,9 @@ class WPLoader extends Module
         'WP_PLUGIN_DIR' => null,
         'WPMU_PLUGIN_DIR' => null,
         'dump' => '',
-        'backupGlobals' => true,
+        'backupGlobals' => false,
         'backupGlobalsExcludeList' => [],
-        'backupStaticAttributes' => true,
+        'backupStaticAttributes' => false,
         'backupStaticAttributesExcludeList' => [],
         'skipInstall' => false
     ];
