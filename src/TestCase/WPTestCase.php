@@ -2,6 +2,7 @@
 
 namespace lucatume\WPBrowser\TestCase;
 
+use AllowDynamicProperties;
 use Codeception\Actor;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Module\WPQueries;
@@ -10,9 +11,15 @@ use ReflectionMethod;
 use ReflectionProperty;
 use WP_UnitTestCase;
 
+#[AllowDynamicProperties]
 class WPTestCase extends Unit
 {
     use WPTestCasePHPUnitMethodsTrait;
+
+    /**
+     * @var string[]|null
+     */
+    private array|null $coreTestCaseProperties = null;
 
     protected Actor $tester;
 
@@ -232,11 +239,27 @@ class WPTestCase extends Unit
         return $wpQueries;
     }
 
+    private function isCoreTestCaseProperty(string $name): bool
+    {
+        if ($this->coreTestCaseProperties === null) {
+            $this->coreTestCaseProperties = array_map(
+                static fn(ReflectionProperty $p) => $p->getName(),
+                (new \ReflectionClass(self::getCoreTestCase()))->getProperties()
+            );
+        }
+
+        return in_array($name, $this->coreTestCaseProperties, true);
+    }
+
     /**
      * @throws ReflectionException
      */
     public function __get(string $name): mixed
     {
+        if (!$this->isCoreTestCaseProperty($name)) {
+            return $this->{$name} ?? null;
+        }
+
         $coreTestCase = self::getCoreTestCase();
         $reflectionProperty = new ReflectionProperty($coreTestCase, $name);
         $reflectionProperty->setAccessible(true);
@@ -248,6 +271,12 @@ class WPTestCase extends Unit
      */
     public function __set(string $name, mixed $value): void
     {
+        if (!$this->isCoreTestCaseProperty($name)) {
+            // Just set a dynamic property on the test case.
+            $this->{$name} = $value;
+            return;
+        }
+
         $coreTestCase = self::getCoreTestCase();
         $reflectionProperty = new ReflectionProperty($coreTestCase, $name);
         $reflectionProperty->setAccessible(true);
@@ -259,6 +288,10 @@ class WPTestCase extends Unit
      */
     public function __isset(string $name): bool
     {
+        if (!$this->isCoreTestCaseProperty($name)) {
+            return isset($this->{$name});
+        }
+
         $coreTestCase = self::getCoreTestCase();
         $reflectionProperty = new ReflectionProperty($coreTestCase, $name);
         $reflectionProperty->setAccessible(true);

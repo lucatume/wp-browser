@@ -60,7 +60,7 @@
     },
     "files": [
       "src/version-4-aliases.php",
-      "src/Deprecated/deprecated-functions.php",
+      "src/deprecated-functions.php",
       "src/functions.php"
     ]
   },

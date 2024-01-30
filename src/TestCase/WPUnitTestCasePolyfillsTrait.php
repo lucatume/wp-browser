@@ -6,8 +6,19 @@ use Codeception\PHPUnit\TestCase;
 
 trait WPUnitTestCasePolyfillsTrait
 {
-    protected function assertIsArray($actual, string $message = ''): void
+    /**
+     * @param array<mixed> $arguments
+     */
+    public function __call(string $name, array $arguments)
     {
-        TestCase::assertIsArray($actual, $message);
+        return TestCase::$name(...$arguments);
+    }
+
+    /**
+     * @param array<mixed> $arguments
+     */
+    public static function __callStatic(string $name, array $arguments)
+    {
+        return TestCase::$name(...$arguments);
     }
 }

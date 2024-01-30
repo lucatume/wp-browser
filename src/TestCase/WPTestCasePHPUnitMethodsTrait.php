@@ -16,6 +16,15 @@ if (version_compare(Version::id(), '8.0', '<')) {
         protected function setUp()
         {
             parent::setUp();
+
+            // Restores the uploads directory if removed during tests.
+            $uploads = wp_upload_dir();
+            if (!is_dir($uploads['basedir'])
+                && !mkdir($uploads['basedir'], 0755, true)
+                && !is_dir($uploads['basedir'])) {
+                throw new \RuntimeException('Failed to create uploads base directory.');
+            }
+
             $this->set_up(); //@phpstan-ignore-line magic __call
             $this->backupAdditionalGlobals();
         }
@@ -46,6 +55,15 @@ if (version_compare(Version::id(), '8.0', '<')) {
         protected function setUp(): void
         {
             parent::setUp();
+
+            // Restores the uploads directory if removed during tests.
+            $uploads = wp_upload_dir();
+            if (!is_dir($uploads['basedir'])
+                && !mkdir($uploads['basedir'], 0755, true)
+                && !is_dir($uploads['basedir'])) {
+                throw new \RuntimeException('Failed to create uploads base directory.');
+            }
+
             $this->set_up(); //@phpstan-ignore-line magic __call
             $this->backupAdditionalGlobals();
         }
