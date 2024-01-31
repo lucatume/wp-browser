@@ -4,6 +4,8 @@ namespace lucatume\WPBrowser\TestCase;
 
 use AllowDynamicProperties;
 use Codeception\Actor;
+use Codeception\Exception\ModuleException;
+use Codeception\Module;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Module\WPQueries;
 use ReflectionException;
@@ -232,10 +234,17 @@ class WPTestCase extends Unit
         return $reflectionMethod->invokeArgs($coreTestCase, $arguments);
     }
 
+    /**
+     * @throws ModuleException If the WPQueries module is not available under any name.
+     */
     protected function queries(): WPQueries
     {
+        /** @var array<string,Module> $modules */
+        $modules = $this->getMetadata()->getCurrent('modules');
+        $module  = isset($modules['WPQueries']) ? 'WPQueries' : WPQueries::class;
         /** @var WPQueries $wpQueries */
-        $wpQueries = $this->getModule(WPQueries::class);
+        $wpQueries = $this->getModule($module);
+
         return $wpQueries;
     }
 
