@@ -3,7 +3,7 @@ Depending on your project PHP compatibility, you have three options to choose fr
 * Your project supports PHP `7.1` to `7.4`: [migrate to wp-browser version `3.5`](#migrate-from-version-3-to-35)
 * Your project supports PHP `8.0` or above: [migrate to wp-browser version `4.0`](#migrate-from-version-3-to-4)
 * You cannot, or do not want, to migrate from version `3` of wp-browser to a new
-  version: [see how you can lock your reuirements to avoid the upgrade](#staying-on-version-lower-than-35)
+  version: [see how you can lock your reuirements to avoid the upgrade](#staying-on-version-3-lower-than-35)
 
 ## Version 3.5 and 4.0
 
@@ -39,7 +39,7 @@ back-compatibility purposes.
     ```
 2. See the [changes common to version 3.5 and 4.0](#changes-common-to-version-35-and-40)
 
-### Changes common to version 3.5 and 4.0
+## Changes common to version 3.5 and 4.0
 
 1. If your test code is loading deprecated functions, arguments, classes, files, or hooks, you need to update your test
    code to let the test case know using the `setExpectedDeprecated` method:
@@ -69,8 +69,10 @@ back-compatibility purposes.
     ```
    Previously, your code could just filter the `doing_it_wrong_trigger_error` hook to return `false` to tolerate the
    doing-it-wrong notices in tests.
+3. Some assertion methods have, in more recent versions of the PHPUnit core suite, adopted stricter type checks when it comes to comparison. E.g., the `assertEqualFields` will now check the object to check the fields on is actually an object. Depending on how loose your use of assertions was before, you might have to update your work.
+4. Other updates to the Core PHPUnit test case will report use of deprecated functions more promptly; if your code is using deprecated functions that might have escaped previous versions of wp-browser, you will need to update them.
 
-## Staying on version lower than 3.5
+## Staying on version 3, lower than 3.5
 
 Update your `composer.json` file to lock the required version of `wp-browser` to a version less than `3.5`:
 

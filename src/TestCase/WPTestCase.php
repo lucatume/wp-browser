@@ -8,6 +8,7 @@ use Codeception\Exception\ModuleException;
 use Codeception\Module;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Module\WPQueries;
+use lucatume\WPBrowser\Utils\ArrayReflectionPropertyAccessor;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -272,7 +273,13 @@ class WPTestCase extends Unit
         $coreTestCase = self::getCoreTestCase();
         $reflectionProperty = new ReflectionProperty($coreTestCase, $name);
         $reflectionProperty->setAccessible(true);
-        return $reflectionProperty->getValue($coreTestCase);
+        $value = $reflectionProperty->getValue($coreTestCase);
+
+        if (is_array($value)) {
+            return new ArrayReflectionPropertyAccessor($reflectionProperty, $coreTestCase);
+        }
+
+        return $value;
     }
 
     /**

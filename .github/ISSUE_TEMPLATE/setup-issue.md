@@ -6,6 +6,8 @@ labels: ''
 assignees: ''
 
 ---
+**Version 3.5**  
+If you're opening an issue to report a breakage caused by version `3.5`; please read the [migration guide first](https://wpbrowser.wptestkit.dev/migration) first!
 
 **Environment**
 OS: [e.g. Windows, Mac, Linux]
