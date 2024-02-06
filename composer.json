@@ -55,6 +55,7 @@
         "src/",
         "src/Deprecated"
       ],
+      "Codeception\\Extension\\": "src/Extension",
       "Hautelook\\Phpass\\": "includes/Hautelook/Phpass",
       "lucatume\\WPBrowser\\Opis\\Closure\\" : "includes/opis/closure/src"
     },

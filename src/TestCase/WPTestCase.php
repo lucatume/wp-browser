@@ -14,6 +14,68 @@ use ReflectionMethod;
 use ReflectionProperty;
 use WP_UnitTestCase;
 
+/**
+ * @method static commit_transaction()
+ * @method static delete_user($user_id)
+ * @method static factory()
+ * @method static flush_cache()
+ * @method static forceTicket($ticket)
+ * @method static get_called_class()
+ * @method static set_up_before_class()
+ * @method static tear_down_after_class()
+ * @method static text_array_to_dataprovider($input)
+ * @method static touch($file)
+ * @method _create_temporary_tables($query)
+ * @method _drop_temporary_tables($query)
+ * @method _make_attachment($upload, $parent_post_id = 0)
+ * @method assertDiscardWhitespace($expected, $actual, $message = '')
+ * @method assertEqualFields($actual, $fields, $message = '')
+ * @method assertEqualSets($expected, $actual, $message = '')
+ * @method assertEqualSetsWithIndex($expected, $actual, $message = '')
+ * @method assertEqualsIgnoreEOL($expected, $actual, $message = '')
+ * @method assertIXRError($actual, $message = '')
+ * @method assertNonEmptyMultidimensionalArray($actual, $message = '')
+ * @method assertNotIXRError($actual, $message = '')
+ * @method assertNotWPError($actual, $message = '')
+ * @method assertQueryTrue($prop)
+ * @method assertSameIgnoreEOL($expected, $actual, $message = '')
+ * @method assertSameSets($expected, $actual, $message = '')
+ * @method assertSameSetsWithIndex($expected, $actual, $message = '')
+ * @method assertWPError($actual, $message = '')
+ * @method assert_post_conditions()
+ * @method clean_up_global_scope()
+ * @method delete_folders($path)
+ * @method deprecated_function_run($function_name, $replacement, $version, $message = '')
+ * @method doing_it_wrong_run($function_name, $message, $version)
+ * @method expectDeprecated()
+ * @method expectedDeprecated()
+ * @method files_in_dir($dir)
+ * @method get_wp_die_handler($handler)
+ * @method go_to($url)
+ * @method knownPluginBug($ticket_id)
+ * @method knownUTBug($ticket_id)
+ * @method knownWPBug($ticket_id)
+ * @method remove_added_uploads()
+ * @method rmdir($path)
+ * @method scan_user_uploads()
+ * @method scandir($dir)
+ * @method setExpectedDeprecated($deprecated)
+ * @method setExpectedException($exception, $message = '', $code = NULL)
+ * @method setExpectedIncorrectUsage($doing_it_wrong)
+ * @method set_permalink_structure($structure = '')
+ * @method set_up()
+ * @method skipOnAutomatedBranches()
+ * @method skipTestOnTimeout($response)
+ * @method skipWithMultisite()
+ * @method skipWithoutMultisite()
+ * @method start_transaction()
+ * @method tear_down()
+ * @method temp_filename()
+ * @method unlink($file)
+ * @method unregister_all_meta_keys()
+ * @method void setCalledClass(string $class)
+ * @method wp_die_handler($message, $title, $args)
+ */
 #[AllowDynamicProperties]
 class WPTestCase extends Unit
 {
@@ -24,7 +86,10 @@ class WPTestCase extends Unit
      */
     private array|null $coreTestCaseProperties = null;
 
-    protected Actor $tester;
+    /**
+     * @var Actor
+     */
+    protected $tester;
 
     // Backup, and reset, globals between tests.
     protected $backupGlobals = false;
@@ -275,9 +340,9 @@ class WPTestCase extends Unit
         $reflectionProperty->setAccessible(true);
         $value = $reflectionProperty->getValue($coreTestCase);
 
-        if (is_array($value)) {
-            return new ArrayReflectionPropertyAccessor($reflectionProperty, $coreTestCase);
-        }
+//        if (is_array($value)) {
+//            return new ArrayReflectionPropertyAccessor($reflectionProperty, $coreTestCase);
+//        }
 
         return $value;
     }

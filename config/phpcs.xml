@@ -34,5 +34,9 @@
         <exclude-pattern>src/MonkeyPatch/FileStreamWrapper.php</exclude-pattern>
     </rule>
 
+    <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
+        <exclude-pattern>src/TestCase/WPTestCasePHPUnitMethodsTrait.php</exclude-pattern>
+    </rule>
+
     <exclude-pattern>./tests/*</exclude-pattern>
 </ruleset>
