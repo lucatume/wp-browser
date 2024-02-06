@@ -8,6 +8,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - The `WPTestCase` class will **not** backup globals and static attributes by default. Version `3` of wp-browser did not backup globals and static attributes by default, this change in version `4` is aligned with that behaviour to ease migration from version `3` to version `4`.
 
+### Added
+
+- Restored support for the `@runInSeparateProcess` annotation for test methods. Along with it, improved support for the `@dataProvider` annotation for test methods used in conjunction with the `@runInSeparateProcess` annotation to run data provider methods at most once.
+- Implemented support for the `runTestsInSeparateProcesses` annotation for test classes; supporting the `@dataProvider` annotation ro run data provider methods at most once.
+
 ## [4.0.18] 2024-01-23;
 
 - Improve messaging and documentation around initialization and setup.

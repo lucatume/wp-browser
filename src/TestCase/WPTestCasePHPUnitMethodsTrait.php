@@ -7,13 +7,19 @@ use PHPUnit\Runner\Version;
 if (version_compare(Version::id(), '8.0', '<')) {
     trait WPTestCasePHPUnitMethodsTrait
     {
-        public static function setUpBeforeClass()
+        public static function setUpBeforeClass() //@phpstan-ignore-line
         {
             parent::setUpBeforeClass();
             self::getCoreTestCase()->set_up_before_class();
         }
 
-        protected function setUp()
+        public static function tearDownAfterClass() //@phpstan-ignore-line
+        {
+            static::tear_down_after_class();  //@phpstan-ignore-line magic __callStatic
+            parent::tearDownAfterClass();
+        }
+
+        protected function setUp() //@phpstan-ignore-line
         {
             parent::setUp();
 
@@ -29,18 +35,11 @@ if (version_compare(Version::id(), '8.0', '<')) {
             $this->backupAdditionalGlobals();
         }
 
-        protected function tearDown()
+        protected function tearDown() //@phpstan-ignore-line
         {
             $this->restoreAdditionalGlobals();
             $this->tear_down(); //@phpstan-ignore-line magic __call
             parent::tearDown();
-        }
-
-
-        public static function tearDownAfterClass()
-        {
-            static::tear_down_after_class();  //@phpstan-ignore-line magic __callStatic
-            parent::tearDownAfterClass();
         }
     }
 } else {
@@ -50,6 +49,12 @@ if (version_compare(Version::id(), '8.0', '<')) {
         {
             parent::setUpBeforeClass();
             self::getCoreTestCase()->set_up_before_class();
+        }
+
+        public static function tearDownAfterClass(): void
+        {
+            static::tear_down_after_class();  //@phpstan-ignore-line magic __callStatic
+            parent::tearDownAfterClass();
         }
 
         protected function setUp(): void
@@ -73,13 +78,6 @@ if (version_compare(Version::id(), '8.0', '<')) {
             $this->restoreAdditionalGlobals();
             $this->tear_down(); //@phpstan-ignore-line magic __call
             parent::tearDown();
-        }
-
-
-        public static function tearDownAfterClass(): void
-        {
-            static::tear_down_after_class();  //@phpstan-ignore-line magic __callStatic
-            parent::tearDownAfterClass();
         }
     }
 }

@@ -23,6 +23,7 @@ extensions:
         - "lucatume\\WPBrowser\\Extension\\BuiltInServerController"
         - "lucatume\\WPBrowser\\Extension\\ChromeDriverController"
         - "lucatume\\WPBrowser\\Extension\\DockerComposeController"
+        - "lucatume\\WPBrowser\\Extension\\IsolationSupport"
     config:
         "lucatume\\WPBrowser\\Extension\\BuiltInServerController":
             docroot: '%WORDPRESS_ROOT_DIR%'

@@ -24,7 +24,10 @@ class WPTestCase extends Unit
      */
     private array|null $coreTestCaseProperties = null;
 
-    protected Actor $tester;
+    /**
+     * @var Actor
+     */
+    protected $tester;
 
     // Backup, and reset, globals between tests.
     protected $backupGlobals = false;

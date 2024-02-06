@@ -27,3 +27,6 @@ composer.lock
 
 # Backup files and folders
 *.bak
+
+# Logs
+*.log
