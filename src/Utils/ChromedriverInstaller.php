@@ -220,6 +220,18 @@ class ChromedriverInstaller
         return $platform;
     }
 
+    private function detectLinuxBinaryPath(): ?string
+    {
+        foreach (['chromium', 'google-chrome'] as $bin) {
+            $path = exec("which $bin");
+
+            if (!empty($path)) {
+                return $path; 
+            }
+        }
+        return null; 
+    }
+
     private function detectWindowsBinaryPath(): string
     {
         $candidates = [
@@ -243,7 +255,7 @@ class ChromedriverInstaller
     private function detectBinary(): string
     {
         return match ($this->platform) {
-            'linux64' => '/usr/bin/google-chrome',
+            'linux64' => $this->detectLinuxBinaryPath(),
             'mac-x64', 'mac-arm64' => '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
             'win32', 'win64' => $this->detectWindowsBinaryPath()
         };
@@ -313,7 +325,7 @@ class ChromedriverInstaller
             && is_array($decoded['milestones'][$this->milestone]['downloads']['chromedriver'])
         )) {
             throw new RuntimeException(
-                'Failed to decode known good Chrome and Chromedriver versions with downloads.',
+                'Failed to decode known good Chrome and Chromedriver versions with downloads. Try upgrading chrome.',
                 self::ERR_DECODE_MILESTONE_DOWNLOADS
             );
         }
