@@ -4,6 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- PHPUnit version 10+ warnings (#692)
+
+### Changed
+
+- Updated Core PHPUnit test code from `wordpress/wordpress-develop`.
+- Update SQLite plugin from `sqlite-database-integration` plugin.
+
 ## [4.0.18] 2024-01-23;
 
 - Improve messaging and documentation around initialization and setup.
