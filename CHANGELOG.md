@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.0.19] 2024-02-09;
+
 ### Fixed
 
 - PHPUnit version 10+ warnings (#692)
@@ -2084,4 +2086,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.16]: https://github.com/lucatume/wp-browser/compare/4.0.15...4.0.16
 [4.0.17]: https://github.com/lucatume/wp-browser/compare/4.0.16...4.0.17
 [4.0.18]: https://github.com/lucatume/wp-browser/compare/4.0.17...4.0.18
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.18...HEAD
+[4.0.19]: https://github.com/lucatume/wp-browser/compare/4.0.18...4.0.19
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.19...HEAD
