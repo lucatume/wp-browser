@@ -325,7 +325,7 @@ class ChromedriverInstaller
             && is_array($decoded['milestones'][$this->milestone]['downloads']['chromedriver'])
         )) {
             throw new RuntimeException(
-                'Failed to decode known good Chrome and Chromedriver versions with downloads. Try upgrading chrome.',
+                'Failed to decode known good Chrome and Chromedriver versions with downloads. Try upgrading chrome. ' . $this->detectLinuxBinaryPath(),
                 self::ERR_DECODE_MILESTONE_DOWNLOADS
             );
         }
