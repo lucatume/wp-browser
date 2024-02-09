@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser;
 
 use lucatume\WPBrowser\Command\GenerateWPUnit;
+use lucatume\WPBrowser\Deprecated\RemovedInPHPUnitVersion10;
 use lucatume\WPBrowser\Module\WPBrowser;
 use lucatume\WPBrowser\Module\WPBrowserMethods;
 use lucatume\WPBrowser\Module\WPCLI;
@@ -21,12 +22,6 @@ use lucatume\WPBrowser\TestCase\WPTestCase;
 use lucatume\WPBrowser\TestCase\WPXMLRPCTestCase;
 
 use function class_alias;
-
-// @phpcs:disable
-class RemovedInPHPUnitVersion10
-{
-}
-// @phpcs:enable
 
 /**
  * Defines a set of class aliases to allow referencing the framework classes with their previous versions' names.
