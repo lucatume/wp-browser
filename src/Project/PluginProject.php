@@ -113,6 +113,7 @@ class PluginProject extends ContentProject
         if ($activationResult instanceof Throwable) {
             $message = $activationResult->getMessage();
             $this->sayWarning('Could not activate plugin: ' . $message);
+            $this->say($activationResult->getFile() . ":" . $activationResult->getLine());
             $this->say('This might happen because the plugin has unmet dependencies; wp-browser configuration ' .
                 'will continue, but you will need to manually activate the plugin and update the dump in ' .
                 'tests/Support/Data/dump.sql.');
