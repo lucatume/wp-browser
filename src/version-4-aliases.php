@@ -19,13 +19,17 @@ use lucatume\WPBrowser\TestCase\WPRestControllerTestCase;
 use lucatume\WPBrowser\TestCase\WPRestPostTypeControllerTestCase;
 use lucatume\WPBrowser\TestCase\WPTestCase;
 use lucatume\WPBrowser\TestCase\WPXMLRPCTestCase;
+
 use function class_alias;
+
+// @phpcs:disable
+class RemovedInPHPUnitVersion10
+{
+}
+// @phpcs:enable
 
 /**
  * Defines a set of class aliases to allow referencing the framework classes with their previous versions' names.
- */
-
-/**
  * Calls to `class_alias` will immediately autoload the class in a eager fashion.
  * Using an autoloader will load them lazily.
  */
@@ -48,6 +52,12 @@ $deprecatedAutoloader = static function (string $class) use (&$deprecatedAutoloa
         'Codeception\\TestCase\\WPRestControllerTestCase' => WPRestControllerTestCase::class,
         'Codeception\\TestCase\\WPRestPostTypeControllerTestCase' => WPRestPostTypeControllerTestCase::class,
         'Codeception\\TestCase\\WPXMLRPCTestCase' => WPXMLRPCTestCase::class,
+         /* WordPress PHPUnit compatibility layer will require these classes removed in PHPUnit 10 */
+        'PHPUnit\\Framework\\Error\\Deprecated' => RemovedInPHPUnitVersion10::class,
+        'PHPUnit\\Framework\\Error\\Notice' => RemovedInPHPUnitVersion10::class,
+        'PHPUnit\\Framework\\Error\\Warning' => RemovedInPHPUnitVersion10::class,
+        'PHPUnit\\Framework\\Warning' => RemovedInPHPUnitVersion10::class,
+        'PHPUnit\\Framework\\TestListener' => RemovedInPHPUnitVersion10::class
     ];
     $countDeprecated = count($deprecated);
     static $hits = 0;

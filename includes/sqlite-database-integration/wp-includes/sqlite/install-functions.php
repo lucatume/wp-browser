@@ -89,7 +89,8 @@ function sqlite_make_db_sqlite() {
 			} catch ( PDOException $err ) {
 				$err_data = $err->errorInfo; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				$err_code = $err_data[1];
-				if ( 5 == $err_code || 6 == $err_code ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+				// phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
+				if ( 5 == $err_code || 6 == $err_code ) {
 					// If the database is locked, commit again.
 					$pdo_mysql->commit();
 				} else {
