@@ -43,6 +43,29 @@ class BuiltInServerControllerTest extends Unit
     private Output $output;
 
     /**
+     * @beforeClass
+     */
+    public static function backupPidFile():void{
+        $pidFile = PhpBuiltInServer::getPidFile();
+
+        if (is_file($pidFile)) {
+            rename($pidFile, $pidFile.'.bak');
+        }
+    }
+
+    /**
+     * @afterClass
+     */
+    public static function restorePidFile():void{
+        $pidFile = PhpBuiltInServer::getPidFile();
+        $pidFileBackup = $pidFile .'.bak';
+
+        if (is_file($pidFileBackup)) {
+            rename($pidFileBackup, $pidFile);
+        }
+    }
+
+    /**
      * @before
      * @after
      */
