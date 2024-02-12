@@ -42,11 +42,58 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
     }
 
     /**
-     * It should throw if binary cannot be found
+     * It should throw if specified binary cannot be found
      *
      * @test
      */
-    public function should_throw_if_binary_cannot_be_found(): void
+    public function should_throw_if_specified_binary_cannot_be_found(): void
+    {
+        $this->uopzSetFunctionReturn('is_file', fn(string $file) => !str_contains($file, 'chrome'), true);
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(ChromedriverInstaller::ERR_INVALID_BINARY);
+
+        new ChromedriverInstaller(null, 'win32', '/path/to/chrome.exe');
+    }
+
+    /**
+     * @return string[]
+     */
+    public function platforms_provider(): array
+    {
+        return [
+            'win32' => ['win32', 'chrome'],
+            'win64' => ['win64', 'chrome'],
+            'linux64' => ['linux64', 'chrom'],
+            'mac-x64' => ['mac-x64', 'Chrome'],
+            'mac-arm64' => ['mac-arm64', 'Chrome'],
+        ];
+    }
+
+    /**
+     * It should throw if binary cannot be found in default paths for platform
+     *
+     * @test
+     * @dataProvider platforms_provider
+     */
+    public function should_throw_if_binary_cannot_be_found_in_default_paths_for_platform(
+        string $platform,
+        string $binNamePattern
+    ): void {
+        $isNotAnExecutableFile = fn(string $file) => !str_contains($file, $binNamePattern);
+        $this->uopzSetFunctionReturn('is_file', $isNotAnExecutableFile, true);
+        $this->uopzSetFunctionReturn('is_executable', $isNotAnExecutableFile, true);
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(ChromedriverInstaller::ERR_INVALID_BINARY);
+
+        new ChromedriverInstaller(null, $platform);
+    }
+
+    /**
+     * It should throw if binary cannot be executed
+     *
+     * @test
+     */
+    public function should_throw_if_binary_cannot_be_executed(): void
     {
         $this->uopzSetFunctionReturn('is_executable', function (string $file): bool {
             return !str_contains($file, 'chrome') && is_executable($file);
@@ -72,9 +119,11 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ChromedriverInstaller::ERR_INVALID_BINARY);
 
-        new ChromedriverInstaller('1.2.3.4',
+        new ChromedriverInstaller(
+            '1.2.3.4',
             'mac-arm64',
-            '/Applications/Chromium.app/Contents/MacOS/Chromium');
+            '/Applications/Chromium.app/Contents/MacOS/Chromium'
+        );
     }
 
     /**
@@ -87,9 +136,11 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ChromedriverInstaller::ERR_VERSION_NOT_STRING);
 
-        new ChromedriverInstaller(null,
+        new ChromedriverInstaller(
             null,
-            codecept_data_dir('bins/chrome-version-not-string'));
+            null,
+            codecept_data_dir('bins/chrome-version-not-string')
+        );
     }
 
     /**
@@ -99,7 +150,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_version_from_binary_has_not_correct_format(): void
     {
-		$this->uopzSetFunctionReturn('exec','Could not start Google Chrome.');
+        $this->uopzSetFunctionReturn('exec', 'Could not start Google Chrome.');
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ChromedriverInstaller::ERR_INVALID_VERSION_FORMAT);
 
@@ -184,6 +235,9 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ChromedriverInstaller::ERR_DECODE_MILESTONE_DOWNLOADS);
+        $this->expectExceptionMessage("Failed to find a version of Chromedriver to download for your platform and " .
+            "Chrome combination.\nTry upgrading Chrome and making sure it is executable from one of the expected " .
+            "locations for your platform (linux64): chromium, google-chrome");
 
         $ci->install(__DIR__);
     }
@@ -197,8 +251,8 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
     {
         $this->uopzSetFunctionReturn('file_get_contents', function (string $file): string|false {
             return str_contains($file, 'chrome-for-testing') ?
-	            '{"milestones":{"116": {"downloads":{"chrome":{},"chromedriver":{}}}}}'
-	            : file_get_contents($file);
+                '{"milestones":{"116": {"downloads":{"chrome":{},"chromedriver":{}}}}}'
+                : file_get_contents($file);
         }, true);
 
         $ci = new ChromedriverInstaller(null, 'linux64', codecept_data_dir('bins/chrome-mock'));
@@ -219,7 +273,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
     {
         $this->uopzSetFunctionReturn('sys_get_temp_dir', codecept_output_dir());
         $this->uopzSetFunctionReturn('unlink', function (string $file): bool {
-            return preg_match('~chromedriver\\.zip$~' ,$file) ? false : unlink($file);
+            return preg_match('~chromedriver\\.zip$~', $file) ? false : unlink($file);
         }, true);
 
         $ci = new ChromedriverInstaller(null, 'linux64', codecept_data_dir('bins/chrome-mock'));
