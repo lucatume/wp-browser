@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.0.21] 2024-02-12;
+
 ### Fixed
 
 - Search more paths for Chrome binaries on linux (#694, thanks to @iateadonut)
@@ -2102,4 +2104,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.18]: https://github.com/lucatume/wp-browser/compare/4.0.17...4.0.18
 [4.0.19]: https://github.com/lucatume/wp-browser/compare/4.0.18...4.0.19
 [4.0.20]: https://github.com/lucatume/wp-browser/compare/4.0.19...4.0.20
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.20...HEAD
+[4.0.21]: https://github.com/lucatume/wp-browser/compare/4.0.20...4.0.21
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.21...HEAD
