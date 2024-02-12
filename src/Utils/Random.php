@@ -12,8 +12,8 @@ use Throwable;
 class Random
 {
     private static string $saltChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' .
-    '!"#$%&()*+,-./:;<=>?@[]^_`{|}~';
-    private static int $saltCharsCount = 92;
+    '!#$%&()*+,-./:;<>?@[]^_`{|}~';
+    private static int $saltCharsCount = 90;
     private static string $alphaChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
     private static int $alphaCharsCount = 52;
     private static string $dbNameChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_';
