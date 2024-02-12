@@ -51,8 +51,8 @@ class WPBrowser extends PhpBrowser
         if (!$cookies) {
             return null;
         }
-        $matchingCookies = array_filter($cookies, static function ($cookie) use ($cookiePattern): int|bool {
-            return preg_match($cookiePattern, $cookie->getName());
+        $matchingCookies = array_filter($cookies, static function (Cookie $cookie) use ($cookiePattern): bool {
+            return (bool)preg_match($cookiePattern, $cookie->getName());
         });
         $cookieList = array_map(static function ($cookie): string {
             return sprintf('{"%s": "%s"}', $cookie->getName(), $cookie->getValue());

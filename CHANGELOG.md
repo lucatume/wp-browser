@@ -8,6 +8,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - Print file and line of failure during setup of plugin project, (#694, thanks to @iateadonut)
 
+## [4.0.19] 2024-02-09;
+
+### Fixed
+
+- PHPUnit version 10+ warnings (#692)
+
+### Changed
+
+- Updated Core PHPUnit test code from `wordpress/wordpress-develop`.
+- Update SQLite plugin from `sqlite-database-integration` plugin.
+
 ## [4.0.18] 2024-01-23;
 
 - Improve messaging and documentation around initialization and setup.
@@ -2079,4 +2090,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.16]: https://github.com/lucatume/wp-browser/compare/4.0.15...4.0.16
 [4.0.17]: https://github.com/lucatume/wp-browser/compare/4.0.16...4.0.17
 [4.0.18]: https://github.com/lucatume/wp-browser/compare/4.0.17...4.0.18
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.18...HEAD
+[4.0.19]: https://github.com/lucatume/wp-browser/compare/4.0.18...4.0.19
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.19...HEAD
