@@ -97,14 +97,14 @@ class ThemeProject extends ContentProject
      * @throws Throwable
      * @throws ProcessException
      */
-    protected function activate(string $wpRootDir, int $serverLocalhostPort): bool
+    public function activate(string $wpRootDir, int $serverLocalhostPort): bool
     {
         $codeExec = new CodeExecutionFactory($wpRootDir, 'localhost:' . $serverLocalhostPort);
         $switchTheme = $codeExec->toSwitchTheme($this->basename, false);
         $activationResult = Loop::executeClosure($switchTheme)->getReturnValue();
         if ($activationResult instanceof Throwable) {
             $message = $activationResult->getMessage();
-            $this->sayWarning('Could not activate plugin: ' . $message);
+            $this->sayWarning('Could not activate theme: ' . $message);
             $this->say('This might happen because the theme has unmet dependencies; wp-browser configuration ' .
                 'will continue, but you will need to manually activate the theme and update the dump in ' .
                 'tests/Support/Data/dump.sql.');
