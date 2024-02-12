@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Search more paths for Chrome binaries on linux (#694, thanks to @iateadonut)
+
+### Changed
+
+- List paths searched for Chrome on current platform in debug output
+
 ## [4.0.20] 2024-02-12;
 
 ### Added
