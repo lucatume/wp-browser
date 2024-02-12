@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- Print file and line of failure during setup of plugin project, (#694, thanks to @iateadonut)
+
 ## [4.0.18] 2024-01-23;
 
 - Improve messaging and documentation around initialization and setup.

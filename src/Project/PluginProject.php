@@ -104,7 +104,7 @@ class PluginProject extends ContentProject
      * @throws Throwable
      * @throws ProcessException
      */
-    protected function activate(string $wpRootDir, int $serverLocalhostPort): bool
+    public function activate(string $wpRootDir, int $serverLocalhostPort): bool
     {
         $codeExec = new CodeExecutionFactory($wpRootDir, 'localhost:' . $serverLocalhostPort);
         $pluginString = basename(dirname($this->pluginFile)) . '/' . basename($this->pluginFile);
