@@ -11,7 +11,6 @@ use lucatume\WPBrowser\Command\GenerateWPUnit;
 use lucatume\WPBrowser\Command\GenerateWPXMLRPC;
 use lucatume\WPBrowser\Extension\EventDispatcherBridge;
 use lucatume\WPBrowser\Extension\IsolationSupport;
-use lucatume\WPBrowser\Deprecated\RemovedInPHPUnitVersion10;
 use lucatume\WPBrowser\Module\WPBrowser;
 use lucatume\WPBrowser\Module\WPBrowserMethods;
 use lucatume\WPBrowser\Module\WPCLI;

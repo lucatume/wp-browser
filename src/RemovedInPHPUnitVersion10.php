@@ -1,5 +1,5 @@
 <?php
-namespace lucatume\WPBrowser\Deprecated;
+namespace lucatume\WPBrowser;
 
 class RemovedInPHPUnitVersion10
 {
