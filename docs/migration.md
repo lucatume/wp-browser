@@ -45,18 +45,55 @@ back-compatibility purposes.
    code to let the test case know using the `setExpectedDeprecated` method:
     ```php
     use lucatume\WPBrowser\TestCase\WPTestCase;
-    class MyTestUsingDeprecatedFunctionTest extends WPTestCase {
-        public function test_it_can_use_deprecated_function() {
+   
+    class MyTestUsingDeprecatedCode extends WPTestCase {
+        public function test_deprecatd_function() {
+   		    // add_filter( 'deprecated_function_trigger_error', '__return_false' );
             $this->setExpectedDeprecated( 'my_deprecated_function' );
             my_deprecated_function();
+        }
+   
+        public function test_deprecated_class(){
+   		    // add_filter( 'deprecated_class_trigger_error', '__return_false' );
+            $this->setExpectedDeprecated( 'MyDeprecatedClass' );
+            new MyDeprecatedClass();
+        }
+   
+        public function test_deprecated_file(){
+   		    // add_filter( 'deprecated_file_trigger_error', '__return_false' );
+            $this->setExpectedDeprecated( '/path/to/my_deprecated_file.php' );
+            require_once 'my_deprecated_file.php';
+        }
+   
+        public function test_deprecated_hook(){
+   		    // add_filter( 'deprecated_hook_trigger_error', '__return_false' );
+            $this->setExpectedDeprecated( 'my_deprecated_hook' );
+            do_action( 'my_deprecated_hook' );
         }
     }
     ```
    Previously, your code could just filter
-   the `deprecated_function_trigger_error`, `deprecated_argument_trigger_error`, `deprecated_class_trigger_error`, `deprecated_file_trigger_error`, `deprecated_hook_trigger_error`,
-   and `doing_it_wrong_trigger_error` hooks to return `false` to tolerate the deprecation notices in tests.
+   the `deprecated_function_trigger_error`, `deprecated_argument_trigger_error`, `deprecated_class_trigger_error`, `deprecated_file_trigger_error`, and `deprecated_hook_trigger_error`, hooks to return `false` to tolerate the deprecation notices in tests.
 
-2. If your test code is knowingly triggering doing-it-wrong notices, you need to update your test code to let the test
+2. If your test code is directly modifying properties like `$expected_deprecated` or `$expected_doing_it_wrong` directly, you need to update your test code to use the `setExpectedDeprecated` and `setExpectedIncorrectUsage` methods:
+    ```php
+    use lucatume\WPBrowser\TestCase\WPTestCase;
+    class MyTestUsingDeprecatedCode extends WPTestCase {
+        public function test_deprecated_function() {
+            // $this->expected_deprecated[] = 'my_deprecated_function';
+            $this->setExpectedDeprecated( 'my_deprecated_function' );
+            my_deprecated_function();
+        }
+   
+        public function test_doing_it_wrong(){
+            // $this->expected_doing_it_wrong[] = 'my_doing_it_wrong';
+            $this->setExpectedIncorrectUsage( 'my_doing_it_wrong' );
+            my_doing_it_wrong();
+        }
+    }
+    ```
+
+3. If your test code is knowingly triggering doing-it-wrong notices, you need to update your test code to let the test
    case know using the `setExpectedIncorrectUsage` method:
     ```php
     use lucatume\WPBrowser\TestCase\WPTestCase;
@@ -69,8 +106,20 @@ back-compatibility purposes.
     ```
    Previously, your code could just filter the `doing_it_wrong_trigger_error` hook to return `false` to tolerate the
    doing-it-wrong notices in tests.
-3. Some assertion methods have, in more recent versions of the PHPUnit core suite, adopted stricter type checks when it comes to comparison. E.g., the `assertEqualFields` will now check the object to check the fields on is actually an object. Depending on how loose your use of assertions was before, you might have to update your work.
-4. Other updates to the Core PHPUnit test case will report use of deprecated functions more promptly; if your code is using deprecated functions that might have escaped previous versions of wp-browser, you will need to update them.
+
+4. Some assertion methods have, in more recent versions of the PHPUnit core suite, adopted stricter type checks when it comes to comparison. E.g., the `assertEqualFields` will now check the object to check the fields on is actually an object. Depending on how loose your use of assertions was before, you might have to update your work to make it pass the stricter checks:
+   ```php
+   use lucatume\WPBrowser\TestCase\WPTestCase;
+   
+    class MyTestUsingAssertEqualFields extends WPTestCase {
+         public function test_it_can_use_assert_equal_fields() {
+            // Cast the array to an object explicitly.
+            $this->assertEqualFields( (object) [ 'a' => 1 ], [ 'a' => 1 ] );
+         }
+    }
+   ``` 
+   
+5. Other updates to the Core PHPUnit test case will report use of deprecated functions more promptly; if your code is using deprecated functions that might have escaped previous versions of wp-browser, you will need to update them.
 
 ## Staying on version 3, lower than 3.5
 
