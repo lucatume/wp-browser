@@ -17,7 +17,7 @@ function sqlite_add_admin_menu() {
 		__( 'SQLite integration', 'sqlite-database-integration' ),
 		'manage_options',
 		'sqlite-integration',
-		'sqlite_integration_admin_screen',
+		'sqlite_integration_admin_screen'
 	);
 }
 add_action( 'admin_menu', 'sqlite_add_admin_menu' );

@@ -11,12 +11,13 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\ParserFactory;
+use PhpParser\PhpVersion;
 
 $rootDir = dirname(__DIR__);
 require_once $rootDir . '/vendor/autoload.php';
 
 // Build a PHP parser using nikic/php-parser
-$parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP5);
+$parser = (new ParserFactory())->createForVersion(PHPVersion::fromComponents(8, 0));
 
 // Build an iterator over all the .php files in the includes directory
 $files = [

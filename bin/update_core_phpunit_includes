@@ -4,12 +4,18 @@ set -eux
 
 script_dir=$(dirname "$0")
 root_dir=$(cd "$script_dir/.." && pwd)
-includes_src="https://github.com/WordPress/wordpress-develop/branches/trunk/tests/phpunit/includes"
 
 rm -rf "${root_dir}"/includes/core-phpunit/includes &&
+  rm -rf "${root_dir}"/includes/core-phpunit/wordpress-develop &&
   mkdir -p "${root_dir}"/includes/core-phpunit &&
   cd "${root_dir}"/includes/core-phpunit &&
-  svn export $includes_src
+  git clone -n --depth=1 --filter=tree:0 https://github.com/WordPress/wordpress-develop &&
+  cd wordpress-develop &&
+  git sparse-checkout set --no-cone tests/phpunit/includes &&
+  git checkout &&
+  cd .. &&
+  mv  wordpress-develop/tests/phpunit/includes ./includes &&
+  rm -rf wordpress-develop &&
   git apply "${root_dir}"/config/patches/core-phpunit/includes/abstract-testcase.php.patch &&
   git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-ajax.php.patch &&
   git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-canonical.php.patch &&

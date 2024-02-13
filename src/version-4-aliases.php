@@ -11,6 +11,7 @@ use lucatume\WPBrowser\Command\GenerateWPUnit;
 use lucatume\WPBrowser\Command\GenerateWPXMLRPC;
 use lucatume\WPBrowser\Extension\EventDispatcherBridge;
 use lucatume\WPBrowser\Extension\IsolationSupport;
+use lucatume\WPBrowser\Deprecated\RemovedInPHPUnitVersion10;
 use lucatume\WPBrowser\Module\WPBrowser;
 use lucatume\WPBrowser\Module\WPBrowserMethods;
 use lucatume\WPBrowser\Module\WPCLI;
@@ -32,9 +33,6 @@ use function class_alias;
 
 /**
  * Defines a set of class aliases to allow referencing the framework classes with their previous versions' names.
- */
-
-/**
  * Calls to `class_alias` will immediately autoload the class in a eager fashion.
  * Using an autoloader will load them lazily.
  */
@@ -65,6 +63,12 @@ $deprecatedAutoloader = static function (string $class) use (&$deprecatedAutoloa
         'Codeception\\TestCase\\WPXMLRPCTestCase' => WPXMLRPCTestCase::class,
         'tad\\WPBrowser\\Extension\\Events' => EventDispatcherBridge::class,
         'Codeception\\Extension\\IsolationSupport' => IsolationSupport::class,
+         /* WordPress PHPUnit compatibility layer will require these classes removed in PHPUnit 10 */
+        'PHPUnit\\Framework\\Error\\Deprecated' => RemovedInPHPUnitVersion10::class,
+        'PHPUnit\\Framework\\Error\\Notice' => RemovedInPHPUnitVersion10::class,
+        'PHPUnit\\Framework\\Error\\Warning' => RemovedInPHPUnitVersion10::class,
+        'PHPUnit\\Framework\\Warning' => RemovedInPHPUnitVersion10::class,
+        'PHPUnit\\Framework\\TestListener' => RemovedInPHPUnitVersion10::class
     ];
     $countDeprecated = count($deprecated);
     static $hits = 0;
