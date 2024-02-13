@@ -8,7 +8,6 @@ use Codeception\Exception\ModuleException;
 use Codeception\Module;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Module\WPQueries;
-use lucatume\WPBrowser\Utils\ArrayReflectionPropertyAccessor;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionProperty;
