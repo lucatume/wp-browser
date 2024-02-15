@@ -261,7 +261,7 @@ class WPTestCase extends Unit
     protected function assertPostConditions(): void
     {
         parent::assertPostConditions();
-        static::assert_post_conditions(); //@phpstan-ignore-line magic __callStatic
+        static::assert_post_conditions();
     }
 
     public function __destruct()

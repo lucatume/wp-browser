@@ -306,6 +306,32 @@ extensions:
 
 Generate a test case extending the `lucatume\WPBrowser\TestCase\WPXMLRPCTestCase` class. This class is a version of the `WPTestCase` designed to test the XML-RPC API.
 
+### `monkey:cache:path`
+
+Enable the command with:
+
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\MonkeyCachePath"
+```
+
+Get the path to the monkey-patching cache directory.
+
+Use the `--porcelain` or `-p` option to get the path without any additional output.
+
+### `monkey:cache:clear`
+
+Enable the command with:
+
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\MonkeyCacheClear"
+```
+
+Clear the monkey-patching cache.
+
 [1]: https://wp-cli.org/
 
 [2]: https://github.com/WordPress/wordpress-develop/tree/trunk/tests/phpunit

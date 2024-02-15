@@ -13,7 +13,6 @@ use Codeception\Test\TestCaseWrapper;
 use FilesystemIterator;
 use Iterator;
 use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
-use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\SerializableThrowable;
 use lucatume\WPBrowser\Utils\MonkeyPatch;
 use lucatume\WPBrowser\Utils\Property;
@@ -157,13 +156,13 @@ PHP;
         }
 
         if (str_contains($fileContents, '@runTestsInSeparateProcesses')
-            || str_contains($fileContents, '#[RunTestsInSeparateProcesses]')
+            || str_contains($fileContents, '#[RunTestsInSeparateProcesses')
         ) {
             return $this->patchFileContentsToRunTestsInSeparateProcesses($testFile, $fileContents);
         }
 
         if (str_contains($fileContents, '@runInSeparateProcess')
-            || str_contains($fileContents, '#[RunInSeparateProcess]')
+            || str_contains($fileContents, '#[RunInSeparateProcess')
         ) {
             return $this->patchFileContentsToRunTestInSeparateProcess($testFile, $fileContents);
         }
@@ -207,6 +206,22 @@ PHP;
         if ($patchedFileContents === null) {
             throw new ExtensionException($this, "File contents patching failed for file {$testFile}.");
         }
+
+        $patchedFileContents = preg_replace(
+            [
+                '/(^\\s*\\*\\s*)@runInSeparateProcess/um',
+                '/(^\\s+#\\[)RunInSeparateProcess([^]]*?])/um',
+                '/(^\\s*\\*\\s*)@runTestsInSeparateProcesses/um',
+                '/(^\\s+#\\[)RunTestsInSeparateProcesses([^]]*?])/um'
+            ],
+            [
+                '$1@willRunInSeparateProcess',
+                '$1WillRunInSeparateProcess$2',
+                '$1@willRunTestsInSeparateProcesses',
+                '$1willRunTestsInSeparateProcesses$2'
+            ],
+            $patchedFileContents
+        );
 
         $patchedFile = MonkeyPatch::getReplacementFileName(
             $testFile,

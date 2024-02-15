@@ -49,4 +49,9 @@ class MonkeyPatch
         $hash = md5($pathname . $mtime . $context);
         return FS::getTmpSubDir('_monkeypatch') . "/{$hash}.php";
     }
+
+    public static function getCachePath(): string
+    {
+        return FS::getTmpSubDir('_monkeypatch');
+    }
 }
