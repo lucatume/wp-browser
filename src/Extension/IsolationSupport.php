@@ -16,6 +16,7 @@ use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
 use lucatume\WPBrowser\Process\SerializableThrowable;
 use lucatume\WPBrowser\Utils\MonkeyPatch;
 use lucatume\WPBrowser\Utils\Property;
+use PHPUnit\Framework\TestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ReflectionException;
@@ -393,9 +394,9 @@ PHP;
 
         $dataName = $_SERVER['WPBROWSER_DATA_NAME'];
 
-        /** @var TestCaseWrapper $testCaseWrapper */
+        /** @var TestCaseWrapper|TestCase $testCaseWrapper */
         $testCaseWrapper = $e->getTest();
-        $testCase = $testCaseWrapper->getTestCase();
+        $testCase = $testCaseWrapper instanceof TestCase ? $testCaseWrapper : $testCaseWrapper->getTestCase();
         Property::setPrivateProperties($testCase, [
             'data' => $data,
             'dataName' => $dataName
