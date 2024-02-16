@@ -32,6 +32,8 @@ extensions:
         - lucatume\WPBrowser\Command\GenerateWPUnit
         - lucatume\WPBrowser\Command\DbExport
         - lucatume\WPBrowser\Command\DbImport
+        - lucatume\WPBrowser\Command\MonkeyCachePath
+        - lucatume\WPBrowser\Command\MonkeyCacheClear
         - lucatume\WPBrowser\Command\DevStart
         - lucatume\WPBrowser\Command\DevStop
         - lucatume\WPBrowser\Command\DevInfo
