@@ -41,32 +41,45 @@ back-compatibility purposes.
 
 ## Changes common to version 3.5 and 4.0
 
-1. If your test code is loading deprecated functions, arguments, classes, files, or hooks, you need to update your test
+1. Update your main Codeception configuration file (e.g. `codeception.yml`) to enable the new commands:
+   
+   ```yaml
+   extensions:
+     commands:
+       - "lucatume\\WPBrowser\\Command\\RunOriginal"
+       - "lucatume\\WPBrowser\\Command\\RunAll"
+       - "lucatume\\WPBrowser\\Command\\DbExport"
+       - "lucatume\\WPBrowser\\Command\\DbImport"
+       - "lucatume\\WPBrowser\\Command\\MonkeyCachePath"
+       - "lucatume\\WPBrowser\\Command\\MonkeyCacheClear"
+   ```
+   
+2. If your test code is loading deprecated functions, arguments, classes, files, or hooks, you need to update your test
    code to let the test case know using the `setExpectedDeprecated` method:
     ```php
     use lucatume\WPBrowser\TestCase\WPTestCase;
    
     class MyTestUsingDeprecatedCode extends WPTestCase {
         public function test_deprecatd_function() {
-   		    // add_filter( 'deprecated_function_trigger_error', '__return_false' );
+               // add_filter( 'deprecated_function_trigger_error', '__return_false' );
             $this->setExpectedDeprecated( 'my_deprecated_function' );
             my_deprecated_function();
         }
    
         public function test_deprecated_class(){
-   		    // add_filter( 'deprecated_class_trigger_error', '__return_false' );
+               // add_filter( 'deprecated_class_trigger_error', '__return_false' );
             $this->setExpectedDeprecated( 'MyDeprecatedClass' );
             new MyDeprecatedClass();
         }
    
         public function test_deprecated_file(){
-   		    // add_filter( 'deprecated_file_trigger_error', '__return_false' );
+               // add_filter( 'deprecated_file_trigger_error', '__return_false' );
             $this->setExpectedDeprecated( '/path/to/my_deprecated_file.php' );
             require_once 'my_deprecated_file.php';
         }
    
         public function test_deprecated_hook(){
-   		    // add_filter( 'deprecated_hook_trigger_error', '__return_false' );
+               // add_filter( 'deprecated_hook_trigger_error', '__return_false' );
             $this->setExpectedDeprecated( 'my_deprecated_hook' );
             do_action( 'my_deprecated_hook' );
         }
@@ -75,7 +88,7 @@ back-compatibility purposes.
    Previously, your code could just filter
    the `deprecated_function_trigger_error`, `deprecated_argument_trigger_error`, `deprecated_class_trigger_error`, `deprecated_file_trigger_error`, and `deprecated_hook_trigger_error`, hooks to return `false` to tolerate the deprecation notices in tests.
 
-2. If your test code is directly modifying properties like `$expected_deprecated` or `$expected_doing_it_wrong` directly, you need to update your test code to use the `setExpectedDeprecated` and `setExpectedIncorrectUsage` methods:
+3. If your test code is directly modifying properties like `$expected_deprecated` or `$expected_doing_it_wrong` directly, you need to update your test code to use the `setExpectedDeprecated` and `setExpectedIncorrectUsage` methods:
     ```php
     use lucatume\WPBrowser\TestCase\WPTestCase;
     class MyTestUsingDeprecatedCode extends WPTestCase {
@@ -93,7 +106,7 @@ back-compatibility purposes.
     }
     ```
 
-3. If your test code is knowingly triggering doing-it-wrong notices, you need to update your test code to let the test
+4. If your test code is knowingly triggering doing-it-wrong notices, you need to update your test code to let the test
    case know using the `setExpectedIncorrectUsage` method:
     ```php
     use lucatume\WPBrowser\TestCase\WPTestCase;
@@ -107,7 +120,7 @@ back-compatibility purposes.
    Previously, your code could just filter the `doing_it_wrong_trigger_error` hook to return `false` to tolerate the
    doing-it-wrong notices in tests.
 
-4. Some assertion methods have, in more recent versions of the PHPUnit core suite, adopted stricter type checks when it comes to comparison. E.g., the `assertEqualFields` will now check the object to check the fields on is actually an object. Depending on how loose your use of assertions was before, you might have to update your work to make it pass the stricter checks:
+5. Some assertion methods have, in more recent versions of the PHPUnit core suite, adopted stricter type checks when it comes to comparison. E.g., the `assertEqualFields` will now check the object to check the fields on is actually an object. Depending on how loose your use of assertions was before, you might have to update your work to make it pass the stricter checks:
    ```php
    use lucatume\WPBrowser\TestCase\WPTestCase;
    
@@ -119,7 +132,23 @@ back-compatibility purposes.
     }
    ``` 
    
-5. Other updates to the Core PHPUnit test case will report use of deprecated functions more promptly; if your code is using deprecated functions that might have escaped previous versions of wp-browser, you will need to update them.
+6. Other updates to the Core PHPUnit test case will report use of deprecated functions more promptly; if your code is using deprecated functions that might have escaped previous versions of wp-browser, you will need to update them.
+
+7. If you're using the `@runInSeparateProcess` annotation for tests in your suite, you will need to enable the `IsolationSupport` extension in your suite configuration file:
+   
+   ```yaml
+   actor: MySuiteTester
+   bootstrap: _bootstrap.php
+   extensions:
+   enabled:
+      - "lucatume\\WPBrowser\\Extension\\IsolationSupport"
+   modules: # The rest of the module configuration ...
+   ```
+   
+   Alternatively, you can enable the extension in the Codeception main configuration file (e.g. `codeception.yml`).
+    
+   Read more about the extension in the [Isolation Support extension documentation](extensions.md#isolationsupport).
+
 
 ## Staying on version 3, lower than 3.5
 
