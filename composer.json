@@ -92,6 +92,9 @@
     ],
     "cs-fix": [
       "phpcbf --standard=config/phpcs.xml src"
+    ],
+    "pre-commit": [
+      "@stan", "@cs-fix", "@cs"
     ]
   },
   "suggest": {
