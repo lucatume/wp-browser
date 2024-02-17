@@ -62,6 +62,7 @@ $deprecatedAutoloader = static function (string $class) use (&$deprecatedAutoloa
         'Codeception\\TestCase\\WPXMLRPCTestCase' => WPXMLRPCTestCase::class,
         'tad\\WPBrowser\\Extension\\Events' => EventDispatcherBridge::class,
         'Codeception\\Extension\\IsolationSupport' => IsolationSupport::class,
+        'tad\\WPBrowser\\Module\\WPLoader\\FactoryStore' => WPLoader\FactoryStore::class,
          /* WordPress PHPUnit compatibility layer will require these classes removed in PHPUnit 10 */
         'PHPUnit\\Framework\\Error\\Deprecated' => RemovedInPHPUnitVersion10::class,
         'PHPUnit\\Framework\\Error\\Notice' => RemovedInPHPUnitVersion10::class,
