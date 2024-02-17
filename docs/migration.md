@@ -149,6 +149,7 @@ back-compatibility purposes.
     
    Read more about the extension in the [Isolation Support extension documentation](extensions.md#isolationsupport).
 
+8. Global space cleanup between test is more thorough in more recent versions of the Core PHPUnit test suite. Due to this you might see failures in tests that were passing in previous versions due to a "leaking" global state. Examples of this might be nonces being set by previous tests and not being reset. Update your tests to explicitly set all the global stat variables you require for the test to run.
 
 ## Staying on version 3, lower than 3.5
 
