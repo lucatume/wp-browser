@@ -93,8 +93,11 @@
     "cs-fix": [
       "phpcbf --standard=config/phpcs.xml src"
     ],
+    "typos": [
+      "typos --config ./config/typos.toml -w"
+    ],
     "pre-commit": [
-      "@stan", "@cs-fix", "@cs"
+      "@stan", "@cs-fix", "@cs", "@typos"
     ]
   },
   "suggest": {
