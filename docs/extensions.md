@@ -162,7 +162,7 @@ In your tests, you can use the annotations or attributes as you would in a PHPUn
 ```php
 use lucatume\WPBrowser\TestCase\WPTestCase;
 
-class IsolationExmapleTest extends WPTestCase {
+class IsolationExampleTest extends WPTestCase {
     /**
      * @runInSeparateProcess
      */
