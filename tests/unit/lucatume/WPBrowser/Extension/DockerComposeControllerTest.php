@@ -51,25 +51,26 @@ class DockerComposeControllerTest extends Unit
     }
 
     /**
-     * @beforeClass
+     * @before
      */
-    public static function backupPidFile():void{
-        $pidFile = DockerComposeController::getRunningFile();
+    public static function backupRunFile(): void
+    {
+        $runFile = DockerComposeController::getRunningFile();
 
-        if (is_file($pidFile)) {
-            rename($pidFile, $pidFile.'.bak');
+        if (is_file($runFile)) {
+            rename($runFile, $runFile . '.bak');
         }
     }
 
     /**
-     * @afterClass
+     * @after
      */
-    public static function restorePidFile():void{
-        $pidFile = DockerComposeController::getRunningFile();
-        $pidFileBackup = $pidFile .'.bak';
+    public static function restoreRunFile(): void
+    {
+        $runFile = DockerComposeController::getRunningFile();
 
-        if (is_file($pidFileBackup)) {
-            rename($pidFileBackup, $pidFile);
+        if (is_file($runFile . '.bak')) {
+            rename($runFile . '.bak', $runFile);
         }
     }
 

@@ -45,9 +45,9 @@ class ChromeDriverControllerTest extends Unit
     }
 
     /**
-     * @beforeClass
+     * @before
      */
-    public static function backupPidFile():void{
+    public function backupPidFile():void{
         $pidFile = ChromeDriver::getPidFile();
 
         if (is_file($pidFile)) {
@@ -56,14 +56,13 @@ class ChromeDriverControllerTest extends Unit
     }
 
     /**
-     * @afterClass
+     * @after
      */
     public static function restorePidFile():void{
         $pidFile = ChromeDriver::getPidFile();
-        $pidFileBackup = $pidFile .'.bak';
 
-        if (is_file($pidFileBackup)) {
-            rename($pidFileBackup, $pidFile);
+        if (is_file($pidFile .'.bak')) {
+            rename($pidFile.'.bak', $pidFile);
         }
     }
 

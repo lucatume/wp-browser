@@ -43,9 +43,9 @@ class BuiltInServerControllerTest extends Unit
     private Output $output;
 
     /**
-     * @beforeClass
+     * @before
      */
-    public static function backupPidFile():void{
+    public function backupPidFile():void{
         $pidFile = PhpBuiltInServer::getPidFile();
 
         if (is_file($pidFile)) {
@@ -54,26 +54,13 @@ class BuiltInServerControllerTest extends Unit
     }
 
     /**
-     * @afterClass
+     * @after
      */
     public static function restorePidFile():void{
         $pidFile = PhpBuiltInServer::getPidFile();
-        $pidFileBackup = $pidFile .'.bak';
 
-        if (is_file($pidFileBackup)) {
-            rename($pidFileBackup, $pidFile);
-        }
-    }
-
-    /**
-     * @before
-     * @after
-     */
-    public function removePidFiles(): void
-    {
-        $pidFile = PhpBuiltInServer::getPidFile();
-        if (is_file($pidFile)) {
-            unlink($pidFile);
+        if (is_file($pidFile .'.bak')) {
+            rename($pidFile.'.bak', $pidFile);
         }
     }
 
