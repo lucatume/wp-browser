@@ -57,6 +57,8 @@ back-compatibility purposes.
 2. If your test code is loading deprecated functions, arguments, classes, files, or hooks, you need to update your test
    code to let the test case know using the `setExpectedDeprecated` method:
     ```php
+    <?php
+   
     use lucatume\WPBrowser\TestCase\WPTestCase;
    
     class MyTestUsingDeprecatedCode extends WPTestCase {
@@ -90,6 +92,8 @@ back-compatibility purposes.
 
 3. If your test code is directly modifying properties like `$expected_deprecated` or `$expected_doing_it_wrong` directly, you need to update your test code to use the `setExpectedDeprecated` and `setExpectedIncorrectUsage` methods:
     ```php
+    <?php
+   
     use lucatume\WPBrowser\TestCase\WPTestCase;
     class MyTestUsingDeprecatedCode extends WPTestCase {
         public function test_deprecated_function() {
@@ -109,6 +113,8 @@ back-compatibility purposes.
 4. If your test code is knowingly triggering doing-it-wrong notices, you need to update your test code to let the test
    case know using the `setExpectedIncorrectUsage` method:
     ```php
+    <?php
+   
     use lucatume\WPBrowser\TestCase\WPTestCase;
     class MyTestUsingDoingItWrongTest extends WPTestCase {
         public function test_it_can_use_doing_it_wrong() {
@@ -122,6 +128,8 @@ back-compatibility purposes.
 
 5. Some assertion methods have, in more recent versions of the PHPUnit core suite, adopted stricter type checks when it comes to comparison. E.g., the `assertEqualFields` will now check the object to check the fields on is actually an object. Depending on how loose your use of assertions was before, you might have to update your work to make it pass the stricter checks:
    ```php
+   <?php
+   
    use lucatume\WPBrowser\TestCase\WPTestCase;
    
     class MyTestUsingAssertEqualFields extends WPTestCase {

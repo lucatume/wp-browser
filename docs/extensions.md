@@ -160,6 +160,8 @@ extensions:
 In your tests, you can use the annotations or attributes as you would in a PHPUnit test:
 
 ```php
+<?php
+
 use lucatume\WPBrowser\TestCase\WPTestCase;
 
 class IsolationExampleTest extends WPTestCase {

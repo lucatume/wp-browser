@@ -10,7 +10,7 @@ site_description: 'Documentation for the wp-browser WordPress testing framework.
 site_author: 'Luca Tumedei'
 nav:
   - Getting started: 'README.md'
-  - Migrating to version 4: 'migration.md'
+  - Migrating to newer versions: 'migration.md'
   - Default configuration: 'default-configuration.md'
   - Custom configuration: 'custom-configuration.md'
   - Modules:
@@ -25,6 +25,7 @@ nav:
       - PHP Built-in Server Controller: 'extensions#builtinservercontroller'
       - ChromeDriver Controller: 'extensions#chromedrivercontroller'
       - Docker Compose Controller: 'extensions#dockercomposecontroller'
+      - Isolation Support: 'extensions#isolationsupport'
   - Commands:
       - run and codeception:run: 'commands#run-and-codeceptionrun'
       - dev:start: 'commands#devstart'
@@ -34,6 +35,15 @@ nav:
       - wp:db:export: 'commands#wpdbexport'
       - chromedriver:update: 'commands#chromedriverupdate'
       - generate:wpunit: 'commands#generatewpunit'
+      - generate:wpajax: 'commands#generatewpajax'
+      - generate:wpcanonical: 'commands#generatewpcanonical'
+      - generate:wprestapi: 'commands#generatewprestapi'
+      - generate:wprestcontroller: 'commands#generatewprestcontroller'
+      - generate:wprestposttypecontroller: 'commands#generatewprestposttypecontroller'
+      - generate:wpxml: 'commands#generatewpxml'
+      - generate:wpxmlrpc: 'commands#generatewpxmlrpc'
+      - monkey:cache:path: 'commands#monkeycachepath'
+      - monkey:cache:clear: 'commands#monkeycacheclear'
   - Troubleshooting: 'troubleshooting.md'
   - Sponsorship: 'https://github.com/sponsors/lucatume'
   - Changelog: 'https://github.com/lucatume/wp-browser/blob/master/CHANGELOG.md'

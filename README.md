@@ -2,6 +2,8 @@
 
 You can use wp-browser to test WordPress sites, plugins and themes.
 
+An easy and quick setup, with a default configuration that will work for most projects, run end-to-end tests, integration tests and unit tests all wit the same tool.
+
 ## Requirements
 
 Depending on the nature of your project, there are different requirements it will need to satisfy before getting started.

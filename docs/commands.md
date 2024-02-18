@@ -332,6 +332,8 @@ extensions:
 
 Clear the monkey-patching cache.
 
+Use the `--porcelain` or `-p` option to suppress any confirmation output.
+
 [1]: https://wp-cli.org/
 
 [2]: https://github.com/WordPress/wordpress-develop/tree/trunk/tests/phpunit
