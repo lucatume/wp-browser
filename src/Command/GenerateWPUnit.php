@@ -3,12 +3,11 @@
 namespace lucatume\WPBrowser\Command;
 
 use Codeception\Command\GenerateTest;
-use Codeception\Configuration;
 use Codeception\CustomCommandInterface;
 use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
+use lucatume\WPBrowser\Lib\Generator\AbstractGenerator;
 use lucatume\WPBrowser\Lib\Generator\WPUnit as WPUnitGenerator;
 use lucatume\WPBrowser\Module\WPLoader;
-use lucatume\WPBrowser\TestCase\WPTestCase;
 use lucatume\WPBrowser\Traits\ConfigurationReader;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -65,12 +64,9 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
         }
 
         $modules = [WPLoader::class, 'WPLoader'];
-        $globalConfig = Configuration::config();
-        $suiteConfig = Configuration::suiteSettings($suite, $globalConfig);
+        /** @var array{namespace: string, actor: string, path: string} $suiteConfig */
+        $suiteConfig = $this->getSuiteConfig($suite);
         $wpLoaderConfigs = $this->getConfigsForModules($suiteConfig, $modules);
-        if (count($wpLoaderConfigs) === 0) {
-            $wpLoaderConfigs = $this->getConfigsForModules($globalConfig, $modules);
-        }
 
         $wploaderCorrectLoad = count($wpLoaderConfigs)
             && array_reduce($wpLoaderConfigs, function ($carry, $config) {
@@ -90,12 +86,9 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
         /** @var string $class */
         $class = $input->getArgument('class');
 
-        /** @var array{namespace: string, actor: string, path: string} $config */
-        $config = $this->getSuiteConfig($suite);
+        $filename = $this->buildPath($suiteConfig['path'], $class);
 
-        $filename = $this->buildPath($config['path'], $class);
-
-        $gen = $this->getGenerator($config, $class);
+        $gen = $this->getGenerator($suiteConfig, $class);
 
         if (!$this->createFile($filename, $gen->produce())) {
             $output->writeln("<error>Test $filename already exists</error>");
@@ -131,11 +124,11 @@ class GenerateWPUnit extends GenerateTest implements CustomCommandInterface
      * @param array{namespace: string, actor: string} $config The generator configuration.
      * @param string $class                                   The class to generate the test case for.
      *
-     * @return WPUnitGenerator An instance of the test case code generator.
+     * @return AbstractGenerator An instance of the test case code generator.
      */
-    protected function getGenerator(array $config, string $class): WPUnitGenerator
+    protected function getGenerator(array $config, string $class): AbstractGenerator
     {
-        return new WPUnitGenerator($config, $class, WPTestCase::class);
+        return new WPUnitGenerator($config, $class);
     }
 
     /**

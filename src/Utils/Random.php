@@ -15,11 +15,11 @@ class Random
      * @var string
      */
     private static $saltChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' .
-    '!"#$%&()*+,-./:;<=>?@[]^_`{|}~';
+    '!#$%&()*+,-./:;<>?@[]^_`{|}~';
     /**
      * @var int
      */
-    private static $saltCharsCount = 92;
+    private static $saltCharsCount = 90;
     /**
      * @var string
      */

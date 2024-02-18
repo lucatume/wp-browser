@@ -18,7 +18,7 @@ class FileReplacementPatcher implements PatcherInterface
     /**
      * @throws MonkeyPatchingException
      */
-    public function patch(string $fileContents, string $pathname): array
+    public function patch(string $fileContents, string $pathname, string $context = null): array
     {
         $replacementFileContents = file_get_contents($this->replacementFile);
 

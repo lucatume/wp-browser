@@ -24,5 +24,3 @@ modules:
               - 'woocommerce/woocommerce.php'
             installationTableHandling: drop
             booststrapActions: []
-            backupGlobalsExcludeList:
-              - wc_container

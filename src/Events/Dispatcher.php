@@ -103,7 +103,7 @@ class Dispatcher
             $firstParameterReflection = $dispatchMethodReflection->getParameters()[0] ?? null;
             $firstParameterType = $firstParameterReflection ? $firstParameterReflection->getType() : null;
             if ($firstParameterType instanceof \ReflectionNamedType && $firstParameterType->getName() === 'object') {
-                return $eventDispatcher->dispatch($name, $event);
+                return $eventDispatcher->dispatch($event, $name);
             }
 
             return $eventDispatcher->dispatch($name, $event); //@phpstan-ignore-line

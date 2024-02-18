@@ -43,11 +43,11 @@ EOT;
     }
 
     /**
-     * It should throw if trying to scaffol on site that is not configured
+     * It should throw if trying to scaffold on site that is not configured
      *
      * @test
      */
-    public function should_throw_if_trying_to_scaffol_on_site_that_is_not_configured(): void
+    public function should_throw_if_trying_to_scaffold_on_site_that_is_not_configured(): void
     {
         $composerFileCode = <<< EOT
 {

@@ -50,13 +50,23 @@ class BuiltInServerControllerTest extends Unit
 
     /**
      * @before
+     */
+    public function backupPidFile():void{
+        $pidFile = PhpBuiltInServer::getPidFile();
+
+        if (is_file($pidFile)) {
+            rename($pidFile, $pidFile.'.bak');
+        }
+    }
+
+    /**
      * @after
      */
-    public function removePidFiles(): void
-    {
+    public static function restorePidFile():void{
         $pidFile = PhpBuiltInServer::getPidFile();
-        if (is_file($pidFile)) {
-            unlink($pidFile);
+
+        if (is_file($pidFile .'.bak')) {
+            rename($pidFile.'.bak', $pidFile);
         }
     }
 

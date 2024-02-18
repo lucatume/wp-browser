@@ -242,6 +242,8 @@ extensions:
         - lucatume\WPBrowser\Command\GenerateWPUnit
         - lucatume\WPBrowser\Command\DbExport
         - lucatume\WPBrowser\Command\DbImport
+        - lucatume\WPBrowser\Command\MonkeyCachePath
+        - lucatume\WPBrowser\Command\MonkeyCacheClear
 
 <<< /codeception.yml <<<
 

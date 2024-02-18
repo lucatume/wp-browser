@@ -459,7 +459,7 @@ class InstallationTest extends Unit
     {
         $wpRoot = FS::tmpDir('installation_');
         $db = new SQLiteDatabase($wpRoot, 'db.sqlite');
-        $installation = Installation::scaffold($wpRoot, '6.1.1')
+        $installation = Installation::scaffold($wpRoot)
             ->configure($db)
             ->install(
                 'https://localhost:2389',

@@ -36,7 +36,7 @@ abstract class ContentProject extends InitTemplate implements ProjectInterface
 
     abstract protected function symlinkProjectInContentDir(string $wpRootDir): void;
 
-    abstract protected function activate(string $wpRootDir, int $serverLocalhostPort): bool;
+    abstract public function activate(string $wpRootDir, int $serverLocalhostPort): bool;
 
     /**
      * @return array<string>|false
