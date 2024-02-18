@@ -169,7 +169,7 @@ class ActivationCest
 }
 
 EOT
-,
+            ,
             [
                 'slug' => Strings::slug($this->getName())
             ]
@@ -222,7 +222,7 @@ class SampleTest extends WPTestCase
     }
 }
 EOT
-,
+            ,
             [
                 'pluginString' => $this->getActivationString()
             ]
