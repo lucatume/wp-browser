@@ -24,7 +24,7 @@ class WPUnit
     /**
      * @var string
      */
-<<<<<<< Updated upstream
+    <<<<<<< Updated upstream
     protected $baseClass;
     use Classname;
     use Namespaces;
@@ -41,8 +41,8 @@ class WPUnit
     /**
      * @var string
      */
-=======
->>>>>>> Stashed changes
+    =======
+    >>>>>>> Stashed changes
     protected $template = <<<EOF
 <?php
 {{namespace}}

@@ -13,7 +13,7 @@ class Process extends SymfonyProcess
 =======
      * @var bool|null
      */
-    private static $inheritEnvironmentVariables;
+private static $inheritEnvironmentVariables;
     /**
 >>>>>>> Stashed changes
      * @var bool
@@ -26,18 +26,18 @@ class Process extends SymfonyProcess
      * @param array<string,mixed>|null $options
      * @param mixed $input
      */
-    public function __construct(
-        array $command,
-        string $cwd = null,
-        array $env = null,
-        $input = null,
-        ?float $timeout = 60,
-        array $options = null
-    ) {
-<<<<<<< Updated upstream
-        if (method_exists($this, 'inheritEnvironmentVariables')) {
-            parent::__construct($command, $cwd, $env, $input, $timeout, $options); //@phpstan-ignore-line
-=======
+public function __construct(
+    array $command,
+    string $cwd = null,
+    array $env = null,
+    $input = null,
+    ?float $timeout = 60,
+    array $options = null
+) {
+    <<<<<<< Updated upstream
+    if (method_exists($this, 'inheritEnvironmentVariables')) {
+        parent::__construct($command, $cwd, $env, $input, $timeout, $options); //@phpstan-ignore-line
+        =======
         parent::__construct($command, $cwd, $env, $input, $timeout, $options); //@phpstan-ignore-line
 
         if (self::$inheritEnvironmentVariables === null) {
@@ -47,7 +47,7 @@ class Process extends SymfonyProcess
 
         if (self::$inheritEnvironmentVariables) {
             // @phpstan-ignore-next-line
->>>>>>> Stashed changes
+            >>>>>>> Stashed changes
             $this->inheritEnvironmentVariables(true);
         }
 

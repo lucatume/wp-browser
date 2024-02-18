@@ -91,7 +91,7 @@ class WPTestCase extends Unit
     protected $tester;
     // Backup, and reset, globals between tests.
     protected $backupGlobals = false;
->>>>>>> Stashed changes
+    >>>>>>> Stashed changes
     // A list of globals that should not be backed up: they are handled by the Core test case.
     protected $backupGlobalsBlacklist = [
         'wpdb',
@@ -127,12 +127,12 @@ class WPTestCase extends Unit
         '_wpTestsBackupStaticAttributesExcludeList'
     ];
     // Backup, and reset, static class attributes between tests.
-<<<<<<< Updated upstream
+    <<<<<<< Updated upstream
     protected $backupStaticAttributes = true;
 
-=======
+    =======
     protected $backupStaticAttributes = false;
->>>>>>> Stashed changes
+    >>>>>>> Stashed changes
     // A list of static attributes that should not be backed up as they are wired to explode when doing so.
     protected $backupStaticAttributesBlacklist = [
         // WordPress
@@ -165,19 +165,19 @@ class WPTestCase extends Unit
         }
 
         if (property_exists($this, 'backupGlobalsExcludeList')) {
-<<<<<<< Updated upstream
+            <<<<<<< Updated upstream
             $backupGlobalsExcludeListReflectionProperty = new \ReflectionProperty($this, 'backupGlobalsExcludeList');
             $backupGlobalsExcludeListReflectionProperty->setAccessible(true);
         } else {
             // Older versions of PHPUnit.
             $backupGlobalsExcludeListReflectionProperty = new \ReflectionProperty($this, 'backupGlobalsBlacklist');
-=======
+            =======
             $backupGlobalsExcludeListReflectionProperty = new ReflectionProperty($this, 'backupGlobalsExcludeList');
             $backupGlobalsExcludeListReflectionProperty->setAccessible(true);
         } else {
             // Older versions of PHPUnit.
             $backupGlobalsExcludeListReflectionProperty = new ReflectionProperty($this, 'backupGlobalsBlacklist');
->>>>>>> Stashed changes
+            >>>>>>> Stashed changes
             $backupGlobalsExcludeListReflectionProperty->setAccessible(true);
         }
         $backupGlobalsExcludeListReflectionProperty->setAccessible(true);
@@ -234,18 +234,18 @@ class WPTestCase extends Unit
      * @var array<string,mixed>
      */
     protected $additionalGlobalsBackup = [];
-<<<<<<< Updated upstream
+    <<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
+    =======
+    >>>>>>> Stashed changes
     /**
      * @var array<string,WP_UnitTestCase>
      */
     private static $coreTestCaseMap = [];
-<<<<<<< Updated upstream
+    <<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
+    =======
+    >>>>>>> Stashed changes
     private static function getCoreTestCase(): WP_UnitTestCase
     {
         if (isset(self::$coreTestCaseMap[static::class])) {
@@ -258,7 +258,7 @@ class WPTestCase extends Unit
 
         return $coreTestCase;
     }
-<<<<<<< Updated upstream
+    <<<<<<< Updated upstream
 
     public static function setUpBeforeClass(): void
     {
@@ -266,8 +266,8 @@ class WPTestCase extends Unit
         self::getCoreTestCase()->set_up_before_class();
     }
 
-=======
->>>>>>> Stashed changes
+    =======
+    >>>>>>> Stashed changes
     protected function backupAdditionalGlobals(): void
     {
         foreach ([
@@ -279,7 +279,7 @@ class WPTestCase extends Unit
             }
         }
     }
-<<<<<<< Updated upstream
+    <<<<<<< Updated upstream
 
     protected function setUp(): void
     {
@@ -288,8 +288,8 @@ class WPTestCase extends Unit
         $this->backupAdditionalGlobals();
     }
 
-=======
->>>>>>> Stashed changes
+    =======
+    >>>>>>> Stashed changes
     protected function restoreAdditionalGlobals(): void
     {
         foreach ($this->additionalGlobalsBackup as $key => $value) {
@@ -297,7 +297,7 @@ class WPTestCase extends Unit
             unset($this->additionalGlobalsBackup[$key]);
         }
     }
-<<<<<<< Updated upstream
+    <<<<<<< Updated upstream
 
     protected function tearDown(): void
     {
@@ -313,8 +313,8 @@ class WPTestCase extends Unit
         parent::tearDownAfterClass();
     }
 
-=======
->>>>>>> Stashed changes
+    =======
+    >>>>>>> Stashed changes
     protected function assertPostConditions(): void
     {
         parent::assertPostConditions();
@@ -332,8 +332,8 @@ class WPTestCase extends Unit
      */
     public static function __callStatic(string $name, array $arguments)
     {
-<<<<<<< Updated upstream
-=======
+        <<<<<<< Updated upstream
+        =======
         switch ($name) {
             case '_setUpBeforeClass':
                 $name = 'setUpBeforeClass';
@@ -345,7 +345,7 @@ class WPTestCase extends Unit
                 $name = $name;
                 break;
         }
->>>>>>> Stashed changes
+        >>>>>>> Stashed changes
         $coreTestCase = self::getCoreTestCase();
         $reflectionMethod = new ReflectionMethod($coreTestCase, $name);
         $reflectionMethod->setAccessible(true);
@@ -363,21 +363,21 @@ class WPTestCase extends Unit
         $reflectionMethod->setAccessible(true);
         return $reflectionMethod->invokeArgs($coreTestCase, $arguments);
     }
-<<<<<<< Updated upstream
+    <<<<<<< Updated upstream
 
-=======
+    =======
     /**
      * @throws ModuleException If the WPQueries module is not available under any name.
      */
->>>>>>> Stashed changes
+    >>>>>>> Stashed changes
     protected function queries(): WPQueries
     {
         /** @var WPQueries $wpQueries */
         $wpQueries = $this->getModule(WPQueries::class);
         return $wpQueries;
     }
-<<<<<<< Updated upstream
-=======
+    <<<<<<< Updated upstream
+    =======
     private function isCoreTestCaseProperty(string $name): bool
     {
         if ($this->coreTestCaseProperties === null) {
@@ -443,5 +443,5 @@ class WPTestCase extends Unit
         $reflectionProperty->setAccessible(true);
         return $reflectionProperty->isInitialized($coreTestCase);
     }
->>>>>>> Stashed changes
+    >>>>>>> Stashed changes
 }

@@ -16,7 +16,7 @@ use function lucatume\WPBrowser\useMemoString;
 class ChromedriverInstaller
 {
 
-<<<<<<< Updated upstream
+    <<<<<<< Updated upstream
     public const ERR_INVALID_VERSION = 1;
     public const ERR_INVALID_BINARY = 2;
     public const ERR_UNSUPPORTED_PLATFORM = 3;
@@ -31,7 +31,7 @@ class ChromedriverInstaller
     public const ERR_MOVE_BINARY = 15;
     public const ERR_DETECT_PLATFORM = 16;
     public const ERR_BINARY_CHMOD = 17;
-=======
+    =======
     public const ERR_INVALID_BINARY = 1;
     public const ERR_UNSUPPORTED_PLATFORM = 2;
     public const ERR_REMOVE_EXISTING_ZIP_FILE = 3;
@@ -45,7 +45,7 @@ class ChromedriverInstaller
     public const ERR_DETECT_PLATFORM = 11;
     public const ERR_BINARY_CHMOD = 12;
 
->>>>>>> Stashed changes
+    >>>>>>> Stashed changes
     /**
      * @var \Symfony\Component\Console\Output\OutputInterface
      */
@@ -369,7 +369,7 @@ class ChromedriverInstaller
             case 'linux64':
             case 'mac-x64':
             case 'mac-arm64':
-<<<<<<< Updated upstream
+                <<<<<<< Updated upstream
                 $process = new Process([$this->binary, ' --version']);
                 break;
             case 'win32':
@@ -525,113 +525,113 @@ class ChromedriverInstaller
         }
 
         return $matches['major'];
-=======
+        =======
                 return 'chromedriver';
-            case 'win32':
-            case 'win64':
+        case 'win32':
+        case 'win64':
                 return 'chromedriver.exe';
-        }
->>>>>>> Stashed changes
     }
+    >>>>>>> Stashed changes
+}
 
-    private function fetchChromedriverVersionUrl(): string
-    {
-        return useMemoString(
-            function () {
-                return $this->unmemoizedFetchChromedriverVersionUrl();
-            },
-            [$this->platform, $this->milestone]
-        );
-    }
+private function fetchChromedriverVersionUrl(): string
+{
+    return useMemoString(
+        function () {
+            return $this->unmemoizedFetchChromedriverVersionUrl();
+        },
+        [$this->platform, $this->milestone]
+    );
+}
 
     /**
      * @throws JsonException
      */
-    private function unmemoizedFetchChromedriverVersionUrl(): string
-    {
-        $milestoneDownloads = file_get_contents(
-            'https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json'
-        );
+private function unmemoizedFetchChromedriverVersionUrl(): string
+{
+    $milestoneDownloads = file_get_contents(
+        'https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json'
+    );
 
-        if ($milestoneDownloads === false) {
-            throw new RuntimeException(
-                'Failed to fetch known good Chrome and Chromedriver versions with downloads.',
-                self::ERR_FETCH_MILESTONE_DOWNLOADS
-            );
-        }
-
-        $decoded = json_decode($milestoneDownloads, true, 512, 0);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception(json_last_error_msg());
-        }
-
-        if (!(
-            is_array($decoded)
-            && isset($decoded['milestones'])
-            && is_array($decoded['milestones'])
-            && isset($decoded['milestones'][$this->milestone])
-            && is_array($decoded['milestones'][$this->milestone])
-            && isset($decoded['milestones'][$this->milestone]['downloads'])
-            && is_array($decoded['milestones'][$this->milestone]['downloads'])
-            && isset($decoded['milestones'][$this->milestone]['downloads']['chromedriver'])
-            && is_array($decoded['milestones'][$this->milestone]['downloads']['chromedriver'])
-        )) {
-            throw new RuntimeException(
-                'Failed to decode known good Chrome and Chromedriver versions with downloads.',
-                self::ERR_DECODE_MILESTONE_DOWNLOADS
-            );
-        }
-
-        foreach ($decoded['milestones'][$this->milestone]['downloads']['chromedriver'] as $download) {
-            if (!(
-                is_array($download)
-                && isset($download['platform'], $download['url'])
-                && is_string($download['platform'])
-                && is_string($download['url'])
-                && $download['platform'] === $this->platform
-            )) {
-                continue;
-            }
-
-            return $download['url'];
-        }
-
+    if ($milestoneDownloads === false) {
         throw new RuntimeException(
-            'Failed to find a download URL for Chromedriver version ' . $this->milestone,
-            self::ERR_DOWNLOAD_URL_NOT_FOUND
+            'Failed to fetch known good Chrome and Chromedriver versions with downloads.',
+            self::ERR_FETCH_MILESTONE_DOWNLOADS
         );
     }
 
-    private function getExecutableFileName(): string
-    {
-        switch ($this->platform) {
-            case 'linux64':
-            case 'mac-x64':
-            case 'mac-arm64':
-                return 'chromedriver';
-            case 'win32':
-            case 'win64':
-                return 'chromedriver.exe';
+    $decoded = json_decode($milestoneDownloads, true, 512, 0);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        throw new \Exception(json_last_error_msg());
+    }
+
+    if (!(
+        is_array($decoded)
+        && isset($decoded['milestones'])
+        && is_array($decoded['milestones'])
+        && isset($decoded['milestones'][$this->milestone])
+        && is_array($decoded['milestones'][$this->milestone])
+        && isset($decoded['milestones'][$this->milestone]['downloads'])
+        && is_array($decoded['milestones'][$this->milestone]['downloads'])
+        && isset($decoded['milestones'][$this->milestone]['downloads']['chromedriver'])
+        && is_array($decoded['milestones'][$this->milestone]['downloads']['chromedriver'])
+    )) {
+        throw new RuntimeException(
+            'Failed to decode known good Chrome and Chromedriver versions with downloads.',
+            self::ERR_DECODE_MILESTONE_DOWNLOADS
+        );
+    }
+
+    foreach ($decoded['milestones'][$this->milestone]['downloads']['chromedriver'] as $download) {
+        if (!(
+            is_array($download)
+            && isset($download['platform'], $download['url'])
+            && is_string($download['platform'])
+            && is_string($download['url'])
+            && $download['platform'] === $this->platform
+        )) {
+            continue;
         }
+
+        return $download['url'];
     }
 
-    public function getVersion(): string
-    {
-        return $this->milestone;
-    }
+    throw new RuntimeException(
+        'Failed to find a download URL for Chromedriver version ' . $this->milestone,
+        self::ERR_DOWNLOAD_URL_NOT_FOUND
+    );
+}
 
-    public function getBinary(): string
-    {
-        return $this->binary;
+private function getExecutableFileName(): string
+{
+    switch ($this->platform) {
+        case 'linux64':
+        case 'mac-x64':
+        case 'mac-arm64':
+            return 'chromedriver';
+        case 'win32':
+        case 'win64':
+            return 'chromedriver.exe';
     }
+}
 
-    public function getPlatform(): string
-    {
-        return $this->platform;
-    }
+public function getVersion(): string
+{
+    return $this->milestone;
+}
 
-    public function useEnvZipFile(bool $useEnvZipFile): void
-    {
-        $this->useEnvZipFile = $useEnvZipFile;
-    }
+public function getBinary(): string
+{
+    return $this->binary;
+}
+
+public function getPlatform(): string
+{
+    return $this->platform;
+}
+
+public function useEnvZipFile(bool $useEnvZipFile): void
+{
+    $this->useEnvZipFile = $useEnvZipFile;
+}
 }
