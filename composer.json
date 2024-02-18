@@ -55,12 +55,13 @@
         "src/",
         "src/Deprecated"
       ],
+      "Codeception\\Extension\\": "src/Extension",
       "Hautelook\\Phpass\\": "includes/Hautelook/Phpass",
       "lucatume\\WPBrowser\\Opis\\Closure\\" : "includes/opis/closure/src"
     },
     "files": [
       "src/version-4-aliases.php",
-      "src/Deprecated/deprecated-functions.php",
+      "src/deprecated-functions.php",
       "src/functions.php"
     ]
   },
@@ -91,6 +92,12 @@
     ],
     "cs-fix": [
       "phpcbf --standard=config/phpcs.xml src"
+    ],
+    "typos": [
+      "typos --config ./config/typos.toml -w"
+    ],
+    "pre-commit": [
+      "@stan", "@cs-fix", "@cs", "@typos"
     ]
   },
   "suggest": {

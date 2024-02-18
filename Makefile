@@ -51,9 +51,5 @@ clean_procs:
 .PHONY: clean_procs
 
 build_35:
-	rm -rf vendor composer.lock
-	composer require --dev rector/rector -W
-	vendor/bin/rector --config=config/rector-35.php
-	rm -rf vendor composer.lock composer.json
-	cp config/composer-35.json composer.json
+	bin/build_35.sh
 .PHONY: build_35

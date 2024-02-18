@@ -2,8 +2,15 @@
 
 namespace lucatume\WPBrowser;
 
+use lucatume\WPBrowser\Command\GenerateWPAjax;
+use lucatume\WPBrowser\Command\GenerateWPCanonical;
+use lucatume\WPBrowser\Command\GenerateWPRestApi;
+use lucatume\WPBrowser\Command\GenerateWPRestController;
+use lucatume\WPBrowser\Command\GenerateWPRestPostTypeController;
 use lucatume\WPBrowser\Command\GenerateWPUnit;
-use lucatume\WPBrowser\Deprecated\RemovedInPHPUnitVersion10;
+use lucatume\WPBrowser\Command\GenerateWPXMLRPC;
+use lucatume\WPBrowser\Extension\EventDispatcherBridge;
+use lucatume\WPBrowser\Extension\IsolationSupport;
 use lucatume\WPBrowser\Module\WPBrowser;
 use lucatume\WPBrowser\Module\WPBrowserMethods;
 use lucatume\WPBrowser\Module\WPCLI;
@@ -39,6 +46,12 @@ $deprecatedAutoloader = static function (string $class) use (&$deprecatedAutoloa
         'Codeception\\Module\\WPQueries' => WPQueries::class,
         'Codeception\\Module\\WPWebDriver' => WPWebDriver::class,
         'Codeception\\Command\\GenerateWPUnit' => GenerateWPUnit::class,
+        'Codeception\\Command\\GenerateWPRestApi' => GenerateWPRestApi::class,
+        'Codeception\\Command\\GenerateWPRestController' => GenerateWPRestController::class,
+        'Codeception\\Command\\GenerateWPRestPostTypeController' => GenerateWPRestPostTypeController::class,
+        'Codeception\\Command\\GenerateWPAjax' => GenerateWPAjax::class,
+        'Codeception\\Command\\GenerateWPCanonical' => GenerateWPCanonical::class,
+        'Codeception\\Command\\GenerateWPXMLRPC' => GenerateWPXMLRPC::class,
         'Codeception\\Template\\Wpbrowser' => WpbrowserInitTemplate::class,
         'Codeception\\TestCase\\WPTestCase' => WPTestCase::class,
         'Codeception\\TestCase\\WPAjaxTestCase' => WPAjaxTestCase::class,
@@ -47,6 +60,9 @@ $deprecatedAutoloader = static function (string $class) use (&$deprecatedAutoloa
         'Codeception\\TestCase\\WPRestControllerTestCase' => WPRestControllerTestCase::class,
         'Codeception\\TestCase\\WPRestPostTypeControllerTestCase' => WPRestPostTypeControllerTestCase::class,
         'Codeception\\TestCase\\WPXMLRPCTestCase' => WPXMLRPCTestCase::class,
+        'tad\\WPBrowser\\Extension\\Events' => EventDispatcherBridge::class,
+        'Codeception\\Extension\\IsolationSupport' => IsolationSupport::class,
+        'tad\\WPBrowser\\Module\\WPLoader\\FactoryStore' => WPLoader\FactoryStore::class,
          /* WordPress PHPUnit compatibility layer will require these classes removed in PHPUnit 10 */
         'PHPUnit\\Framework\\Error\\Deprecated' => RemovedInPHPUnitVersion10::class,
         'PHPUnit\\Framework\\Error\\Notice' => RemovedInPHPUnitVersion10::class,

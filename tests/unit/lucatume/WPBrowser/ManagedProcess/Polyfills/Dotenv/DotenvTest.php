@@ -1,7 +1,8 @@
-<?php namespace lucatume\WPBrowser\Polyfills\Dotenv;
+<?php namespace unit\lucatume\WPBrowser\ManagedProcess\Polyfills\Dotenv;
 
 use Codeception\Test\Unit;
 use InvalidArgumentException;
+use lucatume\WPBrowser\Polyfills\Dotenv\Dotenv;
 
 class DotenvTest extends Unit
 {

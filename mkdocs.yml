@@ -10,6 +10,7 @@ site_description: 'Documentation for the wp-browser WordPress testing framework.
 site_author: 'Luca Tumedei'
 nav:
   - Getting started: 'README.md'
+  - Migrating to version 4: 'migration.md'
   - Default configuration: 'default-configuration.md'
   - Custom configuration: 'custom-configuration.md'
   - Modules:

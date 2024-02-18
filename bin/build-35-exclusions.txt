@@ -1,0 +1,16 @@
+.idea
+.build
+.cache
+.git
+.github
+bin
+docs
+var
+vendor
+CHANGELOG.md
+docker-compose.yml
+dynamicReturnTypeMeta.json
+LICENSE
+Makefile
+mkdocs.yml
+README.md

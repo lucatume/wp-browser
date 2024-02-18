@@ -2,16 +2,16 @@
 
 namespace lucatume\WPBrowser\Adapters\Symfony\Component\Process;
 
+use ReflectionMethod;
+use ReflectionProperty;
 use Symfony\Component\Process\Exception\LogicException;
 use Symfony\Component\Process\Pipes\PipesInterface;
 use Symfony\Component\Process\Process as SymfonyProcess;
 
 class Process extends SymfonyProcess
 {
-    /**
-     * @var bool
-     */
-    private $createNewConsole = false;
+    private static ?bool $inheritEnvironmentVariables = null;
+    private bool $createNewConsole = false;
 
     /**
      * @param string[] $command
@@ -26,8 +26,18 @@ class Process extends SymfonyProcess
         ?float $timeout = 60,
         array $options = null
     ) {
-        if (method_exists($this, 'inheritEnvironmentVariables')) {
-            parent::__construct($command, $cwd, $env, $input, $timeout, $options); //@phpstan-ignore-line
+        parent::__construct($command, $cwd, $env, $input, $timeout, $options); //@phpstan-ignore-line
+
+        if (self::$inheritEnvironmentVariables === null) {
+            self::$inheritEnvironmentVariables = method_exists($this, 'inheritEnvironmentVariables')
+                && !str_contains(
+                    (string)(new ReflectionMethod($this, 'inheritEnvironmentVariables'))->getDocComment(),
+                    '@deprecated'
+                );
+        }
+
+        if (self::$inheritEnvironmentVariables) {
+            // @phpstan-ignore-next-line
             $this->inheritEnvironmentVariables(true);
         }
 
@@ -44,7 +54,7 @@ class Process extends SymfonyProcess
             throw new LogicException('Start time is only available after process start.');
         }
 
-        $startTimeReflectionProperty = new \ReflectionProperty(SymfonyProcess::class, 'starttime');
+        $startTimeReflectionProperty = new ReflectionProperty(SymfonyProcess::class, 'starttime');
         $startTimeReflectionProperty->setAccessible(true);
         /** @var float $startTime */
         $startTime = $startTimeReflectionProperty->getValue($this);
@@ -55,7 +65,7 @@ class Process extends SymfonyProcess
     public function __destruct()
     {
         if ($this->createNewConsole) {
-            $processPipesProperty = new \ReflectionProperty(SymfonyProcess::class, 'processPipes');
+            $processPipesProperty = new ReflectionProperty(SymfonyProcess::class, 'processPipes');
             $processPipesProperty->setAccessible(true);
             /** @var PipesInterface $processPipes */
             $processPipes = $processPipesProperty->getValue($this);
@@ -71,7 +81,7 @@ class Process extends SymfonyProcess
     {
         $this->createNewConsole = true;
 
-        $optionsReflectionProperty = new \ReflectionProperty(SymfonyProcess::class, 'options');
+        $optionsReflectionProperty = new ReflectionProperty(SymfonyProcess::class, 'options');
         $optionsReflectionProperty->setAccessible(true);
         $options = $optionsReflectionProperty->getValue($this);
         $options = is_array($options) ? $options : [];
@@ -88,7 +98,7 @@ class Process extends SymfonyProcess
         if ($name === 'fromShellCommandline') {
             $command = array_shift($arguments);
             $process = new self([], ...$arguments); // @phpstan-ignore-line
-            $processCommandLineProperty = new \ReflectionProperty(SymfonyProcess::class, 'commandline');
+            $processCommandLineProperty = new ReflectionProperty(SymfonyProcess::class, 'commandline');
             $processCommandLineProperty->setAccessible(true);
             $processCommandLineProperty->setValue($process, $command);
 

@@ -1,4 +1,4 @@
-<?php  //[STAMP] e5a9948816851aa0c628caaf3ebe1e32
+<?php  //[STAMP] 6d5c77efb60e0b6e6c6a2536b3cef2a3
 // phpcs:ignoreFile
 namespace _generated;
 
@@ -1374,15 +1374,15 @@ trait AcceptanceTesterActions
      *
      * ``` php
      * <?php
-     * $I->selectOption('Which OS do you use?', array('Windows','Linux'));
+     * $I->selectOption('Which OS do you use?', ['Windows', 'Linux']);
      * ```
      *
      * Or provide an associative array for the second argument to specifically define which selection method should be used:
      *
      * ``` php
      * <?php
-     * $I->selectOption('Which OS do you use?', array('text' => 'Windows')); // Only search by text 'Windows'
-     * $I->selectOption('Which OS do you use?', array('value' => 'windows')); // Only search by value 'windows'
+     * $I->selectOption('Which OS do you use?', ['text' => 'Windows']); // Only search by text 'Windows'
+     * $I->selectOption('Which OS do you use?', ['value' => 'windows']); // Only search by value 'windows'
      * ```
      * @see \Codeception\Lib\InnerBrowser::selectOption()
      */
@@ -7695,13 +7695,13 @@ trait AcceptanceTesterActions
      * $I->seeFileFound('shop.log');
      * ```
      *
-     * @param string|null $path The path, relative to the site uploads folder.
+     * @param string|int|null $path The path, relative to the site uploads folder.
      *
      *
      * @throws Exception If the path is a date string and is not parsable by the `strtotime` function.
      * @see \lucatume\WPBrowser\Module\WPFilesystem::amInUploadsPath()
      */
-    public function amInUploadsPath(?string $path = NULL): void {
+    public function amInUploadsPath(string|int|null $path = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Condition('amInUploadsPath', func_get_args()));
     }
 

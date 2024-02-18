@@ -13,21 +13,22 @@ use PhpParser\NodeVisitorAbstract;
 use PhpParser\ParserFactory;
 use PhpParser\PhpVersion;
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+$rootDir = dirname(__DIR__);
+require_once $rootDir . '/vendor/autoload.php';
 
 // Build a PHP parser using nikic/php-parser
 $parser = (new ParserFactory())->createForVersion(PHPVersion::fromComponents(8, 0));
 
 // Build an iterator over all the .php files in the includes directory
-$files = new RegexIterator(
-    new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator(
-            dirname(__DIR__) . '/includes/core-phpunit/includes',
-            RecursiveDirectoryIterator::SKIP_DOTS | RecursiveDirectoryIterator::CURRENT_AS_PATHNAME
-        )
-    ),
-    '/\.php$/'
-);
+$files = [
+    $rootDir . "/includes/core-phpunit/includes/testcase-ajax.php",
+    $rootDir . "/includes/core-phpunit/includes/testcase-canonical.php",
+    $rootDir . "/includes/core-phpunit/includes/testcase-rest-api.php",
+    $rootDir . "/includes/core-phpunit/includes/testcase-rest-controller.php",
+    $rootDir . "/includes/core-phpunit/includes/testcase-rest-post-type-controller.php",
+    $rootDir . "/includes/core-phpunit/includes/testcase-xml.php",
+    $rootDir . '/includes/core-phpunit/includes/testcase-xmlrpc.php',
+];
 
 // Add a node visitor that will resolve to fully qualified namespaces.
 $traverser = new NodeTraverser();
@@ -41,7 +42,7 @@ $namespaceFlagVisitor = new class extends NodeVisitorAbstract {
     private function addMatch(string $file, int $line, string $match)
     {
         // Pick the fragment after the last \ in the match.
-        $class = substr($match, strrpos($match, '\\') + 1);
+        $class = substr($match, (strrpos($match, '\\') ?: -1) + 1);
         $this->matchesByFile[$file][] = [$line, $class];
     }
 
@@ -59,7 +60,7 @@ $namespaceFlagVisitor = new class extends NodeVisitorAbstract {
     {
         if ($node instanceof New_) {
             $class = $node->class;
-            if ($class instanceof Name) {
+            if ($class instanceof Name && count($class->getParts()) > 1) {
                 $name = $class->toString();
                 if (!class_exists($name) && !interface_exists($name) && !trait_exists($name)) {
                     $file = $this->file;
@@ -71,7 +72,7 @@ $namespaceFlagVisitor = new class extends NodeVisitorAbstract {
         } elseif ($node instanceof Function_ || $node instanceof ClassMethod) {
             foreach ($node->getParams() as $param) {
                 $type = $param->type;
-                if ($type instanceof Name) {
+                if ($type instanceof Name && count($type->getParts()) > 1) {
                     $name = $type->toString();
                     if (!class_exists($name) && !interface_exists($name) && !trait_exists($name)) {
                         $file = $this->file;
@@ -79,6 +80,17 @@ $namespaceFlagVisitor = new class extends NodeVisitorAbstract {
                         $match = $name;
                         $this->addMatch($file, $line, $match);
                     }
+                }
+            }
+        } elseif($node instanceof Node\Expr\Instanceof_){
+            $class = $node->class;
+            if ($class instanceof Name && count($class->getParts()) > 1) {
+                $name = $class->toString();
+                if (!class_exists($name) && !interface_exists($name) && !trait_exists($name)) {
+                    $file = $this->file;
+                    $line = $node->getAttribute('startLine');
+                    $match = $class->toString();
+                    $this->addMatch($file, $line, $match);
                 }
             }
         }
@@ -91,6 +103,7 @@ $namespaceFlagVisitor = new class extends NodeVisitorAbstract {
 };
 
 $traverser->addVisitor($namespaceFlagVisitor);
+
 // Scan all the files to build the parser information.
 foreach ($files as $file) {
     $stmts = $parser->parse(file_get_contents($file));
@@ -98,21 +111,13 @@ foreach ($files as $file) {
     $stmts = $traverser->traverse($stmts);
 }
 
-$filesToCure = [
-    dirname(__DIR__) . "/includes/core-phpunit/includes/testcase-ajax.php",
-    dirname(__DIR__) . "/includes/core-phpunit/includes/testcase-canonical.php",
-    dirname(__DIR__) . "/includes/core-phpunit/includes/testcase-rest-api.php",
-    dirname(__DIR__) . "/includes/core-phpunit/includes/testcase-rest-controller.php",
-    dirname(__DIR__) . "/includes/core-phpunit/includes/testcase-rest-post-type-controller.php",
-    dirname(__DIR__) . "/includes/core-phpunit/includes/testcase-xml.php",
-    dirname(__DIR__) . '/includes/core-phpunit/includes/testcase-xmlrpc.php',
-];
-foreach ($namespaceFlagVisitor->getMatchesByFile() as $file => $matches) {
-    if (!in_array($file, $filesToCure, true)) {
-        // Target only the files to cure.
-        continue;
-    }
+$matchesByFile = $namespaceFlagVisitor->getMatchesByFile();
 
+if (!count($matchesByFile)) {
+    printf("No replacemenents required.\n");
+}
+
+foreach ($matchesByFile as $file => $matches) {
     $updatedContents = file($file);
 
     if ($updatedContents === false) {
@@ -120,7 +125,7 @@ foreach ($namespaceFlagVisitor->getMatchesByFile() as $file => $matches) {
     }
 
     foreach ($matches as [$line, $match]) {
-        $updatedContents[$line - 1] = str_replace($match, '\\' . $match, $updatedContents[$line - 1]);
+        $updatedContents[$line - 1] = str_replace(ltrim($match, '\\'), '\\' . $match, $updatedContents[$line - 1]);
     }
 
     printf('Updating file: %s ... ', $file);

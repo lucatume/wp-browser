@@ -50,6 +50,30 @@ class DockerComposeControllerTest extends Unit
         $this->uopzSetMock(Output::class, $this->output);
     }
 
+    /**
+     * @before
+     */
+    public static function backupRunFile(): void
+    {
+        $runFile = DockerComposeController::getRunningFile();
+
+        if (is_file($runFile)) {
+            rename($runFile, $runFile . '.bak');
+        }
+    }
+
+    /**
+     * @after
+     */
+    public static function restoreRunFile(): void
+    {
+        $runFile = DockerComposeController::getRunningFile();
+
+        if (is_file($runFile . '.bak')) {
+            rename($runFile . '.bak', $runFile);
+        }
+    }
+
     public function notArrayOfStringsProvider(): array
     {
         return [

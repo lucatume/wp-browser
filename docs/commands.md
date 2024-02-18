@@ -221,6 +221,117 @@ Database queries running in the context of test methods of a test case extending
 transaction that is rolled back after the test method is run. This means that any database change happening in the
 context of a test method will not appear in the database while the test is running and after the test is run.
 
+### `generate:wpajax`
+
+Enable the command with:
+
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\GenerateWPAjax"
+```
+
+Generate a test case extending the `lucatume\WPBrowser\TestCase\WPAjaxTestCase` class. This class is a version of the `WPTestCase` designed to test AJAX requests.
+
+
+### `generate:wpcanonical`
+
+Enable the command with:
+
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\GenerateWPCanonical"
+```
+
+Generate a test case extending the `lucatume\WPBrowser\TestCase\WPCanonicalTestCase` class. This class is a version of the `WPTestCase` designed to test canonical redirects.
+
+### `generate:wprestapi`
+
+Enable the command with:
+
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\GenerateWPRestApi"
+```
+
+Generate a test case extending the `lucatume\WPBrowser\TestCase\WPRestApiTestCase` class. This class is a version of the `WPTestCase` designed to test the handling of REST API requests.
+
+### `generate:wprestcontroller`
+
+Enable the command with:
+
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\GenerateWPRestController"
+```
+
+Generate a test case extending the `lucatume\WPBrowser\TestCase\WPRestControllerTestCase` class. This class is a version of the `WPTestCase` designed to unit-test REST API controllers.
+
+### `generate:wprestposttypecontroller`
+
+Enable the command with:
+
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\GenerateWPRestPostTypeController"
+```
+
+Generate a test case extending the `lucatume\WPBrowser\TestCase\WPRestPostTypeControllerTestCase` class. This class is a version of the `WPTestCase` designed to unit-test REST API controllers for post types.
+
+### `generate:wpxml`
+
+Enable the command with:
+
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\GenerateWPXML"
+```
+
+Generate a test case extending the `lucatume\WPBrowser\TestCase\WPXMLTestCase` class. This class is a version of the `WPTestCase` designed to test the production of XML data.
+
+### `generate:wpxmlrpc`
+
+Enable the command with:
+
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\GenerateWPXMLRPC"
+```
+
+Generate a test case extending the `lucatume\WPBrowser\TestCase\WPXMLRPCTestCase` class. This class is a version of the `WPTestCase` designed to test the XML-RPC API.
+
+### `monkey:cache:path`
+
+Enable the command with:
+
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\MonkeyCachePath"
+```
+
+Get the path to the monkey-patching cache directory.
+
+Use the `--porcelain` or `-p` option to get the path without any additional output.
+
+### `monkey:cache:clear`
+
+Enable the command with:
+
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\MonkeyCacheClear"
+```
+
+Clear the monkey-patching cache.
+
 [1]: https://wp-cli.org/
 
 [2]: https://github.com/WordPress/wordpress-develop/tree/trunk/tests/phpunit

@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-use Codeception\TestInterface;
 use lucatume\Rector\RemoveTypeHinting;
-use lucatume\Rector\SwapEventDispatcherEventNameParameters;
 use Rector\Config\RectorConfig;
 use Rector\DowngradePhp72\Rector\ClassMethod\DowngradeParameterTypeWideningRector;
 use Rector\Renaming\Rector\MethodCall\RenameMethodRector;
@@ -44,8 +42,6 @@ return static function (RectorConfig $rectorConfig): void {
         new MethodCallRename('PHPUnit\Framework\Assert', 'assertDoesNotMatchRegularExpression', 'assertNotRegExp'),
         new MethodCallRename('PHPUnit\Framework\Assert', 'assertFileDoesNotExist', 'assertFileNotExists')
     ]);
-
-    $rectorConfig->rule(SwapEventDispatcherEventNameParameters::class);
 
     $rectorConfig->sets([DowngradeLevelSetList::DOWN_TO_PHP_71]);
     $rectorConfig->skip([DowngradeParameterTypeWideningRector::class]);

@@ -44,6 +44,28 @@ class ChromeDriverControllerTest extends Unit
         $this->uopzSetMock(Output::class, $this->output);
     }
 
+    /**
+     * @before
+     */
+    public function backupPidFile():void{
+        $pidFile = ChromeDriver::getPidFile();
+
+        if (is_file($pidFile)) {
+            rename($pidFile, $pidFile.'.bak');
+        }
+    }
+
+    /**
+     * @after
+     */
+    public static function restorePidFile():void{
+        $pidFile = ChromeDriver::getPidFile();
+
+        if (is_file($pidFile .'.bak')) {
+            rename($pidFile.'.bak', $pidFile);
+        }
+    }
+
     public function notArrayOfStringsProvider(): array
     {
         return [

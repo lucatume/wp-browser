@@ -7,6 +7,8 @@ use Codeception\Template\Bootstrap;
 use lucatume\WPBrowser\Command\DbExport;
 use lucatume\WPBrowser\Command\DbImport;
 use lucatume\WPBrowser\Command\GenerateWPUnit;
+use lucatume\WPBrowser\Command\MonkeyCacheClear;
+use lucatume\WPBrowser\Command\MonkeyCachePath;
 use lucatume\WPBrowser\Command\RunAll;
 use lucatume\WPBrowser\Command\RunOriginal;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
@@ -104,6 +106,8 @@ class Wpbrowser extends Bootstrap
                     GenerateWPUnit::class,
                     DbExport::class,
                     DbImport::class,
+                    MonkeyCachePath::class,
+                    MonkeyCacheClear::class,
                     ...$testEnv->customCommands
                 ]
             ]

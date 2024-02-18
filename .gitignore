@@ -3,6 +3,7 @@
 .DS_Store
 
 .cache
+.build
 
 # Composer files.
 vendor/
@@ -26,3 +27,6 @@ composer.lock
 
 # Backup files and folders
 *.bak
+
+# Logs
+*.log
