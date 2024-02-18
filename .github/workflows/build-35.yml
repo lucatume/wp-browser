@@ -25,18 +25,9 @@ jobs:
         run: composer dump-autoload --no-interaction --optimize --strict-psr
       - name: Require rector
         run: composer require --dev rector/rector
-      - name: Get changed files
-        id: changed-files
-        uses: yumemi-inc/changed-files@v3
-        with:
-          separator: " "
-          patterns: |
-            src/**/*.php
-            includes/**/*.php
-            tests/**/*.php
       - name: Transpile to v3.5
         run: |
-          vendor/bin/rector process --config=config/rector-35.php -- ${{ steps.changed-files.outputs.files }}
+          vendor/bin/rector process --config=config/rector-35.php
       - name: Set up git credentials
         run: |
           git config --global user.name "Luca Tumedei"
@@ -59,9 +50,6 @@ jobs:
         run: |
           git checkout -B v3.5-auto-build-from-v4
           git push origin v3.5-auto-build-from-v4
-      - name: Checkout the changed files from the HEAD branch
-        run: |
-          git checkout ${{ github.sha }} -- ${{ steps.changed-files.outputs.files }}
       - name: Pop changes from stash and commit them
         run: |
           git stash pop || true
