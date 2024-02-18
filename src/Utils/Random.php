@@ -15,11 +15,19 @@ class Random
      * @var string
      */
     private static $saltChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' .
+<<<<<<< Updated upstream
     '!"#$%&()*+,-./:;<=>?@[]^_`{|}~';
     /**
      * @var int
      */
     private static $saltCharsCount = 92;
+=======
+    '!#$%&()*+,-./:;<>?@[]^_`{|}~';
+    /**
+     * @var int
+     */
+    private static $saltCharsCount = 90;
+>>>>>>> Stashed changes
     /**
      * @var string
      */

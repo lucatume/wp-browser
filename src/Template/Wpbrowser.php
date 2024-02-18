@@ -101,7 +101,11 @@ class Wpbrowser extends Bootstrap
             'extensions' => [
                 'enabled' => array_merge([RunFailed::class], array_keys($testEnv->extensionsEnabled)),
                 'config' => $testEnv->extensionsEnabled,
+<<<<<<< Updated upstream
                 'commands' => array_merge([RunOriginal::class, RunAll::class, GenerateWPUnit::class, DbExport::class, DbImport::class], $testEnv->customCommands)
+=======
+                'commands' => array_merge([RunOriginal::class, RunAll::class, GenerateWPUnit::class, DbExport::class, DbImport::class, MonkeyCachePath::class, MonkeyCacheClear::class], $testEnv->customCommands)
+>>>>>>> Stashed changes
             ]
         ];
 

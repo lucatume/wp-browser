@@ -1,9 +1,4 @@
 <?php
-/**
- * The WordPress unit test case template.
- *
- * @package Codeception\Lib\Generator
- */
 
 namespace lucatume\WPBrowser\Lib\Generator;
 
@@ -12,105 +7,44 @@ use Codeception\Lib\Generator\Shared\Classname;
 use Codeception\Util\Shared\Namespaces;
 use Codeception\Util\Template;
 use Exception;
-use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 
-/**
- * Class WPUnit
- *
- * @package Codeception\Lib\Generator
- */
-class WPUnit
+abstract class AbstractGenerator
 {
-    /**
-     * @var string
-     */
-<<<<<<< Updated upstream
-    protected $baseClass;
     use Classname;
     use Namespaces;
 
     /**
      * @var array{namespace: string, actor: string}
      */
-    private $settings;
+    protected $settings;
     /**
      * @var string
      */
-    private $name;
-
+    protected $name;
     /**
      * @var string
      */
-=======
->>>>>>> Stashed changes
-    protected $template = <<<EOF
-<?php
-{{namespace}}
-class {{name}}Test extends {{baseClass}}
-{
-    {{tester}}
-    public function setUp() :void
-    {
-        // Before...
-        parent::setUp();
-
-        // Your set up methods here.
-    }
-
-    public function tearDown() :void
-    {
-        // Your tear down methods here.
-
-        // Then...
-        parent::tearDown();
-    }
-
-    // Tests
-    public function test_factory() :void
-    {
-        \$post = static::factory()->post->create_and_get();
-        
-        \$this->assertInstanceOf(\\WP_Post::class, \$post);
-    }
-}
-
-EOF;
+    protected $template;
 
     /**
-     * WPUnit constructor.
-     *
      * @param array{namespace: string, actor: string} $settings The template settings.
-     * @param string $name                                      The template name.
-     * @param string $baseClass                                 The base class.
      */
-    public function __construct(array $settings, string $name, string $baseClass)
+    public function __construct(array $settings, string $name)
     {
-        $this->baseClass = $baseClass;
         $this->settings = $settings;
         $this->name = $this->removeSuffix($name, 'Test');
     }
 
-    /**
-     * Produces and return the rendered template.
-     *
-     * @return string The rendered template.
-     */
     public function produce(): string
     {
         $ns = $this->getNamespaceHeader($this->settings['namespace'] . '\\' . $this->name);
 
         return (new Template($this->template))->place('namespace', $ns)
-            ->place('baseClass', '\\' . ltrim($this->baseClass, '\\'))
             ->place('name', $this->getShortClassName($this->name))
             ->place('tester', $this->getTester())
             ->produce();
     }
 
-    /**
-     * Returns the current tester name.
-     *
-     * @return string The current tester name.
-     */
     protected function getTester(): string
     {
         if (isset($this->settings['actor'])) {

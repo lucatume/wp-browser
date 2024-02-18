@@ -1694,7 +1694,11 @@ class WP_SQLite_Translator {
 			/* Remove the quotes around the name. */
 			$unescaped_value = mb_substr( $token->token, 1, -1, 'UTF-8' );
 			if ( strpos($unescaped_value, '\_') !== false || strpos($unescaped_value, '\%') !== false ) {
+<<<<<<< Updated upstream
 				$this->like_escape_count ++;
+=======
+				++$this->like_escape_count;
+>>>>>>> Stashed changes
 				return str_replace(
 					array( '\_', '\%' ),
 					array( self::LIKE_ESCAPE_CHAR . '_', self::LIKE_ESCAPE_CHAR . '%' ),

@@ -22,6 +22,7 @@ $wp_filter['do_mu_upgrade'][10][] = [
     }
 ];
 
+<<<<<<< Updated upstream
 if (file_exists($root . $path)) {
     // Enforces trailing slash, keeping links tidy in the admin
     if (is_dir($root . $path) && substr_compare($path, '/', -strlen('/')) !== 0) {
@@ -36,6 +37,21 @@ if (file_exists($root . $path)) {
     } else {
         return false;
     }
+=======
+	// Enforces trailing slash, keeping links tidy in the admin
+	if ( is_dir( $root.$path ) && substr_compare($path, '/', -strlen('/')) !== 0 ) {
+		header( "Location: $path/" );
+		exit;
+	}
+
+	// Runs PHP file if it exists
+	if ( strpos($path, '.php') !== false ) {
+		chdir( dirname( $root.$path ) );
+		require_once $root.$path;
+	} else {
+		return false;
+	}
+>>>>>>> Stashed changes
 } else {
     // Otherwise, run `index.php`
     chdir($root);

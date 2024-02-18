@@ -7706,7 +7706,11 @@ trait AcceptanceTesterActions
      * @throws Exception If the path is a date string and is not parsable by the `strtotime` function.
      * @see \lucatume\WPBrowser\Module\WPFilesystem::amInUploadsPath()
      */
+<<<<<<< Updated upstream
     public function amInUploadsPath(?string $path = NULL): void {
+=======
+    public function amInUploadsPath($path = NULL): void {
+>>>>>>> Stashed changes
         $this->getScenario()->runStep(new \Codeception\Step\Condition('amInUploadsPath', func_get_args()));
     }
 

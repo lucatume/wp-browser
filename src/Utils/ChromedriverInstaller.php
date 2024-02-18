@@ -16,6 +16,7 @@ use function lucatume\WPBrowser\useMemoString;
 class ChromedriverInstaller
 {
 
+<<<<<<< Updated upstream
     public const ERR_INVALID_VERSION = 1;
     public const ERR_INVALID_BINARY = 2;
     public const ERR_UNSUPPORTED_PLATFORM = 3;
@@ -30,6 +31,21 @@ class ChromedriverInstaller
     public const ERR_MOVE_BINARY = 15;
     public const ERR_DETECT_PLATFORM = 16;
     public const ERR_BINARY_CHMOD = 17;
+=======
+    public const ERR_INVALID_BINARY = 1;
+    public const ERR_UNSUPPORTED_PLATFORM = 2;
+    public const ERR_REMOVE_EXISTING_ZIP_FILE = 3;
+    public const ERR_VERSION_NOT_STRING = 4;
+    public const ERR_INVALID_VERSION_FORMAT = 5;
+    public const ERR_DESTINATION_NOT_DIR = 6;
+    public const ERR_FETCH_MILESTONE_DOWNLOADS = 7;
+    public const ERR_DECODE_MILESTONE_DOWNLOADS = 8;
+    public const ERR_DOWNLOAD_URL_NOT_FOUND = 9;
+    public const ERR_REMOVE_EXISTING_BINARY = 10;
+    public const ERR_DETECT_PLATFORM = 11;
+    public const ERR_BINARY_CHMOD = 12;
+
+>>>>>>> Stashed changes
     /**
      * @var \Symfony\Component\Console\Output\OutputInterface
      */
@@ -74,6 +90,210 @@ class ChromedriverInstaller
     }
 
     /**
+<<<<<<< Updated upstream
+=======
+     * @throws RuntimeException
+     */
+    private function detectPlatform(): string
+    {
+        // Return one of `linux64`, `mac-arm64`,`mac-x64`, `win32`, `win64`.
+        $system = php_uname('s');
+        $arch = php_uname('m');
+
+        if ($system === 'Darwin') {
+            if ($arch === 'arm64') {
+                return 'mac-arm64';
+            }
+
+            return 'mac-x64';
+        }
+
+        if ($system === 'Linux') {
+            return 'linux64';
+        }
+
+        if ($system === 'Windows NT') {
+            if (strpos($arch, '64') !== false) {
+                return 'win64';
+            }
+
+            return 'win32';
+        }
+
+        throw new RuntimeException('Failed to detect platform.', self::ERR_DETECT_PLATFORM);
+    }
+
+    /**
+     * @return 'linux64'|'mac-x64'|'mac-arm64'|'win32'|'win64'
+     *
+     * @throws RuntimeException
+     * @param mixed $platform
+     */
+    private function checkPlatform($platform): string
+    {
+        if (!(is_string($platform) && in_array($platform, [
+                'linux64',
+                'mac-arm64',
+                'mac-x64',
+                'win32',
+                'win64'
+            ]))) {
+            throw new RuntimeException(
+                'Invalid platform, supported platforms are: linux64, mac-arm64, mac-x64, win32, win64.',
+                self::ERR_UNSUPPORTED_PLATFORM
+            );
+        }
+
+        /** @var 'linux64'|'mac-arm64'|'mac-x64'|'win32'|'win64' $platform */
+        return $platform;
+    }
+
+    /**
+     * @throws RuntimeException
+     */
+    private function detectBinary(): string
+    {
+        switch ($this->platform) {
+            case 'linux64':
+                return $this->detectLinuxBinaryPath();
+            case 'mac-x64':
+            case 'mac-arm64':
+                return '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+            case 'win32':
+            case 'win64':
+                return $this->detectWindowsBinaryPath();
+        }
+    }
+
+    private function detectLinuxBinaryPath(): string
+    {
+        foreach (['chromium', 'google-chrome'] as $bin) {
+            $path = exec("which $bin");
+
+            if (!empty($path)) {
+                return $path;
+            }
+        }
+
+        return '/usr/bin/google-chrome';
+    }
+
+    private function detectWindowsBinaryPath(): string
+    {
+        $candidates = [
+            getenv('ProgramFiles') . '\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe',
+            getenv('ProgramFiles(x86)') . '\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe',
+            getenv('LOCALAPPDATA') . '\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe'
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (is_file($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return $candidate;
+    }
+
+    /**
+     * @param mixed $binary
+     */
+    private function checkBinary($binary): string
+    {
+        // Replace escaped spaces with spaces to check the binary.
+        if (!(is_string($binary) && is_executable(str_replace('\ ', ' ', $binary)))) {
+            throw new RuntimeException(
+                "Invalid Chrome binary: not executable or not existing.\n" .
+                "Checked paths: " . implode(', ', $this->getBinaryCandidateList()) . "\n",
+                self::ERR_INVALID_BINARY
+            );
+        }
+
+        return $binary;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getBinaryCandidateList(): array
+    {
+        switch ($this->platform) {
+            case 'linux64':
+                return ['chromium', 'google-chrome'];
+            case 'mac-x64':
+            case 'mac-arm64':
+                return ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'];
+            case 'win32':
+            case 'win64':
+                return [
+                    getenv('ProgramFiles') . '\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe',
+                    getenv('ProgramFiles(x86)') . '\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe',
+                    getenv('LOCALAPPDATA') . '\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe'
+                ];
+        }
+    }
+
+    /**
+     * @throws RuntimeException
+     */
+    private function detectVersion(): string
+    {
+        switch ($this->platform) {
+            case 'linux64':
+            case 'mac-x64':
+            case 'mac-arm64':
+                $process = new Process([$this->binary, ' --version']);
+                break;
+            case 'win32':
+            case 'win64':
+                $process = Process::fromShellCommandline(
+                    'reg query "HKEY_CURRENT_USER\Software\Google\Chrome\BLBeacon" /v version'
+                );
+                break;
+        }
+
+        $process->run();
+        $chromeVersion = $process->getOutput();
+
+        if ($chromeVersion === '') {
+            throw new RuntimeException(
+                "Could not detect Chrome version from $this->binary",
+                self::ERR_VERSION_NOT_STRING
+            );
+        }
+
+        $matches = [];
+        if (!(
+            preg_match('/\s*\d+\.\d+\.\d+\.\d+\s*/', $chromeVersion, $matches)
+            && isset($matches[0]) && is_string($matches[0])
+        )) {
+            throw new RuntimeException(
+                "Could not detect Chrome version from $this->binary",
+                self::ERR_INVALID_VERSION_FORMAT
+            );
+        }
+
+        return trim($matches[0]);
+    }
+
+    /**
+     * @param mixed $version
+     */
+    private function checkVersion($version): string
+    {
+        $matches = [];
+        if (!(is_string($version) && preg_match('/^.*?(?<major>\d+)(\.\d+\.\d+\.\d+)*$/', $version, $matches))) {
+            throw new RuntimeException(
+                "Invalid Chrome version: must be in the form X.Y.Z.W.",
+                self::ERR_INVALID_VERSION_FORMAT
+            );
+        }
+
+        return $matches['major'];
+    }
+
+    /**
+>>>>>>> Stashed changes
      * @throws JsonException
      */
     public function install(string $dir = null): string
@@ -149,6 +369,7 @@ class ChromedriverInstaller
             case 'linux64':
             case 'mac-x64':
             case 'mac-arm64':
+<<<<<<< Updated upstream
                 $process = new Process([$this->binary, ' --version']);
                 break;
             case 'win32':
@@ -304,6 +525,13 @@ class ChromedriverInstaller
         }
 
         return $matches['major'];
+=======
+                return 'chromedriver';
+            case 'win32':
+            case 'win64':
+                return 'chromedriver.exe';
+        }
+>>>>>>> Stashed changes
     }
 
     private function fetchChromedriverVersionUrl(): string

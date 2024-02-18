@@ -46,7 +46,62 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
      *
      * @test
      */
+<<<<<<< Updated upstream
     public function should_throw_if_binary_cannot_be_found(): void
+=======
+    public function should_throw_if_specified_binary_cannot_be_found(): void
+    {
+        $this->uopzSetFunctionReturn('is_file', function (string $file) {
+            return strpos($file, 'chrome') === false;
+        }, true);
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(ChromedriverInstaller::ERR_INVALID_BINARY);
+
+        new ChromedriverInstaller(null, 'win32', '/path/to/chrome.exe');
+    }
+
+    /**
+     * @return string[]
+     */
+    public function platforms_provider(): array
+    {
+        return [
+            'win32' => ['win32', 'chrome'],
+            'win64' => ['win64', 'chrome'],
+            'linux64' => ['linux64', 'chrom'],
+            'mac-x64' => ['mac-x64', 'Chrome'],
+            'mac-arm64' => ['mac-arm64', 'Chrome'],
+        ];
+    }
+
+    /**
+     * It should throw if binary cannot be found in default paths for platform
+     *
+     * @test
+     * @dataProvider platforms_provider
+     */
+    public function should_throw_if_binary_cannot_be_found_in_default_paths_for_platform(
+        string $platform,
+        string $binNamePattern
+    ): void {
+        $isNotAnExecutableFile = function (string $file) use ($binNamePattern) {
+            return strpos($file, $binNamePattern) === false;
+        };
+        $this->uopzSetFunctionReturn('is_file', $isNotAnExecutableFile, true);
+        $this->uopzSetFunctionReturn('is_executable', $isNotAnExecutableFile, true);
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(ChromedriverInstaller::ERR_INVALID_BINARY);
+
+        new ChromedriverInstaller(null, $platform);
+    }
+
+    /**
+     * It should throw if binary cannot be executed
+     *
+     * @test
+     */
+    public function should_throw_if_binary_cannot_be_executed(): void
+>>>>>>> Stashed changes
     {
         $this->uopzSetFunctionReturn('is_executable', function (string $file): bool {
             return strpos($file, 'chrome') === false && is_executable($file);
@@ -197,8 +252,13 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
     {
         $this->uopzSetFunctionReturn('file_get_contents', function (string $file) {
             return strpos($file, 'chrome-for-testing') !== false ?
+<<<<<<< Updated upstream
 	            '{"milestones":{"116": {"downloads":{"chrome":{},"chromedriver":{}}}}}'
 	            : file_get_contents($file);
+=======
+                '{"milestones":{"116": {"downloads":{"chrome":{},"chromedriver":{}}}}}'
+                : file_get_contents($file);
+>>>>>>> Stashed changes
         }, true);
 
         $ci = new ChromedriverInstaller(null, 'linux64', codecept_data_dir('bins/chrome-mock'));

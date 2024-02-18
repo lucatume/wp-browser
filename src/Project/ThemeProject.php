@@ -149,7 +149,11 @@ class ActivationCest
 }
 
 EOT
+<<<<<<< Updated upstream
             ,
+=======
+,
+>>>>>>> Stashed changes
             [
                 'basename' => Strings::slug($this->basename)
             ]
@@ -202,7 +206,11 @@ class SampleTest extends WPTestCase
     }
 }
 EOT
+<<<<<<< Updated upstream
             ,
+=======
+,
+>>>>>>> Stashed changes
             [
                 'stylesheet' => $this->getActivationString()
             ]

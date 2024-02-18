@@ -9,6 +9,13 @@ use Symfony\Component\Process\Process as SymfonyProcess;
 class Process extends SymfonyProcess
 {
     /**
+<<<<<<< Updated upstream
+=======
+     * @var bool|null
+     */
+    private static $inheritEnvironmentVariables;
+    /**
+>>>>>>> Stashed changes
      * @var bool
      */
     private $createNewConsole = false;
@@ -27,8 +34,20 @@ class Process extends SymfonyProcess
         ?float $timeout = 60,
         array $options = null
     ) {
+<<<<<<< Updated upstream
         if (method_exists($this, 'inheritEnvironmentVariables')) {
             parent::__construct($command, $cwd, $env, $input, $timeout, $options); //@phpstan-ignore-line
+=======
+        parent::__construct($command, $cwd, $env, $input, $timeout, $options); //@phpstan-ignore-line
+
+        if (self::$inheritEnvironmentVariables === null) {
+            self::$inheritEnvironmentVariables = method_exists($this, 'inheritEnvironmentVariables')
+                && strpos((string)(new ReflectionMethod($this, 'inheritEnvironmentVariables'))->getDocComment(), '@deprecated') === false;
+        }
+
+        if (self::$inheritEnvironmentVariables) {
+            // @phpstan-ignore-next-line
+>>>>>>> Stashed changes
             $this->inheritEnvironmentVariables(true);
         }
 
