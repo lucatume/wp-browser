@@ -20,10 +20,7 @@ class ChromeDriverControllerTest extends Unit
     use UopzFunctions;
     use SnapshotAssertions;
 
-    /**
-     * @var \Codeception\Lib\Console\Output
-     */
-    private $output;
+    private Output $output;
 
     /**
      * @before
@@ -47,6 +44,28 @@ class ChromeDriverControllerTest extends Unit
         $this->uopzSetMock(Output::class, $this->output);
     }
 
+    /**
+     * @before
+     */
+    public function backupPidFile():void{
+        $pidFile = ChromeDriver::getPidFile();
+
+        if (is_file($pidFile)) {
+            rename($pidFile, $pidFile.'.bak');
+        }
+    }
+
+    /**
+     * @after
+     */
+    public static function restorePidFile():void{
+        $pidFile = ChromeDriver::getPidFile();
+
+        if (is_file($pidFile .'.bak')) {
+            rename($pidFile.'.bak', $pidFile);
+        }
+    }
+
     public function notArrayOfStringsProvider(): array
     {
         return [
@@ -65,9 +84,8 @@ class ChromeDriverControllerTest extends Unit
      *
      * @test
      * @dataProvider notArrayOfStringsProvider
-     * @param mixed $suites
      */
-    public function should_throw_if_suite_configuration_parameter_is_not_array_of_strings($suites): void
+    public function should_throw_if_suite_configuration_parameter_is_not_array_of_strings(mixed $suites): void
     {
         $config = ['suites' => $suites];
         $options = [];
@@ -98,9 +116,8 @@ class ChromeDriverControllerTest extends Unit
      *
      * @test
      * @dataProvider notIntGreaterThanZeroProvider
-     * @param mixed $port
      */
-    public function should_throw_if_config_port_is_not_int_greater_than_0($port): void
+    public function should_throw_if_config_port_is_not_int_greater_than_0(mixed $port): void
     {
         $config = ['port' => $port];
         $options = [];

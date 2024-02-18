@@ -270,10 +270,7 @@ ERROR;
         $stderrStream = new StderrStream($stream, StderrStream::RELATIVE_PATHNAMES, $currentDateTime);
         $errors = $stderrStream->getParsed();
 
-        $encoded = json_encode($errors, JSON_PRETTY_PRINT);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception(json_last_error_msg());
-        }
+        $encoded = json_encode($errors, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
         codecept_debug($encoded);
         $this->assertMatchesJsonSnapshot($encoded);
         if ($expectedThrowableClass) {

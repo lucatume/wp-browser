@@ -47,9 +47,7 @@ class InstallationTest extends Unit
     {
         $tmpDir = FS::tmpDir('installation_');
         $this->uopzSetFunctionReturn('is_writable',
-            function (string $dir) use ($tmpDir) {
-                return !($dir === $tmpDir . '/') && is_writable($dir);
-            },
+            fn(string $dir) => !($dir === $tmpDir . '/') && is_writable($dir),
             true
         );
 
@@ -68,9 +66,7 @@ class InstallationTest extends Unit
     {
         $tmpDir = FS::tmpDir('installation_');
         $this->uopzSetFunctionReturn('is_readable',
-            function (string $dir) use ($tmpDir) {
-                return !($dir === $tmpDir . '/') && is_readable($dir);
-            },
+            fn(string $dir) => !($dir === $tmpDir . '/') && is_readable($dir),
             true
         );
 
@@ -459,7 +455,7 @@ class InstallationTest extends Unit
     {
         $wpRoot = FS::tmpDir('installation_');
         $db = new SQLiteDatabase($wpRoot, 'db.sqlite');
-        $installation = Installation::scaffold($wpRoot, '6.1.1')
+        $installation = Installation::scaffold($wpRoot)
             ->configure($db)
             ->install(
                 'https://localhost:2389',

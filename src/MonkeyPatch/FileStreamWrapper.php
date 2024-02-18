@@ -15,7 +15,7 @@ class FileStreamWrapper
     protected static $isRegistered = false;
 
     /**
-     * @var array<string,PatcherInterface>
+     * @var array<string,array{0: PatcherInterface, 1: bool, 2: string}>
      */
     private static $fileToPatcherMap = [];
 
@@ -25,14 +25,18 @@ class FileStreamWrapper
     public $context;
 
     /**
-     * @var resource
+     * @var resource|null
      */
-    private $fileResource;
+    private $fileResource = null;
 
-    public static function setPatcherForFile(string $file, PatcherInterface $patcher): void
-    {
+    public static function setPatcherForFile(
+        string $file,
+        PatcherInterface $patcher,
+        bool $redirectOpenedPath = true,
+        string $context = null
+    ): void {
         $fromFilePath = FS::realpath($file) ?: $file;
-        self::$fileToPatcherMap[$fromFilePath] = $patcher;
+        self::$fileToPatcherMap[$fromFilePath] = [$patcher, $redirectOpenedPath, $context ?? ''];
         self::register();
     }
 
@@ -120,6 +124,10 @@ class FileStreamWrapper
      */
     public function stream_cast()
     {
+        if (!is_resource($this->fileResource)) {
+            throw new MonkeyPatchingException('Cannot cast a non-resource to a resource.');
+        }
+
         return $this->fileResource;
     }
 
@@ -132,6 +140,10 @@ class FileStreamWrapper
 
     public function stream_set_option(int $option, int $arg1, int $arg2): bool
     {
+        if (!is_resource($this->fileResource)) {
+            return false;
+        }
+
         switch ($option) {
             case STREAM_OPTION_BLOCKING:
                 return stream_set_blocking($this->fileResource, (bool)$arg1);
@@ -150,6 +162,10 @@ class FileStreamWrapper
      */
     public function stream_write(string $data): int
     {
+        if (!is_resource($this->fileResource)) {
+            throw new MonkeyPatchingException('Cannot write to a non-resource.');
+        }
+
         $written = fwrite($this->fileResource, $data);
 
         if ($written === false) {
@@ -164,7 +180,7 @@ class FileStreamWrapper
      */
     public function stream_tell(): int
     {
-        $pos = ftell($this->fileResource);
+        $pos = is_resource($this->fileResource) ? ftell($this->fileResource) : false;
 
         if ($pos === false) {
             throw new MonkeyPatchingException('Could not get the position of the file pointer.');
@@ -175,16 +191,28 @@ class FileStreamWrapper
 
     public function stream_close(): bool
     {
+        if (!is_resource($this->fileResource)) {
+            return false;
+        }
+
         return fclose($this->fileResource);
     }
 
     public function stream_eof(): bool
     {
+        if (!is_resource($this->fileResource)) {
+            return true;
+        }
+
         return feof($this->fileResource);
     }
 
     public function stream_seek(int $offset, int $whence = SEEK_SET): bool
     {
+        if (!is_resource($this->fileResource)) {
+            return false;
+        }
+
         return fseek($this->fileResource, $offset, $whence) === 0;
     }
 
@@ -236,6 +264,10 @@ class FileStreamWrapper
      */
     public function stream_stat()
     {
+        if (!is_resource($this->fileResource)) {
+            return false;
+        }
+
         $stat = fstat($this->fileResource);
 
         if ($stat === false) {
@@ -308,6 +340,10 @@ class FileStreamWrapper
 
     public function stream_truncate(int $newSize): bool
     {
+        if (!is_resource($this->fileResource)) {
+            return false;
+        }
+
         return ftruncate($this->fileResource, max(0, $newSize));
     }
 
@@ -367,7 +403,7 @@ class FileStreamWrapper
         if (!(file_exists($path))) {
             if (isset(self::$fileToPatcherMap[$path])) {
                 // Ask the patcher to provide stats.
-                $stat = self::$fileToPatcherMap[$path]->stat($path);
+                $stat = self::$fileToPatcherMap[$path][0]->stat($path);
             } else {
                 $stat = false;
             }
@@ -439,7 +475,7 @@ class FileStreamWrapper
 
         static::register();
 
-        return $this->fileResource !== null;
+        return true;
     }
 
     /**
@@ -447,7 +483,7 @@ class FileStreamWrapper
      */
     private function patchFile(string $absPath): string
     {
-        $patcher = self::$fileToPatcherMap[$absPath];
+        [$patcher, $redirectOpenedPath, $context] = self::$fileToPatcherMap[$absPath];
         self::unregister();
         // Do not use `is_file` here as it will use the cached stats: this check should be real.
         $fileContents = file_exists($absPath) ? file_get_contents($absPath) : '';
@@ -457,7 +493,7 @@ class FileStreamWrapper
             throw new MonkeyPatchingException("Could not read file $absPath contents.");
         }
 
-        [$fileContents, $openedPath] = $patcher->patch($fileContents, $absPath);
+        [$fileContents, $openedPath] = $patcher->patch($fileContents, $absPath, $context);
 
         if ($this->context !== null) {
             $fileResource = fopen('php://temp', 'rb+', false, $this->context);
@@ -477,7 +513,7 @@ class FileStreamWrapper
 
         rewind($this->fileResource);
 
-        return $openedPath;
+        return $redirectOpenedPath ? $openedPath : $absPath;
     }
 
     /**

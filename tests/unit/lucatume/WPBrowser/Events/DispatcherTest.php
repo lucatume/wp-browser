@@ -13,10 +13,7 @@ class DispatcherTest extends Unit
 {
     use UopzFunctions;
 
-    /**
-     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
-     */
-    private $backupGlobalDispatcher;
+    private \Symfony\Component\EventDispatcher\EventDispatcherInterface $backupGlobalDispatcher;
 
     public function _before(): void
     {
@@ -94,7 +91,7 @@ class DispatcherTest extends Unit
 
         Dispatcher::setEventDispatcher();
 
-        $this->assertInstanceOf(\Symfony\Component\EventDispatcher\EventDispatcherInterface::class, Dispatcher::getEventDispatcher());
+        $this->assertInstanceOf(EventDispatcherInterface::class, Dispatcher::getEventDispatcher());
         $this->assertNotSame($previousDispatcher, Dispatcher::getEventDispatcher());
 
         $callStack = [];

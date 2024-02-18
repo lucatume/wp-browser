@@ -53,9 +53,7 @@ class DevInfoTest extends \Codeception\Test\Unit
                 '__construct' => function () use (&$builtInServerControllerBuildArgs) {
                     $builtInServerControllerBuildArgs = func_get_args();
                 },
-                'getPrettyName' => function () {
-                    return 'BuiltInServer';
-                },
+                'getPrettyName' => fn() => 'BuiltInServer',
                 'getInfo' => function () {
                     return [
                         'name' => 'BuiltInServerController',
@@ -71,9 +69,7 @@ class DevInfoTest extends \Codeception\Test\Unit
                 '__construct' => function () use (&$dockerComposeControllerBuildArgs) {
                     $dockerComposeControllerBuildArgs = func_get_args();
                 },
-                'getPrettyName' => function () {
-                    return 'DockerCompose';
-                },
+                'getPrettyName' => fn() => 'DockerCompose',
                 'getInfo' => function () {
                     return [
                         'name' => 'DockerComposeController',
@@ -89,9 +85,7 @@ class DevInfoTest extends \Codeception\Test\Unit
                 '__construct' => function () use (&$chromeDriverControllerBuildArgs) {
                     $chromeDriverControllerBuildArgs = func_get_args();
                 },
-                'getPrettyName' => function () {
-                    return 'ChromeDriver';
-                },
+                'getPrettyName' => fn() => 'ChromeDriver',
                 'getInfo' => function () {
                     return [
                         'name' => 'ChromeDriverController',

@@ -1,9 +1,12 @@
 <?php
 
 use lucatume\WPBrowser\TestCase\WPAjaxTestCase;
+use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 
 class AjaxTest extends WPAjaxTestCase
 {
+    use UopzFunctions;
+
     public function ajaxCallback(): void
     {
         if (
@@ -29,7 +32,7 @@ class AjaxTest extends WPAjaxTestCase
             global $wpdb;
             $wpdb->suppress_errors = true; // Due to a WooCommerce activation issue in older versions.
             $this->_handleAjax('test_ajax_action');
-        } catch (\WPAjaxDieContinueException $exception) {
+        } catch (\WPAjaxDieContinueException) {
             $response = json_decode($this->_last_response);
         }
 

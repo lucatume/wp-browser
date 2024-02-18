@@ -69,7 +69,7 @@ function sqlite_make_db_sqlite() {
 	if ( defined( 'SQLITE_DEBUG_CROSSCHECK' ) && SQLITE_DEBUG_CROSSCHECK ) {
 		$host = DB_HOST;
 		$port = 3306;
-		if ( strpos($host, ':') !== false ) {
+		if ( str_contains( $host, ':' ) ) {
 			$host_parts = explode( ':', $host );
 			$host       = $host_parts[0];
 			$port       = $host_parts[1];
@@ -89,7 +89,8 @@ function sqlite_make_db_sqlite() {
 			} catch ( PDOException $err ) {
 				$err_data = $err->errorInfo; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				$err_code = $err_data[1];
-				if ( 5 == $err_code || 6 == $err_code ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+				// phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
+				if ( 5 == $err_code || 6 == $err_code ) {
 					// If the database is locked, commit again.
 					$pdo_mysql->commit();
 				} else {

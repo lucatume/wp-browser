@@ -12,19 +12,13 @@ use lucatume\WPBrowser\Utils\Random;
 
 class PhpBuiltinServerProcessMock extends Process
 {
-    /**
-     * @var mixed[]
-     */
-    public static $instances = [];
+    public static array $instances = [];
 
-    /**
-     * @param mixed $input
-     */
     public function __construct(
         array $command,
         string $cwd = null,
         array $env = null,
-        $input = null,
+        mixed $input = null,
         ?float $timeout = 60
     ) {
         parent::__construct($command, $cwd, $env, $input, $timeout);
@@ -100,9 +94,8 @@ class PhpBuiltInServerTest extends Unit
      *
      * @test
      * @dataProvider notAssociativeArrayProvider
-     * @param mixed $env
      */
-    public function should_throw_if_env_is_not_associative_array($env): void
+    public function should_throw_if_env_is_not_associative_array(mixed $env): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(PhpBuiltInServer::ERR_ENV);

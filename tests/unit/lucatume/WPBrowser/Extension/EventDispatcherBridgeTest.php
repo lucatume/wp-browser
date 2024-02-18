@@ -53,7 +53,7 @@ class EventDispatcherBridgeTest extends Unit
         $this->uopzSetStaticMethodReturn(Dispatcher::class, 'getEventDispatcher', null);
         $this->uopzSetStaticMethodReturn(Dispatcher::class,
             'setEventDispatcher',
-            function (\Symfony\Component\EventDispatcher\EventDispatcherInterface $setEventDispatcher) use (
+            function (EventDispatcherInterface $setEventDispatcher) use (
                 $eventDispatcher
             ) {
                 Assert::assertSame($eventDispatcher, $setEventDispatcher);

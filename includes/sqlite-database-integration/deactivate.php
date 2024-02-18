@@ -33,7 +33,7 @@ function sqlite_plugin_remove_db_file() {
 	// Run an action on `shutdown`, to deactivate the option in the MySQL database.
 	add_action(
 		'shutdown',
-		function() {
+		function () {
 			global $table_prefix;
 
 			// Get credentials for the MySQL database.

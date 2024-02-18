@@ -31,7 +31,7 @@ trait FunctionalTesterActions
      * @return int The inserted row ID.
      * @see \lucatume\WPBrowser\Module\WPDb::haveSiteMetaInDatabase()
      */
-    public function haveSiteMetaInDatabase(int $blogId, string $string, $value): int {
+    public function haveSiteMetaInDatabase(int $blogId, string $string, mixed $value): int {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveSiteMetaInDatabase', func_get_args()));
     }
 
@@ -57,7 +57,7 @@ trait FunctionalTesterActions
      * @throws Exception On unserialize failure.
      * @see \lucatume\WPBrowser\Module\WPDb::grabSiteMetaFromDatabase()
      */
-    public function grabSiteMetaFromDatabase(int $blogId, string $key, bool $single) {
+    public function grabSiteMetaFromDatabase(int $blogId, string $key, bool $single): mixed {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteMetaFromDatabase', func_get_args()));
     }
 
@@ -79,7 +79,7 @@ trait FunctionalTesterActions
      * @return mixed The value of the post field.
      * @see \lucatume\WPBrowser\Module\WPDb::grabPostFieldFromDatabase()
      */
-    public function grabPostFieldFromDatabase(int $postId, string $field) {
+    public function grabPostFieldFromDatabase(int $postId, string $field): mixed {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabPostFieldFromDatabase', func_get_args()));
     }
 
@@ -125,14 +125,14 @@ trait FunctionalTesterActions
      * ```
      *
      * @param array<string,mixed>|string $criteriaOrName An array of search criteria or the option name.
-     * @param mixed $value The optional value to try and match, only used if the option
+     * @param mixed|null $value                          The optional value to try and match, only used if the option
      *                                                   name is provided.
      *
      *
      * @throws JsonException If there's an issue debugging the failure.
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeOptionInDatabase()
      */
-    public function dontSeeOptionInDatabase($criteriaOrName, $value = NULL): void {
+    public function dontSeeOptionInDatabase(array|string $criteriaOrName, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeOptionInDatabase', func_get_args()));
     }
     /**
@@ -153,14 +153,14 @@ trait FunctionalTesterActions
      * ```
      *
      * @param array<string,mixed>|string $criteriaOrName An array of search criteria or the option name.
-     * @param mixed $value The optional value to try and match, only used if the option
+     * @param mixed|null $value                          The optional value to try and match, only used if the option
      *                                                   name is provided.
      *
      *
      * @throws JsonException If there's an issue debugging the failure.
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeOptionInDatabase()
      */
-    public function cantSeeOptionInDatabase($criteriaOrName, $value = NULL): void {
+    public function cantSeeOptionInDatabase(array|string $criteriaOrName, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeOptionInDatabase', func_get_args()));
     }
 
@@ -664,7 +664,7 @@ trait FunctionalTesterActions
      * @return int The inserted meta `meta_id`.
      * @see \lucatume\WPBrowser\Module\WPDb::havePostmetaInDatabase()
      */
-    public function havePostmetaInDatabase(int $postId, string $meta_key, $meta_value): int {
+    public function havePostmetaInDatabase(int $postId, string $meta_key, mixed $meta_value): int {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('havePostmetaInDatabase', func_get_args()));
     }
 
@@ -712,7 +712,7 @@ trait FunctionalTesterActions
      * @return int|false The matching term `term_id` or `false` if not found.
      * @see \lucatume\WPBrowser\Module\WPDb::grabTermIdFromDatabase()
      */
-    public function grabTermIdFromDatabase(array $criteria) {
+    public function grabTermIdFromDatabase(array $criteria): int|false {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermIdFromDatabase', func_get_args()));
     }
 
@@ -816,7 +816,7 @@ trait FunctionalTesterActions
      * @return int The inserted term meta `meta_id`.
      * @see \lucatume\WPBrowser\Module\WPDb::haveTermMetaInDatabase()
      */
-    public function haveTermMetaInDatabase(int $term_id, string $meta_key, $meta_value): int {
+    public function haveTermMetaInDatabase(int $term_id, string $meta_key, mixed $meta_value): int {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveTermMetaInDatabase', func_get_args()));
     }
 
@@ -863,7 +863,7 @@ trait FunctionalTesterActions
      * @return int|false The matching term `term_taxonomy_id` or `false` if not found.
      * @see \lucatume\WPBrowser\Module\WPDb::grabTermTaxonomyIdFromDatabase()
      */
-    public function grabTermTaxonomyIdFromDatabase(array $criteria) {
+    public function grabTermTaxonomyIdFromDatabase(array $criteria): int|false {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTermTaxonomyIdFromDatabase', func_get_args()));
     }
 
@@ -1482,7 +1482,7 @@ trait FunctionalTesterActions
      * @throws Exception If the search criteria is incoherent.
      * @see \lucatume\WPBrowser\Module\WPDb::grabUserMetaFromDatabase()
      */
-    public function grabUserMetaFromDatabase(int $userId, string $meta_key, bool $single = false) {
+    public function grabUserMetaFromDatabase(int $userId, string $meta_key, bool $single = false): mixed {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabUserMetaFromDatabase', func_get_args()));
     }
 
@@ -1533,7 +1533,7 @@ trait FunctionalTesterActions
      * @return int The inserted option `option_id`.
      * @see \lucatume\WPBrowser\Module\WPDb::haveTransientInDatabase()
      */
-    public function haveTransientInDatabase(string $transient, $value): int {
+    public function haveTransientInDatabase(string $transient, mixed $value): int {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveTransientInDatabase', func_get_args()));
     }
 
@@ -1558,7 +1558,7 @@ trait FunctionalTesterActions
      * @return int The inserted option `option_id`
      * @see \lucatume\WPBrowser\Module\WPDb::haveOptionInDatabase()
      */
-    public function haveOptionInDatabase(string $option_name, $option_value, string $autoload = "yes"): int {
+    public function haveOptionInDatabase(string $option_name, mixed $option_value, string $autoload = "yes"): int {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveOptionInDatabase', func_get_args()));
     }
 
@@ -1596,10 +1596,10 @@ trait FunctionalTesterActions
      * ```
      *
      * @param string $key       The option name.
-     * @param mixed $value If set the option will only be removed if its value matches the passed one.
+     * @param mixed|null $value If set the option will only be removed if its value matches the passed one.
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveOptionInDatabase()
      */
-    public function dontHaveOptionInDatabase(string $key, $value = NULL): void {
+    public function dontHaveOptionInDatabase(string $key, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveOptionInDatabase', func_get_args()));
     }
 
@@ -1622,7 +1622,7 @@ trait FunctionalTesterActions
      * @return int The inserted option `option_id`.
      * @see \lucatume\WPBrowser\Module\WPDb::haveSiteOptionInDatabase()
      */
-    public function haveSiteOptionInDatabase(string $key, $value): int {
+    public function haveSiteOptionInDatabase(string $key, mixed $value): int {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveSiteOptionInDatabase', func_get_args()));
     }
 
@@ -1709,10 +1709,10 @@ trait FunctionalTesterActions
      * ```
      *
      * @param string $key       The option name.
-     * @param mixed $value If set the option will only be removed it its value matches the specified one.
+     * @param mixed|null $value If set the option will only be removed it its value matches the specified one.
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveSiteOptionInDatabase()
      */
-    public function dontHaveSiteOptionInDatabase(string $key, $value = NULL): void {
+    public function dontHaveSiteOptionInDatabase(string $key, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveSiteOptionInDatabase', func_get_args()));
     }
 
@@ -1736,7 +1736,7 @@ trait FunctionalTesterActions
      * @return int The inserted transient `option_id`
      * @see \lucatume\WPBrowser\Module\WPDb::haveSiteTransientInDatabase()
      */
-    public function haveSiteTransientInDatabase(string $key, $value): int {
+    public function haveSiteTransientInDatabase(string $key, mixed $value): int {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveSiteTransientInDatabase', func_get_args()));
     }
 
@@ -1774,7 +1774,7 @@ trait FunctionalTesterActions
      * @return mixed The value of the option stored in the database, unserialized if serialized.
      * @see \lucatume\WPBrowser\Module\WPDb::grabSiteOptionFromDatabase()
      */
-    public function grabSiteOptionFromDatabase(string $key) {
+    public function grabSiteOptionFromDatabase(string $key): mixed {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteOptionFromDatabase', func_get_args()));
     }
 
@@ -1794,7 +1794,7 @@ trait FunctionalTesterActions
      * @return mixed The option value. If the value is serialized it will be unserialized.
      * @see \lucatume\WPBrowser\Module\WPDb::grabOptionFromDatabase()
      */
-    public function grabOptionFromDatabase(string $option_name) {
+    public function grabOptionFromDatabase(string $option_name): mixed {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabOptionFromDatabase', func_get_args()));
     }
 
@@ -1815,7 +1815,7 @@ trait FunctionalTesterActions
      * @return mixed The value of the site transient. If the value is serialized it will be unserialized.
      * @see \lucatume\WPBrowser\Module\WPDb::grabSiteTransientFromDatabase()
      */
-    public function grabSiteTransientFromDatabase(string $key) {
+    public function grabSiteTransientFromDatabase(string $key): mixed {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabSiteTransientFromDatabase', func_get_args()));
     }
 
@@ -1834,12 +1834,12 @@ trait FunctionalTesterActions
      * ```
      *
      * @param string $key       The name of the transient to check for, w/o the `_site_transient_` prefix.
-     * @param mixed $value If provided then the assertion will include the value.
+     * @param mixed|null $value If provided then the assertion will include the value.
      *
      * @throws JsonException
      * @see \lucatume\WPBrowser\Module\WPDb::seeSiteSiteTransientInDatabase()
      */
-    public function seeSiteSiteTransientInDatabase(string $key, $value = NULL): void {
+    public function seeSiteSiteTransientInDatabase(string $key, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeSiteSiteTransientInDatabase', func_get_args()));
     }
     /**
@@ -1857,12 +1857,12 @@ trait FunctionalTesterActions
      * ```
      *
      * @param string $key       The name of the transient to check for, w/o the `_site_transient_` prefix.
-     * @param mixed $value If provided then the assertion will include the value.
+     * @param mixed|null $value If provided then the assertion will include the value.
      *
      * @throws JsonException
      * @see \lucatume\WPBrowser\Module\WPDb::seeSiteSiteTransientInDatabase()
      */
-    public function canSeeSiteSiteTransientInDatabase(string $key, $value = NULL): void {
+    public function canSeeSiteSiteTransientInDatabase(string $key, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeSiteSiteTransientInDatabase', func_get_args()));
     }
 
@@ -1884,14 +1884,14 @@ trait FunctionalTesterActions
      * ```
      *
      * @param array<string,mixed>|string $criteriaOrName An array of search criteria or the option name.
-     * @param mixed $value The optional value to try and match, only used if the option
+     * @param mixed|null $value                          The optional value to try and match, only used if the option
      *                                                   name is provided.
      *
      *
      * @throws JsonException If there's any issue debugging the failure.
      * @see \lucatume\WPBrowser\Module\WPDb::seeOptionInDatabase()
      */
-    public function seeOptionInDatabase($criteriaOrName, $value = NULL): void {
+    public function seeOptionInDatabase(array|string $criteriaOrName, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeOptionInDatabase', func_get_args()));
     }
     /**
@@ -1912,14 +1912,14 @@ trait FunctionalTesterActions
      * ```
      *
      * @param array<string,mixed>|string $criteriaOrName An array of search criteria or the option name.
-     * @param mixed $value The optional value to try and match, only used if the option
+     * @param mixed|null $value                          The optional value to try and match, only used if the option
      *                                                   name is provided.
      *
      *
      * @throws JsonException If there's any issue debugging the failure.
      * @see \lucatume\WPBrowser\Module\WPDb::seeOptionInDatabase()
      */
-    public function canSeeOptionInDatabase($criteriaOrName, $value = NULL): void {
+    public function canSeeOptionInDatabase(array|string $criteriaOrName, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeOptionInDatabase', func_get_args()));
     }
 
@@ -1938,14 +1938,14 @@ trait FunctionalTesterActions
      * ```
      *
      * @param array<string,mixed>|string $criteriaOrName An array of search criteria or the option name.
-     * @param mixed $value The optional value to try and match, only used if the option
+     * @param mixed|null $value                          The optional value to try and match, only used if the option
      *                                                   name is provided.
      *
      *
      * @throws JsonException If there's any issue debugging the failure.
      * @see \lucatume\WPBrowser\Module\WPDb::seeSiteOptionInDatabase()
      */
-    public function seeSiteOptionInDatabase($criteriaOrName, $value = NULL): void {
+    public function seeSiteOptionInDatabase(array|string $criteriaOrName, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeSiteOptionInDatabase', func_get_args()));
     }
     /**
@@ -1963,14 +1963,14 @@ trait FunctionalTesterActions
      * ```
      *
      * @param array<string,mixed>|string $criteriaOrName An array of search criteria or the option name.
-     * @param mixed $value The optional value to try and match, only used if the option
+     * @param mixed|null $value                          The optional value to try and match, only used if the option
      *                                                   name is provided.
      *
      *
      * @throws JsonException If there's any issue debugging the failure.
      * @see \lucatume\WPBrowser\Module\WPDb::seeSiteOptionInDatabase()
      */
-    public function canSeeSiteOptionInDatabase($criteriaOrName, $value = NULL): void {
+    public function canSeeSiteOptionInDatabase(array|string $criteriaOrName, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeSiteOptionInDatabase', func_get_args()));
     }
 
@@ -2216,7 +2216,7 @@ trait FunctionalTesterActions
      * @return int The inserted comment meta ID.
      * @see \lucatume\WPBrowser\Module\WPDb::haveCommentMetaInDatabase()
      */
-    public function haveCommentMetaInDatabase(int $comment_id, string $meta_key, $meta_value): int {
+    public function haveCommentMetaInDatabase(int $comment_id, string $meta_key, mixed $meta_value): int {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveCommentMetaInDatabase', func_get_args()));
     }
 
@@ -2481,7 +2481,7 @@ trait FunctionalTesterActions
      * @see WPDb::haveUserCapabilitiesInDatabase() for the roles and caps options.
      * @see \lucatume\WPBrowser\Module\WPDb::haveUserInDatabase()
      */
-    public function haveUserInDatabase(string $user_login, $role = "subscriber", array $overrides = []): int {
+    public function haveUserInDatabase(string $user_login, array|string $role = "subscriber", array $overrides = []): int {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveUserInDatabase', func_get_args()));
     }
 
@@ -2572,7 +2572,7 @@ trait FunctionalTesterActions
      * @return array<int|string,array<int>|int> An array of inserted `meta_id`.
      * @see \lucatume\WPBrowser\Module\WPDb::haveUserCapabilitiesInDatabase()
      */
-    public function haveUserCapabilitiesInDatabase(int $userId, $role): array {
+    public function haveUserCapabilitiesInDatabase(int $userId, array|string $role): array {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveUserCapabilitiesInDatabase', func_get_args()));
     }
 
@@ -2596,7 +2596,7 @@ trait FunctionalTesterActions
      * @return array<int> An array of inserted `umeta_id`s.
      * @see \lucatume\WPBrowser\Module\WPDb::haveUserMetaInDatabase()
      */
-    public function haveUserMetaInDatabase(int $userId, string $meta_key, $meta_value): array {
+    public function haveUserMetaInDatabase(int $userId, string $meta_key, mixed $meta_value): array {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveUserMetaInDatabase', func_get_args()));
     }
 
@@ -2651,7 +2651,7 @@ trait FunctionalTesterActions
      * @return array<int> An array of inserted `meta_id`.
      * @see \lucatume\WPBrowser\Module\WPDb::haveUserLevelsInDatabase()
      */
-    public function haveUserLevelsInDatabase(int $userId, $role): array {
+    public function haveUserLevelsInDatabase(int $userId, array|string $role): array {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveUserLevelsInDatabase', func_get_args()));
     }
 
@@ -3411,7 +3411,7 @@ trait FunctionalTesterActions
      *                         readable.
      * @see \lucatume\WPBrowser\Module\WPDb::haveAttachmentInDatabase()
      */
-    public function haveAttachmentInDatabase(string $file, $date = "now", array $overrides = [], ?array $imageSizes = NULL): int {
+    public function haveAttachmentInDatabase(string $file, string|int $date = "now", array $overrides = [], ?array $imageSizes = NULL): int {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('haveAttachmentInDatabase', func_get_args()));
     }
 
@@ -3573,7 +3573,7 @@ trait FunctionalTesterActions
      * @throws ModuleRequireException If the `WPFilesystem` module is not loaded in the suite.
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveAttachmentFilesInDatabase()
      */
-    public function dontHaveAttachmentFilesInDatabase($attachmentIds): void {
+    public function dontHaveAttachmentFilesInDatabase(array|int $attachmentIds): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveAttachmentFilesInDatabase', func_get_args()));
     }
 
@@ -3728,7 +3728,7 @@ trait FunctionalTesterActions
      * @param bool $purgeMeta           Whether the user meta should be purged alongside the user or not.
      * @see \lucatume\WPBrowser\Module\WPDb::dontHaveUserInDatabase()
      */
-    public function dontHaveUserInDatabase($userIdOrLogin, bool $purgeMeta = true): void {
+    public function dontHaveUserInDatabase(string|int $userIdOrLogin, bool $purgeMeta = true): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('dontHaveUserInDatabase', func_get_args()));
     }
 
@@ -3748,7 +3748,7 @@ trait FunctionalTesterActions
      * @return int|false The user ID or `false` if the user was not found.
      * @see \lucatume\WPBrowser\Module\WPDb::grabUserIdFromDatabase()
      */
-    public function grabUserIdFromDatabase(string $userLogin) {
+    public function grabUserIdFromDatabase(string $userLogin): int|false {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabUserIdFromDatabase', func_get_args()));
     }
 
@@ -3770,7 +3770,7 @@ trait FunctionalTesterActions
      * @return mixed|array<string,mixed> Either a single meta value or an array of all the available meta values.
      * @see \lucatume\WPBrowser\Module\WPDb::grabPostMetaFromDatabase()
      */
-    public function grabPostMetaFromDatabase(int $postId, string $metaKey, bool $single = false) {
+    public function grabPostMetaFromDatabase(int $postId, string $metaKey, bool $single = false): mixed {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabPostMetaFromDatabase', func_get_args()));
     }
 
@@ -4066,14 +4066,14 @@ trait FunctionalTesterActions
      * ```
      *
      * @param array<string,mixed>|string $criteriaOrName An array of search criteria or the option name.
-     * @param mixed $value The optional value to try and match, only used if the option
+     * @param mixed|null $value                          The optional value to try and match, only used if the option
      *                                                   name is provided.
      *
      *
      * @throws JsonException If there's any issue debugging the query.
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeSiteOptionInDatabase()
      */
-    public function dontSeeSiteOptionInDatabase($criteriaOrName, $value = NULL): void {
+    public function dontSeeSiteOptionInDatabase(array|string $criteriaOrName, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeSiteOptionInDatabase', func_get_args()));
     }
     /**
@@ -4092,14 +4092,14 @@ trait FunctionalTesterActions
      * ```
      *
      * @param array<string,mixed>|string $criteriaOrName An array of search criteria or the option name.
-     * @param mixed $value The optional value to try and match, only used if the option
+     * @param mixed|null $value                          The optional value to try and match, only used if the option
      *                                                   name is provided.
      *
      *
      * @throws JsonException If there's any issue debugging the query.
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeSiteOptionInDatabase()
      */
-    public function cantSeeSiteOptionInDatabase($criteriaOrName, $value = NULL): void {
+    public function cantSeeSiteOptionInDatabase(array|string $criteriaOrName, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeSiteOptionInDatabase', func_get_args()));
     }
 
@@ -4121,7 +4121,7 @@ trait FunctionalTesterActions
      *
      * @see \lucatume\WPBrowser\Module\WPDb::grabTransientFromDatabase()
      */
-    public function grabTransientFromDatabase(string $transient) {
+    public function grabTransientFromDatabase(string $transient): mixed {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('grabTransientFromDatabase', func_get_args()));
     }
 
@@ -4144,7 +4144,7 @@ trait FunctionalTesterActions
      *
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeTransientInDatabase()
      */
-    public function dontSeeTransientInDatabase(string $transient, $value = NULL): void {
+    public function dontSeeTransientInDatabase(string $transient, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeTransientInDatabase', func_get_args()));
     }
     /**
@@ -4166,7 +4166,7 @@ trait FunctionalTesterActions
      *
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeTransientInDatabase()
      */
-    public function cantSeeTransientInDatabase(string $transient, $value = NULL): void {
+    public function cantSeeTransientInDatabase(string $transient, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeTransientInDatabase', func_get_args()));
     }
 
@@ -4190,7 +4190,7 @@ trait FunctionalTesterActions
      *
      * @see \lucatume\WPBrowser\Module\WPDb::seeTransientInDatabase()
      */
-    public function seeTransientInDatabase(string $name, $value = NULL): void {
+    public function seeTransientInDatabase(string $name, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeTransientInDatabase', func_get_args()));
     }
     /**
@@ -4213,7 +4213,7 @@ trait FunctionalTesterActions
      *
      * @see \lucatume\WPBrowser\Module\WPDb::seeTransientInDatabase()
      */
-    public function canSeeTransientInDatabase(string $name, $value = NULL): void {
+    public function canSeeTransientInDatabase(string $name, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeTransientInDatabase', func_get_args()));
     }
 
@@ -4228,7 +4228,7 @@ trait FunctionalTesterActions
      * $I->dontSeeSiteTransientInDatabase('foo');
      * $I->dontSeeSiteTransientInDatabase('foo', 23);
      * ```
-     * @param mixed $value The optional value to try and match.
+     * @param mixed|null $value The optional value to try and match.
      *
      * @param string $transient The transient name.
      * @return void
@@ -4237,7 +4237,7 @@ trait FunctionalTesterActions
      *
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeSiteTransientInDatabase()
      */
-    public function dontSeeSiteTransientInDatabase(string $transient, $value = NULL): void {
+    public function dontSeeSiteTransientInDatabase(string $transient, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeSiteTransientInDatabase', func_get_args()));
     }
     /**
@@ -4251,7 +4251,7 @@ trait FunctionalTesterActions
      * $I->dontSeeSiteTransientInDatabase('foo');
      * $I->dontSeeSiteTransientInDatabase('foo', 23);
      * ```
-     * @param mixed $value The optional value to try and match.
+     * @param mixed|null $value The optional value to try and match.
      *
      * @param string $transient The transient name.
      * @return void
@@ -4260,7 +4260,7 @@ trait FunctionalTesterActions
      *
      * @see \lucatume\WPBrowser\Module\WPDb::dontSeeSiteTransientInDatabase()
      */
-    public function cantSeeSiteTransientInDatabase(string $transient, $value = NULL): void {
+    public function cantSeeSiteTransientInDatabase(string $transient, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeSiteTransientInDatabase', func_get_args()));
     }
 
@@ -4276,7 +4276,7 @@ trait FunctionalTesterActions
      * $I->seeSiteTransientInDatabase('foo');
      * $I->seeSiteTransientInDatabase('foo', 23);
      * ```
-     * @param mixed $value The optional value to try and match.
+     * @param mixed|null $value The optional value to try and match.
      *
      * @param string $transient The transient name.
      * @return void
@@ -4284,7 +4284,7 @@ trait FunctionalTesterActions
      *
      * @see \lucatume\WPBrowser\Module\WPDb::seeSiteTransientInDatabase()
      */
-    public function seeSiteTransientInDatabase(string $transient, $value = NULL): void {
+    public function seeSiteTransientInDatabase(string $transient, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeSiteTransientInDatabase', func_get_args()));
     }
     /**
@@ -4299,7 +4299,7 @@ trait FunctionalTesterActions
      * $I->seeSiteTransientInDatabase('foo');
      * $I->seeSiteTransientInDatabase('foo', 23);
      * ```
-     * @param mixed $value The optional value to try and match.
+     * @param mixed|null $value The optional value to try and match.
      *
      * @param string $transient The transient name.
      * @return void
@@ -4307,7 +4307,7 @@ trait FunctionalTesterActions
      *
      * @see \lucatume\WPBrowser\Module\WPDb::seeSiteTransientInDatabase()
      */
-    public function canSeeSiteTransientInDatabase(string $transient, $value = NULL): void {
+    public function canSeeSiteTransientInDatabase(string $transient, mixed $value = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeSiteTransientInDatabase', func_get_args()));
     }
 
@@ -5990,9 +5990,8 @@ trait FunctionalTesterActions
      *
      * Asserts that an object has a specified attribute.
      * @see \Codeception\Module\AbstractAsserts::assertObjectHasAttribute()
-     * @param object $object
      */
-    public function assertObjectHasAttribute(string $attributeName, $object, string $message = "") {
+    public function assertObjectHasAttribute(string $attributeName, object $object, string $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertObjectHasAttribute', func_get_args()));
     }
 
@@ -6002,9 +6001,8 @@ trait FunctionalTesterActions
      *
      * Asserts that an object does not have a specified attribute.
      * @see \Codeception\Module\AbstractAsserts::assertObjectNotHasAttribute()
-     * @param object $object
      */
-    public function assertObjectNotHasAttribute(string $attributeName, $object, string $message = "") {
+    public function assertObjectNotHasAttribute(string $attributeName, object $object, string $message = "") {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('assertObjectNotHasAttribute', func_get_args()));
     }
 
@@ -6413,7 +6411,7 @@ trait FunctionalTesterActions
      * @throws ModuleException
      * @see \lucatume\WPBrowser\Module\WPFilesystem::seeUploadedFileFound()
      */
-    public function seeUploadedFileFound(string $filename, $date = NULL): void {
+    public function seeUploadedFileFound(string $filename, string|int|null $date = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeUploadedFileFound', func_get_args()));
     }
     /**
@@ -6438,7 +6436,7 @@ trait FunctionalTesterActions
      * @throws ModuleException
      * @see \lucatume\WPBrowser\Module\WPFilesystem::seeUploadedFileFound()
      */
-    public function canSeeUploadedFileFound(string $filename, $date = NULL): void {
+    public function canSeeUploadedFileFound(string $filename, string|int|null $date = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeUploadedFileFound', func_get_args()));
     }
 
@@ -6457,7 +6455,7 @@ trait FunctionalTesterActions
      * ```
      *
      * @param string $file                            The file path, relative to the uploads folder.
-     * @param mixed $date A string compatible with `strtotime`, a Unix timestamp or a Date
+     * @param DateTimeInterface|string|int|null $date A string compatible with `strtotime`, a Unix timestamp or a Date
      *                                                object.
      *
      * @return string The absolute path to an uploaded file.
@@ -6465,7 +6463,7 @@ trait FunctionalTesterActions
      * @throws Exception
      * @see \lucatume\WPBrowser\Module\WPFilesystem::getUploadsPath()
      */
-    public function getUploadsPath(string $file = "", $date = NULL): string {
+    public function getUploadsPath(string $file = "", mixed $date = NULL): string {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getUploadsPath', func_get_args()));
     }
 
@@ -6490,7 +6488,7 @@ trait FunctionalTesterActions
      * @throws ModuleException
      * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeUploadedFileFound()
      */
-    public function dontSeeUploadedFileFound(string $file, $date = NULL): void {
+    public function dontSeeUploadedFileFound(string $file, string|int|null $date = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeUploadedFileFound', func_get_args()));
     }
     /**
@@ -6514,7 +6512,7 @@ trait FunctionalTesterActions
      * @throws ModuleException
      * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeUploadedFileFound()
      */
-    public function cantSeeUploadedFileFound(string $file, $date = NULL): void {
+    public function cantSeeUploadedFileFound(string $file, string|int|null $date = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeUploadedFileFound', func_get_args()));
     }
 
@@ -6540,7 +6538,7 @@ trait FunctionalTesterActions
      * @throws ModuleException
      * @see \lucatume\WPBrowser\Module\WPFilesystem::seeInUploadedFile()
      */
-    public function seeInUploadedFile(string $file, string $contents, $date = NULL): void {
+    public function seeInUploadedFile(string $file, string $contents, string|int|null $date = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Assertion('seeInUploadedFile', func_get_args()));
     }
     /**
@@ -6565,7 +6563,7 @@ trait FunctionalTesterActions
      * @throws ModuleException
      * @see \lucatume\WPBrowser\Module\WPFilesystem::seeInUploadedFile()
      */
-    public function canSeeInUploadedFile(string $file, string $contents, $date = NULL): void {
+    public function canSeeInUploadedFile(string $file, string $contents, string|int|null $date = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('seeInUploadedFile', func_get_args()));
     }
 
@@ -6589,7 +6587,7 @@ trait FunctionalTesterActions
      * @param int|string|null $date A string compatible with `strtotime` or a Unix timestamp.
      * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeInUploadedFile()
      */
-    public function dontSeeInUploadedFile(string $file, string $contents, $date = NULL): void {
+    public function dontSeeInUploadedFile(string $file, string $contents, string|int|null $date = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('dontSeeInUploadedFile', func_get_args()));
     }
     /**
@@ -6612,7 +6610,7 @@ trait FunctionalTesterActions
      * @param int|string|null $date A string compatible with `strtotime` or a Unix timestamp.
      * @see \lucatume\WPBrowser\Module\WPFilesystem::dontSeeInUploadedFile()
      */
-    public function cantSeeInUploadedFile(string $file, string $contents, $date = NULL): void {
+    public function cantSeeInUploadedFile(string $file, string $contents, string|int|null $date = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\ConditionalAssertion('dontSeeInUploadedFile', func_get_args()));
     }
 
@@ -6638,7 +6636,7 @@ trait FunctionalTesterActions
      * @throws ModuleException If the destination folder could not be removed.
      * @see \lucatume\WPBrowser\Module\WPFilesystem::deleteUploadedDir()
      */
-    public function deleteUploadedDir(string $dir, $date = NULL): void {
+    public function deleteUploadedDir(string $dir, \DateTime|string|int|null $date = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('deleteUploadedDir', func_get_args()));
     }
 
@@ -6661,7 +6659,7 @@ trait FunctionalTesterActions
      * @param int|string|null $date A string compatible with `strtotime` or a Unix timestamp.
      * @see \lucatume\WPBrowser\Module\WPFilesystem::deleteUploadedFile()
      */
-    public function deleteUploadedFile(string $file, $date = NULL): void {
+    public function deleteUploadedFile(string $file, string|int|null $date = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('deleteUploadedFile', func_get_args()));
     }
 
@@ -6685,7 +6683,7 @@ trait FunctionalTesterActions
      * @param string|null $dir               The path to the directory to delete, relative to the uploads folder.
      * @see \lucatume\WPBrowser\Module\WPFilesystem::cleanUploadsDir()
      */
-    public function cleanUploadsDir(?string $dir = NULL, $date = NULL): void {
+    public function cleanUploadsDir(?string $dir = NULL, \DateTime|string|int|null $date = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('cleanUploadsDir', func_get_args()));
     }
 
@@ -6710,7 +6708,7 @@ trait FunctionalTesterActions
      * @param string $src                    The path to the source file, relative to the current uploads folder.
      * @see \lucatume\WPBrowser\Module\WPFilesystem::copyDirToUploads()
      */
-    public function copyDirToUploads(string $src, string $dst, $date = NULL): void {
+    public function copyDirToUploads(string $src, string $dst, \DateTime|string|int|null $date = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('copyDirToUploads', func_get_args()));
     }
 
@@ -6740,7 +6738,7 @@ trait FunctionalTesterActions
      *                                                file could not be written.
      * @see \lucatume\WPBrowser\Module\WPFilesystem::writeToUploadedFile()
      */
-    public function writeToUploadedFile(string $filename, string $data, $date = NULL): string {
+    public function writeToUploadedFile(string $filename, string $data, \DateTime|string|int|null $date = NULL): string {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('writeToUploadedFile', func_get_args()));
     }
 
@@ -6764,7 +6762,7 @@ trait FunctionalTesterActions
      * @param string $filename               The path to the file, relative to the current uploads folder.
      * @see \lucatume\WPBrowser\Module\WPFilesystem::openUploadedFile()
      */
-    public function openUploadedFile(string $filename, $date = NULL): void {
+    public function openUploadedFile(string $filename, \DateTime|string|int|null $date = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('openUploadedFile', func_get_args()));
     }
 
@@ -7613,7 +7611,7 @@ trait FunctionalTesterActions
      * @throws Exception If the date is not a valid format.
      * @see \lucatume\WPBrowser\Module\WPFilesystem::getBlogUploadsPath()
      */
-    public function getBlogUploadsPath(int $blogId, string $file = "", $date = NULL): string {
+    public function getBlogUploadsPath(int $blogId, string $file = "", \DateTimeImmutable|\DateTime|string|null $date = NULL): string {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('getBlogUploadsPath', func_get_args()));
     }
 

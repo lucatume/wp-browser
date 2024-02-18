@@ -19,31 +19,15 @@ use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
  *
  * @package Codeception\Lib\Generator
  */
-class WPUnit
+class WPUnit extends AbstractGenerator
 {
-    /**
-     * @var string
-     */
-    protected $baseClass;
-    use Classname;
-    use Namespaces;
-
-    /**
-     * @var array{namespace: string, actor: string}
-     */
-    private $settings;
-    /**
-     * @var string
-     */
-    private $name;
-
     /**
      * @var string
      */
     protected $template = <<<EOF
 <?php
 {{namespace}}
-class {{name}}Test extends {{baseClass}}
+class {{name}}Test extends \lucatume\WPBrowser\TestCase\WPTestCase
 {
     {{tester}}
     public function setUp() :void
@@ -70,72 +54,5 @@ class {{name}}Test extends {{baseClass}}
         \$this->assertInstanceOf(\\WP_Post::class, \$post);
     }
 }
-
 EOF;
-
-    /**
-     * WPUnit constructor.
-     *
-     * @param array{namespace: string, actor: string} $settings The template settings.
-     * @param string $name                                      The template name.
-     * @param string $baseClass                                 The base class.
-     */
-    public function __construct(array $settings, string $name, string $baseClass)
-    {
-        $this->baseClass = $baseClass;
-        $this->settings = $settings;
-        $this->name = $this->removeSuffix($name, 'Test');
-    }
-
-    /**
-     * Produces and return the rendered template.
-     *
-     * @return string The rendered template.
-     */
-    public function produce(): string
-    {
-        $ns = $this->getNamespaceHeader($this->settings['namespace'] . '\\' . $this->name);
-
-        return (new Template($this->template))->place('namespace', $ns)
-            ->place('baseClass', '\\' . ltrim($this->baseClass, '\\'))
-            ->place('name', $this->getShortClassName($this->name))
-            ->place('tester', $this->getTester())
-            ->produce();
-    }
-
-    /**
-     * Returns the current tester name.
-     *
-     * @return string The current tester name.
-     */
-    protected function getTester(): string
-    {
-        if (isset($this->settings['actor'])) {
-            $actor = $this->settings['actor'];
-        }
-
-        try {
-            /** @var array{actor_suffix: string} $config */
-            $config = Configuration::config();
-            $propertyName = isset($config['actor_suffix']) ?
-                lcfirst($config['actor_suffix'])
-                : '';
-        } catch (Exception $exception) {
-            $propertyName = '';
-        }
-
-        if (!isset($actor)) {
-            return '';
-        }
-
-        $testerFrag = <<<EOF
-    /**
-     * @var \\$actor
-     */
-    protected $$propertyName;
-    
-EOF;
-
-        return ltrim($testerFrag);
-    }
 }

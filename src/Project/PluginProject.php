@@ -118,7 +118,7 @@ class PluginProject extends ContentProject
      * @throws Throwable
      * @throws ProcessException
      */
-    protected function activate(string $wpRootDir, int $serverLocalhostPort): bool
+    public function activate(string $wpRootDir, int $serverLocalhostPort): bool
     {
         $codeExec = new CodeExecutionFactory($wpRootDir, 'localhost:' . $serverLocalhostPort);
         $pluginString = basename(dirname($this->pluginFile)) . '/' . basename($this->pluginFile);
@@ -127,6 +127,7 @@ class PluginProject extends ContentProject
         if ($activationResult instanceof Throwable) {
             $message = $activationResult->getMessage();
             $this->sayWarning('Could not activate plugin: ' . $message);
+            $this->say($activationResult->getFile() . ":" . $activationResult->getLine());
             $this->say('This might happen because the plugin has unmet dependencies; wp-browser configuration ' .
                 'will continue, but you will need to manually activate the plugin and update the dump in ' .
                 'tests/Support/Data/dump.sql.');
@@ -168,7 +169,7 @@ class ActivationCest
 }
 
 EOT
-            ,
+,
             [
                 'slug' => Strings::slug($this->getName())
             ]
@@ -221,7 +222,7 @@ class SampleTest extends WPTestCase
     }
 }
 EOT
-            ,
+,
             [
                 'pluginString' => $this->getActivationString()
             ]

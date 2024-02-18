@@ -53,10 +53,7 @@ function isolated_test_read($id): ?string
     return $wpdb->get_var($query);
 }
 
-/**
- * @return mixed[]|object|null
- */
-function isolated_test_read_all()
+function isolated_test_read_all(): array|object|null
 {
     global $wpdb;
 

@@ -7,7 +7,6 @@ use Codeception\Events;
 use Codeception\Exception\ExtensionException;
 use Codeception\Extension;
 use lucatume\WPBrowser\Events\Dispatcher;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface as SymfonyEventDispatcher;
 
 class EventDispatcherBridge extends Extension

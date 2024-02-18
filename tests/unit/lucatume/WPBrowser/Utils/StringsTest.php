@@ -131,9 +131,7 @@ class StringsTest extends Unit
             'empty_w_data_and_seed' => ['',['name'=>'luca'],['session'=>'test'],''],
             'template_w_data_and_seed' => [
                 '{{session}}_{{name}}',
-                [ 'name' => 'luca', 'session' => static function ($session) {
-                    return 'xyz_' . $session;
-                }],
+                [ 'name' => 'luca', 'session' => static fn($session) => 'xyz_' . $session],
                 [ 'session' => 'test' ],
                 'xyz_test_luca'
             ]

@@ -159,9 +159,9 @@ class WPLoader extends Module
         'WP_PLUGIN_DIR' => null,
         'WPMU_PLUGIN_DIR' => null,
         'dump' => '',
-        'backupGlobals' => true,
+        'backupGlobals' => false,
         'backupGlobalsExcludeList' => [],
-        'backupStaticAttributes' => true,
+        'backupStaticAttributes' => false,
         'backupStaticAttributesExcludeList' => [],
         'skipInstall' => false
     ];
@@ -500,9 +500,9 @@ class WPLoader extends Module
             $this->checkInstallationToLoadOnly();
             $this->debug('The WordPress installation will be loaded after all other modules have been initialized.');
 
-            Dispatcher::addListener(Events::SUITE_BEFORE, function (): void {
+            Dispatcher::addListener(Events::SUITE_INIT, function (): void {
                 $this->loadWordPress(true);
-            }, -100);
+            });
 
             return;
         }

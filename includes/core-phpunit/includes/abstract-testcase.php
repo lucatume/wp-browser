@@ -20,10 +20,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	protected $expected_doing_it_wrong = array();
 	protected $caught_doing_it_wrong   = array();
 
-    /**
-     * @var string|null
-     */
-    private static $calledClass;
+    private static ?string $calledClass = null;
 
 	protected static $hooks_saved = array();
 	protected static $ignore_files;
