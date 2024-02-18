@@ -18,7 +18,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->paths([
         dirname(__DIR__) . '/includes',
         dirname(__DIR__) . '/src',
-        dirname(__DIR__) . '/tests',
+        dirname(__DIR__) . '/tests'
     ]);
 
     $rectorConfig->ruleWithConfiguration(RenameClassRector::class, [
