@@ -9,7 +9,7 @@ mkdir -p ./.build/35
 rsync -av --exclude-from=bin/build-35-exclusions.txt . ./.build/35
 cd ./.build/35
 rm -rf vendor composer.lock
-composer require --dev rector/rector:0.19.2 -W
+composer require --dev rector/rector:0.19.8 -W
 composer dump-autoload
 if [ -z "$files" ]; then
     vendor/bin/rector process src --config=config/rector-35.php
@@ -18,4 +18,5 @@ else
 fi
 rm -rf vendor composer.lock composer.json
 cp config/composer-35.json composer.json
+rm -rf config
 cd -

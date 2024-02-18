@@ -3,6 +3,9 @@
 .cache
 .git
 .github
+.gitattributes
+.gitignore
+codeception.dist.yml
 bin
 docs
 var
@@ -14,3 +17,4 @@ LICENSE
 Makefile
 mkdocs.yml
 README.md
+tests/.env
