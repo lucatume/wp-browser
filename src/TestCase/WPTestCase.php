@@ -251,10 +251,10 @@ class WPTestCase extends Unit
         if (isset($GLOBALS['_wp_registered_theme_features'])) {
             $this->additionalGlobalsBackup = $GLOBALS['_wp_registered_theme_features'];
         }
-        if(isset($_SERVER['REQUEST_TIME_FLOAT'])){
+        if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
             $this->requestTimeFloat = $_SERVER['REQUEST_TIME_FLOAT'];
         }
-        if(isset($_SERVER['REQUEST_TIME'])){
+        if (isset($_SERVER['REQUEST_TIME'])) {
             $this->requestTime = $_SERVER['REQUEST_TIME'];
         }
     }
@@ -265,10 +265,10 @@ class WPTestCase extends Unit
             $GLOBALS[$key] = $value;
             unset($this->additionalGlobalsBackup[$key]);
         }
-        if(isset($this->requestTimeFloat)){
+        if (isset($this->requestTimeFloat)) {
             $_SERVER['REQUEST_TIME_FLOAT'] = $this->requestTimeFloat;
         }
-        if(isset($this->requestTime)){
+        if (isset($this->requestTime)) {
             $_SERVER['REQUEST_TIME'] = $this->requestTime;
         }
     }
