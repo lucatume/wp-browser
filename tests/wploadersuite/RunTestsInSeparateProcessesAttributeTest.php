@@ -2,6 +2,9 @@
 
 use lucatume\WPBrowser\TestCase\WPTestCase;
 
+/**
+ * @requires PHP 8.0
+ */
 #[RunTestsInSeparateProcesses]
 class RunTestsInSeparateProcessesAttributeTest extends WPTestCase
 {
