@@ -64,7 +64,7 @@ foreach(\$args as &\$arg){
         'WPBROWSER_DATA_NAME' => \$dataName,
         'WPBROWSER_DATA_SET' => \$encodedDataSet,
         'WPBROWSER_TEST_FILE' => '{{file}}' 
-    ], 
+    ] 
 );
 \$exitCode = \$process->run();
 
