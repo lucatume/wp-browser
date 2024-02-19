@@ -147,6 +147,9 @@ class WPTestCase extends Unit
         'WC_Payment_Gateways' => ['_instance'],
     ];
 
+    private ?float $requestTimeFloat = null;
+    private ?int $requestTime = null;
+
     /**
      * @param array<mixed> $data
      */
@@ -248,6 +251,12 @@ class WPTestCase extends Unit
         if (isset($GLOBALS['_wp_registered_theme_features'])) {
             $this->additionalGlobalsBackup = $GLOBALS['_wp_registered_theme_features'];
         }
+        if(isset($_SERVER['REQUEST_TIME_FLOAT'])){
+            $this->requestTimeFloat = $_SERVER['REQUEST_TIME_FLOAT'];
+        }
+        if(isset($_SERVER['REQUEST_TIME'])){
+            $this->requestTime = $_SERVER['REQUEST_TIME'];
+        }
     }
 
     protected function restoreAdditionalGlobals(): void
@@ -255,6 +264,12 @@ class WPTestCase extends Unit
         foreach ($this->additionalGlobalsBackup as $key => $value) {
             $GLOBALS[$key] = $value;
             unset($this->additionalGlobalsBackup[$key]);
+        }
+        if(isset($this->requestTimeFloat)){
+            $_SERVER['REQUEST_TIME_FLOAT'] = $this->requestTimeFloat;
+        }
+        if(isset($this->requestTime)){
+            $_SERVER['REQUEST_TIME'] = $this->requestTime;
         }
     }
 
