@@ -24,5 +24,6 @@ rm -rf "${root_dir}"/includes/core-phpunit/includes &&
   git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-rest-post-type-controller.php.patch &&
   git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-xml.php.patch &&
   git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-xmlrpc.php.patch &&
+  git apply "${root_dir}"/config/patches/core-phpunit/includes/phpunit6/compat.php.patch &&
   php "${root_dir}/bin/namespace_global_class_names.php"
 
