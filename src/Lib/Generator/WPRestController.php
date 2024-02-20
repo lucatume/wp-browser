@@ -13,7 +13,10 @@ class WPRestController extends AbstractGenerator
 class {{name}}Test extends \lucatume\WPBrowser\TestCase\WPRestControllerTestCase
 {
     {{tester}}
-    private \WP_REST_Controller|null \$controller = null;
+    /**
+     * @var \WP_REST_Controller|null
+     */
+    private \$controller = null;
 
     public function setUp(): void
     {
@@ -27,7 +30,8 @@ class {{name}}Test extends \lucatume\WPBrowser\TestCase\WPRestControllerTestCase
         }
         
         \$controller = new class extends \WP_REST_Controller {
-            private array \$data = [
+            /** @var array<string,array<string,string|int>> \$data */
+            private \$data = [
                 'minion' => [
                     'label' => 'Minion',
                     'count' => 89,
@@ -169,7 +173,7 @@ class {{name}}Test extends \lucatume\WPBrowser\TestCase\WPRestControllerTestCase
                 'callback' => [\$controller, 'getAdversaries'],
                 'permission_callback' => [\$controller, 'anyone'],
                 'schema' => [\$controller, 'get_item_schema'],
-            ],
+            ]
         );
 
         register_rest_route(
@@ -180,7 +184,7 @@ class {{name}}Test extends \lucatume\WPBrowser\TestCase\WPRestControllerTestCase
                 'callback' => [\$controller, 'getAdversary'],
                 'permission_callback' => [\$controller, 'anyone'],
                 'schema' => [\$controller, 'get_item_schema'],
-            ],
+            ]
         );
 
         register_rest_route(
@@ -191,7 +195,7 @@ class {{name}}Test extends \lucatume\WPBrowser\TestCase\WPRestControllerTestCase
                 'callback' => [\$controller, 'upsertAdversary'],
                 'permission_callback' => [\$controller, 'adminsOnly'],
                 'schema' => [\$controller, 'get_item_schema'],
-            ],
+            ]
         );
 
         register_rest_route(
@@ -202,7 +206,7 @@ class {{name}}Test extends \lucatume\WPBrowser\TestCase\WPRestControllerTestCase
                 'callback' => [\$controller, 'deleteAdversary'],
                 'permission_callback' => [\$controller, 'adminsOnly'],
                 'schema' => [\$controller, 'get_item_schema'],
-            ],
+            ]
         );
     }
 

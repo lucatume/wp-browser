@@ -13,7 +13,10 @@ class WPRestPostTypeController extends AbstractGenerator
 class {{name}}Test extends \lucatume\WPBrowser\TestCase\WPRestPostTypeControllerTestCase
 {
     {{tester}}
-    private \WP_REST_Posts_Controller|null \$controller = null;
+    /**
+     * @var \WP_REST_Posts_Controller|null
+     */
+    private \$controller = null;
 
     public function setUp(): void
     {
@@ -164,7 +167,9 @@ class {{name}}Test extends \lucatume\WPBrowser\TestCase\WPRestPostTypeController
                 \$posts = get_posts(['post_type' => 'book']);
 
                 \$books = array_map(
-                    fn(\$post) => \$this->prepare_item_for_response(\$post, \$request),
+                    function (\$post) use (\$request) {
+                        return \$this->prepare_item_for_response(\$post, \$request);
+                    },
                     \$posts
                 );
 
