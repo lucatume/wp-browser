@@ -63,25 +63,25 @@ back-compatibility purposes.
    
     class MyTestUsingDeprecatedCode extends WPTestCase {
         public function test_deprecatd_function() {
-               // add_filter( 'deprecated_function_trigger_error', '__return_false' );
+            // add_filter( 'deprecated_function_trigger_error', '__return_false' );
             $this->setExpectedDeprecated( 'my_deprecated_function' );
             my_deprecated_function();
         }
    
         public function test_deprecated_class(){
-               // add_filter( 'deprecated_class_trigger_error', '__return_false' );
+            // add_filter( 'deprecated_class_trigger_error', '__return_false' );
             $this->setExpectedDeprecated( 'MyDeprecatedClass' );
             new MyDeprecatedClass();
         }
    
         public function test_deprecated_file(){
-               // add_filter( 'deprecated_file_trigger_error', '__return_false' );
+            // add_filter( 'deprecated_file_trigger_error', '__return_false' );
             $this->setExpectedDeprecated( '/path/to/my_deprecated_file.php' );
             require_once 'my_deprecated_file.php';
         }
    
         public function test_deprecated_hook(){
-               // add_filter( 'deprecated_hook_trigger_error', '__return_false' );
+            // add_filter( 'deprecated_hook_trigger_error', '__return_false' );
             $this->setExpectedDeprecated( 'my_deprecated_hook' );
             do_action( 'my_deprecated_hook' );
         }
