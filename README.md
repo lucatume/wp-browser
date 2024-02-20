@@ -1,8 +1,9 @@
 # wp-browser
 
-> You're looking at version 3 of the project; compatible with PHP 5.6+ and Codeception 4.
-> Version 3 of the project is compatible with PHP 8.0+ and the latest version of Codeception, version 5.
-> This branch is maintained for back-compatibility purposes; if you're starting new project, you should use the latest version.
+Version 3 of the project is compatible with PHP 5.6+ and Codeception 4.
+This branch is maintained for back-compatibility purposes; if you're starting new project, you should use the latest version.
+
+[Read more about how to migrate to a new version of wp-browser here][4].
 
 wp-browser provides easy acceptance, functional, integration and unit testing for WordPress plugins, themes and
 whole sites using [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.").
@@ -51,3 +52,4 @@ This is just a bite though, find out more in [the documentation][1].
 [1]: https://wpbrowser.wptestkit.dev/v3
 [2]: https://wpbrowser.wptestkit.dev/v3/levels-of-testing
 [3]: https://wpbrowser.wptestkit.dev/v3/modules
+[4]: https://wpbrowser.wptestkit.dev/migration/
