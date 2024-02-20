@@ -1,1 +1,0 @@
-run - Runs all the test suites, each in a separate process.

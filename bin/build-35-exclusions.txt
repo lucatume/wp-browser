@@ -18,5 +18,5 @@ Makefile
 mkdocs.yml
 README.md
 tests/.env
-tests/_support/_generated
+tests/_support/_generated/*
 includes/sqlite-database-integration

@@ -1,4 +1,0 @@
-array (
-  'status' => 'down',
-  'config' => '',
-)
