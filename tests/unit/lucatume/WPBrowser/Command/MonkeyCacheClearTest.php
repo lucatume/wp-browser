@@ -32,7 +32,8 @@ class MonkeyCacheClearTest extends Unit
 
         $this->assertDirectoryExists(MonkeyPatch::getCachePath());
         $this->assertCount(0, (array)glob(MonkeyPatch::getCachePath() . '/*'));
-        $this->assertDirectoryDoesNotExist(MonkeyPatch::getCachePath() . '/some-dir');
+        /** @noinspection PhpUnitTestsInspection */
+        $this->assertFalse(is_dir(MonkeyPatch::getCachePath() . '/some-dir'));
         $this->assertEquals("Monkey patch cache cleared.\n", $output->fetch());
     }
 
@@ -59,7 +60,8 @@ class MonkeyCacheClearTest extends Unit
 
         $this->assertDirectoryExists(MonkeyPatch::getCachePath());
         $this->assertCount(0, (array)glob(MonkeyPatch::getCachePath() . '/*'));
-        $this->assertDirectoryDoesNotExist(MonkeyPatch::getCachePath() . '/some-dir');
+        /** @noinspection PhpUnitTestsInspection */
+        $this->assertFalse(is_dir(MonkeyPatch::getCachePath() . '/some-dir'));
         $this->assertEquals('', $output->fetch());
     }
 }
