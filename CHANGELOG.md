@@ -4,6 +4,56 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.1.0] 2024-02-20;
+
+### Changed
+
+- The `WPTestCase` class will **not** backup globals and static attributes by default. Version `3` of wp-browser did not backup globals and static attributes by default, this change in version `4` is aligned with that behaviour to ease migration from version `3` to version `4`.
+
+### Added
+
+- Restored support for the `@runInSeparateProcess` annotation for test methods. Along with it, improved support for the `@dataProvider` annotation for test methods used in conjunction with the `@runInSeparateProcess` annotation to run data provider methods at most once.
+- Implemented support for the `runTestsInSeparateProcesses` annotation for test classes; supporting the `@dataProvider` annotation ro run data provider methods at most once.
+- Added support for the `#[RunInSeparateProcess]` attribute for test methods and the `#[RunTestsInSeparateProcesses]` attribute for test classes.
+- [Migration guide from version 3 to version 3.5 or 4](https://wpbrowser.wptestkit.dev/migration/)
+
+## [4.0.21] 2024-02-12;
+
+### Fixed
+
+- Search more paths for Chrome binaries on linux (#694, thanks to @iateadonut)
+
+### Changed
+
+- List paths searched for Chrome on current platform in debug output
+
+## [4.0.20] 2024-02-12;
+
+### Added
+
+- Print file and line of failure during setup of plugin project, (#694, thanks to @iateadonut)
+
+## [4.0.19] 2024-02-09;
+
+### Fixed
+
+- PHPUnit version 10+ warnings (#692)
+
+### Changed
+
+- Updated Core PHPUnit test code from `wordpress/wordpress-develop`.
+- Update SQLite plugin from `sqlite-database-integration` plugin.
+
+## [4.0.18] 2024-01-23;
+
+- Improve messaging and documentation around initialization and setup.
+
+## [4.0.17] 2023-12-14;
+
+### Fixed 
+
+- Improve router script to speed up localhost server.
+
 ## [4.0.16] 2023-12-07;
 
 ### Changed
@@ -14,7 +64,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- The `WPLoader::silentlyActivatePlugins` configuration parameter to activate plugins without firing their activation hook.
+- The `WPLoader::silentlyActivatePlugins` configuration parameter to activate plugins without firing the `activated_plugin` action.
 
 ## [4.0.14] 2023-12-06;
 
@@ -2063,4 +2113,10 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.14]: https://github.com/lucatume/wp-browser/compare/4.0.13...4.0.14
 [4.0.15]: https://github.com/lucatume/wp-browser/compare/4.0.14...4.0.15
 [4.0.16]: https://github.com/lucatume/wp-browser/compare/4.0.15...4.0.16
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.0.16...HEAD
+[4.0.17]: https://github.com/lucatume/wp-browser/compare/4.0.16...4.0.17
+[4.0.18]: https://github.com/lucatume/wp-browser/compare/4.0.17...4.0.18
+[4.0.19]: https://github.com/lucatume/wp-browser/compare/4.0.18...4.0.19
+[4.0.20]: https://github.com/lucatume/wp-browser/compare/4.0.19...4.0.20
+[4.0.21]: https://github.com/lucatume/wp-browser/compare/4.0.20...4.0.21
+[4.1.0]: https://github.com/lucatume/wp-browser/compare/4.0.21...4.1.0
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.1.0...HEAD
