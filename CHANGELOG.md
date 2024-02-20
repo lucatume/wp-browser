@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Restored support for the `@runInSeparateProcess` annotation for test methods. Along with it, improved support for the `@dataProvider` annotation for test methods used in conjunction with the `@runInSeparateProcess` annotation to run data provider methods at most once.
 - Implemented support for the `runTestsInSeparateProcesses` annotation for test classes; supporting the `@dataProvider` annotation ro run data provider methods at most once.
 - Added support for the `#[RunInSeparateProcess]` attribute for test methods and the `#[RunTestsInSeparateProcesses]` attribute for test classes.
+- [Migration guide from version 3 to version 3.5 or 4](https://wpbrowser.wptestkit.dev/migration/)
 
 ## [4.0.21] 2024-02-12;
 
