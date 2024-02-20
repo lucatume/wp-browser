@@ -2,6 +2,11 @@
 
 You can use wp-browser to test WordPress sites, plugins and themes.
 
+Version `3.5` is built from the transpiling of version `4.0` of the project.
+
+If you're using version `~3.2`, read [the migration guide][6] to update your project to either version `3.5` or
+version `4.0` depending on your PHP compatibility requirements.
+
 ## Installation
 
 Add wp-browser to your project as a development dependency using [Composer][1]
@@ -69,3 +74,5 @@ A thanks to my sponsors: you make maintaining this project easier.
 [4]: https://codeception.com/
 
 [5]: https://github.com/lucatume/wp-browser/issues/new/choose
+
+[6]: https://wpbrowser.wptestkit.dev/migration/
