@@ -31,7 +31,7 @@ jobs:
   test:
     strategy:
       matrix:
-        php_version: [ '8.0', '8.1', '8.2' ]
+        php_version: [ '8.0', '8.1', '8.2', '8.3' ]
         suite:
           - acceptance
           - climodule
