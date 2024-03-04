@@ -37,7 +37,7 @@
     "symfony/process": ">=3.4.47 <7.0",
     "symfony/filesystem": ">=3.4.47 <7.0",
     "vlucas/phpdotenv": "^4.3",
-    "druidfi/mysqldump-php": "^1.1"
+    "ifsnop/mysqldump-php": "^2.12"
   },
   "require-dev": {
     "gumlet/php-image-resize": "^1.6",
