@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Replace `ifsnop/mysqldump-php` with `druidfi/mysqldump-php` for better performance (thanks @staabm).
+
 ## [4.1.0] 2024-02-20;
 
 ### Changed
