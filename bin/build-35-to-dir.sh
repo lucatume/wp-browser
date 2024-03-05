@@ -32,3 +32,4 @@ cd -
 rsync -av ./.build/35/includes/ "$destination_dir/includes"
 rsync -av ./.build/35/src/ "$destination_dir/src"
 rsync -av ./.build/35/tests/ "$destination_dir/tests"
+vendor/bin/phpcbf --standard=config/phpcs.xml "$destination_dir/src"
