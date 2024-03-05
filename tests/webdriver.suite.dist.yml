@@ -17,6 +17,7 @@ modules:
       path: '/'
       window_size: false
       wait: 5
+      pageload_timeout: 5
       capabilities:
         "goog:chromeOptions":
           args:
