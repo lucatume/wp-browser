@@ -22,6 +22,7 @@ modules:
                 X_WPBROWSER_REQUEST: 1
                 X_TEST_REQUEST: 1
                 X_APM_REQUEST: 1
+            connect_timeout: 3
         lucatume\WPBrowser\Module\WPDb:
             dsn: '%WORDPRESS_DB_DSN%'
             user: %WORDPRESS_DB_USER%

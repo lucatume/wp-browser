@@ -2,8 +2,8 @@
 
 namespace lucatume\WPBrowser\WordPress\Database;
 
+use Druidfi\Mysqldump\Mysqldump;
 use Exception;
-use Ifsnop\Mysqldump\Mysqldump;
 use lucatume\WPBrowser\Utils\Db as DbUtil;
 use lucatume\WPBrowser\Utils\Serializer;
 use lucatume\WPBrowser\WordPress\DbException;
@@ -330,14 +330,8 @@ class MysqlDatabase implements DatabaseInterface
     public function dump(string $dumpFile): void
     {
         try {
-            $dump = new class($this->dsn, $this->dbUser, $this->dbPassword) extends Mysqldump {
-                public function start($filename = '')
-                {
-                    $this->dumpSettings['add-drop-table'] = true;
-                    $this->dumpSettings['add-drop-database'] = true;
-                    return parent::start($filename);
-                }
-            };
+            $dumpSettings = ['add-drop-table'=> true, 'add-drop-database' => true];
+            $dump = new Mysqldump($this->dsn, $this->dbUser, $this->dbPassword, $dumpSettings);
             $dump->start($dumpFile);
         } catch (\Exception $e) {
             throw new  DbException("Failed to dump database: " . $e->getMessage(), DbException::FAILED_DUMP);

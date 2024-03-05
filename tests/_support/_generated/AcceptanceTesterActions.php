@@ -1,4 +1,4 @@
-<?php  //[STAMP] 6d5c77efb60e0b6e6c6a2536b3cef2a3
+<?php  //[STAMP] 805bfe84cdf3497f082dd984548cc7d0
 // phpcs:ignoreFile
 namespace _generated;
 
@@ -239,7 +239,7 @@ trait AcceptanceTesterActions
      *
      * Opens the page for the given relative URI.
      *
-     * ``` php
+     * ```php
      * <?php
      * // opens front page
      * $I->amOnPage('/');
@@ -266,7 +266,7 @@ trait AcceptanceTesterActions
      *
      * Note that if the locator matches a button of type `submit`, the form will be submitted.
      *
-     * ``` php
+     * ```php
      * <?php
      * // simple link
      * $I->click('Logout');
@@ -297,7 +297,7 @@ trait AcceptanceTesterActions
      * You can specify a specific HTML element (via CSS or XPath) as the second
      * parameter to only search within that element.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->see('Logout');                        // I can suppose user is logged in
      * $I->see('Sign Up', 'h1');                 // I can suppose it's a signup page
@@ -334,7 +334,7 @@ trait AcceptanceTesterActions
      * You can specify a specific HTML element (via CSS or XPath) as the second
      * parameter to only search within that element.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->see('Logout');                        // I can suppose user is logged in
      * $I->see('Sign Up', 'h1');                 // I can suppose it's a signup page
@@ -441,7 +441,7 @@ trait AcceptanceTesterActions
      * Checks that the current page contains the given string in its
      * raw source code.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeInSource('<h1>Green eggs &amp; ham</h1>');
      * ```
@@ -457,7 +457,7 @@ trait AcceptanceTesterActions
      * Checks that the current page contains the given string in its
      * raw source code.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeInSource('<h1>Green eggs &amp; ham</h1>');
      * ```
@@ -507,7 +507,7 @@ trait AcceptanceTesterActions
      * Checks that there's a link with the specified text.
      * Give a full URL as the second parameter to match links with that exact URL.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeLink('Logout'); // matches <a href="#">Logout</a>
      * $I->seeLink('Logout','/logout'); // matches <a href="/logout">Logout</a>
@@ -524,7 +524,7 @@ trait AcceptanceTesterActions
      * Checks that there's a link with the specified text.
      * Give a full URL as the second parameter to match links with that exact URL.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeLink('Logout'); // matches <a href="#">Logout</a>
      * $I->seeLink('Logout','/logout'); // matches <a href="/logout">Logout</a>
@@ -542,7 +542,7 @@ trait AcceptanceTesterActions
      * Checks that the page doesn't contain a link with the given string.
      * If the second parameter is given, only links with a matching "href" attribute will be checked.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeLink('Logout'); // I suppose user is not logged in
      * $I->dontSeeLink('Checkout now', '/store/cart.php');
@@ -559,7 +559,7 @@ trait AcceptanceTesterActions
      * Checks that the page doesn't contain a link with the given string.
      * If the second parameter is given, only links with a matching "href" attribute will be checked.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeLink('Logout'); // I suppose user is not logged in
      * $I->dontSeeLink('Checkout now', '/store/cart.php');
@@ -576,7 +576,7 @@ trait AcceptanceTesterActions
      *
      * Checks that current URI contains the given string.
      *
-     * ``` php
+     * ```php
      * <?php
      * // to match: /home/dashboard
      * $I->seeInCurrentUrl('home');
@@ -594,7 +594,7 @@ trait AcceptanceTesterActions
      * [!] Conditional Assertion: Test won't be stopped on fail
      * Checks that current URI contains the given string.
      *
-     * ``` php
+     * ```php
      * <?php
      * // to match: /home/dashboard
      * $I->seeInCurrentUrl('home');
@@ -613,7 +613,7 @@ trait AcceptanceTesterActions
      *
      * Checks that the current URI doesn't contain the given string.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeInCurrentUrl('/users/');
      * ```
@@ -628,7 +628,7 @@ trait AcceptanceTesterActions
      * [!] Conditional Assertion: Test won't be stopped on fail
      * Checks that the current URI doesn't contain the given string.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeInCurrentUrl('/users/');
      * ```
@@ -645,7 +645,7 @@ trait AcceptanceTesterActions
      * Checks that the current URL is equal to the given string.
      * Unlike `seeInCurrentUrl`, this only matches the full URL.
      *
-     * ``` php
+     * ```php
      * <?php
      * // to match root url
      * $I->seeCurrentUrlEquals('/');
@@ -662,7 +662,7 @@ trait AcceptanceTesterActions
      * Checks that the current URL is equal to the given string.
      * Unlike `seeInCurrentUrl`, this only matches the full URL.
      *
-     * ``` php
+     * ```php
      * <?php
      * // to match root url
      * $I->seeCurrentUrlEquals('/');
@@ -680,7 +680,7 @@ trait AcceptanceTesterActions
      * Checks that the current URL doesn't equal the given string.
      * Unlike `dontSeeInCurrentUrl`, this only matches the full URL.
      *
-     * ``` php
+     * ```php
      * <?php
      * // current url is not root
      * $I->dontSeeCurrentUrlEquals('/');
@@ -697,7 +697,7 @@ trait AcceptanceTesterActions
      * Checks that the current URL doesn't equal the given string.
      * Unlike `dontSeeInCurrentUrl`, this only matches the full URL.
      *
-     * ``` php
+     * ```php
      * <?php
      * // current url is not root
      * $I->dontSeeCurrentUrlEquals('/');
@@ -714,7 +714,7 @@ trait AcceptanceTesterActions
      *
      * Checks that the current URL matches the given regular expression.
      *
-     * ``` php
+     * ```php
      * <?php
      * // to match root url
      * $I->seeCurrentUrlMatches('~^/users/(\d+)~');
@@ -730,7 +730,7 @@ trait AcceptanceTesterActions
      * [!] Conditional Assertion: Test won't be stopped on fail
      * Checks that the current URL matches the given regular expression.
      *
-     * ``` php
+     * ```php
      * <?php
      * // to match root url
      * $I->seeCurrentUrlMatches('~^/users/(\d+)~');
@@ -747,7 +747,7 @@ trait AcceptanceTesterActions
      *
      * Checks that current url doesn't match the given regular expression.
      *
-     * ``` php
+     * ```php
      * <?php
      * // to match root url
      * $I->dontSeeCurrentUrlMatches('~^/users/(\d+)~');
@@ -763,7 +763,7 @@ trait AcceptanceTesterActions
      * [!] Conditional Assertion: Test won't be stopped on fail
      * Checks that current url doesn't match the given regular expression.
      *
-     * ``` php
+     * ```php
      * <?php
      * // to match root url
      * $I->dontSeeCurrentUrlMatches('~^/users/(\d+)~');
@@ -781,7 +781,7 @@ trait AcceptanceTesterActions
      * Executes the given regular expression against the current URI and returns the first capturing group.
      * If no parameters are provided, the full URI is returned.
      *
-     * ``` php
+     * ```php
      * <?php
      * $user_id = $I->grabFromCurrentUrl('~^/user/(\d+)/~');
      * $uri = $I->grabFromCurrentUrl();
@@ -798,7 +798,7 @@ trait AcceptanceTesterActions
      *
      * Checks that the specified checkbox is checked.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeCheckboxIsChecked('#agree'); // I suppose user agreed to terms
      * $I->seeCheckboxIsChecked('#signup_form input[type=checkbox]'); // I suppose user agreed to terms, If there is only one checkbox in form.
@@ -815,7 +815,7 @@ trait AcceptanceTesterActions
      * [!] Conditional Assertion: Test won't be stopped on fail
      * Checks that the specified checkbox is checked.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeCheckboxIsChecked('#agree'); // I suppose user agreed to terms
      * $I->seeCheckboxIsChecked('#signup_form input[type=checkbox]'); // I suppose user agreed to terms, If there is only one checkbox in form.
@@ -833,7 +833,7 @@ trait AcceptanceTesterActions
      *
      * Check that the specified checkbox is unchecked.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeCheckboxIsChecked('#agree'); // I suppose user didn't agree to terms
      * $I->seeCheckboxIsChecked('#signup_form input[type=checkbox]'); // I suppose user didn't check the first checkbox in form.
@@ -849,7 +849,7 @@ trait AcceptanceTesterActions
      * [!] Conditional Assertion: Test won't be stopped on fail
      * Check that the specified checkbox is unchecked.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeCheckboxIsChecked('#agree'); // I suppose user didn't agree to terms
      * $I->seeCheckboxIsChecked('#signup_form input[type=checkbox]'); // I suppose user didn't check the first checkbox in form.
@@ -867,7 +867,7 @@ trait AcceptanceTesterActions
      * Checks that the given input field or textarea *equals* (i.e. not just contains) the given value.
      * Fields are matched by label text, the "name" attribute, CSS, or XPath.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeInField('Body','Type your comment here');
      * $I->seeInField('form textarea[name=body]','Type your comment here');
@@ -890,7 +890,7 @@ trait AcceptanceTesterActions
      * Checks that the given input field or textarea *equals* (i.e. not just contains) the given value.
      * Fields are matched by label text, the "name" attribute, CSS, or XPath.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeInField('Body','Type your comment here');
      * $I->seeInField('form textarea[name=body]','Type your comment here');
@@ -914,7 +914,7 @@ trait AcceptanceTesterActions
      * Checks that an input field or textarea doesn't contain the given value.
      * For fuzzy locators, the field is matched by label text, CSS and XPath.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeInField('Body','Type your comment here');
      * $I->dontSeeInField('form textarea[name=body]','Type your comment here');
@@ -936,7 +936,7 @@ trait AcceptanceTesterActions
      * Checks that an input field or textarea doesn't contain the given value.
      * For fuzzy locators, the field is matched by label text, CSS and XPath.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeInField('Body','Type your comment here');
      * $I->dontSeeInField('form textarea[name=body]','Type your comment here');
@@ -959,7 +959,7 @@ trait AcceptanceTesterActions
      * Checks if the array of form parameters (name => value) are set on the form matched with the
      * passed selector.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeInFormFields('form[name=myform]', [
      *      'input1' => 'value',
@@ -970,7 +970,7 @@ trait AcceptanceTesterActions
      * For multi-select elements, or to check values of multiple elements with the same name, an
      * array may be passed:
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeInFormFields('.form-class', [
      *      'multiselect' => [
@@ -986,7 +986,7 @@ trait AcceptanceTesterActions
      *
      * Additionally, checkbox values can be checked with a boolean.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeInFormFields('#form-id', [
      *      'checkbox1' => true,        // passes if checked
@@ -996,7 +996,7 @@ trait AcceptanceTesterActions
      *
      * Pair this with submitForm for quick testing magic.
      *
-     * ``` php
+     * ```php
      * <?php
      * $form = [
      *      'field1' => 'value',
@@ -1020,7 +1020,7 @@ trait AcceptanceTesterActions
      * Checks if the array of form parameters (name => value) are set on the form matched with the
      * passed selector.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeInFormFields('form[name=myform]', [
      *      'input1' => 'value',
@@ -1031,7 +1031,7 @@ trait AcceptanceTesterActions
      * For multi-select elements, or to check values of multiple elements with the same name, an
      * array may be passed:
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeInFormFields('.form-class', [
      *      'multiselect' => [
@@ -1047,7 +1047,7 @@ trait AcceptanceTesterActions
      *
      * Additionally, checkbox values can be checked with a boolean.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeInFormFields('#form-id', [
      *      'checkbox1' => true,        // passes if checked
@@ -1057,7 +1057,7 @@ trait AcceptanceTesterActions
      *
      * Pair this with submitForm for quick testing magic.
      *
-     * ``` php
+     * ```php
      * <?php
      * $form = [
      *      'field1' => 'value',
@@ -1082,7 +1082,7 @@ trait AcceptanceTesterActions
      * Checks if the array of form parameters (name => value) are not set on the form matched with
      * the passed selector.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeInFormFields('form[name=myform]', [
      *      'input1' => 'non-existent value',
@@ -1093,7 +1093,7 @@ trait AcceptanceTesterActions
      * To check that an element hasn't been assigned any one of many values, an array can be passed
      * as the value:
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeInFormFields('.form-class', [
      *      'fieldName' => [
@@ -1105,7 +1105,7 @@ trait AcceptanceTesterActions
      *
      * Additionally, checkbox values can be checked with a boolean.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeInFormFields('#form-id', [
      *      'checkbox1' => true,        // fails if checked
@@ -1124,7 +1124,7 @@ trait AcceptanceTesterActions
      * Checks if the array of form parameters (name => value) are not set on the form matched with
      * the passed selector.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeInFormFields('form[name=myform]', [
      *      'input1' => 'non-existent value',
@@ -1135,7 +1135,7 @@ trait AcceptanceTesterActions
      * To check that an element hasn't been assigned any one of many values, an array can be passed
      * as the value:
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeInFormFields('.form-class', [
      *      'fieldName' => [
@@ -1147,7 +1147,7 @@ trait AcceptanceTesterActions
      *
      * Additionally, checkbox values can be checked with a boolean.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeInFormFields('#form-id', [
      *      'checkbox1' => true,        // fails if checked
@@ -1191,7 +1191,7 @@ trait AcceptanceTesterActions
      *
      * Examples:
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->submitForm('#login', [
      *     'login' => 'davert',
@@ -1228,7 +1228,7 @@ trait AcceptanceTesterActions
      *
      * You could write the following to submit it:
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->submitForm(
      *     '#userForm',
@@ -1268,7 +1268,7 @@ trait AcceptanceTesterActions
      * This function works well when paired with `seeInFormFields()`
      * for quickly testing CRUD interfaces and form validation logic.
      *
-     * ``` php
+     * ```php
      * <?php
      * $form = [
      *      'field1' => 'value',
@@ -1286,7 +1286,7 @@ trait AcceptanceTesterActions
      * you can use either the string value or boolean `true`/`false` which will
      * be replaced by the checkbox's value in the DOM.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->submitForm('#my-form', [
      *      'field1' => 'value',
@@ -1346,7 +1346,7 @@ trait AcceptanceTesterActions
      *
      * Fills a text field or textarea with the given string.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->fillField("//input[@type='text']", "Hello World!");
      * $I->fillField(['name' => 'email'], 'jon@example.com');
@@ -1363,7 +1363,7 @@ trait AcceptanceTesterActions
      *
      * Selects an option in a select tag or in radio button group.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->selectOption('form select[name=account]', 'Premium');
      * $I->selectOption('form input[name=payment]', 'Monthly');
@@ -1372,14 +1372,14 @@ trait AcceptanceTesterActions
      *
      * Provide an array for the second argument to select multiple options:
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->selectOption('Which OS do you use?', ['Windows', 'Linux']);
      * ```
      *
      * Or provide an associative array for the second argument to specifically define which selection method should be used:
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->selectOption('Which OS do you use?', ['text' => 'Windows']); // Only search by text 'Windows'
      * $I->selectOption('Which OS do you use?', ['value' => 'windows']); // Only search by value 'windows'
@@ -1396,7 +1396,7 @@ trait AcceptanceTesterActions
      *
      * Ticks a checkbox. For radio buttons, use the `selectOption` method instead.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->checkOption('#agree');
      * ```
@@ -1412,7 +1412,7 @@ trait AcceptanceTesterActions
      *
      * Unticks a checkbox.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->uncheckOption('#notify');
      * ```
@@ -1428,7 +1428,7 @@ trait AcceptanceTesterActions
      *
      * Attaches a file relative to the Codeception `_data` directory to the given file upload field.
      *
-     * ``` php
+     * ```php
      * <?php
      * // file is stored in 'tests/_data/prices.xls'
      * $I->attachFile('input[@type="file"]', 'prices.xls');
@@ -1523,7 +1523,7 @@ trait AcceptanceTesterActions
      * If a fuzzy locator is used, the element is found using CSS, XPath,
      * and by matching the full page source by regular expression.
      *
-     * ``` php
+     * ```php
      * <?php
      * $heading = $I->grabTextFrom('h1');
      * $heading = $I->grabTextFrom('descendant-or-self::h1');
@@ -1539,10 +1539,10 @@ trait AcceptanceTesterActions
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
-     * Grabs the value of the given attribute value from the given element.
-     * Fails if element is not found.
+     * Returns the value of the given attribute value from the given HTML element. For some attributes, the string `true` is returned instead of their literal value (e.g. `disabled="disabled"` or `required="required"`).
+     * Fails if the element is not found. Returns `null` if the attribute is not present on the element.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->grabAttributeFrom('#tooltip', 'title');
      * ```
@@ -1588,7 +1588,7 @@ trait AcceptanceTesterActions
      * Finds the value for the given form field.
      * If a fuzzy locator is used, the field is found by field name, CSS, and XPath.
      *
-     * ``` php
+     * ```php
      * <?php
      * $name = $I->grabValueFrom('Name');
      * $name = $I->grabValueFrom('input[name=username]');
@@ -1608,7 +1608,7 @@ trait AcceptanceTesterActions
      * Sets a cookie with the given name and value.
      * You can set additional cookie params like `domain`, `path`, `expires`, `secure` in array passed as last argument.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->setCookie('PHPSESSID', 'el4ukv0kqbvoirg7nkp4dncpk3');
      * ```
@@ -1654,7 +1654,7 @@ trait AcceptanceTesterActions
      * Checks that a cookie with the given name is set.
      * You can set additional cookie params like `domain`, `path` as array passed in last argument.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeCookie('PHPSESSID');
      * ```
@@ -1672,7 +1672,7 @@ trait AcceptanceTesterActions
      * Checks that a cookie with the given name is set.
      * You can set additional cookie params like `domain`, `path` as array passed in last argument.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeCookie('PHPSESSID');
      * ```
@@ -1733,7 +1733,7 @@ trait AcceptanceTesterActions
      * You can also specify expected attributes of this element.
      * Only works if `<html>` tag is present.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeElement('.error');
      * $I->seeElement('//form/input[1]');
@@ -1756,7 +1756,7 @@ trait AcceptanceTesterActions
      * You can also specify expected attributes of this element.
      * Only works if `<html>` tag is present.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeElement('.error');
      * $I->seeElement('//form/input[1]');
@@ -1779,7 +1779,7 @@ trait AcceptanceTesterActions
      * Checks that the given element is invisible or not present on the page.
      * You can also specify expected attributes of this element.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeElement('.error');
      * $I->dontSeeElement('//form/input[1]');
@@ -1798,7 +1798,7 @@ trait AcceptanceTesterActions
      * Checks that the given element is invisible or not present on the page.
      * You can also specify expected attributes of this element.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeElement('.error');
      * $I->dontSeeElement('//form/input[1]');
@@ -1817,7 +1817,7 @@ trait AcceptanceTesterActions
      *
      * Checks that there are a certain number of elements matched by the given locator on the page.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeNumberOfElements('tr', 10);
      * $I->seeNumberOfElements('tr', [0,10]); // between 0 and 10 elements
@@ -1835,7 +1835,7 @@ trait AcceptanceTesterActions
      * [!] Conditional Assertion: Test won't be stopped on fail
      * Checks that there are a certain number of elements matched by the given locator on the page.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeNumberOfElements('tr', 10);
      * $I->seeNumberOfElements('tr', [0,10]); // between 0 and 10 elements
@@ -1854,7 +1854,7 @@ trait AcceptanceTesterActions
      *
      * Checks that the given option is selected.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeOptionIsSelected('#form input[name=payment]', 'Visa');
      * ```
@@ -1871,7 +1871,7 @@ trait AcceptanceTesterActions
      * [!] Conditional Assertion: Test won't be stopped on fail
      * Checks that the given option is selected.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeOptionIsSelected('#form input[name=payment]', 'Visa');
      * ```
@@ -1889,7 +1889,7 @@ trait AcceptanceTesterActions
      *
      * Checks that the given option is not selected.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeOptionIsSelected('#form input[name=payment]', 'Visa');
      * ```
@@ -1906,7 +1906,7 @@ trait AcceptanceTesterActions
      * [!] Conditional Assertion: Test won't be stopped on fail
      * Checks that the given option is not selected.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->dontSeeOptionIsSelected('#form input[name=payment]', 'Visa');
      * ```
@@ -2124,7 +2124,7 @@ trait AcceptanceTesterActions
      *
      * Checks that the page title contains the given string.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeInTitle('Blog - Post #1');
      * ```
@@ -2141,7 +2141,7 @@ trait AcceptanceTesterActions
      * [!] Conditional Assertion: Test won't be stopped on fail
      * Checks that the page title contains the given string.
      *
-     * ``` php
+     * ```php
      * <?php
      * $I->seeInTitle('Blog - Post #1');
      * ```
