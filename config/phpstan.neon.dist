@@ -9,3 +9,5 @@ parameters:
   excludePaths:
     - ./../src/WordPress/Version.php # Using the WordPress version file.
     - ./../src/TestCase/WPTestCasePHPUnitMethodsTrait.php # Compat file has missing return types.
+  bootstrapFiles:
+    - ./phpstan/class-aliases.php

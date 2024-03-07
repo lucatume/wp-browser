@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Replace `ifsnop/mysqldump-php` with `druidfi/mysqldump-php` for better performance (thanks @staabm).
+- Disable MU update routine in CLI router to speed up test execution.
 
 ## [4.1.0] 2024-02-20;
 
