@@ -383,6 +383,9 @@ class MysqlDatabase implements DatabaseInterface
         };
     }
 
+    /**
+     * @throws Exception
+     */
     private function buildDruidfiMysqldump(): Mysqldump
     {
         $dumpSettings = [ 'add-drop-table' => true, 'add-drop-database' => true ];

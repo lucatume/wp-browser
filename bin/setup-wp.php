@@ -56,7 +56,7 @@ if ($installation->getState() instanceof Scaffolded) {
     $extraPHP = <<< PHP
 define( 'WP_DEBUG_LOG', true );
 define( 'WP_DEBUG_DISPLAY', false );
-define( 'DISABLE_CRON', true );
+define( 'DISABLE_WP_CRON', true );
 PHP;
     $configData->setExtraPHP($extraPHP);
     $installation = $installation->configure(
