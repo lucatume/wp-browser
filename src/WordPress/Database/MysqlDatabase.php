@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser\WordPress\Database;
 
 use Druidfi\Mysqldump\Mysqldump;
+use Ifsnop\Mysqldump\Mysqldump as LegacyMysqldump;
 use Exception;
 use lucatume\WPBrowser\Utils\Db as DbUtil;
 use lucatume\WPBrowser\Utils\Serializer;
@@ -324,14 +325,42 @@ class MysqlDatabase implements DatabaseInterface
         return $modifiedByQuery;
     }
 
+    private function buildIfsnopMysqlDump(): LegacyMysqldump
+    {
+        return new class( $this->dsn, $this->dbUser, $this->dbPassword ) extends LegacyMysqldump {
+            public function start($filename = ''): void
+            {
+                // @phpstan-ignore-next-line property defined in ifsnop/mysqldump dependency.
+                $this->dumpSettings['add-drop-table']    = true;
+                $this->dumpSettings['add-drop-database'] = true;
+
+                parent::start($filename);
+            }
+        };
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function buildDruidfiMysqldump(): Mysqldump
+    {
+        $dumpSettings = [ 'add-drop-table' => true, 'add-drop-database' => true ];
+
+        return new Mysqldump($this->dsn, $this->dbUser, $this->dbPassword, $dumpSettings);
+    }
+
     /**
      * @throws DbException
      */
     public function dump(string $dumpFile): void
     {
         try {
-            $dumpSettings = ['add-drop-table'=> true, 'add-drop-database' => true];
-            $dump = new Mysqldump($this->dsn, $this->dbUser, $this->dbPassword, $dumpSettings);
+            if (class_exists(LegacyMysqldump::class)) {
+                $dump = $this->buildIfsnopMysqlDump();
+            } else {
+                $dump = $this->buildDruidfiMysqldump();
+            }
+            /** @var Mysqldump $dump */
             $dump->start($dumpFile);
         } catch (\Exception $e) {
             throw new  DbException("Failed to dump database: " . $e->getMessage(), DbException::FAILED_DUMP);
