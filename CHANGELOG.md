@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Refactor `MysqlDatabase` class following merge of #702.
+- Disable MU update routine in CLI router to speed up test execution.
 
 ## [3.5.0] 2024-02-20;
 
