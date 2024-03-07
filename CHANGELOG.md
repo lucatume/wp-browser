@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.1.2] 2024-03-07;
+
 ### Changed
 
 - Disable MU update routine in CLI router to speed up test execution.
@@ -2129,4 +2131,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.0.20]: https://github.com/lucatume/wp-browser/compare/4.0.19...4.0.20
 [4.0.21]: https://github.com/lucatume/wp-browser/compare/4.0.20...4.0.21
 [4.1.0]: https://github.com/lucatume/wp-browser/compare/4.0.21...4.1.0
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.1.0...HEAD
+[4.1.2]: https://github.com/lucatume/wp-browser/compare/4.1.0...4.1.2
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.1.2...HEAD
