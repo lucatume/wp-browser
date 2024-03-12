@@ -6,7 +6,7 @@ namespace lucatume\WPBrowser\WordPress\InstallationState;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
@@ -238,7 +238,7 @@ class SingleTest extends Unit
 
         $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
-        $this->uopzSetFunctionReturn('file_get_contents', false);
+        $this->setFunctionReturn('file_get_contents', false);
 
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::WP_CONFIG_FILE_NOT_FOUND);
@@ -272,7 +272,7 @@ class SingleTest extends Unit
         $single = new Single($wpRootDir, $wpConfigFilePath);
 
 
-        $this->uopzSetFunctionReturn('file_get_contents', function (string $file) use ($wpConfigFilePath) {
+        $this->setFunctionReturn('file_get_contents', function (string $file) use ($wpConfigFilePath) {
             if ($file === $wpConfigFilePath) {
                 return '<?php echo "Not a wp-config.php file"';
             }
@@ -310,7 +310,7 @@ class SingleTest extends Unit
         $single = new Single($wpRootDir, $wpConfigFilePath);
 
 
-        $this->uopzSetFunctionReturn('file_put_contents', false);
+        $this->setFunctionReturn('file_put_contents', false);
 
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::WRITE_ERROR);

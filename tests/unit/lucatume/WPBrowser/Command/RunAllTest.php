@@ -9,7 +9,7 @@ use Exception;
 use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Command\RunAll;
 use lucatume\WPBrowser\Tests\Traits\ClassStubs;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -49,8 +49,8 @@ class RunAllTest extends Unit
             'getIterator' => fn() => yield from ["Running suite\n", "Done\n"],
             'isSuccessful' => fn() => true,
         ];
-        $this->uopzSetMock(Process::class, $this->makeEmptyClass(Process::class, $mockParams));
-        $this->uopzSetStaticMethodReturn(Configuration::class, 'suites', ['suite-1', 'suite-2', 'suite-3']);
+        $this->setClassMock(Process::class, $this->makeEmptyClass(Process::class, $mockParams));
+        $this->setMethodReturn(Configuration::class, 'suites', ['suite-1', 'suite-2', 'suite-3']);
 
         $command = new RunAll();
         $output = new BufferedOutput();
@@ -85,8 +85,8 @@ class RunAllTest extends Unit
                 return $currentSuite++ !== $failingSuite;
             },
         ];
-        $this->uopzSetMock(Process::class, $this->makeEmptyClass(Process::class, $mockParams));
-        $this->uopzSetStaticMethodReturn(Configuration::class, 'suites', ['suite-1', 'suite-2', 'suite-3']);
+        $this->setClassMock(Process::class, $this->makeEmptyClass(Process::class, $mockParams));
+        $this->setMethodReturn(Configuration::class, 'suites', ['suite-1', 'suite-2', 'suite-3']);
 
         $command = new RunAll();
         $output = new BufferedOutput();
@@ -103,11 +103,11 @@ class RunAllTest extends Unit
      */
     public function should_return_1_if_failing_to_build_process(): void
     {
-        $this->uopzSetMock(Process::class,
+        $this->setClassMock(Process::class,
             $this->makeEmptyClass(Process::class, [
                 '__construct' => fn() => throw new Exception('Failed to build process.')
             ]));
-        $this->uopzSetStaticMethodReturn(Configuration::class, 'suites', ['suite-1', 'suite-2', 'suite-3']);
+        $this->setMethodReturn(Configuration::class, 'suites', ['suite-1', 'suite-2', 'suite-3']);
 
         $command = new RunAll();
         $output = new BufferedOutput();

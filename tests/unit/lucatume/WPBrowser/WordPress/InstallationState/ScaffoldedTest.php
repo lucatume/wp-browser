@@ -5,7 +5,7 @@ namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
@@ -636,7 +636,7 @@ PHP;
 
         $scaffolded = new Scaffolded($wpRootDir);
 
-        $this->uopzSetStaticMethodReturn(FS::class, 'recurseCopy', false);
+        $this->setMethodReturn(FS::class, 'recurseCopy', false);
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::SQLITE_PLUGIN_COPY_FAILED);
 
@@ -656,7 +656,7 @@ PHP;
 
         $scaffolded = new Scaffolded($wpRootDir);
 
-        $this->uopzSetFunctionReturn('file_get_contents', function (string $file) {
+        $this->setFunctionReturn('file_get_contents', function (string $file) {
             if (str_ends_with($file, 'db.copy')) {
                 return false;
             }
@@ -681,7 +681,7 @@ PHP;
 
         $scaffolded = new Scaffolded($wpRootDir);
 
-        $this->uopzSetFunctionReturn('file_put_contents', function (string $file) {
+        $this->setFunctionReturn('file_put_contents', function (string $file) {
             if (str_ends_with($file, 'db.php')) {
                 return false;
             }

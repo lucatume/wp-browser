@@ -7,7 +7,7 @@ use Codeception\Test\Unit;
 use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Random;
 
 class PhpBuiltinServerProcessMock extends Process
@@ -111,7 +111,7 @@ class PhpBuiltInServerTest extends Unit
     public function should_start_php_built_in_server_with_specified_workers(): void
     {
         $port = Random::openLocalhostPort();
-        $this->uopzSetMock(Process::class, PhpBuiltinServerProcessMock::class);
+        $this->setClassMock(Process::class, PhpBuiltinServerProcessMock::class);
 
         $server = new PhpBuiltInServer(__DIR__, $port, [
             'PHP_CLI_SERVER_WORKERS' => 3,
@@ -130,7 +130,7 @@ class PhpBuiltInServerTest extends Unit
     public function should_start_on_random_port_if_not_specified(): void
     {
         $port = Random::openLocalhostPort();
-        $this->uopzSetMock(Process::class, PhpBuiltinServerProcessMock::class);
+        $this->setClassMock(Process::class, PhpBuiltinServerProcessMock::class);
 
         $server = new PhpBuiltInServer(__DIR__, $port);
         $server->start();

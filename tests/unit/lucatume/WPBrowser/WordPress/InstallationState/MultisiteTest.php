@@ -6,7 +6,7 @@ namespace lucatume\WPBrowser\WordPress\InstallationState;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;

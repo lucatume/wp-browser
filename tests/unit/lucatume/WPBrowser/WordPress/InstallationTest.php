@@ -4,10 +4,9 @@
 namespace lucatume\WPBrowser\WordPress;
 
 use Codeception\Test\Unit;
-use lucatume\WPBrowser\Tests\FSTemplates\BedrockProject;
 use lucatume\WPBrowser\Tests\Traits\MainInstallationAccess;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
@@ -46,7 +45,7 @@ class InstallationTest extends Unit
     public function should_throw_when_building_on_non_writable_root_directory(): void
     {
         $tmpDir = FS::tmpDir('installation_');
-        $this->uopzSetFunctionReturn('is_writable',
+        $this->setFunctionReturn('is_writable',
             fn(string $dir) => !($dir === $tmpDir . '/') && is_writable($dir),
             true
         );
@@ -65,7 +64,7 @@ class InstallationTest extends Unit
     public function should_throw_when_building_on_non_readable_root_directory()
     {
         $tmpDir = FS::tmpDir('installation_');
-        $this->uopzSetFunctionReturn('is_readable',
+        $this->setFunctionReturn('is_readable',
             fn(string $dir) => !($dir === $tmpDir . '/') && is_readable($dir),
             true
         );

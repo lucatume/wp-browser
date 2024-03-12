@@ -10,7 +10,7 @@ use Codeception\Suite;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Extension\ChromeDriverController;
 use lucatume\WPBrowser\ManagedProcess\ChromeDriver;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Composer;
 use stdClass;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
@@ -38,10 +38,10 @@ class ChromeDriverControllerTest extends Unit
     {
         // Mock the binary.
         $bin = codecept_data_dir('/bins/chromedriver-mock');
-        $this->uopzSetStaticMethodReturn(Composer::class, 'binDir', $bin);
+        $this->setMethodReturn(Composer::class, 'binDir', $bin);
         // Silence output.
         $this->output = new Output(['verbosity' => Output::VERBOSITY_QUIET]);
-        $this->uopzSetMock(Output::class, $this->output);
+        $this->setClassMock(Output::class, $this->output);
     }
 
     /**
@@ -205,7 +205,7 @@ class ChromeDriverControllerTest extends Unit
     public function should_throw_if_pid_file_is_not_readable(): void
     {
         file_put_contents(ChromeDriver::getPidFile(), '1233');
-        $this->uopzSetFunctionReturn('file_get_contents', function (string $file): bool {
+        $this->setFunctionReturn('file_get_contents', function (string $file): bool {
             if ($file === ChromeDriver::getPidFile()) {
                 return false;
             }

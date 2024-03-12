@@ -5,7 +5,7 @@ namespace unit\lucatume\WPBrowser\WordPress\Database;
 
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
@@ -17,7 +17,6 @@ use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use lucatume\WPBrowser\WordPress\InstallationState\Single;
 use lucatume\WPBrowser\WordPress\WPConfigFile;
 use PDO;
-use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 class MysqlDatabaseTest extends Unit
 {
@@ -175,7 +174,7 @@ class MysqlDatabaseTest extends Unit
         $this->expectException(DbException::class);
         $this->expectExceptionCode(DbException::DUMP_FILE_NOT_READABLE);
 
-        $this->uopzSetFunctionReturn('fopen', false);
+        $this->setFunctionReturn('fopen', false);
 
         $db->import(codecept_data_dir('files/test-dump-001.sql'));
     }
@@ -279,7 +278,7 @@ class MysqlDatabaseTest extends Unit
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
 
-        $this->uopzSetFunctionReturn('fwrite', false);
+        $this->setFunctionReturn('fwrite', false);
 
         $this->expectException(DbException::class);
         $this->expectExceptionCode(DbException::FAILED_DUMP);

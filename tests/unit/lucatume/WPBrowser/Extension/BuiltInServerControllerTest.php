@@ -10,7 +10,7 @@ use Codeception\Suite;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Extension\BuiltInServerController;
 use lucatume\WPBrowser\ManagedProcess\PhpBuiltInServer;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Composer;
 use lucatume\WPBrowser\Utils\Random;
 use stdClass;
@@ -68,10 +68,10 @@ class BuiltInServerControllerTest extends Unit
     {
         // Mock the binary.
         $bin = codecept_data_dir('/bins/php-built-in-server-mock');
-        $this->uopzSetStaticMethodReturn(Composer::class, 'binDir', $bin);
+        $this->setMethodReturn(Composer::class, 'binDir', $bin);
         // Silence output.
         $this->output = new Output(['verbosity' => Output::VERBOSITY_QUIET]);
-        $this->uopzSetMock(Output::class, $this->output);
+        $this->setClassMock(Output::class, $this->output);
     }
 
     public function notArrayOfStringsProvider(): array
@@ -243,7 +243,7 @@ class BuiltInServerControllerTest extends Unit
      */
     public function should_replace_cc_root_dir_placeholder_in_env_array(): void
     {
-        $this->uopzSetMock(PhpBuiltInServer::class, PhpBuiltInServerMock::class);
+        $this->setClassMock(PhpBuiltInServer::class, PhpBuiltInServerMock::class);
         $config = [
             'docroot' => __DIR__,
             'env' => [
@@ -291,7 +291,7 @@ class BuiltInServerControllerTest extends Unit
     public function should_throw_if_pid_file_is_not_readable(): void
     {
         file_put_contents(PhpBuiltInServer::getPidFile(), '1233');
-        $this->uopzSetFunctionReturn('file_get_contents', function (string $file): bool {
+        $this->setFunctionReturn('file_get_contents', function (string $file): bool {
             if ($file === PhpBuiltInServer::getPidFile()) {
                 return false;
             }
