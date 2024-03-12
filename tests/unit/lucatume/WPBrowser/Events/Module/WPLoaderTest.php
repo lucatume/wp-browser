@@ -38,6 +38,9 @@ use WP_Theme;
 use const ABSPATH;
 use const WP_DEBUG;
 
+/**
+ * @group slow
+ */
 class WPLoaderTest extends Unit
 {
     use SnapshotAssertions;

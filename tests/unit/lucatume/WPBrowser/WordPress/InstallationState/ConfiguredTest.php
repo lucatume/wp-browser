@@ -20,6 +20,9 @@ use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 
+/**
+ * @group slow
+ */
 class ConfiguredTest extends Unit
 {
     use UopzFunctions;

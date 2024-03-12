@@ -18,6 +18,9 @@ use PHPUnit\Framework\AssertionFailedError;
 use stdClass;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
+/**
+ * @group slow
+ */
 class WPCLITest extends Unit
 {
     use SnapshotAssertions;

@@ -18,6 +18,9 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\NullOutput;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
+/**
+ * @group slow
+ */
 class PluginProjectTest extends Unit
 {
     use TmpFilesCleanup;

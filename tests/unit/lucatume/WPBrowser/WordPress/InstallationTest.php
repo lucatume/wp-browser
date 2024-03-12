@@ -18,6 +18,9 @@ use lucatume\WPBrowser\WordPress\InstallationState\Multisite;
 use lucatume\WPBrowser\WordPress\InstallationState\Single;
 use RuntimeException;
 
+/**
+ * @group slow
+ */
 class InstallationTest extends Unit
 {
     use UopzFunctions;

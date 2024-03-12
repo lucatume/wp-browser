@@ -11,6 +11,9 @@ use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
 use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
+/**
+ * @group slow
+ */
 class WpConfigFileGeneratorTest extends Unit
 {
     use UopzFunctions;

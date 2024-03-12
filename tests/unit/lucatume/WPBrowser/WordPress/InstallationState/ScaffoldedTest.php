@@ -16,6 +16,9 @@ use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
+/**
+ * @group slow
+ */
 class ScaffoldedTest extends Unit
 {
     use SnapshotAssertions;

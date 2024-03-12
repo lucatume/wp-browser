@@ -14,6 +14,9 @@ use lucatume\WPBrowser\Command\GenerateWPXML;
 use lucatume\WPBrowser\Command\GenerateWPXMLRPC;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 
+/**
+ * @group slow
+ */
 class GenerationCommandsTest extends Unit
 {
     private static string $suite = 'wploadersuite';

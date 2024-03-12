@@ -17,6 +17,9 @@ use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use lucatume\WPBrowser\WordPress\LoadSandbox;
 use PHPUnit\Framework\Assert;
 
+/**
+ * @group slow
+ */
 class LoadSandboxTest extends Unit
 {
     use LoopIsolation;

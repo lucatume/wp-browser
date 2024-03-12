@@ -18,6 +18,9 @@ use lucatume\WPBrowser\WordPress\InstallationState\Single;
 use lucatume\WPBrowser\WordPress\WPConfigFile;
 use PDO;
 
+/**
+ * @group slow
+ */
 class MysqlDatabaseTest extends Unit
 {
     use UopzFunctions;

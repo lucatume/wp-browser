@@ -15,6 +15,9 @@ use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 
+/**
+ * @group slow
+ */
 class MultisiteTest extends Unit
 {
     use UopzFunctions;

@@ -12,6 +12,9 @@ use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
 use lucatume\WPBrowser\WordPress\InstallationException;
 
+/**
+ * @group slow
+ */
 class EmptyDirTest extends Unit
 {
     use UopzFunctions;
