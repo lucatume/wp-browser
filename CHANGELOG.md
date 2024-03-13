@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.5.2] 2024-03-13;
+
 ### Added
 
 - `lucatume\WPBrowser\Traits\UopzFunctions` trait to provide a set of functions to work with the `uopz` extension; see the documentation for more details.
@@ -1880,4 +1882,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.2.1]: https://github.com/lucatume/wp-browser/compare/3.2.0...3.2.1
 [3.5.0]: https://github.com/lucatume/wp-browser/compare/3.2.1...3.5.0
 [3.5.1]: https://github.com/lucatume/wp-browser/compare/3.5.0...3.5.1
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.5.1...HEAD
+[3.5.2]: https://github.com/lucatume/wp-browser/compare/3.5.1...3.5.2
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.5.2...HEAD
