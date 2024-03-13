@@ -10,7 +10,7 @@ use Codeception\Suite;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Events\Dispatcher;
 use lucatume\WPBrowser\Extension\EventDispatcherBridge;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use PHPUnit\Framework\Assert;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -27,7 +27,7 @@ class EventDispatcherBridgeTest extends Unit
     public function should_throw_if_event_dispatcher_cannot_be_found_in_trace(): void
     {
         $mockTrace = [];
-        $this->uopzSetFunctionReturn('debug_backtrace', $mockTrace);
+        $this->setFunctionReturn('debug_backtrace', $mockTrace);
 
         $eventDispatcherBridge = new EventDispatcherBridge([], []);
 
@@ -49,9 +49,9 @@ class EventDispatcherBridgeTest extends Unit
         $mockTrace = [
             ['object' => $eventDispatcher]
         ];
-        $this->uopzSetFunctionReturn('debug_backtrace', $mockTrace);
-        $this->uopzSetStaticMethodReturn(Dispatcher::class, 'getEventDispatcher', null);
-        $this->uopzSetStaticMethodReturn(Dispatcher::class,
+        $this->setFunctionReturn('debug_backtrace', $mockTrace);
+        $this->setMethodReturn(Dispatcher::class, 'getEventDispatcher', null);
+        $this->setMethodReturn(Dispatcher::class,
             'setEventDispatcher',
             function (\Symfony\Component\EventDispatcher\EventDispatcherInterface $setEventDispatcher) use (
                 $eventDispatcher
@@ -85,9 +85,9 @@ class EventDispatcherBridgeTest extends Unit
         $mockTrace = [
             ['object' => $eventDispatcher]
         ];
-        $this->uopzSetFunctionReturn('debug_backtrace', $mockTrace);
-        $this->uopzSetStaticMethodReturn(Dispatcher::class, 'getEventDispatcher', $previousEventDispatcher);
-        $this->uopzSetStaticMethodReturn(Dispatcher::class, 'setEventDispatcher', null);
+        $this->setFunctionReturn('debug_backtrace', $mockTrace);
+        $this->setMethodReturn(Dispatcher::class, 'getEventDispatcher', $previousEventDispatcher);
+        $this->setMethodReturn(Dispatcher::class, 'setEventDispatcher', null);
 
         $eventDispatcherBridge = new EventDispatcherBridge([], []);
         $suite = PHP_VERSION >= 8.0 ? null : new Suite;
@@ -107,9 +107,9 @@ class EventDispatcherBridgeTest extends Unit
         $mockTrace = [
             ['object' => $eventDispatcher]
         ];
-        $this->uopzSetFunctionReturn('debug_backtrace', $mockTrace);
-        $this->uopzSetStaticMethodReturn(Dispatcher::class, 'getEventDispatcher', null);
-        $this->uopzSetStaticMethodReturn(Dispatcher::class,
+        $this->setFunctionReturn('debug_backtrace', $mockTrace);
+        $this->setMethodReturn(Dispatcher::class, 'getEventDispatcher', null);
+        $this->setMethodReturn(Dispatcher::class,
             'setEventDispatcher',
             function ($eventDispatcher) use (&$setEventDispatcher) {
                 $setEventDispatcher = $eventDispatcher;

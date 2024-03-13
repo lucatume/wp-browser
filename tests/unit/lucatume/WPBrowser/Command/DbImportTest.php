@@ -16,6 +16,9 @@ use lucatume\WPBrowser\WordPress\InstallationException;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
+/**
+ * @group slow
+ */
 class DbImportTest extends \Codeception\Test\Unit
 {
     use TmpFilesCleanup;

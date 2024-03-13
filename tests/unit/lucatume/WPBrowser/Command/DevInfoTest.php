@@ -9,7 +9,7 @@ use lucatume\WPBrowser\Extension\ChromeDriverController;
 use lucatume\WPBrowser\Extension\DockerComposeController;
 use lucatume\WPBrowser\Extension\EventDispatcherBridge;
 use lucatume\WPBrowser\Tests\Traits\ClassStubs;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
@@ -28,7 +28,7 @@ class DevInfoTest extends \Codeception\Test\Unit
     public function should_not_display_any_info_if_there_are_no_service_extensions(): void
     {
         $mockConfig = [];
-        $this->uopzSetStaticMethodReturn(Configuration::class, 'config', $mockConfig);
+        $this->setMethodReturn(Configuration::class, 'config', $mockConfig);
         $input = new StringInput('');
         $output = new BufferedOutput();
 
@@ -48,7 +48,7 @@ class DevInfoTest extends \Codeception\Test\Unit
     {
 
         $builtInServerControllerBuildArgs = null;
-        $this->uopzSetMock(BuiltInServerController::class,
+        $this->setClassMock(BuiltInServerController::class,
             $this->makeEmptyClass(BuiltInServerController::class, [
                 '__construct' => function () use (&$builtInServerControllerBuildArgs) {
                     $builtInServerControllerBuildArgs = func_get_args();
@@ -66,7 +66,7 @@ class DevInfoTest extends \Codeception\Test\Unit
                 }
             ]));
         $dockerComposeControllerBuildArgs = null;
-        $this->uopzSetMock(DockerComposeController::class,
+        $this->setClassMock(DockerComposeController::class,
             $this->makeEmptyClass(DockerComposeController::class, [
                 '__construct' => function () use (&$dockerComposeControllerBuildArgs) {
                     $dockerComposeControllerBuildArgs = func_get_args();
@@ -84,7 +84,7 @@ class DevInfoTest extends \Codeception\Test\Unit
                 }
             ]));
         $chromeDriverControllerBuildArgs = null;
-        $this->uopzSetMock(ChromeDriverController::class,
+        $this->setClassMock(ChromeDriverController::class,
             $this->makeEmptyClass(ChromeDriverController::class, [
                 '__construct' => function () use (&$chromeDriverControllerBuildArgs) {
                     $chromeDriverControllerBuildArgs = func_get_args();
@@ -128,7 +128,7 @@ class DevInfoTest extends \Codeception\Test\Unit
             ],
         ];
 
-        $this->uopzSetStaticMethodReturn(Configuration::class, 'config', $mockConfig, false);
+        $this->setMethodReturn(Configuration::class, 'config', $mockConfig, false);
         $input = new StringInput('');
         $output = new BufferedOutput();
 
