@@ -18,6 +18,9 @@ use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use \UnitTester;
 
+/**
+ * @group slow
+ */
 class DbExportTest extends \Codeception\Test\Unit
 {
     use TmpFilesCleanup;

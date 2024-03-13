@@ -1,7 +1,7 @@
 <?php
 
 use lucatume\WPBrowser\TestCase\WPAjaxTestCase;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 
 class AjaxTest extends WPAjaxTestCase
 {

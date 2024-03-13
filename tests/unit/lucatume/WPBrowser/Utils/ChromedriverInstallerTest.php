@@ -6,7 +6,7 @@ namespace lucatume\WPBrowser\Utils;
 use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 
 class ChromedriverInstallerTest extends \Codeception\Test\Unit
 {
@@ -20,7 +20,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_detected_platform_is_not_supported(): void
     {
-        $this->uopzSetFunctionReturn('php_uname', 'Lorem');
+        $this->setFunctionReturn('php_uname', 'Lorem');
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ChromedriverInstaller::ERR_DETECT_PLATFORM);
@@ -48,7 +48,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_specified_binary_cannot_be_found(): void
     {
-        $this->uopzSetFunctionReturn('is_file', function (string $file) {
+        $this->setFunctionReturn('is_file', function (string $file) {
             return strpos($file, 'chrome') === false;
         }, true);
         $this->expectException(RuntimeException::class);
@@ -84,8 +84,8 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
         $isNotAnExecutableFile = function (string $file) use ($binNamePattern) {
             return strpos($file, $binNamePattern) === false;
         };
-        $this->uopzSetFunctionReturn('is_file', $isNotAnExecutableFile, true);
-        $this->uopzSetFunctionReturn('is_executable', $isNotAnExecutableFile, true);
+        $this->setFunctionReturn('is_file', $isNotAnExecutableFile, true);
+        $this->setFunctionReturn('is_executable', $isNotAnExecutableFile, true);
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ChromedriverInstaller::ERR_INVALID_BINARY);
 
@@ -99,7 +99,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_binary_cannot_be_executed(): void
     {
-        $this->uopzSetFunctionReturn('is_executable', function (string $file): bool {
+        $this->setFunctionReturn('is_executable', function (string $file): bool {
             return strpos($file, 'chrome') === false && is_executable($file);
         }, true);
 
@@ -116,7 +116,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_specified_binary_is_not_valid(): void
     {
-        $this->uopzSetFunctionReturn('is_executable', function (string $file): bool {
+        $this->setFunctionReturn('is_executable', function (string $file): bool {
             return strpos($file, 'Chromium') === false && is_executable($file);
         }, true);
 
@@ -154,7 +154,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_version_from_binary_has_not_correct_format(): void
     {
-        $this->uopzSetFunctionReturn('exec', 'Could not start Google Chrome.');
+        $this->setFunctionReturn('exec', 'Could not start Google Chrome.');
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ChromedriverInstaller::ERR_INVALID_VERSION_FORMAT);
 
@@ -210,7 +210,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_it_cannot_get_milestone_downloads(): void
     {
-        $this->uopzSetFunctionReturn('file_get_contents', function (string $file) {
+        $this->setFunctionReturn('file_get_contents', function (string $file) {
             return strpos($file, 'chrome-for-testing') !== false ? false : file_get_contents($file);
         }, true);
 
@@ -230,7 +230,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_response_is_not_valid_json(): void
     {
-        $this->uopzSetFunctionReturn('file_get_contents', function (string $file) {
+        $this->setFunctionReturn('file_get_contents', function (string $file) {
             return strpos($file, 'chrome-for-testing') !== false ? '{}' : file_get_contents($file);
         }, true);
 
@@ -253,7 +253,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_download_url_for_chrome_version_cannot_be_found_in_milestone_downloads(): void
     {
-        $this->uopzSetFunctionReturn('file_get_contents', function (string $file) {
+        $this->setFunctionReturn('file_get_contents', function (string $file) {
             return strpos($file, 'chrome-for-testing') !== false ?
                 '{"milestones":{"116": {"downloads":{"chrome":{},"chromedriver":{}}}}}'
                 : file_get_contents($file);
@@ -275,8 +275,8 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_existing_zip_file_cannot_be_removed(): void
     {
-        $this->uopzSetFunctionReturn('sys_get_temp_dir', codecept_output_dir());
-        $this->uopzSetFunctionReturn('unlink', function (string $file): bool {
+        $this->setFunctionReturn('sys_get_temp_dir', codecept_output_dir());
+        $this->setFunctionReturn('unlink', function (string $file): bool {
             return preg_match('~chromedriver\\.zip$~', $file) ? false : unlink($file);
         }, true);
 
@@ -297,8 +297,8 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
     public function should_throw_if_existing_binary_cannot_be_removed(): void
     {
         $dir = Filesystem::tmpDir('chromedriver_installer_', ['chromedriver' => '']);
-        $this->uopzSetFunctionReturn('sys_get_temp_dir', codecept_output_dir());
-        $this->uopzSetFunctionReturn('unlink', function (string $file) use ($dir): bool {
+        $this->setFunctionReturn('sys_get_temp_dir', codecept_output_dir());
+        $this->setFunctionReturn('unlink', function (string $file) use ($dir): bool {
             return $file === $dir . '/chromedriver' ? false : unlink($file);
         }, true);
 
@@ -318,8 +318,8 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
     public function should_throw_if_new_binary_cannot_be_made_executable(): void
     {
         $dir = Filesystem::tmpDir('chromedriver_installer_');
-        $this->uopzSetFunctionReturn('sys_get_temp_dir', codecept_output_dir());
-        $this->uopzSetFunctionReturn('chmod', false);
+        $this->setFunctionReturn('sys_get_temp_dir', codecept_output_dir());
+        $this->setFunctionReturn('chmod', false);
 
         $ci = new ChromedriverInstaller(null, 'linux64', codecept_data_dir('bins/chrome-mock'));
 
@@ -338,7 +338,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
     {
         $tmpDir = Filesystem::tmpDir('chromedriver_installer_tmp_');
         $dir = Filesystem::tmpDir('chromedriver_installer_');
-        $this->uopzSetFunctionReturn('sys_get_temp_dir', $tmpDir);
+        $this->setFunctionReturn('sys_get_temp_dir', $tmpDir);
 
         $ci = new ChromedriverInstaller(null, 'linux64', codecept_data_dir('bins/chrome-mock'));
 

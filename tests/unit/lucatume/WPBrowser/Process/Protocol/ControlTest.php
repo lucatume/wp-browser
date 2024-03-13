@@ -7,7 +7,7 @@ use Codeception\Configuration;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Process\Protocol\Control;
 use lucatume\WPBrowser\Process\Protocol\ProtocolException;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 
 class ControlTest extends Unit
 {
@@ -136,11 +136,11 @@ class ControlTest extends Unit
     public function testConfigsCodeceptionIfConfigIsSet(): void
     {
         $configCalled = false;
-        $this->uopzSetStaticMethodReturn(Configuration::class, 'config', function () use (&$configCalled) {
+        $this->setMethodReturn(Configuration::class, 'config', function () use (&$configCalled) {
             $configCalled = true;
         }, true);
         $appended = [];
-        $this->uopzSetStaticMethodReturn(Configuration::class, 'append', function (array $append) use (&$appended) {
+        $this->setMethodReturn(Configuration::class, 'append', function (array $append) use (&$appended) {
             $appended = $append;
         }, true);
 
@@ -158,15 +158,15 @@ class ControlTest extends Unit
     public function testSetsCwdIfCodeceptionRootDirSet(): void
     {
         $changedDir = null;
-        $this->uopzSetFunctionReturn('chdir', function (string $dir) use (&$changedDir) {
+        $this->setFunctionReturn('chdir', function (string $dir) use (&$changedDir) {
             $changedDir = $changedDir ? chdir($dir) : $dir;
         }, true);
         $configCalled = false;
-        $this->uopzSetStaticMethodReturn(Configuration::class, 'config', function () use (&$configCalled) {
+        $this->setMethodReturn(Configuration::class, 'config', function () use (&$configCalled) {
             $configCalled = true;
         }, true);
         $appended = [];
-        $this->uopzSetStaticMethodReturn(Configuration::class, 'append', function (array $append) use (&$appended) {
+        $this->setMethodReturn(Configuration::class, 'append', function (array $append) use (&$appended) {
             $appended = $append;
         }, true);
 
@@ -198,7 +198,7 @@ class ControlTest extends Unit
     public function testSetsCwdIfSet(): void
     {
         $changedDir = null;
-        $this->uopzSetFunctionReturn('chdir', function (string $dir) use (&$changedDir) {
+        $this->setFunctionReturn('chdir', function (string $dir) use (&$changedDir) {
             $changedDir = $dir;
         }, true);
         $control = new Control([
@@ -265,7 +265,7 @@ class ControlTest extends Unit
 
     public function testItCorrectlyHandlesEmptyCodeceptionConfiguration(): void
     {
-        $this->uopzSetStaticMethodReturn(Configuration::class, 'isEmpty', true);
+        $this->setMethodReturn(Configuration::class, 'isEmpty', true);
 
         $this->assertEquals([], Control::getDefault()['codeceptionConfig']);
 

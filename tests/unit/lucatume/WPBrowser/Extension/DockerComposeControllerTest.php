@@ -11,7 +11,7 @@ use Codeception\Test\Unit;
 use Exception;
 use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Tests\Traits\ClassStubs;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Composer;
 use stdClass;
 use Symfony\Component\Yaml\Yaml;
@@ -44,10 +44,10 @@ class DockerComposeControllerTest extends Unit
     {
         // Mock the binary.
         $bin = codecept_data_dir('/bins/docker-compose-mock');
-        $this->uopzSetStaticMethodReturn(Composer::class, 'binDir', $bin);
+        $this->setMethodReturn(Composer::class, 'binDir', $bin);
         // Silence output.
         $this->output = new Output(['verbosity' => Output::VERBOSITY_QUIET]);
-        $this->uopzSetMock(Output::class, $this->output);
+        $this->setClassMock(Output::class, $this->output);
     }
 
     /**
@@ -117,7 +117,7 @@ class DockerComposeControllerTest extends Unit
     {
         file_put_contents(DockerComposeController::getRunningFile(), 'yes');
         $constructed = 0;
-        $this->uopzSetMock(
+        $this->setClassMock(
             Process::class,
             $this->makeEmptyClass(Process::class, [
                 '__construct' => static function (...$args) use (&$constructed) {
@@ -145,7 +145,7 @@ class DockerComposeControllerTest extends Unit
     public function should_up_stack_correctly(): void
     {
         $constructCommands = [];
-        $this->uopzSetMock(
+        $this->setClassMock(
             Process::class,
             $this->makeEmptyClass(Process::class, [
                 '__construct' => static function ($command, ...$args) use (&$constructCommands) {
@@ -176,7 +176,7 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_throw_if_config_compose_file_is_not_valid_existing_file(): void
     {
-        $this->uopzSetMock(Process::class, $this->makeEmptyClass(Process::class, []));
+        $this->setClassMock(Process::class, $this->makeEmptyClass(Process::class, []));
 
         $config = ['suites' => ['end2end'], 'compose-file' => 'not-a-file.yml'];
         $options = [];
@@ -198,7 +198,7 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_throw_if_config_env_file_is_not_valid_file(): void
     {
-        $this->uopzSetMock(Process::class, $this->makeEmptyClass(Process::class, []));
+        $this->setClassMock(Process::class, $this->makeEmptyClass(Process::class, []));
 
         $config = ['suites' => ['end2end'], 'compose-file' => 'docker-compose.yml', 'env-file' => 'not-an-env-file'];
         $options = [];
@@ -221,7 +221,7 @@ class DockerComposeControllerTest extends Unit
     public function should_correctly_handle_stack_lifecycle(): void
     {
         $constructed = 0;
-        $this->uopzSetMock(
+        $this->setClassMock(
             Process::class,
             $this->makeEmptyClass(Process::class, [
                 '__construct' => static function () use (&$constructed) {
@@ -256,7 +256,7 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_throw_if_docker_compose_start_fails(): void
     {
-        $this->uopzSetMock(
+        $this->setClassMock(
             Process::class,
             $this->makeEmptyClass(Process::class, [
                 'mustRun' => static function () {
@@ -283,7 +283,7 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_throw_if_running_file_cannot_be_written(): void
     {
-        $this->uopzSetMock(Process::class, $this->makeEmptyClass(Process::class, []));
+        $this->setClassMock(Process::class, $this->makeEmptyClass(Process::class, []));
         $config = ['suites' => ['end2end'], 'compose-file' => 'docker-compose.yml'];
         $options = [];
 
@@ -293,7 +293,7 @@ class DockerComposeControllerTest extends Unit
 
         $this->expectException(ExtensionException::class);
         $this->expectExceptionMessage('Failed to write Docker Compose running file.');
-        $this->uopzSetFunctionReturn('file_put_contents', false);
+        $this->setFunctionReturn('file_put_contents', false);
 
         $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
     }
@@ -316,7 +316,7 @@ class DockerComposeControllerTest extends Unit
 
         $this->assertFileExists(DockerComposeController::getRunningFile());
 
-        $this->uopzSetMock(
+        $this->setClassMock(
             Process::class,
             $this->makeEmptyClass(Process::class, [
                 'mustRun' => static function () {
@@ -338,7 +338,7 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_throw_if_running_file_cannot_be_removed_while_stopping(): void
     {
-        $this->uopzSetMock(
+        $this->setClassMock(
             Process::class,
             $this->makeEmptyClass(Process::class, [
                 'stop' => 0
@@ -355,7 +355,7 @@ class DockerComposeControllerTest extends Unit
 
         $this->assertFileExists(DockerComposeController::getRunningFile());
 
-        $this->uopzSetFunctionReturn('unlink', false);
+        $this->setFunctionReturn('unlink', false);
 
         $this->expectException(ExtensionException::class);
         $this->expectExceptionMessage('Failed to remove Docker Compose running file.');
@@ -370,7 +370,7 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_produce_information_correctly(): void
     {
-        $this->uopzSetMock(
+        $this->setClassMock(
             Process::class,
             $this->makeEmptyClass(Process::class, [
                 'getOutput' => static function () {

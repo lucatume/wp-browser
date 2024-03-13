@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- `lucatume\WPBrowser\Traits\UopzFunctions` trait to provide a set of functions to work with the `uopz` extension; see the documentation for more details.
+
 ## [3.5.1] 2024-03-07;
 
 ### Changed

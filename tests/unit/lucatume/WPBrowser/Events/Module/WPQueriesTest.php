@@ -6,8 +6,7 @@ use Codeception\Exception\ModuleException;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
-use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
@@ -110,7 +109,7 @@ class WPQueriesTest extends Unit
      */
     public function it_should_define_the_savequeries_constant_if_not_defined_already(): void
     {
-        $this->uopzUndefineConstant('SAVEQUERIES');
+        $this->unsetConstant('SAVEQUERIES');
         $this->assertFalse(defined('SAVEQUERIES'));
 
         $this->wpdb = $this->getWpdb();
@@ -127,7 +126,7 @@ class WPQueriesTest extends Unit
      */
     public function should_throw_if_savequeries_defined_and_false(): void
     {
-        $this->uopzRedefineConstant('SAVEQUERIES', false);
+        $this->setConstant('SAVEQUERIES', false);
         $this->assertTrue(defined('SAVEQUERIES'));
         $this->assertFalse(SAVEQUERIES);
 
