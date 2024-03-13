@@ -3,9 +3,9 @@
 namespace lucatume\WPBrowser\WordPress\Database;
 
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
-use lucatume\WPBrowser\WordPress\DbException;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\WPConfigFile;
 
@@ -33,7 +33,7 @@ class SqliteDatabaseTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_building_on_non_writable_directory(): void
     {
-        $this->uopzSetFunctionReturn('is_writable', false);
+        $this->setFunctionReturn('is_writable', false);
         $this->expectException(DbException::class);
         $this->expectExceptionCode(SQLiteDatabase::ERR_DIR_NOT_FOUND);
         new SQLiteDatabase(__DIR__);
@@ -140,7 +140,7 @@ class SqliteDatabaseTest extends \Codeception\Test\Unit
         $file = '/db.sqlite';
         $db = new SQLiteDatabase($dir, $file);
         $db->create();
-        $this->uopzSetFunctionReturn('unlink', false);
+        $this->setFunctionReturn('unlink', false);
         $this->expectException(DbException::class);
         $this->expectExceptionCode(SQLiteDatabase::ERR_DROP_DB_FAILED);
         $db->drop();
@@ -247,7 +247,7 @@ class SqliteDatabaseTest extends \Codeception\Test\Unit
         $dump = codecept_data_dir('dump.sqlite');
         $dir = FS::tmpDir('sqlite_');
         $file = 'db.sqlite';
-        $this->uopzSetFunctionReturn('file_get_contents', false);
+        $this->setFunctionReturn('file_get_contents', false);
 
         $this->expectException(DbException::class);
         $this->expectExceptionCode(DbException::DUMP_FILE_NOT_READABLE);
@@ -334,7 +334,7 @@ class SqliteDatabaseTest extends \Codeception\Test\Unit
         $db = new SQLiteDatabase($dir, $file);
         $db->import($dump);
 
-        $this->uopzSetFunctionReturn('file_put_contents', false);
+        $this->setFunctionReturn('file_put_contents', false);
 
         $this->expectException(DbException::class);
         $this->expectExceptionCode(DbException::FAILED_DUMP);

@@ -2,11 +2,10 @@
 
 namespace lucatume\WPBrowser\Process\Protocol;
 
-use CompileError;
 use Exception;
-use lucatume\WPBrowser\Process\SerializableThrowable;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
 use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
+use lucatume\WPBrowser\Process\SerializableThrowable;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
@@ -77,7 +76,7 @@ class ResponseTest extends TestCase
         $returnValue = "success";
         $exitValue = 0;
         $telemetry = ["memoryPeakUsage" => 123456];
-        $this->uopzSetFunctionReturn('memory_get_peak_usage', 123456);
+        $this->setFunctionReturn('memory_get_peak_usage', 123456);
 
         $response = new Response($returnValue, $exitValue, $telemetry);
 

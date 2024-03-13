@@ -7,7 +7,7 @@ use Codeception\Test\Unit;
 use Exception;
 use lucatume\WPBrowser\Tests\Traits\ClassStubs;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
@@ -20,6 +20,9 @@ use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
 
+/**
+ * @group slow
+ */
 class ConfiguredTest extends Unit
 {
     use UopzFunctions;
@@ -330,7 +333,7 @@ class ConfiguredTest extends Unit
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
 
-        $this->uopzSetStaticMethodReturn(CodeExecutionFactory::class,
+        $this->setMethodReturn(CodeExecutionFactory::class,
             'toInstallWordPress',
             (new ExitAction(1, 'errors occurred'))->getClosure());
 
@@ -362,7 +365,7 @@ class ConfiguredTest extends Unit
 
         $configured = new Configured($wpRootDir, $wpRootDir . '/wp-config.php');
 
-        $this->uopzSetStaticMethodReturn(CodeExecutionFactory::class,
+        $this->setMethodReturn(CodeExecutionFactory::class,
             'toInstallWordPress',
             (new ThrowAction(new Exception('Something is amiss')))->getClosure());
 

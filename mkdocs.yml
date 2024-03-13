@@ -44,6 +44,8 @@ nav:
       - generate:wpxmlrpc: 'commands#generatewpxmlrpc'
       - monkey:cache:path: 'commands#monkeycachepath'
       - monkey:cache:clear: 'commands#monkeycacheclear'
+  - Testing Helpers:
+      - UopzFunctions trait: 'traits/UopzFunctions.md'
   - Troubleshooting: 'troubleshooting.md'
   - Sponsorship: 'https://github.com/sponsors/lucatume'
   - Changelog: 'https://github.com/lucatume/wp-browser/blob/master/CHANGELOG.md'
@@ -90,6 +92,7 @@ theme:
     - navigation.top
     - toc.follow
     - content.code.select
+    - content.tabs.link
   logo: assets/logo.png
   favicon: assets/favicon.png
   palette:
@@ -109,6 +112,9 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  - admonition
+  - pymdownx.tabbed:
+      alternate_style: true
 extra:
   social:
     - icon: fontawesome/solid/paper-plane

@@ -6,9 +6,9 @@ namespace lucatume\WPBrowser\Utils;
 use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Tests\Traits\ClassStubs;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
-use PHPUnit\Framework\Assert;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use PHPUnit\Framework\Assert;
 
 class ComposerTest extends \Codeception\Test\Unit
 {
@@ -34,7 +34,7 @@ class ComposerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_trying_to_build_on_non_readable_file(): void
     {
-        $this->uopzSetFunctionReturn('is_readable', false);
+        $this->setFunctionReturn('is_readable', false);
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(Composer::ERR_FILE_NOT_FOUND);
         new Composer(__FILE__);
@@ -78,7 +78,7 @@ class ComposerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_file_contents_cannot_be_read(): void
     {
-        $this->uopzSetFunctionReturn('file_get_contents', false);
+        $this->setFunctionReturn('file_get_contents', false);
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(Composer::ERR_FILE_UNREADABLE);
         new Composer(__FILE__);
@@ -117,7 +117,7 @@ class ComposerTest extends \Codeception\Test\Unit
         $composer->requireDev(['foo/bar' => '1.0.0', 'foo/baz' => '^2.3']);
         $hash = md5(microtime());
         $outputFile = sys_get_temp_dir() . "/$hash-composer.json";
-        $this->uopzSetFunctionReturn('file_put_contents', false);
+        $this->setFunctionReturn('file_put_contents', false);
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(Composer::ERR_FILE_WRITE_FAILED);
         $composer->write();
@@ -131,7 +131,7 @@ class ComposerTest extends \Codeception\Test\Unit
     public function should_allow_updating_the_composer_file(): void
     {
         $built = 0;
-        $this->uopzSetMock(Process::class,
+        $this->setClassMock(Process::class,
             $this->makeEmptyClass(Process::class, [
                 '__construct' => function () use (&$built) {
                     Assert::assertEquals(['composer', 'update', '--no-interaction'], func_get_args()[0]);
@@ -157,7 +157,7 @@ class ComposerTest extends \Codeception\Test\Unit
     public function should_allow_updating_the_composer_file_for_a_specific_package(): void
     {
         $built = 0;
-        $this->uopzSetMock(Process::class,
+        $this->setClassMock(Process::class,
             $this->makeEmptyClass(Process::class, [
                 '__construct' => function () use (&$built) {
                     Assert::assertEquals(['composer', 'update', '--no-interaction', 'foo/baz'], func_get_args()[0]);
@@ -183,7 +183,7 @@ class ComposerTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_update_fails(): void
     {
-        $this->uopzSetMock(Process::class,
+        $this->setClassMock(Process::class,
             $this->makeEmptyClass(Process::class, [
                 '__construct' => function () {
                     Assert::assertEquals(['composer', 'update', '--no-interaction'], func_get_args()[0]);

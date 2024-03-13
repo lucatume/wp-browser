@@ -6,7 +6,7 @@ namespace lucatume\WPBrowser\ManagedProcess;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Composer;
 
 class ChromedriverTest extends Unit
@@ -42,7 +42,7 @@ class ChromedriverTest extends Unit
      */
     public function should_throw_if_binary_not_found(): void
     {
-        $this->uopzSetStaticMethodReturn(Composer::class, 'binDir', '/not-a-binary');
+        $this->setMethodReturn(Composer::class, 'binDir', '/not-a-binary');
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ManagedProcessInterface::ERR_BINARY_NOT_FOUND);
@@ -57,7 +57,7 @@ class ChromedriverTest extends Unit
      */
     public function should_throw_if_binary_is_not_executable(): void
     {
-        $this->uopzSetStaticMethodReturn(Composer::class, 'binDir', __FILE__);
+        $this->setMethodReturn(Composer::class, 'binDir', __FILE__);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ManagedProcessInterface::ERR_BINARY_NOT_FOUND);
@@ -72,7 +72,7 @@ class ChromedriverTest extends Unit
     public function should_throw_if_binary_cannot_be_started_with_arguments(): void
     {
         $throwingBin = codecept_data_dir('bins/throwing-bin');
-        $this->uopzSetStaticMethodReturn(Composer::class, 'binDir', $throwingBin);
+        $this->setMethodReturn(Composer::class, 'binDir', $throwingBin);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ManagedProcessInterface::ERR_START);
@@ -94,7 +94,7 @@ class ChromedriverTest extends Unit
             'isRunning' => true,
             'stop' => 5
         ]);
-        $this->uopzSetMock(Process::class, $mockProcess);
+        $this->setClassMock(Process::class, $mockProcess);
 
         $chromedriver = new ChromeDriver(3456, ['--url-base=wd/hub', '--headless']);
 
@@ -116,14 +116,14 @@ class ChromedriverTest extends Unit
             'isRunning' => true,
             'getPid'      => 2389,
         ]);
-        $this->uopzSetMock(Process::class, $mockProcess);
+        $this->setClassMock(Process::class, $mockProcess);
 
         $chromedriver = new ChromeDriver(3456, ['--url-base=wd/hub', '--headless']);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ManagedProcessInterface::ERR_PID_FILE);
 
-        $this->uopzSetFunctionReturn('file_put_contents', function (string $file): false|int {
+        $this->setFunctionReturn('file_put_contents', function (string $file): false|int {
             return $file === ChromeDriver::getPidFile() ? false : 0;
         }, true);
 
@@ -138,7 +138,7 @@ class ChromedriverTest extends Unit
     public function should_handle_chromedriver_lifecycle_correctly(): void
     {
         $bin = codecept_data_dir('/bins/chromedriver-mock');
-        $this->uopzSetStaticMethodReturn(Composer::class, 'binDir', $bin);
+        $this->setMethodReturn(Composer::class, 'binDir', $bin);
 
         $chromedriver = new ChromeDriver(3456, ['--url-base=wd/hub', '--headless']);
         $chromedriver->start();
@@ -162,12 +162,12 @@ class ChromedriverTest extends Unit
     public function should_throw_if_pid_file_removal_fails(): void
     {
         $bin = codecept_data_dir('/bins/chromedriver-mock');
-        $this->uopzSetStaticMethodReturn(Composer::class, 'binDir', $bin);
+        $this->setMethodReturn(Composer::class, 'binDir', $bin);
 
         $chromedriver = new ChromeDriver(3456, ['--url-base=wd/hub', '--headless']);
         $chromedriver->start();
 
-        $this->uopzSetFunctionReturn('unlink', false);
+        $this->setFunctionReturn('unlink', false);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionCode(ManagedProcessInterface::ERR_PID_FILE_DELETE);
@@ -183,7 +183,7 @@ class ChromedriverTest extends Unit
     public function should_start_on_default_port_if_not_specified(): void
     {
         $bin = codecept_data_dir('/bins/chromedriver-mock');
-        $this->uopzSetStaticMethodReturn(Composer::class, 'binDir', $bin);
+        $this->setMethodReturn(Composer::class, 'binDir', $bin);
 
         $chromedriver = new ChromeDriver();
         $chromedriver->start();

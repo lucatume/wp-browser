@@ -9,12 +9,9 @@ use Codeception\Test\Unit;
 use lucatume\WPBrowser\Module\Support\DbDump;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
-use lucatume\WPBrowser\Tests\Traits\UopzFunctions;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
-use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
-use lucatume\WPBrowser\WordPress\Installation;
-use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use PDO;
 use RuntimeException;
 
@@ -143,7 +140,7 @@ SQL;
     {
         $root = FS::tmpDir('wpdb_', ['dump.sql' => 'SELECT 1']);
         $filepath = $root . '/dump.sql';
-        $this->uopzSetFunctionReturn('is_readable', static function (string $file) use ($filepath) {
+        $this->setFunctionReturn('is_readable', static function (string $file) use ($filepath) {
             return $file !== $filepath && is_readable($file);
         }, true);
 
