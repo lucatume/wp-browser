@@ -986,6 +986,15 @@ class MyTest extends WPTestCase
 }
 ```
 
+#### resetObjectProperty
+
+`resetObjectProperty(string|object $classOrObject, string $property): void`
+
+Reset the property `$property` of the class `$class` or object `$object` to its original value.
+
+You do not need to reset the property of an object that was set with `setObjectProperty` explicitly: the trait will take
+care of cleaning up all the modifications made to the functions, methods and class attributes after each test.
+
 #### getMethodStaticVariables
 
 `getMethodStaticVariables(string $class, string $method): array`

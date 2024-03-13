@@ -197,6 +197,23 @@ class UopzFunctionsTest extends Unit
     }
 
     /**
+     * It should reset instance method return between tests
+     *
+     * @test
+     */
+    public function should_reset_instance_method_return_between_tests(): void
+    {
+        $globalClass = new SomeGlobalClassOne();
+        $namespacedClass = new SomeNamespacedClassOne();
+        $this->assertEquals('original-value-one', $globalClass->getValueOne());
+        $this->assertEquals('original-value-two', $globalClass->getValueTwo());
+        $this->assertEquals('original-value-three', $globalClass->getValueThree());
+        $this->assertEquals('original-value-one', $namespacedClass->getValueOne());
+        $this->assertEquals('original-value-two', $namespacedClass->getValueTwo());
+        $this->assertEquals('original-value-three', $namespacedClass->getValueThree());
+    }
+
+    /**
      * It should allow setting a static method return value
      *
      * @test
@@ -218,6 +235,21 @@ class UopzFunctionsTest extends Unit
         $this->assertEquals(23, SomeNamespacedClassOne::getStaticValueOne());
         $this->assertEquals($return23, SomeNamespacedClassOne::getStaticValueTwo());
         $this->assertEquals(89, SomeNamespacedClassOne::getStaticValueThree());
+    }
+
+    /**
+     * It should reset static method return value between tests
+     *
+     * @test
+     */
+    public function should_reset_static_method_return_value_between_tests(): void
+    {
+        $this->assertEquals('original-static-value-one', SomeGlobalClassOne::getStaticValueOne());
+        $this->assertEquals('original-static-value-two', SomeGlobalClassOne::getStaticValueTwo());
+        $this->assertEquals('original-static-value-three', SomeGlobalClassOne::getStaticValueThree());
+        $this->assertEquals('original-static-value-one', SomeNamespacedClassOne::getStaticValueOne());
+        $this->assertEquals('original-static-value-two', SomeNamespacedClassOne::getStaticValueTwo());
+        $this->assertEquals('original-static-value-three', SomeNamespacedClassOne::getStaticValueThree());
     }
 
     /**
@@ -1223,12 +1255,12 @@ class UopzFunctionsTest extends Unit
     {
         $this->preventExit();
 
-        $this->assertEquals(1,ini_get('uopz.exit'));
+        $this->assertEquals(1, ini_get('uopz.exit'));
         ob_start();
         echo "Print this and die\n";
         die();
 
-        $this->assertEquals("Print this and die\n",ob_get_clean());
+        $this->assertEquals("Print this and die\n", ob_get_clean());
     }
 
     /**
@@ -1248,6 +1280,6 @@ class UopzFunctionsTest extends Unit
      */
     public function should_restore_exit_between_tests(): void
     {
-        $this->assertEquals(1,ini_get('uopz.exit'));
+        $this->assertEquals(1, ini_get('uopz.exit'));
     }
 }

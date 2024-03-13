@@ -468,7 +468,11 @@ trait UopzFunctions
     public function resetUopzAlterations(): void
     {
         foreach (self::$uopzSetFunctionReturns as $function => $k) {
-            $this->unsetFunctionReturn($function);
+            if (str_contains($function, '::')) {
+                $this->unsetMethodReturn(...explode('::', $function));
+            } else {
+                $this->unsetFunctionReturn($function);
+            }
         }
 
         foreach (self::$uopzSetFunctionHooks as $function => $k) {
