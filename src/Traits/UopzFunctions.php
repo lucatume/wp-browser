@@ -371,6 +371,8 @@ trait UopzFunctions
         }
 
         $currentValues = uopz_get_static($class, $method);
+        $currentValues['__CLONE__'] = '__CLONE__';
+        unset($currentValues['__CLONE__']);
 
         if (!isset(self::$uopzSetMethodStaticVariables["$class::$method"])) {
             self::$uopzSetMethodStaticVariables["$class::$method"] = $currentValues;
@@ -388,7 +390,11 @@ trait UopzFunctions
             $this->markTestSkipped('This test requires the uopz extension');
         }
 
-        return uopz_get_static($class, $method);
+        $currentValues = uopz_get_static($class, $method);
+        $currentValues['__CLONE__'] = '__CLONE__';
+        unset($currentValues['__CLONE__']);
+
+        return $currentValues;
     }
 
     protected function resetMethodStaticVariables(string $class, string $method): void
@@ -411,7 +417,11 @@ trait UopzFunctions
             $this->markTestSkipped('This test requires the uopz extension');
         }
 
-        return uopz_get_static($function);
+        $currentValues = uopz_get_static($function);
+        $currentValues['__CLONE__'] = '__CLONE__';
+        unset($currentValues['__CLONE__']);
+
+        return $currentValues;
     }
 
     /**
@@ -424,6 +434,8 @@ trait UopzFunctions
         }
 
         $currentValues = uopz_get_static($function);
+        $currentValues['__CLONE__'] = '__CLONE__';
+        unset($currentValues['__CLONE__']);
 
         if (!isset(self::$uopzSetFunctionStaticVariables[$function])) {
             self::$uopzSetFunctionStaticVariables[$function] = $currentValues;
