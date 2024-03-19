@@ -1,0 +1,59 @@
+@font-face {
+  font-family: "airplanemodeicons";
+  src:url("../fonts/airplanemodeicons.eot");
+  src:url("../fonts/airplanemodeicons.eot?#iefix") format("embedded-opentype"),
+      url("../fonts/airplanemodeicons.woff") format("woff"),
+      url("../fonts/airplanemodeicons.ttf") format("truetype"),
+      url("../fonts/airplanemodeicons.svg#airplanemodeicons") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+#wp-admin-bar-airplane-mode-toggle .ab-icon {
+	top: 1px;
+}
+
+#wp-admin-bar-airplane-mode-toggle .ab-icon:before {
+	content: "\e000";
+	font: normal 18px/1 airplanemodeicons;
+}
+
+.airplane-mode-disabled #wp-admin-bar-airplane-mode-toggle .ab-icon:before {
+	content: "\e001";
+}
+
+#wpadminbar > #wp-toolbar > #wp-admin-bar-root-default > #wp-admin-bar-airplane-mode-toggle .ab-icon,
+#wpadminbar #wp-admin-bar-airplane-mode-toggle .ab-icon,
+#wpadminbar #wp-admin-bar-airplane-mode-toggle .ab-item::before {
+  margin-right: 0;
+}
+
+.airplane-mode-no-qm #wpadminbar > #wp-toolbar > #wp-admin-bar-root-default > #wp-admin-bar-airplane-mode-toggle .ab-icon,
+.airplane-mode-no-qm #wpadminbar #wp-admin-bar-airplane-mode-toggle .ab-icon,
+.airplane-mode-no-qm #wpadminbar #wp-admin-bar-airplane-mode-toggle .ab-item::before {
+  margin-right: 6px;
+}
+
+ /* Set the opacity to mimic comment moderation queue. */
+.airplane-mode-disabled #wp-admin-bar-airplane-mode-toggle .ab-label {
+  /* Theoretically for IE 8 & 9 (more valid) */
+  /* ...but not required as filter works too */
+  /* should come BEFORE filter */
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+
+  /* This works in IE 8 & 9 too */
+  /* ... but also 5, 6, 7 */
+	filter: alpha(opacity=50); /* IE 5-7 */
+
+  /* Modern Browsers */
+  opacity: 0.5;
+}
+
+.airplane-mode-enabled.plugin-install-php.branch-4-6 h1 a.upload-view-toggle,
+.airplane-mode-enabled.plugin-install-php h1 a.upload,
+.airplane-mode-enabled.plugin-install-php .wp-filter,
+.airplane-mode-enabled.theme-install-php .wp-filter,
+.airplane-mode-enabled .theme-browser.content-filterable.rendered,
+.airplane-mode-enabled.theme-install-php a.browse-themes {
+	display: none !important;
+}

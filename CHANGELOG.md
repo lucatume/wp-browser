@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- The `AirplaneMode` module, based on the `norcross/airplane-mode` plugin, to put the website under test in "airplane mode", preventing it from making any network requests during tests.
+
 ## [3.5.2] 2024-03-13;
 
 ### Added

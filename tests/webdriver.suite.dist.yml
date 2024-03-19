@@ -5,6 +5,7 @@ modules:
     - WPWebDriver
     - WPDb
     - WPFilesystem
+    - lucatume\WPBrowser\Module\AirplaneMode
   config:
     WPWebDriver:
       url: '%WORDPRESS_URL%'
@@ -42,3 +43,6 @@ modules:
       plugins: '/wp-content/plugins'
       mu-plugins: '/wp-content/mu-plugins'
       uploads: '/wp-content/uploads'
+    lucatume\WPBrowser\Module\AirplaneMode:
+      muPluginsDir: '%WORDPRESS_ROOT_DIR%/wp-content/mu-plugins'
+      symlink: true

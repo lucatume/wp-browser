@@ -12,6 +12,7 @@ modules:
         - lucatume\WPBrowser\Module\WPFilesystem
         - AcceptanceHelper
         - Asserts
+        - lucatume\WPBrowser\Module\AirplaneMode
     config:
         lucatume\WPBrowser\Module\WPBrowser:
             url: '%WORDPRESS_URL%'
@@ -39,3 +40,6 @@ modules:
             plugins: '/wp-content/plugins'
             mu-plugins: '/wp-content/mu-plugins'
             uploads: '/wp-content/uploads'
+        lucatume\WPBrowser\Module\AirplaneMode:
+            muPluginsDir: '%WORDPRESS_ROOT_DIR%/wp-content/mu-plugins'
+            symlink: true
