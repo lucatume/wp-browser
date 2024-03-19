@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.5.3] 2024-03-19;
+
 ### Added
 
 - The `AirplaneMode` module, based on the `norcross/airplane-mode` plugin, to put the website under test in "airplane mode", preventing it from making any network requests during tests.
@@ -1887,4 +1889,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.5.0]: https://github.com/lucatume/wp-browser/compare/3.2.1...3.5.0
 [3.5.1]: https://github.com/lucatume/wp-browser/compare/3.5.0...3.5.1
 [3.5.2]: https://github.com/lucatume/wp-browser/compare/3.5.1...3.5.2
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.5.2...HEAD
+[3.5.3]: https://github.com/lucatume/wp-browser/compare/3.5.2...3.5.3
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.5.3...HEAD
