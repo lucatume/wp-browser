@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.5.4] 2024-03-19;
+
 ### Fixed
 
 - Update the build script to target the correct branch.
@@ -1894,4 +1896,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.5.1]: https://github.com/lucatume/wp-browser/compare/3.5.0...3.5.1
 [3.5.2]: https://github.com/lucatume/wp-browser/compare/3.5.1...3.5.2
 [3.5.3]: https://github.com/lucatume/wp-browser/compare/3.5.2...3.5.3
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.5.3...HEAD
+[3.5.4]: https://github.com/lucatume/wp-browser/compare/3.5.3...3.5.4
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.5.4...HEAD
