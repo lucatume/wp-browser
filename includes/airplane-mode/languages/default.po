@@ -1,0 +1,47 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Airplane Mode\n"
+"POT-Creation-Date: 2015-12-07 17:24-0500\n"
+"PO-Revision-Date: 2015-12-07 17:25-0500\n"
+"Last-Translator: Andrew Norcross <andrew.norcross@gmail.com>\n"
+"Language-Team: \n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.6\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: _;__;_e;_n\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: airplane-mode.php:365
+#, php-format
+msgid "Airplane Mode is enabled. oEmbed blocked for %1$s."
+msgstr "Airplane Mode is enabled. oEmbed blocked for %1$s."
+
+#: airplane-mode.php:475
+msgid "Airplane Mode is enabled"
+msgstr "Airplane Mode is enabled"
+
+#: airplane-mode.php:583
+msgid "Airplane Mode is enabled."
+msgstr "Airplane Mode is enabled."
+
+#: airplane-mode.php:583
+msgid "Airplane Mode is disabled."
+msgstr "Airplane Mode is disabled."
+
+#: airplane-mode.php:592
+msgid "Active"
+msgstr "Active"
+
+#: airplane-mode.php:592
+msgid "Inactive"
+msgstr "Inactive"
+
+#: airplane-mode.php:609
+#, php-format
+msgid "There was %s HTTP request."
+msgstr "There was %s HTTP request."
