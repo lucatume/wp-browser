@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 
-set -eux
+set -eu
 
 script_dir=$(dirname "$0")
 root_dir=$(cd "$script_dir/.." && pwd)

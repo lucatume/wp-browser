@@ -1,0 +1,13 @@
+#! /usr/bin/env sh
+
+set -eu
+
+script_dir=$(dirname "$0")
+root_dir=$(cd "$script_dir/.." && pwd)
+plugin_file_src="https://downloads.wordpress.org/plugin/airplane-mode.zip";
+# Download the zip file and unzip it in the includes/airplane-mode directory
+curl -L "$plugin_file_src" -o "$root_dir/includes/airplane-mode.zip"
+unzip -o "$root_dir/includes/airplane-mode.zip" -d "$root_dir/includes/"
+# Remove the zip file
+rm "$root_dir/includes/airplane-mode.zip"
+
