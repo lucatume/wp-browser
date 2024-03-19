@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Update the build script to target the correct branch.
+
 ## [3.5.3] 2024-03-19;
 
 ### Added
