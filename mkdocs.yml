@@ -9,10 +9,11 @@ watch:
 site_description: 'Documentation for the wp-browser WordPress testing framework.'
 site_author: 'Luca Tumedei'
 nav:
-  - Getting started: 'README.md'
-  - Migrating to newer versions: 'migration.md'
-  - Default configuration: 'default-configuration.md'
-  - Custom configuration: 'custom-configuration.md'
+  - Setup:
+    - Getting started: 'README.md'
+    - Migrating to newer versions: 'migration.md'
+    - Default configuration: 'default-configuration.md'
+    - Custom configuration: 'custom-configuration.md'
   - Modules:
       - WPBrowser: 'modules/WPBrowser.md'
       - WPCLI: 'modules/WPCLI.md'
@@ -21,12 +22,14 @@ nav:
       - WPLoader: 'modules/WPLoader.md'
       - WPQueries: 'modules/WPQueries.md'
       - WPWebDriver: 'modules/WPWebDriver.md'
+      - Airplane Mode: 'modules/AirplaneMode.md'
   - Extensions:
       - PHP Built-in Server Controller: 'extensions#builtinservercontroller'
       - ChromeDriver Controller: 'extensions#chromedrivercontroller'
       - Docker Compose Controller: 'extensions#dockercomposecontroller'
       - Isolation Support: 'extensions#isolationsupport'
   - Commands:
+      - wpcept: 'wpcept'
       - run and codeception:run: 'commands#run-and-codeceptionrun'
       - dev:start: 'commands#devstart'
       - dev:stop: 'commands#devstop'
@@ -44,13 +47,12 @@ nav:
       - generate:wpxmlrpc: 'commands#generatewpxmlrpc'
       - monkey:cache:path: 'commands#monkeycachepath'
       - monkey:cache:clear: 'commands#monkeycacheclear'
-  - Testing Helpers:
+  - Helpers:
       - UopzFunctions trait: 'traits/UopzFunctions.md'
   - Troubleshooting: 'troubleshooting.md'
-  - Sponsorship: 'https://github.com/sponsors/lucatume'
   - Changelog: 'https://github.com/lucatume/wp-browser/blob/master/CHANGELOG.md'
-  - Version 3 documentation:
-    -  Welcome: v3/README.md
+  - v3:
+    - Welcome: v3/README.md
     - Frequently asked questions: v3/faq.md
     - Codeception, PHPUnit and wp-browser: v3/codeception-phpunit-and-wpbrowser.md
     - Using wp-browser with Codeception 4.0: v3/codeception-4-support.md
@@ -90,6 +92,8 @@ theme:
     - navigation.instant.prefetch
     - navigation.tracking
     - navigation.top
+    - navigation.sections
+    - navigation.tabs
     - toc.follow
     - content.code.select
     - content.tabs.link
