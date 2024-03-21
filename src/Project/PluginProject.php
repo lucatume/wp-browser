@@ -147,7 +147,7 @@ class PluginProject extends ContentProject
 
 namespace Tests\\EndToEnd;
 
-use Tests\\Support\\EndToEndTester;
+use EndToEndTester;
 
 class ActivationCest
 {
