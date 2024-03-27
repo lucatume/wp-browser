@@ -166,7 +166,7 @@ PHP
         $this->assertFalse($themeProject->activate($wpRootDir, 1234));
         $expected = "Could not activate theme: Error: Current PHP version does not meet minimum requirements for Acme Theme. \n" .
             "This might happen because the theme has unmet dependencies; wp-browser configuration will continue, " .
-            "but you will need to manually activate the theme and update the dump in tests/Support/Data/dump.sql.";
+            "but you will need to manually activate the theme and update the dump in tests/_data/dump.sql";
         $this->assertEquals(
             $expected,
             trim(str_replace($wpRootDir, '{{wp_root_dir}}', $output->fetch()))
