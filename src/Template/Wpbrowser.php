@@ -2,6 +2,7 @@
 
 namespace lucatume\WPBrowser\Template;
 
+use Codeception\Codecept;
 use Codeception\Extension\RunFailed;
 use Codeception\Template\Bootstrap;
 use lucatume\WPBrowser\Command\DbExport;
@@ -226,6 +227,8 @@ ENV;
 
     private function createEndToEndSuite(ProjectInterface $project): void
     {
+        // @phpstan-ignore-next-line
+        $dumpFilePath = Codecept::VERSION >= 5 ? 'tests/Support/Data/dump.sql' : 'tests/_data/dump.sql';
         $suiteConfig = <<<EOF
 # Integration suite configuration
 #
@@ -261,7 +264,7 @@ modules:
                   - "--no-sandbox"
         lucatume\WPBrowser\Module\WPDb:
             dbUrl: '%WORDPRESS_DB_URL%'
-            dump: 'tests/Support/Data/dump.sql'
+            dump: '{$dumpFilePath}'
             populate: true
             cleanup: true
             reconnect: false

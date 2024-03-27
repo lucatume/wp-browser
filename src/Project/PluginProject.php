@@ -2,12 +2,12 @@
 
 namespace lucatume\WPBrowser\Project;
 
+use Codeception\Codecept;
 use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
-use lucatume\WPBrowser\TestCase\WPTestCase;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Strings;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
@@ -114,9 +114,11 @@ class PluginProject extends ContentProject
             $message = $activationResult->getMessage();
             $this->sayWarning('Could not activate plugin: ' . $message);
             $this->say($activationResult->getFile() . ":" . $activationResult->getLine());
+            // @phpstan-ignore-next-line
+            $dumpPath = Codecept::VERSION >= 5 ? 'tests/Support/Data/dump.sql' : 'tests/_data/dump.sql';
             $this->say('This might happen because the plugin has unmet dependencies; wp-browser configuration ' .
                 'will continue, but you will need to manually activate the plugin and update the dump in ' .
-                'tests/Support/Data/dump.sql.');
+                $dumpPath);
             return false;
         }
 
@@ -127,13 +129,15 @@ class PluginProject extends ContentProject
 
     protected function scaffoldEndToEndActivationCest(): void
     {
+        // @phpstan-ignore-next-line
+        $testerTrait = Codecept::VERSION >= 5 ? 'Tests\Support\EndToEndTester' : 'EndToEndTester';
         $cestCode = Strings::renderString(
             <<< EOT
 <?php
 
 namespace Tests\EndToEnd;
 
-use Tests\Support\EndToEndTester;
+use $testerTrait;
 
 class ActivationCest
 {
