@@ -2,6 +2,7 @@
 
 namespace lucatume\WPBrowser\Project;
 
+use Codeception\Codecept;
 use Codeception\InitTemplate;
 use lucatume\WPBrowser\Command\ChromedriverUpdate;
 use lucatume\WPBrowser\Command\DevInfo;
@@ -186,12 +187,14 @@ EOT;
 
     private function scaffoldEndToEndActivationCest(): void
     {
+        // @phpstan-ignore-next-line
+        $testerTrait = Codecept::VERSION >= 5 ? 'Tests\Support\EndToEndTester' : 'EndToEndTester';
         $cestCode = <<< EOT
 <?php
 
 namespace Tests\EndToEnd;
 
-use Tests\Support\EndToEndTester;
+use $testerTrait;
 
 class ActivationCest
 {
