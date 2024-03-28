@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.5.5] 2024-03-28;
+
 ### Changed
 
 - Update init template to scaffold dump file path and example tests correctly (thanks @tarecord).
@@ -1901,4 +1903,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.5.2]: https://github.com/lucatume/wp-browser/compare/3.5.1...3.5.2
 [3.5.3]: https://github.com/lucatume/wp-browser/compare/3.5.2...3.5.3
 [3.5.4]: https://github.com/lucatume/wp-browser/compare/3.5.3...3.5.4
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.5.4...HEAD
+[3.5.5]: https://github.com/lucatume/wp-browser/compare/3.5.4...3.5.5
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.5.5...HEAD
