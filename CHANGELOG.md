@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Update init template to scaffold dump file path and example tests correctly (thanks @tarecord).
+
 ## [3.5.4] 2024-03-19;
 
 ### Fixed
