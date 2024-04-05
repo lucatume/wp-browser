@@ -375,11 +375,11 @@ PHP;
     }
 
     /**
-     * It should throw if tryng to scaffold again
+     * It should throw if trying to scaffold again
      *
      * @test
      */
-    public function should_throw_if_tryng_to_scaffold_again(): void
+    public function should_throw_if_trying_to_scaffold_again(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
         Installation::scaffold($wpRootDir, '6.1.1');
