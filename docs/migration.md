@@ -53,8 +53,27 @@ back-compatibility purposes.
        - "lucatume\\WPBrowser\\Command\\MonkeyCachePath"
        - "lucatume\\WPBrowser\\Command\\MonkeyCacheClear"
    ```
-   
-2. If your test code is loading deprecated functions, arguments, classes, files, or hooks, you need to update your test
+2. Along with the new commands, update the existing commands to use the `lucatume\WPBrowser\Command\` namespace:
+
+   ```diff
+   extensions:
+     commands:
+   -    - "Codeception\\Command\\GenerateWPUnit"
+   -    - "Codeception\\Command\\GenerateWPRestApi"
+   -    - "Codeception\\Command\\GenerateWPRestController"
+   -    - "Codeception\\Command\\GenerateWPRestPostTypeController"
+   -    - "Codeception\\Command\\GenerateWPAjax"
+   -    - "Codeception\\Command\\GenerateWPCanonical"
+   -    - "Codeception\\Command\\GenerateWPXMLRPC"
+   +    - "lucatume\\WPBrowser\\Command\\GenerateWPUnit"
+   +    - "lucatume\\WPBrowser\\Command\\GenerateWPRestApi"
+   +    - "lucatume\\WPBrowser\\Command\\GenerateWPRestController"
+   +    - "lucatume\\WPBrowser\\Command\\GenerateWPRestPostTypeController"
+   +    - "lucatume\\WPBrowser\\Command\\GenerateWPAjax"
+   +    - "lucatume\\WPBrowser\\Command\\GenerateWPCanonical"
+   +    - "lucatume\\WPBrowser\\Command\\GenerateWPXMLRPC"
+   ```
+3. If your test code is loading deprecated functions, arguments, classes, files, or hooks, you need to update your test
    code to let the test case know using the `setExpectedDeprecated` method:
     ```php
     <?php
@@ -88,9 +107,8 @@ back-compatibility purposes.
     }
     ```
    Previously, your code could just filter
-   the `deprecated_function_trigger_error`, `deprecated_argument_trigger_error`, `deprecated_class_trigger_error`, `deprecated_file_trigger_error`, and `deprecated_hook_trigger_error`, hooks to return `false` to tolerate the deprecation notices in tests.
-
-3. If your test code is directly modifying properties like `$expected_deprecated` or `$expected_doing_it_wrong` directly, you need to update your test code to use the `setExpectedDeprecated` and `setExpectedIncorrectUsage` methods:
+   the `deprecated_function_trigger_error`, `deprecated_argument_trigger_error`, `deprecated_class_trigger_error`, `deprecated_file_trigger_error`, and `deprecated_hook_trigger_error`, hooks to return `false` to tolerate the deprecation notices in tests.  
+4. If your test code is directly modifying properties like `$expected_deprecated` or `$expected_doing_it_wrong` directly, you need to update your test code to use the `setExpectedDeprecated` and `setExpectedIncorrectUsage` methods:
     ```php
     <?php
    
@@ -108,9 +126,8 @@ back-compatibility purposes.
             my_doing_it_wrong();
         }
     }
-    ```
-
-4. If your test code is knowingly triggering doing-it-wrong notices, you need to update your test code to let the test
+    ```  
+5. If your test code is knowingly triggering doing-it-wrong notices, you need to update your test code to let the test
    case know using the `setExpectedIncorrectUsage` method:
     ```php
     <?php
@@ -124,9 +141,8 @@ back-compatibility purposes.
     }
     ```
    Previously, your code could just filter the `doing_it_wrong_trigger_error` hook to return `false` to tolerate the
-   doing-it-wrong notices in tests.
-
-5. Some assertion methods have, in more recent versions of the PHPUnit core suite, adopted stricter type checks when it comes to comparison. E.g., the `assertEqualFields` will now check the object to check the fields on is actually an object. Depending on how loose your use of assertions was before, you might have to update your work to make it pass the stricter checks:
+   doing-it-wrong notices in tests.  
+6. Some assertion methods have, in more recent versions of the PHPUnit core suite, adopted stricter type checks when it comes to comparison. E.g., the `assertEqualFields` will now check the object to check the fields on is actually an object. Depending on how loose your use of assertions was before, you might have to update your work to make it pass the stricter checks:
    ```php
    <?php
    
@@ -138,11 +154,9 @@ back-compatibility purposes.
             $this->assertEqualFields( (object) [ 'a' => 1 ], [ 'a' => 1 ] );
          }
     }
-   ``` 
-   
-6. Other updates to the Core PHPUnit test case will report use of deprecated functions more promptly; if your code is using deprecated functions that might have escaped previous versions of wp-browser, you will need to update them.
-
-7. If you're using the `@runInSeparateProcess` annotation for tests in your suite, you will need to enable the `IsolationSupport` extension in your suite configuration file:
+   ```   
+7. Other updates to the Core PHPUnit test case will report use of deprecated functions more promptly; if your code is using deprecated functions that might have escaped previous versions of wp-browser, you will need to update them.  
+8. If you're using the `@runInSeparateProcess` annotation for tests in your suite, you will need to enable the `IsolationSupport` extension in your suite configuration file:
    
    ```yaml
    actor: MySuiteTester
@@ -155,9 +169,8 @@ back-compatibility purposes.
    
    Alternatively, you can enable the extension in the Codeception main configuration file (e.g. `codeception.yml`).
     
-   Read more about the extension in the [Isolation Support extension documentation](extensions.md#isolationsupport).
-
-8. Global space cleanup between test is more thorough in more recent versions of the Core PHPUnit test suite. Due to this you might see failures in tests that were passing in previous versions due to a "leaking" global state. Examples of this might be nonces being set by previous tests and not being reset. Update your tests to explicitly set all the global stat variables you require for the test to run.
+   Read more about the extension in the [Isolation Support extension documentation](extensions.md#isolationsupport).  
+9. Global space cleanup between test is more thorough in more recent versions of the Core PHPUnit test suite. Due to this you might see failures in tests that were passing in previous versions due to a "leaking" global state. Examples of this might be nonces being set by previous tests and not being reset. Update your tests to explicitly set all the global stat variables you require for the test to run.
 
 ## Staying on version 3, lower than 3.5
 
