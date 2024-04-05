@@ -654,7 +654,7 @@ class WPLoaderTest extends Unit
         $this->assertInIsolation(static function () use ($wpRootDir, $wpLoader) {
             $wpLoader->_initialize();
 
-            Dispatcher::dispatch(Events::SUITE_INIT);
+            Dispatcher::dispatch(Events::SUITE_BEFORE);
         });
     }
 
@@ -707,7 +707,7 @@ class WPLoaderTest extends Unit
                 $actions[] = WPLoader::EVENT_AFTER_LOADONLY;
             });
 
-            Dispatcher::dispatch(Events::SUITE_INIT);
+            Dispatcher::dispatch(Events::SUITE_BEFORE);
 
             Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
             Assert::assertEquals($wpRootDir . '/', ABSPATH);
@@ -797,7 +797,7 @@ class WPLoaderTest extends Unit
         $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
             $wpLoader->_initialize();
 
-            Dispatcher::dispatch(Events::SUITE_INIT);
+            Dispatcher::dispatch(Events::SUITE_BEFORE);
 
             Assert::assertEquals($wpRootDir . '/', ABSPATH);
         });
@@ -1782,7 +1782,7 @@ class WPLoaderTest extends Unit
 
         $this->assertInIsolation(static function () use ($wpLoader) {
             $wpLoader->_initialize();
-            Dispatcher::dispatch(Events::SUITE_INIT);
+            Dispatcher::dispatch(Events::SUITE_BEFORE);
 
             Assert::assertTrue(function_exists('do_action'));
             Assert::assertInstanceOf(\WP_User::class, wp_get_current_user());
