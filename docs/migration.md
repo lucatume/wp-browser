@@ -54,6 +54,27 @@ back-compatibility purposes.
        - "lucatume\\WPBrowser\\Command\\MonkeyCacheClear"
    ```
    
+   Along with the new commands, update the existing commands to use the `lucatume\WPBrowser\Command\` namespace:
+
+   ```diff
+   extensions:
+     commands:
+   -    - "Codeception\\Command\\GenerateWPUnit"
+   -    - "Codeception\\Command\\GenerateWPRestApi"
+   -    - "Codeception\\Command\\GenerateWPRestController"
+   -    - "Codeception\\Command\\GenerateWPRestPostTypeController"
+   -    - "Codeception\\Command\\GenerateWPAjax"
+   -    - "Codeception\\Command\\GenerateWPCanonical"
+   -    - "Codeception\\Command\\GenerateWPXMLRPC"
+   +    - "lucatume\\WPBrowser\\Command\\GenerateWPUnit"
+   +    - "lucatume\\WPBrowser\\Command\\GenerateWPRestApi"
+   +    - "lucatume\\WPBrowser\\Command\\GenerateWPRestController"
+   +    - "lucatume\\WPBrowser\\Command\\GenerateWPRestPostTypeController"
+   +    - "lucatume\\WPBrowser\\Command\\GenerateWPAjax"
+   +    - "lucatume\\WPBrowser\\Command\\GenerateWPCanonical"
+   +    - "lucatume\\WPBrowser\\Command\\GenerateWPXMLRPC"
+   ```
+   
 2. If your test code is loading deprecated functions, arguments, classes, files, or hooks, you need to update your test
    code to let the test case know using the `setExpectedDeprecated` method:
     ```php
