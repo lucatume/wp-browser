@@ -1,6 +1,6 @@
 <?php
 /**
- * Keeps only quries originated by a class method call.
+ * Keeps only queries originated by a class method call.
  *
  * @package lucatume\WPBrowser\Iterators\Filters
  */
