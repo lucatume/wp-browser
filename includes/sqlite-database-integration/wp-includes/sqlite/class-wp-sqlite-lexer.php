@@ -33,7 +33,7 @@ class WP_SQLite_Lexer {
 	 *
 	 * @var string[]
 	 */
-	protected const PARSER_METHODS = array(
+	const PARSER_METHODS = array(
 		// It is best to put the parsers in order of their complexity
 		// (ascending) and their occurrence rate (descending).
 		//
@@ -77,7 +77,7 @@ class WP_SQLite_Lexer {
 	 *
 	 * @var string[]
 	 */
-	protected const KEYWORD_NAME_INDICATORS = array(
+	const KEYWORD_NAME_INDICATORS = array(
 		'FROM',
 		'SET',
 		'WHERE',
@@ -89,7 +89,7 @@ class WP_SQLite_Lexer {
 	 *
 	 * @var string[]
 	 */
-	protected const OPERATOR_NAME_INDICATORS = array(
+	const OPERATOR_NAME_INDICATORS = array(
 		',',
 		'.',
 	);
