@@ -12,7 +12,13 @@
  * @since 1.0.0
  */
 function sqlite_add_admin_menu() {
-	add_options_page(__( 'SQLite integration', 'sqlite-database-integration' ), __( 'SQLite integration', 'sqlite-database-integration' ), 'manage_options', 'sqlite-integration', 'sqlite_integration_admin_screen');
+	add_options_page(
+		__( 'SQLite integration', 'sqlite-database-integration' ),
+		__( 'SQLite integration', 'sqlite-database-integration' ),
+		'manage_options',
+		'sqlite-integration',
+		'sqlite_integration_admin_screen'
+	);
 }
 add_action( 'admin_menu', 'sqlite_add_admin_menu' );
 
