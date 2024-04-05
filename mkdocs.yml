@@ -29,7 +29,6 @@ nav:
       - Docker Compose Controller: 'extensions#dockercomposecontroller'
       - Isolation Support: 'extensions#isolationsupport'
   - Commands:
-      - wpcept: 'wpcept'
       - run and codeception:run: 'commands#run-and-codeceptionrun'
       - dev:start: 'commands#devstart'
       - dev:stop: 'commands#devstop'
