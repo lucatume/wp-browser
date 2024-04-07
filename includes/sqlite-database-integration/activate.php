@@ -15,8 +15,9 @@
  */
 function sqlite_plugin_activation_redirect( $plugin ) {
 	if ( plugin_basename( SQLITE_MAIN_FILE ) === $plugin ) {
-		wp_redirect( admin_url( 'options-general.php?page=sqlite-integration' ) );
-		exit;
+		if ( wp_safe_redirect( admin_url( 'options-general.php?page=sqlite-integration' ) ) ) {
+			exit;
+		}
 	}
 }
 add_action( 'activated_plugin', 'sqlite_plugin_activation_redirect' );

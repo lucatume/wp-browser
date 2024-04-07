@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Load WordPress at `SUITE_BEFORE` in the `WPLoader` module, I had previously changed this to `SUITE_INIT` but that was causing issues.
+- Update Core PHPUnit tests
+- Update SQLite plugin.
+
 ## [3.5.5] 2024-03-28;
 
 ### Changed
