@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.5.6] 2024-04-07;
+
 ### Changed
 
 - Load WordPress at `SUITE_BEFORE` in the `WPLoader` module, I had previously changed this to `SUITE_INIT` but that was causing issues.
@@ -1910,4 +1912,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.5.3]: https://github.com/lucatume/wp-browser/compare/3.5.2...3.5.3
 [3.5.4]: https://github.com/lucatume/wp-browser/compare/3.5.3...3.5.4
 [3.5.5]: https://github.com/lucatume/wp-browser/compare/3.5.4...3.5.5
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.5.5...HEAD
+[3.5.6]: https://github.com/lucatume/wp-browser/compare/3.5.5...3.5.6
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.5.6...HEAD
