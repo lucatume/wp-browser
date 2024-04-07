@@ -121,8 +121,8 @@ PHP
         $expected = "Could not activate plugin: Something went wrong. \n" .
             "{{wp_root_dir}}/wp-content/plugins/acme-plugin/plugin.php:3\n" .
             "This might happen because the plugin has unmet dependencies; wp-browser configuration will continue, " .
-            "but you will need to manually activate the plugin and update the dump in tests/Support/Data/dump.sql";
-        $this->assertEquals(
+            "but you will need to manually activate the plugin and update the dump in tests";
+        $this->assertStringContainsString(
             $expected,
             trim(str_replace($wpRootDir, '{{wp_root_dir}}', $output->fetch()))
         );

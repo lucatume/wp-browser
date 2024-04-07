@@ -8,3 +8,7 @@ ignore-hidden = false
 
 [default.extend-identifiers]
 "RebOOter" = "RebOOter"
+
+[default.extend-words]
+# To handle the hipster default blog content about bike messengers gettin' caught in the rain.
+"gettin" = "gettin"

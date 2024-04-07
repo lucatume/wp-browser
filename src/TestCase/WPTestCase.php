@@ -135,6 +135,7 @@ class WPTestCase extends Unit
     protected $backupStaticAttributesExcludeList = [
         // WordPress
         'WP_Block_Type_Registry' => ['instance'],
+        'WP_Block_Bindings_Registry' => ['instance'],
         // wp-browser
         'lucatume\WPBrowser\Events\Dispatcher' => ['eventDispatcher'],
         self::class => ['coreTestCaseMap'],
