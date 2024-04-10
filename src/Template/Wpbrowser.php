@@ -326,7 +326,8 @@ EOF;
         return new SiteProject($this->input, $this->output, $workDir);
     }
 
-    public static function setDropInPath(string $path): void{
+    public static function setDropInPath(string $path): void
+    {
         self::$dropInPath = $path;
     }
 
@@ -337,7 +338,7 @@ EOF;
             @unlink($this->workDir . '/codeception.yml');
         }
 
-        if(self::$dropInPath && file_exists(self::$dropInPath)){
+        if (self::$dropInPath && file_exists(self::$dropInPath)) {
             @unlink(self::$dropInPath);
         }
     }
