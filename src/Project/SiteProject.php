@@ -165,7 +165,7 @@ EOT;
         $this->testEnvironment->customCommands[] = DevInfo::class;
         $this->testEnvironment->customCommands[] = DevRestart::class;
         $this->testEnvironment->customCommands[] = ChromedriverUpdate::class;
-        $this->testEnvironment->wpRootDir = '.';
+        $this->testEnvironment->wpRootDir = FS::relativePath(getcwd(), $this->installation->getWpRootDir());
         $this->testEnvironment->dbUrl = 'sqlite://' . implode(
             DIRECTORY_SEPARATOR,
             ['%codecept_root_dir%', $dataDirRelativePath, 'db.sqlite']
