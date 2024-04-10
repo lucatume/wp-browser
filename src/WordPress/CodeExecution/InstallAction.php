@@ -6,12 +6,12 @@ use Closure;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequest;
 use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
 use lucatume\WPBrowser\WordPress\WPConfigFile;
-use function wp_slash;
 
+use function wp_slash;
 
 class InstallAction implements CodeExecutionActionInterface
 {
-	use WordPressChecks;
+    use WordPressChecks;
 
     private FileRequest $request;
 
@@ -29,7 +29,7 @@ class InstallAction implements CodeExecutionActionInterface
             ->setTargetFile($wpRootDir . '/wp-load.php')
             ->defineConstant('WP_INSTALLING', true)
             ->defineConstant('MULTISITE', false)
-            ->addPreloadClosure(function () use ($url): void {
+            ->addPreloadClosure(function (): void {
                 // The `MULTISITE` const might be already defined in the `wp-config.php` file.
                 // If that is the case, silence the error.
                 set_error_handler(static function ($errno, $errstr): bool {
