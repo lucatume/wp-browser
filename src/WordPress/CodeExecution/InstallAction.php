@@ -4,10 +4,15 @@ namespace lucatume\WPBrowser\WordPress\CodeExecution;
 
 use Closure;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequest;
+use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
+use lucatume\WPBrowser\WordPress\WPConfigFile;
 use function wp_slash;
+
 
 class InstallAction implements CodeExecutionActionInterface
 {
+	use WordPressChecks;
+
     private FileRequest $request;
 
     public function __construct(
@@ -39,12 +44,18 @@ class InstallAction implements CodeExecutionActionInterface
 
                 // Plug the `wp_mail` function to avoid the sending of emails.
                 require_once dirname(__DIR__, 3) . '/includes/pluggables/function-wp-mail.php';
-
-                if (!defined('WP_SITEURL')) {
-                    define('WP_SITEURL', $url);
-                }
             })
             ->addAfterLoadClosure(fn() => $this->installWordPress($title, $adminUser, $adminPassword, $adminEmail));
+
+        // Define the `WP_SITEURL` constant if not already defined in the wp-config.php file.
+        $wpConfigFilePath = $this->findWpConfigFilePath($wpRootDir);
+        if ($wpConfigFilePath) {
+            $wpConfigFile = new WPConfigFile($wpRootDir, $wpConfigFilePath);
+            if (!$wpConfigFile->getConstant('WP_SITEURL')) {
+                $request->defineConstant('WP_SITEURL', $url);
+            }
+        }
+
         $this->request = $request;
     }
 
