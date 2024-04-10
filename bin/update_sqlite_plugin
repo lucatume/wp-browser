@@ -11,4 +11,5 @@ unzip -o "$root_dir/includes/sqlite-database-integration.zip" -d "$root_dir/incl
 # Remove the zip file
 rm "$root_dir/includes/sqlite-database-integration.zip"
 git apply "${root_dir}"/config/patches/sqlite-database-integration/db.copy.patch
+git apply "${root_dir}"/config/patches/sqlite-database-integration/load.php.patch
 
