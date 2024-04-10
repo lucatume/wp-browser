@@ -23,6 +23,7 @@ use lucatume\WPBrowser\WordPress\InstallationState\Scaffolded;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
+use lucatume\WPBrowser\Template\Wpbrowser;
 
 class SiteProject extends InitTemplate implements ProjectInterface
 {
@@ -95,7 +96,8 @@ class SiteProject extends InitTemplate implements ProjectInterface
         }
 
         $contentDir = $this->installation->getContentDir();
-        Installation::placeSqliteMuPlugin($this->installation->getMuPluginsDir(), $contentDir);
+        $dropInPath = Installation::placeSqliteMuPlugin($this->installation->getMuPluginsDir(), $contentDir);
+        Wpbrowser::setDropInPath($dropInPath);
 
         $this->sayInfo('SQLite drop-in placed, installing WordPress ...');
         $serverLocalhostPort = Random::openLocalhostPort();

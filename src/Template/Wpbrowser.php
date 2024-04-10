@@ -25,6 +25,7 @@ use Throwable;
 class Wpbrowser extends Bootstrap
 {
     private ?TestEnvironment $testEnvironment = null;
+    private static string $dropInPath = '';
 
     /**
      * @throws RuntimeException
@@ -325,11 +326,19 @@ EOF;
         return new SiteProject($this->input, $this->output, $workDir);
     }
 
+    public static function setDropInPath(string $path): void{
+        self::$dropInPath = $path;
+    }
+
     protected function cleanUpOnFail(): void
     {
         FS::rrmdir($this->workDir . '/tests');
         if (is_file($this->workDir . '/codeception.yml')) {
             @unlink($this->workDir . '/codeception.yml');
+        }
+
+        if(self::$dropInPath && file_exists(self::$dropInPath)){
+            @unlink(self::$dropInPath);
         }
     }
 }

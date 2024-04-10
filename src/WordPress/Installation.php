@@ -83,13 +83,14 @@ class Installation
     /**
      * @throws InstallationException
      */
-    public static function placeSqliteMuPlugin(string $muPluginsDir, string $contentDir): void
+    public static function placeSqliteMuPlugin(string $muPluginsDir, string $contentDir): string
     {
-        if (self::hasSqliteDropin($contentDir . '/db.php')) {
-            return;
+        $dropinPathname = $contentDir . '/db.php';
+        if (self::hasSqliteDropin($dropinPathname)) {
+            return $dropinPathname;
         }
 
-        if (is_file($contentDir . '/db.php')) {
+        if (is_file($dropinPathname)) {
             throw new InstallationException(
                 "The db.php file already exists in the $contentDir directory and it's not a SQLite drop-in.",
                 InstallationException::DB_DROPIN_ALREADY_EXISTS
@@ -131,7 +132,7 @@ class Installation
             $dbCopyContents
         );
 
-        if (!file_put_contents($contentDir . '/db.php', $updatedContents, LOCK_EX)) {
+        if (!file_put_contents($dropinPathname, $updatedContents, LOCK_EX)) {
             throw new InstallationException(
                 "Could not write the SQLite db.php file at $contentDir.",
                 InstallationException::SQLITE_DROPIN_COPY_FAILED
@@ -147,6 +148,8 @@ class Installation
                 InstallationException::SQLITE_DROPIN_COPY_FAILED
             );
         }
+
+        return $dropinPathname;
     }
 
     /**
