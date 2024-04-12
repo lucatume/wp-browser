@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.5.7] 2024-04-12;
+
 ### Changed
 
 - Fix non standard installation handling, hello Bedrock! (#716)
@@ -1917,4 +1919,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.5.4]: https://github.com/lucatume/wp-browser/compare/3.5.3...3.5.4
 [3.5.5]: https://github.com/lucatume/wp-browser/compare/3.5.4...3.5.5
 [3.5.6]: https://github.com/lucatume/wp-browser/compare/3.5.5...3.5.6
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.5.6...HEAD
+[3.5.7]: https://github.com/lucatume/wp-browser/compare/3.5.6...3.5.7
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.5.7...HEAD
