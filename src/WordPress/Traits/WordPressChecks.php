@@ -33,7 +33,6 @@ trait WordPressChecks
         return $wpRootDir;
     }
 
-
     /**
      * @return string|false
      */

@@ -28,6 +28,10 @@ class Wpbrowser extends Bootstrap
      * @var \lucatume\WPBrowser\Project\TestEnvironment|null
      */
     private $testEnvironment;
+    /**
+     * @var string
+     */
+    private static $dropInPath = '';
 
     /**
      * @throws RuntimeException
@@ -199,6 +203,7 @@ WORDPRESS_TABLE_PREFIX={$testEnv->wpTablePrefix}
 # The URL and domain of the WordPress site used in end-to-end tests.
 WORDPRESS_URL={$testEnv->wpUrl}
 WORDPRESS_DOMAIN={$testEnv->wpDomain}
+WORDPRESS_ADMIN_PATH={$testEnv->wpAdminPath}
 
 # The username and password of the administrator user of the WordPress site used in end-to-end tests.
 WORDPRESS_ADMIN_USER={$testEnv->wpAdminUser}
@@ -241,7 +246,7 @@ modules:
             url: '%WORDPRESS_URL%'
             adminUsername: '%WORDPRESS_ADMIN_USER%'
             adminPassword: '%WORDPRESS_ADMIN_PASSWORD%'
-            adminPath: '/wp-admin'
+            adminPath: '%WORDPRESS_ADMIN_PATH%'
             browser: chrome
             host: '%CHROMEDRIVER_HOST%'
             port: '%CHROMEDRIVER_PORT%'
@@ -269,10 +274,10 @@ modules:
             wpRootFolder: '%WORDPRESS_ROOT_DIR%'
         lucatume\WPBrowser\Module\WPLoader:
             loadOnly: true
-            wpRootFolder: "%WORDPRESS_ROOT_DIR%" 
+            wpRootFolder: '%WORDPRESS_ROOT_DIR%'
             dbUrl: '%WORDPRESS_DB_URL%'
             domain: '%WORDPRESS_DOMAIN%'
-            
+ 
 EOF;
         $this->createSuite('EndToEnd', 'EndToEnd', $suiteConfig);
         $bootstrapContents = <<<EOF
@@ -319,11 +324,20 @@ EOF;
         return new SiteProject($this->input, $this->output, $workDir);
     }
 
+    public static function setDropInPath(string $path): void
+    {
+        self::$dropInPath = $path;
+    }
+
     protected function cleanUpOnFail(): void
     {
         FS::rrmdir($this->workDir . '/tests');
         if (is_file($this->workDir . '/codeception.yml')) {
             @unlink($this->workDir . '/codeception.yml');
+        }
+
+        if (self::$dropInPath && file_exists(self::$dropInPath)) {
+            @unlink(self::$dropInPath);
         }
     }
 }

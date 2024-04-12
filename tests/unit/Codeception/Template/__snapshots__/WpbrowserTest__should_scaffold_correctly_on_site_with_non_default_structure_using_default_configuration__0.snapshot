@@ -1,4 +1,4 @@
->>> /tests/EndToEnd.suite.yml >>>
+>>> /EndToEnd.suite.yml >>>
 # Integration suite configuration
 #
 # Run integration and "WordPress unit" tests.
@@ -48,9 +48,9 @@ modules:
             dbUrl: '%WORDPRESS_DB_URL%'
             domain: '%WORDPRESS_DOMAIN%'
  
-<<< /tests/EndToEnd.suite.yml <<<
+<<< /EndToEnd.suite.yml <<<
 
->>> /tests/Integration/SampleTest.php >>>
+>>> /Integration/SampleTest.php >>>
 <?php
 
 namespace Tests;
@@ -83,14 +83,19 @@ class SampleTest extends WPTestCase
         $this->assertInstanceOf(\WP_Post::class, $post);
     }
 
-    public function test_theme_active(): void
+    public function test_default_users(): void
     {
-        $this->assertTrue(wp_get_theme()->stylesheet === 'theme_23');
+        $this->assertEquals(0, wp_get_current_user()->ID);
+        
+        wp_set_current_user(1);
+        
+        $this->assertEquals(1, wp_get_current_user()->ID);
+        $this->assertEquals('admin', wp_get_current_user()->user_login);
     }
 }
-<<< /tests/Integration/SampleTest.php <<<
+<<< /Integration/SampleTest.php <<<
 
->>> /tests/Integration/_bootstrap.php >>>
+>>> /Integration/_bootstrap.php >>>
 <?php
 /*
  * Integration suite bootstrap file.
@@ -103,9 +108,9 @@ class SampleTest extends WPTestCase
  * If you need to load one or more database dump file(s) to set up the test database, add the path to the dump file to
  * the "modules.config.WPLoader.dump" setting.
  */
-<<< /tests/Integration/_bootstrap.php <<<
+<<< /Integration/_bootstrap.php <<<
 
->>> /tests/Integration.suite.yml >>>
+>>> /Integration.suite.yml >>>
 # Integration suite configuration
 #
 # Run integration and "WordPress unit" tests.
@@ -125,10 +130,10 @@ modules:
            adminEmail: 'admin@%WORDPRESS_DOMAIN%'
            title: 'Integration Tests'
            plugins: []
-           theme: 'theme_23'
-<<< /tests/Integration.suite.yml <<<
+           theme: ''
+<<< /Integration.suite.yml <<<
 
->>> /tests/Support/IntegrationTester.php >>>
+>>> /Support/IntegrationTester.php >>>
 <?php
 
 declare(strict_types=1);
@@ -159,9 +164,9 @@ class IntegrationTester extends \Codeception\Actor
      */
 }
 
-<<< /tests/Support/IntegrationTester.php <<<
+<<< /Support/IntegrationTester.php <<<
 
->>> /tests/Support/EndToEndTester.php >>>
+>>> /Support/EndToEndTester.php >>>
 <?php
 
 declare(strict_types=1);
@@ -192,13 +197,13 @@ class EndToEndTester extends \Codeception\Actor
      */
 }
 
-<<< /tests/Support/EndToEndTester.php <<<
+<<< /Support/EndToEndTester.php <<<
 
->>> /tests/Support/Data/.gitkeep >>>
+>>> /Support/Data/.gitkeep >>>
 
-<<< /tests/Support/Data/.gitkeep <<<
+<<< /Support/Data/.gitkeep <<<
 
->>> /tests/EndToEnd/_bootstrap.php >>>
+>>> /EndToEnd/_bootstrap.php >>>
 <?php
 /*
  * EndToEnd suite bootstrap file.
@@ -217,9 +222,9 @@ class EndToEndTester extends \Codeception\Actor
  * `vendor/bin/codecept wp:cli EndToEnd user create alice alice@example.com --role=administrator` to create a new user.
  * `vendor/bin/codecept wp:cli EndToEnd db export tests/Support/Data/dump.sql` to update the dump file.
  */
-<<< /tests/EndToEnd/_bootstrap.php <<<
+<<< /EndToEnd/_bootstrap.php <<<
 
->>> /tests/EndToEnd/ActivationCest.php >>>
+>>> /EndToEnd/ActivationCest.php >>>
 <?php
 
 namespace Tests\EndToEnd;
@@ -228,27 +233,32 @@ use Tests\Support\EndToEndTester;
 
 class ActivationCest
 {
-    public function test_it_activates_correctly(EndToEndTester $I): void
+    public function test_homepage_works(EndToEndTester $I): void
+    {
+        $I->amOnPage('/');
+        $I->seeElement('body');
+    }
+    
+    public function test_can_login_as_admin(EndToEndTester $I): void
     {
         $I->loginAsAdmin();
-        $I->amOnAdminPage('/themes.php');
-
-        $I->seeElement('.theme.active[data-slug="theme-23"]');
+        $I->amOnAdminPage('/');
+        $I->seeElement('body.wp-admin');
     }
 }
 
-<<< /tests/EndToEnd/ActivationCest.php <<<
+<<< /EndToEnd/ActivationCest.php <<<
 
->>> /tests/.env >>>
+>>> /.env >>>
 # The path to the WordPress root directory, the one containing the wp-load.php file.
 # This can be a relative path from the directory that contains the codeception.yml file,
 # or an absolute path.
-WORDPRESS_ROOT_DIR=tests/_wordpress
+WORDPRESS_ROOT_DIR=web/wp
 
 # Tests will require a MySQL database to run.
 # The database will be created if it does not exist.
 # Do not use a database that contains important data!
-WORDPRESS_DB_URL=sqlite://%codecept_root_dir%/tests/_wordpress/data/db.sqlite
+WORDPRESS_DB_URL=sqlite://%codecept_root_dir%/tests/Support/Data/db.sqlite
 
 # The Integration suite will use this table prefix for the WordPress tables.
 TEST_TABLE_PREFIX=test_
@@ -257,9 +267,9 @@ TEST_TABLE_PREFIX=test_
 WORDPRESS_TABLE_PREFIX=wp_
 
 # The URL and domain of the WordPress site used in end-to-end tests.
-WORDPRESS_URL=http://localhost:39249
-WORDPRESS_DOMAIN=localhost:39249
-WORDPRESS_ADMIN_PATH=/wp-admin
+WORDPRESS_URL=http://localhost:24423
+WORDPRESS_DOMAIN=localhost:24423
+WORDPRESS_ADMIN_PATH=/wp/wp-admin
 
 # The username and password of the administrator user of the WordPress site used in end-to-end tests.
 WORDPRESS_ADMIN_USER=admin
@@ -267,76 +277,18 @@ WORDPRESS_ADMIN_PASSWORD=password
 
 # The host and port of the ChromeDriver server that will be used in end-to-end tests.
 CHROMEDRIVER_HOST=localhost
-CHROMEDRIVER_PORT=43995
+CHROMEDRIVER_PORT=17558
 
 # The port on which the PHP built-in server will serve the WordPress installation.
-BUILTIN_SERVER_PORT=39249
+BUILTIN_SERVER_PORT=24423
 
-<<< /tests/.env <<<
+# The path to the directory that should be served on localhost, the one containing the wp-config.php file.
+WORDPRESS_DOCROOT=web
 
->>> /tests/_output/.gitignore >>>
+<<< /.env <<<
+
+>>> /_output/.gitignore >>>
 *
 !.gitignore
 
-<<< /tests/_output/.gitignore <<<
-
->>> /codeception.yml >>>
-namespace: Tests
-support_namespace: Support
-paths:
-    tests: tests
-    output: tests/_output
-    data: tests/Support/Data
-    support: tests/Support
-    envs: tests/_envs
-actor_suffix: Tester
-params:
-    - tests/.env
-extensions:
-    enabled:
-        - Codeception\Extension\RunFailed
-        - lucatume\WPBrowser\Extension\ChromeDriverController
-        - lucatume\WPBrowser\Extension\BuiltInServerController
-    config:
-        lucatume\WPBrowser\Extension\ChromeDriverController:
-            port: '%CHROMEDRIVER_PORT%'
-        lucatume\WPBrowser\Extension\BuiltInServerController:
-            workers: 5
-            port: '%BUILTIN_SERVER_PORT%'
-            docroot: '%WORDPRESS_ROOT_DIR%'
-            env:
-                DATABASE_TYPE: sqlite
-                DB_ENGINE: sqlite
-                DB_DIR: '%codecept_root_dir%/tests/Support/Data'
-                DB_FILE: db.sqlite
-    commands:
-        - lucatume\WPBrowser\Command\RunOriginal
-        - lucatume\WPBrowser\Command\RunAll
-        - lucatume\WPBrowser\Command\GenerateWPUnit
-        - lucatume\WPBrowser\Command\DbExport
-        - lucatume\WPBrowser\Command\DbImport
-        - lucatume\WPBrowser\Command\MonkeyCachePath
-        - lucatume\WPBrowser\Command\MonkeyCacheClear
-        - lucatume\WPBrowser\Command\DevStart
-        - lucatume\WPBrowser\Command\DevStop
-        - lucatume\WPBrowser\Command\DevInfo
-        - lucatume\WPBrowser\Command\DevRestart
-        - lucatume\WPBrowser\Command\ChromedriverUpdate
-
-<<< /codeception.yml <<<
-
->>> /style.css >>>
-/*
-Theme Name: Theme 23
-Template: twentytwenty
-*/
-<<< /style.css <<<
-
->>> /composer.json >>>
-{
-  "name": "acme/theme-23",
-  "type": "wordpress-theme",
-  "require": {},
-  "require-dev": {}
-}
-<<< /composer.json <<<
+<<< /_output/.gitignore <<<

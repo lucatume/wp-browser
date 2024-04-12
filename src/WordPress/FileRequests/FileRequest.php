@@ -165,8 +165,10 @@ abstract class FileRequest
             PreloadFilters::addFilter($hookName, $callback, $priority, $acceptedArgs);
         }
 
-        // Reveal the errors.
-        define('WP_DISABLE_FATAL_ERROR_HANDLER', true);
+        // Reveal the errors: disable the fatal error handler.
+        PreloadFilters::addFilter('wp_fatal_error_handler_enabled', function () {
+            return false;
+        }, 1000);
 
         // Set up the cookie jar.
         foreach ($this->cookieJar as $key => $value) {

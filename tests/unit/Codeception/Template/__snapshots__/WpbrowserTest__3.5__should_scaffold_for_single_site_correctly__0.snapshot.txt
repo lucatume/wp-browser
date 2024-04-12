@@ -25,6 +25,8 @@ extensions:
                 DB_ENGINE: sqlite
                 DB_DIR: '%codecept_root_dir%/tests/_data'
                 DB_FILE: db.sqlite
+                WPBROWSER_SITEURL: '%WORDPRESS_URL%'
+                WPBROWSER_HOMEURL: '%WORDPRESS_URL%'
     commands:
         - lucatume\WPBrowser\Command\RunOriginal
         - lucatume\WPBrowser\Command\RunAll
