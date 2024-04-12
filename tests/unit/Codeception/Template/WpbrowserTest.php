@@ -711,4 +711,53 @@ EOT;
             fn() => $this->replaceRandomPorts(...func_get_args())
         );
     }
+
+    /**
+     * It should scaffold correctly on site with non default structure using default configuration
+     *
+     * @test
+     */
+    public function should_scaffold_correctly_on_site_with_non_default_structure_using_default_configuration(): void
+    {
+        if (PHP_VERSION < 8.0) {
+            $this->markTestSkipped('This test requires PHP 8.0 or higher.');
+        }
+
+        $projectDir = FS::tmpDir('setup_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        (new BedrockProject($db, 'https://the-project.local'))->scaffold($projectDir);
+
+        $this->mockComposerBin($projectDir);
+
+        $command = [
+            PHP_BINARY,
+            codecept_root_dir("vendor/bin/codecept"),
+            'init',
+            'wpbrowser',
+            '--path=' . $projectDir
+        ];
+        $process = new Process($command);
+
+
+        $process->setInput(
+            "yes\n" // Yes, use recommended setup.
+        );
+
+        $process->mustRun();
+
+        // Remove some hashed files.
+        FS::rrmdir($projectDir . '/' . Codeception::supportDir() . '/_generated');
+        FS::rrmdir($projectDir . '/' . Codeception::dataDir() . '/db.sqlite');
+        FS::rrmdir($projectDir . '/' . Codeception::dataDir() . '/dump.sql');
+
+        // Random ports will change: visit the data to replace the random ports with a placeholder.
+        $this->assertMatchesDirectorySnapshot(
+            $projectDir . '/tests',
+            fn() => $this->replaceRandomPorts(...func_get_args())
+        );
+    }
 }

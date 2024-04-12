@@ -12,6 +12,7 @@ use lucatume\WPBrowser\Command\DevStop;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Extension\BuiltInServerController;
 use lucatume\WPBrowser\Extension\ChromeDriverController;
+use lucatume\WPBrowser\Template\Wpbrowser;
 use lucatume\WPBrowser\Utils\ChromedriverInstaller;
 use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
@@ -47,7 +48,7 @@ class SiteProject extends InitTemplate implements ProjectInterface
             );
         }
 
-        $suggest = "Make sure you're initializing wp-browser at the root of your site project,".
+        $suggest = "Make sure you're initializing wp-browser at the root of your site project," .
             " and that the directory contains the WordPress files and a wp-config.php file.";
 
         if ($installationState instanceof EmptyDir) {
@@ -95,7 +96,8 @@ class SiteProject extends InitTemplate implements ProjectInterface
         }
 
         $contentDir = $this->installation->getContentDir();
-        Installation::placeSqliteMuPlugin($this->installation->getMuPluginsDir(), $contentDir);
+        $dropInPath = Installation::placeSqliteMuPlugin($this->installation->getMuPluginsDir(), $contentDir);
+        Wpbrowser::setDropInPath($dropInPath);
 
         $this->sayInfo('SQLite drop-in placed, installing WordPress ...');
         $serverLocalhostPort = Random::openLocalhostPort();
@@ -141,6 +143,22 @@ BUILTIN_SERVER_PORT=$serverLocalhostPort
 
 EOT;
 
+        $docRootEnvVar = "%WORDPRESS_ROOT_DIR%";
+        $docRoot = dirname($this->installation->getWpConfigFilePath());
+        $siteUrlRelativePath = '';
+        $wpRootDir = $this->installation->getWpRootDir();
+        if ($docRoot !== rtrim($wpRootDir, '/')) {
+            $docRootRelativePath = FS::relativePath($this->workDir, $docRoot);
+            $docRootEnvVar = '%WORDPRESS_DOCROOT%';
+            $siteUrlRelativePath = rtrim('/' . ltrim(FS::relativePath($docRoot, $wpRootDir), '/'), '/');
+            $this->testEnvironment->extraEnvFileContents .= <<<EOT
+
+# The path to the directory that should be served on localhost, the one containing the wp-config.php file.
+WORDPRESS_DOCROOT=$docRootRelativePath
+
+EOT;
+        }
+
         $this->testEnvironment->extensionsEnabled = [
             ChromeDriverController::class => [
                 'port' => "%CHROMEDRIVER_PORT%",
@@ -148,12 +166,14 @@ EOT;
             BuiltInServerController::class => [
                 'workers' => 5,
                 'port' => "%BUILTIN_SERVER_PORT%",
-                'docroot' => "%WORDPRESS_ROOT_DIR%",
+                'docroot' => $docRootEnvVar,
                 'env' => [
                     'DATABASE_TYPE' => 'sqlite',
                     'DB_ENGINE' => 'sqlite',
                     'DB_DIR' => '%codecept_root_dir%' . DIRECTORY_SEPARATOR . $dataDirRelativePath,
-                    'DB_FILE' => 'db.sqlite'
+                    'DB_FILE' => 'db.sqlite',
+                    'WPBROWSER_SITEURL' => '%WORDPRESS_URL%' . $siteUrlRelativePath,
+                    'WPBROWSER_HOMEURL' => '%WORDPRESS_URL%'
                 ]
             ]
 
@@ -163,7 +183,8 @@ EOT;
         $this->testEnvironment->customCommands[] = DevInfo::class;
         $this->testEnvironment->customCommands[] = DevRestart::class;
         $this->testEnvironment->customCommands[] = ChromedriverUpdate::class;
-        $this->testEnvironment->wpRootDir = '.';
+        $this->testEnvironment->wpRootDir = FS::relativePath($this->workDir, $wpRootDir) ?: '.';
+        $this->testEnvironment->wpAdminPath = '/' . ltrim(FS::relativePath($docRoot, $wpRootDir . '/wp-admin'), '/');
         $this->testEnvironment->dbUrl = 'sqlite://' . implode(
             DIRECTORY_SEPARATOR,
             ['%codecept_root_dir%', $dataDirRelativePath, 'db.sqlite']
@@ -182,7 +203,7 @@ EOT;
 
     private function getName(): string
     {
-        return basename(dirname($this->workDir));
+        return basename($this->workDir);
     }
 
     private function scaffoldEndToEndActivationCest(): void

@@ -12,6 +12,7 @@ class TestEnvironment
     public string $wpTablePrefix = 'wp_';
     public string $wpUrl = 'http://wordpress.test';
     public string $wpDomain = 'wordpress.test';
+    public string $wpAdminPath = '/wp-admin';
     public string $wpAdminUser = 'admin';
     public string $wpAdminPassword = 'password';
     public string $chromeDriverHost = 'localhost';

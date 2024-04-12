@@ -12,7 +12,9 @@
  * @package wp-sqlite-integration
  */
 
-define( 'SQLITE_MAIN_FILE', __FILE__ );
+if (!defined('SQLITE_MAIN_FILE')) {
+    define('SQLITE_MAIN_FILE', __FILE__);
+}
 
 require_once __DIR__ . '/admin-page.php';
 require_once __DIR__ . '/activate.php';
