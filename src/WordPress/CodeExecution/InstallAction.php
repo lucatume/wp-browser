@@ -4,10 +4,15 @@ namespace lucatume\WPBrowser\WordPress\CodeExecution;
 
 use Closure;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequest;
+use lucatume\WPBrowser\WordPress\Traits\WordPressChecks;
+use lucatume\WPBrowser\WordPress\WPConfigFile;
+
 use function wp_slash;
 
 class InstallAction implements CodeExecutionActionInterface
 {
+    use WordPressChecks;
+
     /**
      * @var \lucatume\WPBrowser\WordPress\FileRequests\FileRequest
      */
@@ -27,7 +32,7 @@ class InstallAction implements CodeExecutionActionInterface
             ->setTargetFile($wpRootDir . '/wp-load.php')
             ->defineConstant('WP_INSTALLING', true)
             ->defineConstant('MULTISITE', false)
-            ->addPreloadClosure(function () use ($url): void {
+            ->addPreloadClosure(function (): void {
                 // The `MULTISITE` const might be already defined in the `wp-config.php` file.
                 // If that is the case, silence the error.
                 set_error_handler(static function ($errno, $errstr): bool {
@@ -42,14 +47,20 @@ class InstallAction implements CodeExecutionActionInterface
 
                 // Plug the `wp_mail` function to avoid the sending of emails.
                 require_once dirname(__DIR__, 3) . '/includes/pluggables/function-wp-mail.php';
-
-                if (!defined('WP_SITEURL')) {
-                    define('WP_SITEURL', $url);
-                }
             })
             ->addAfterLoadClosure(function () use ($title, $adminUser, $adminPassword, $adminEmail) {
                 return $this->installWordPress($title, $adminUser, $adminPassword, $adminEmail);
             });
+
+        // Define the `WP_SITEURL` constant if not already defined in the wp-config.php file.
+        $wpConfigFilePath = $this->findWpConfigFilePath($wpRootDir);
+        if ($wpConfigFilePath) {
+            $wpConfigFile = new WPConfigFile($wpRootDir, $wpConfigFilePath);
+            if (!$wpConfigFile->getConstant('WP_SITEURL')) {
+                $request->defineConstant('WP_SITEURL', $url);
+            }
+        }
+
         $this->request = $request;
     }
 

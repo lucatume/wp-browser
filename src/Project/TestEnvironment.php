@@ -33,6 +33,10 @@ class TestEnvironment
     /**
      * @var string
      */
+    public $wpAdminPath = '/wp-admin';
+    /**
+     * @var string
+     */
     public $wpAdminUser = 'admin';
     /**
      * @var string
