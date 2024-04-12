@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Fix non standard installation handling, hello Bedrock! (#716)
+
 ## [3.5.6] 2024-04-07;
 
 ### Changed
