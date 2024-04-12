@@ -48,7 +48,10 @@ When used in this mode, the module supports the following configuration paramete
   `WP_PLUGIN_DIR` constant.
 * `plugins` - a list of plugins to activate and load in the WordPress installation. Each plugin must be specified in a
   format like `hello.php` or `my-plugin/my-plugin.php` format.
-* `silentlyActivatePlugins` - a list of plugins to activate **silently**, without firing their activation hooks. Depending on the plugin, a silent activation might cause the plugin to not work correctly. The list must be in the same format as the `plugins` parameter and plugin should be activated silently only if they are not working correctly during normal activation and are known to work correctly when activated silently.
+* `silentlyActivatePlugins` - a list of plugins to activate **silently**, without firing their activation hooks.
+  Depending on the plugin, a silent activation might cause the plugin to not work correctly. The list must be in the
+  same format as the `plugins` parameter and plugin should be activated silently only if they are not working correctly
+  during normal activation and are known to work correctly when activated silently.
 * `bootstrapActions` - a list of actions or callables to call **after** WordPress is loaded and before the tests run.
 * `theme` - the theme to activate and load in the WordPress installation. The theme must be specified in slug format
   like
@@ -83,11 +86,29 @@ When used in this mode, the module supports the following configuration paramete
 * `WP_HTTP_BLOCK_EXTERNAL` - the `WP_HTTP_BLOCK_EXTERNAL` constant value to use when loading WordPress. If
   the `wpRootFolder` path points at a configured installation, containing the `wp-config.php` file, then the value of
   the constant in the configuration file will be used, else it will be randomly generated.
-* `backupGlobals` - a boolean value to indicate if the global environment should be backed up before each test. Defaults to `true`. The globals' backup involves serialization of the global state, plugins or themes that define classes developed to prevent serialization of the global state will cause the tests to fail. Set this parameter to `false` to disable the global environment backup, or use a more refined approach setting the `backupGlobalsExcludeList` parameter below. Note that a test case that is explicitly setting the `backupGlobals` property will override this configuration parameter.
-* `backupGlobalsExcludeList` - a list of global variables to exclude from the global environment backup. The list must be in the form of array, and it will be merged to the list of globals excluded by default.
-* `backupStaticAttributes` - a boolean value to indicate if static attributes of classes should be backed up before each test. Defaults to `true`. The static attributes' backup involves serialization of the global state, plugins or themes that define classes developed to prevent serialization of the global state will cause the tests to fail. Set this parameter to `false` to disable the static attributes backup, or use a more refined approanch setting the `backupStaticAttributesExcludeList` parameter below. Note that a test case that is explicitly setting the `backupStaticAttributes` property will override this configuration parameter.
-* `backupStaticAttributesExcludeList` - a list of classes to exclude from the static attributes backup. The list must be in the form of map from class names to the array of method names to exclude from the backup. See an example below.
-* `skipInstall` - a boolean value to indicate if the WordPress installation should be skipped between runs, when already installed. Defaults to `false`. During boot, the `WPLoader` module will re-install WordPress and activate, on top of the fresh installation, any plugin and theme specified in the `plugins` and `theme` configuration parameters: this can be a time-consuming operation. Set this parameter to `true` to run the WordPress installation once and just load it on the following runs. To force the installation to run again, rerun the suite using the WPLoader module using the `--debug` flag or delete the `_wploader-state.sql` file in the suite directory. This configuration parameter is ignored when the `loadOnly` parameter is set to `true`.
+* `backupGlobals` - a boolean value to indicate if the global environment should be backed up before each test. Defaults
+  to `true`. The globals' backup involves serialization of the global state, plugins or themes that define classes
+  developed to prevent serialization of the global state will cause the tests to fail. Set this parameter to `false` to
+  disable the global environment backup, or use a more refined approach setting the `backupGlobalsExcludeList` parameter
+  below. Note that a test case that is explicitly setting the `backupGlobals` property will override this configuration
+  parameter.
+* `backupGlobalsExcludeList` - a list of global variables to exclude from the global environment backup. The list must
+  be in the form of array, and it will be merged to the list of globals excluded by default.
+* `backupStaticAttributes` - a boolean value to indicate if static attributes of classes should be backed up before each
+  test. Defaults to `true`. The static attributes' backup involves serialization of the global state, plugins or themes
+  that define classes developed to prevent serialization of the global state will cause the tests to fail. Set this
+  parameter to `false` to disable the static attributes backup, or use a more refined approanch setting
+  the `backupStaticAttributesExcludeList` parameter below. Note that a test case that is explicitly setting
+  the `backupStaticAttributes` property will override this configuration parameter.
+* `backupStaticAttributesExcludeList` - a list of classes to exclude from the static attributes backup. The list must be
+  in the form of map from class names to the array of method names to exclude from the backup. See an example below.
+* `skipInstall` - a boolean value to indicate if the WordPress installation should be skipped between runs, when already
+  installed. Defaults to `false`. During boot, the `WPLoader` module will re-install WordPress and activate, on top of
+  the fresh installation, any plugin and theme specified in the `plugins` and `theme` configuration parameters: this can
+  be a time-consuming operation. Set this parameter to `true` to run the WordPress installation once and just load it on
+  the following runs. To force the installation to run again, rerun the suite using the WPLoader module using
+  the `--debug` flag or delete the `_wploader-state.sql` file in the suite directory. This configuration parameter is
+  ignored when the `loadOnly` parameter is set to `true`.
 
 This is an example of an integration suite configured to use the module:
 
@@ -159,7 +180,8 @@ modules:
         theme: twentytwentythree
 ```
 
-The follow example configuration prevents the backup of globals and static attributes in all the tests of the suite that are not explicitly overriding the `backupGlobals` and `backupStaticAttributes` properties:
+The follow example configuration prevents the backup of globals and static attributes in all the tests of the suite that
+are not explicitly overriding the `backupGlobals` and `backupStaticAttributes` properties:
 
 ```yaml
 actor: IntegrationTester
@@ -219,45 +241,16 @@ modules:
               - instance
               - anotherStaticAttributeThatWillExplodeOnWakeup
           - AnotherPlugin\AnotherClass:
-                - instance
-                - yetAnotherStaticAttributeThatWillExplodeOnWakeup
+              - instance
+              - yetAnotherStaticAttributeThatWillExplodeOnWakeup
 ```
 
 ### Handling a custom site structure
 
-If you're working on a site project using a custom file structure, e.g. [Bedrock][4], you should
-use [a custom configuration](./../custom-configuration.md) and, together with that, configure the `WPLoader` module to
-load WordPress, plugins and themes code from the correct locations.
-Take care to point the `wpRootFolder` parameter to the directory containing the `wp-load.php` file,
-the `/var/my-site/web/wp` one in the following example, and the module will read the project configuration file to load
-the WordPress code from the correct location.
+The setup process should _just work_ for standard and non-standard WordPress installations alike.
 
-Here's an example of how the module should be configured to run integration tests on a Bedrock installation:
-
-```yaml
-actor: IntegrationTester
-bootstrap: _bootstrap.php
-modules:
-  enabled:
-    - \Helper\Integration
-    - lucatume\WPBrowser\Module\WPLoader:
-        wpRootFolder: /var/my-site/web/wp
-        dbUrl: mysql://root:root@mysql:3306/wordpress
-        tablePrefix: test_
-        domain: my-project.test
-        adminEmail: admin@my-project.test
-        title: 'Integration Tests'
-        plugins:
-          - hello.php
-          - woocommerce/woocommerce.php
-          - my-plugin/my-plugin.php
-        theme: twentytwentythree
-```
-
-In general, pointing the `wpRootFolder` parameter to the directory containing the `wp-load.php` file should take care of
-loading WordPress code from the correct location.
-Should that not be the case, use the `configFile` parameter to point the module to the project test configuration file:
-a PHP file defining the constants and environment variables to use to load WordPress, plugins and themes correctly.
+Even if you're working on a site project using a custom file structure, e.g. [Bedrock][4], you will be able to set up
+your site to run tests using the default configuration based on PHP built-in server, Chromedriver and SQLite database.
 
 ## Configuration with loadOnly: true
 
@@ -330,23 +323,26 @@ The module provides the following methods:
 <!-- methods -->
 
 #### factory
-Signature: `factory()` : `lucatume\WPBrowser\Module\WPLoader\FactoryStore`  
+
+Signature: `factory()` : `lucatume\WPBrowser\Module\WPLoader\FactoryStore`
 
 Accessor method to get the object storing the factories for things.
 This method gives access to the same factories provided by the
 [Core test suite](https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/).
 
 #### getContentFolder
-Signature: `getContentFolder([string $path])` : `string`  
+
+Signature: `getContentFolder([string $path])` : `string`
 
 Returns the absolute path to the WordPress content directory.
 
 #### getInstallation
-Signature: `getInstallation()` : `lucatume\WPBrowser\WordPress\Installation`  
 
+Signature: `getInstallation()` : `lucatume\WPBrowser\WordPress\Installation`
 
 #### getPluginsFolder
-Signature: `getPluginsFolder([string $path])` : `string`  
+
+Signature: `getPluginsFolder([string $path])` : `string`
 
 Returns the absolute path to the plugins directory.
 
@@ -354,12 +350,14 @@ The value will first look at the `WP_PLUGIN_DIR` constant, then the `pluginsFold
 and will, finally, look in the default path from the WordPress root directory.
 
 #### getThemesFolder
-Signature: `getThemesFolder([string $path])` : `string`  
+
+Signature: `getThemesFolder([string $path])` : `string`
 
 Returns the absolute path to the themes directory.
 
 #### getWpRootFolder
-Signature: `getWpRootFolder([?string $path])` : `string`  
+
+Signature: `getWpRootFolder([?string $path])` : `string`
 
 Returns the absolute path to the WordPress root folder or a path within it..
 <!-- /methods -->
