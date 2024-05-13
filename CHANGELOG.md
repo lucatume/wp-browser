@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.1.8] 2024-05-13;
+
 ### Changed
 
 - Updated `sqlite-integration-plugin` and Core PHPUnit suite files.
@@ -2173,4 +2175,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.1.5]: https://github.com/lucatume/wp-browser/compare/4.1.4...4.1.5
 [4.1.6]: https://github.com/lucatume/wp-browser/compare/4.1.5...4.1.6
 [4.1.7]: https://github.com/lucatume/wp-browser/compare/4.1.6...4.1.7
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.1.7...HEAD
+[4.1.8]: https://github.com/lucatume/wp-browser/compare/4.1.7...4.1.8
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.1.8...HEAD
