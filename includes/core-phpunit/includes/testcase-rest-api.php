@@ -2,7 +2,7 @@
 
 namespace lucatume\WPBrowser\TestCase;
 
-abstract class WP_Test_REST_TestCase extends WPTestCase {
+abstract class WPRestApiTestCase extends WPTestCase {
 
 	/**
 	 * Asserts that the REST API response has the specified error.
