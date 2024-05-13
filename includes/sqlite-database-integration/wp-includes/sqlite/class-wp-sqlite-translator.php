@@ -1040,7 +1040,7 @@ class WP_SQLite_Translator {
 		$result->name             = '';
 		$result->sqlite_data_type = '';
 		$result->not_null         = false;
-		$result->default          = null;
+		$result->default          = false;
 		$result->auto_increment   = false;
 		$result->primary_key      = false;
 
@@ -1054,7 +1054,7 @@ class WP_SQLite_Translator {
 		$result->sqlite_data_type   = $skip_mysql_data_type_parts[0];
 		$result->mysql_data_type    = $skip_mysql_data_type_parts[1];
 
-		// Look for the NOT NULL and AUTO_INCREMENT flags.
+		// Look for the NOT NULL, PRIMARY KEY, DEFAULT, and AUTO_INCREMENT flags.
 		while ( true ) {
 			$token = $this->rewriter->skip();
 			if ( ! $token ) {
@@ -1123,8 +1123,30 @@ class WP_SQLite_Translator {
 		if ( $field->not_null ) {
 			$definition .= ' NOT NULL';
 		}
-		if ( null !== $field->default ) {
+		/**
+		 * WPDB removes the STRICT_TRANS_TABLES mode from MySQL queries.
+		 * This mode allows the use of `NULL` when NOT NULL is set on a column that falls back to DEFAULT.
+		 * SQLite does not support this behavior, so we need to add the `ON CONFLICT REPLACE` clause to the column definition.
+		 */
+		if ( $field->not_null ) {
+			$definition .= ' ON CONFLICT REPLACE';
+		}
+		/**
+		 * The value of DEFAULT can be NULL. PHP would print this as an empty string, so we need a special case for it.
+		 */
+		if ( null === $field->default ) {
+			$definition .= ' DEFAULT NULL';
+		} elseif ( false !== $field->default ) {
 			$definition .= ' DEFAULT ' . $field->default;
+		} elseif ( $field->not_null ) {
+			/**
+			 * If the column is NOT NULL, we need to provide a default value to match WPDB behavior caused by removing the STRICT_TRANS_TABLES mode.
+			 */
+			if ( 'text' === $field->sqlite_data_type ) {
+				$definition .= ' DEFAULT \'\'';
+			} elseif ( in_array( $field->sqlite_data_type, array( 'integer', 'real' ), true ) ) {
+				$definition .= ' DEFAULT 0';
+			}
 		}
 
 		/*
@@ -1416,6 +1438,10 @@ class WP_SQLite_Translator {
 				continue;
 			}
 
+			if ( $this->skip_index_hint() ) {
+				continue;
+			}
+
 			$this->rewriter->consume();
 		}
 		$this->rewriter->consume_all();
@@ -1427,8 +1453,9 @@ class WP_SQLite_Translator {
 			$updated_query                     = $this->get_information_schema_query( $updated_query );
 			$params                            = array();
 		} elseif (
-			strpos( $updated_query, '@@SESSION.sql_mode' ) !== false
-			|| strpos( $updated_query, 'CONVERT( ' ) !== false
+			// Examples: @@SESSION.sql_mode, @@GLOBAL.max_allowed_packet, @@character_set_client
+			preg_match( '/@@((SESSION|GLOBAL)\s*\.\s*)?\w+\b/i', $updated_query ) === 1 ||
+			strpos( $updated_query, 'CONVERT( ' ) !== false
 		) {
 			/*
 			 * If the query contains a function that is not supported by SQLite,
@@ -1469,6 +1496,71 @@ class WP_SQLite_Translator {
 	}
 
 	/**
+	 * Ignores the FORCE INDEX clause
+	 *
+	 *    USE {INDEX|KEY}
+	 *      [FOR {JOIN|ORDER BY|GROUP BY}] ([index_list])
+	 *  | {IGNORE|FORCE} {INDEX|KEY}
+	 *      [FOR {JOIN|ORDER BY|GROUP BY}] (index_list)
+	 *
+	 * @see https://dev.mysql.com/doc/refman/8.3/en/index-hints.html
+	 * @return bool
+	 */
+	private function skip_index_hint() {
+		$force = $this->rewriter->peek();
+		if ( ! $force || ! $force->matches(
+			WP_SQLite_Token::TYPE_KEYWORD,
+			WP_SQLite_Token::FLAG_KEYWORD_RESERVED,
+			array( 'USE', 'FORCE', 'IGNORE' )
+		) ) {
+			return false;
+		}
+
+		$index = $this->rewriter->peek_nth( 2 );
+		if ( ! $index || ! $index->matches(
+			WP_SQLite_Token::TYPE_KEYWORD,
+			WP_SQLite_Token::FLAG_KEYWORD_RESERVED,
+			array( 'INDEX', 'KEY' )
+		) ) {
+			return false;
+		}
+
+		$this->rewriter->skip(); // USE, FORCE, IGNORE.
+		$this->rewriter->skip(); // INDEX, KEY.
+
+		$maybe_for = $this->rewriter->peek();
+		if ( $maybe_for && $maybe_for->matches(
+			WP_SQLite_Token::TYPE_KEYWORD,
+			WP_SQLite_Token::FLAG_KEYWORD_RESERVED,
+			array( 'FOR' )
+		) ) {
+			$this->rewriter->skip(); // FOR.
+
+			$token = $this->rewriter->peek();
+			if ( $token && $token->matches(
+				WP_SQLite_Token::TYPE_KEYWORD,
+				WP_SQLite_Token::FLAG_KEYWORD_RESERVED,
+				array( 'JOIN', 'ORDER', 'GROUP' )
+			) ) {
+				$this->rewriter->skip(); // JOIN, ORDER, GROUP.
+				if ( 'BY' === strtoupper( $this->rewriter->peek()->value ) ) {
+					$this->rewriter->skip(); // BY.
+				}
+			}
+		}
+
+		// Skip everything until the closing parenthesis.
+		$this->rewriter->skip(
+			array(
+				'type'  => WP_SQLite_Token::TYPE_OPERATOR,
+				'value' => ')',
+			)
+		);
+
+		return true;
+	}
+
+	/**
 	 * Executes a TRUNCATE statement.
 	 */
 	private function execute_truncate() {
@@ -1493,7 +1585,23 @@ class WP_SQLite_Translator {
 	private function execute_describe() {
 		$this->rewriter->skip();
 		$this->table_name = $this->rewriter->consume()->value;
-		$stmt             = $this->execute_sqlite_query(
+		$this->set_results_from_fetched_data(
+			$this->describe( $this->table_name )
+		);
+		if ( ! $this->results ) {
+			throw new PDOException( 'Table not found' );
+		}
+	}
+
+	/**
+	 * Executes a SELECT statement.
+	 *
+	 * @param string $table_name The table name.
+	 *
+	 * @return array
+	 */
+	private function describe( $table_name ) {
+		return $this->execute_sqlite_query(
 			"SELECT
 				`name` as `Field`,
 				(
@@ -1502,7 +1610,7 @@ class WP_SQLite_Translator {
 					WHEN 1 THEN 'NO'
 					END
 				) as `Null`,
-				IFNULL(
+				COALESCE(
 					d.`mysql_type`,
 					(
 						CASE `type`
@@ -1522,31 +1630,67 @@ class WP_SQLite_Translator {
 					ELSE 'PRI'
 					END
 				) as `Key`
-				FROM pragma_table_info(\"$this->table_name\") p
+				FROM pragma_table_info(\"$table_name\") p
 				LEFT JOIN " . self::DATA_TYPES_CACHE_TABLE . " d
-				ON d.`table` = \"$this->table_name\"
+				ON d.`table` = \"$table_name\"
 				AND d.`column_or_index` = p.`name`
 				;
 			"
-		);
-		$this->set_results_from_fetched_data(
-			$stmt->fetchAll( $this->pdo_fetch_mode )
-		);
-		if ( ! $this->results ) {
-			throw new PDOException( 'Table not found' );
-		}
+		)
+		->fetchAll( $this->pdo_fetch_mode );
 	}
 
 	/**
 	 * Executes an UPDATE statement.
+	 * Supported syntax:
+	 *
+	 * UPDATE [LOW_PRIORITY] [IGNORE] table_reference
+	 *    SET assignment_list
+	 *    [WHERE where_condition]
+	 *    [ORDER BY ...]
+	 *    [LIMIT row_count]
+	 *
+	 * @see https://dev.mysql.com/doc/refman/8.0/en/update.html
 	 */
 	private function execute_update() {
-		$this->rewriter->consume(); // Update.
-
-		$params = array();
+		$this->rewriter->consume(); // Consume the UPDATE keyword.
+		$has_where                 = false;
+		$needs_closing_parenthesis = false;
+		$params                    = array();
 		while ( true ) {
 			$token = $this->rewriter->peek();
 			if ( ! $token ) {
+				break;
+			}
+
+			/*
+			 * If the query contains a WHERE clause,
+			 * we need to rewrite the query to use a nested SELECT statement.
+			 * eg:
+			 * - UPDATE table SET column = value WHERE condition LIMIT 1;
+			 * will be rewritten to:
+			 * - UPDATE table SET column = value WHERE rowid IN (SELECT rowid FROM table WHERE condition LIMIT 1);
+			 */
+			if ( 0 === $this->rewriter->depth ) {
+				if ( ( 'LIMIT' === $token->value || 'ORDER' === $token->value ) && ! $has_where ) {
+					$this->rewriter->add(
+						new WP_SQLite_Token( 'WHERE', WP_SQLite_Token::TYPE_KEYWORD )
+					);
+					$needs_closing_parenthesis = true;
+					$this->preface_where_clause_with_a_subquery();
+				} elseif ( 'WHERE' === $token->value ) {
+					$has_where                 = true;
+					$needs_closing_parenthesis = true;
+					$this->rewriter->consume();
+					$this->preface_where_clause_with_a_subquery();
+					$this->rewriter->add(
+						new WP_SQLite_Token( 'WHERE', WP_SQLite_Token::TYPE_KEYWORD, WP_SQLite_Token::FLAG_KEYWORD_RESERVED )
+					);
+				}
+			}
+
+			// Ignore the semicolon in case of rewritten query as it breaks the query.
+			if ( ';' === $this->rewriter->peek()->value && $this->rewriter->peek()->type === WP_SQLite_Token::TYPE_DELIMITER ) {
 				break;
 			}
 
@@ -1572,11 +1716,50 @@ class WP_SQLite_Translator {
 
 			$this->rewriter->consume();
 		}
+
+		// Wrap up the WHERE clause with the nested SELECT statement.
+		if ( $needs_closing_parenthesis ) {
+			$this->rewriter->add( new WP_SQLite_Token( ')', WP_SQLite_Token::TYPE_OPERATOR ) );
+		}
+
 		$this->rewriter->consume_all();
 
 		$updated_query = $this->rewriter->get_updated_query();
 		$this->execute_sqlite_query( $updated_query, $params );
 		$this->set_result_from_affected_rows();
+	}
+
+	/**
+	 * Injects `rowid IN (SELECT rowid FROM table WHERE ...` into the WHERE clause at the current
+	 * position in the query.
+	 *
+	 * This is necessary to emulate the behavior of MySQL's UPDATE LIMIT and DELETE LIMIT statement
+	 * as SQLite does not support LIMIT in UPDATE and DELETE statements.
+	 *
+	 * The WHERE clause is wrapped in a subquery that selects the rowid of the rows that match the original
+	 * WHERE clause.
+	 *
+	 * @return void
+	 */
+	private function preface_where_clause_with_a_subquery() {
+		$this->rewriter->add_many(
+			array(
+				new WP_SQLite_Token( ' ', WP_SQLite_Token::TYPE_WHITESPACE ),
+				new WP_SQLite_Token( 'rowid', WP_SQLite_Token::TYPE_KEYWORD, WP_SQLite_Token::FLAG_KEYWORD_KEY ),
+				new WP_SQLite_Token( ' ', WP_SQLite_Token::TYPE_WHITESPACE ),
+				new WP_SQLite_Token( 'IN', WP_SQLite_Token::TYPE_KEYWORD, WP_SQLite_Token::FLAG_KEYWORD_RESERVED ),
+				new WP_SQLite_Token( ' ', WP_SQLite_Token::TYPE_WHITESPACE ),
+				new WP_SQLite_Token( '(', WP_SQLite_Token::TYPE_OPERATOR ),
+				new WP_SQLite_Token( 'SELECT', WP_SQLite_Token::TYPE_KEYWORD, WP_SQLite_Token::FLAG_KEYWORD_RESERVED ),
+				new WP_SQLite_Token( ' ', WP_SQLite_Token::TYPE_WHITESPACE ),
+				new WP_SQLite_Token( 'rowid', WP_SQLite_Token::TYPE_KEYWORD, WP_SQLite_Token::FLAG_KEYWORD_KEY ),
+				new WP_SQLite_Token( ' ', WP_SQLite_Token::TYPE_WHITESPACE ),
+				new WP_SQLite_Token( 'FROM', WP_SQLite_Token::TYPE_KEYWORD, WP_SQLite_Token::FLAG_KEYWORD_RESERVED ),
+				new WP_SQLite_Token( ' ', WP_SQLite_Token::TYPE_WHITESPACE ),
+				new WP_SQLite_Token( $this->table_name, WP_SQLite_Token::TYPE_KEYWORD, WP_SQLite_Token::FLAG_KEYWORD_RESERVED ),
+				new WP_SQLite_Token( ' ', WP_SQLite_Token::TYPE_WHITESPACE ),
+			)
+		);
 	}
 
 	/**
@@ -1824,6 +2007,7 @@ class WP_SQLite_Translator {
 			|| $this->capture_group_by( $token )
 			|| $this->translate_ungrouped_having( $token )
 			|| $this->translate_like_escape( $token )
+			|| $this->translate_left_function( $token )
 		);
 	}
 
@@ -2022,6 +2206,41 @@ class WP_SQLite_Translator {
 
 		$this->rewriter->skip();
 		$this->rewriter->add( new WP_SQLite_Token( 'DATETIME', WP_SQLite_Token::TYPE_KEYWORD, WP_SQLite_Token::FLAG_KEYWORD_FUNCTION ) );
+		return true;
+	}
+
+	/**
+	 * Translate the LEFT() function.
+	 *
+	 * > Returns the leftmost len characters from the string str, or NULL if any argument is NULL.
+	 *
+	 * https://dev.mysql.com/doc/refman/8.3/en/string-functions.html#function_left
+	 *
+	 * @param WP_SQLite_Token $token The token to translate.
+	 *
+	 * @return bool
+	 */
+	private function translate_left_function( $token ) {
+		if (
+			! $token->matches(
+				WP_SQLite_Token::TYPE_KEYWORD,
+				WP_SQLite_Token::FLAG_KEYWORD_FUNCTION,
+				array( 'LEFT' )
+			)
+		) {
+			return false;
+		}
+
+		$this->rewriter->skip();
+		$this->rewriter->add( new WP_SQLite_Token( 'SUBSTRING', WP_SQLite_Token::TYPE_KEYWORD, WP_SQLite_Token::FLAG_KEYWORD_FUNCTION ) );
+		$this->rewriter->consume(
+			array(
+				'type'  => WP_SQLite_Token::TYPE_OPERATOR,
+				'value' => ',',
+			)
+		);
+		$this->rewriter->add( new WP_SQLite_Token( 1, WP_SQLite_Token::TYPE_NUMBER ) );
+		$this->rewriter->add( new WP_SQLite_Token( ',', WP_SQLite_Token::TYPE_OPERATOR ) );
 		return true;
 	}
 
@@ -3026,46 +3245,23 @@ class WP_SQLite_Translator {
 				$this->results = true;
 				return;
 
+			case 'GRANTS FOR':
+				$this->set_results_from_fetched_data(
+					array(
+						(object) array(
+							'Grants for root@localhost' => 'GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, RELOAD, SHUTDOWN, PROCESS, FILE, REFERENCES, INDEX, ALTER, SHOW DATABASES, SUPER, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE, REPLICATION SLAVE, REPLICATION CLIENT, CREATE VIEW, SHOW VIEW, CREATE ROUTINE, ALTER ROUTINE, CREATE USER, EVENT, TRIGGER, CREATE TABLESPACE, CREATE ROLE, DROP ROLE ON *.* TO `root`@`localhost` WITH GRANT OPTION',
+						),
+					)
+				);
+				return;
+
 			case 'FULL COLUMNS':
 				$this->rewriter->consume();
 				// Fall through.
 			case 'COLUMNS FROM':
 				$table_name = $this->rewriter->consume()->token;
-				$stmt       = $this->execute_sqlite_query(
-					"PRAGMA table_info(\"$table_name\");"
-				);
-				/* @todo we may need to add the Extra column if anybdy needs it. 'auto_increment' is the value */
-				$name_map = array(
-					'name'       => 'Field',
-					'type'       => 'Type',
-					'dflt_value' => 'Default',
-					'cid'        => null,
-					'notnull'    => null,
-					'pk'         => null,
-				);
-				$columns  = $stmt->fetchAll( $this->pdo_fetch_mode );
-				$columns  = array_map(
-					function ( $row ) use ( $name_map ) {
-						$new       = array();
-						$is_object = is_object( $row );
-						$row       = $is_object ? (array) $row : $row;
-						foreach ( $row as $k => $v ) {
-							$k = array_key_exists( $k, $name_map ) ? $name_map [ $k ] : $k;
-							if ( $k ) {
-								$new[ $k ] = $v;
-							}
-						}
-						if ( array_key_exists( 'notnull', $row ) ) {
-							$new['Null'] = ( '1' === $row ['notnull'] ) ? 'NO' : 'YES';
-						}
-						if ( array_key_exists( 'pk', $row ) ) {
-							$new['Key'] = ( '1' === $row ['pk'] ) ? 'PRI' : '';
-						}
-						return $is_object ? (object) $new : $new;
-					},
-					$columns
-				);
-				$this->set_results_from_fetched_data( $columns );
+
+				$this->set_results_from_fetched_data( $this->get_columns_from( $table_name ) );
 				return;
 
 			case 'INDEX FROM':
@@ -3140,14 +3336,100 @@ class WP_SQLite_Translator {
 
 				return;
 
+			case 'CREATE TABLE':
+				$table_name = $this->rewriter->consume()->token;
+				$columns    = $this->get_columns_from( $table_name );
+				$keys       = $this->get_keys( $table_name );
+
+				foreach ( $columns as $column ) {
+					$column      = (array) $column;
+					$definition  = '';
+					$definition .= '`' . $column['Field'] . '` ';
+					$definition .= $this->get_cached_mysql_data_type(
+						$table_name,
+						$column['Field']
+					) ?? $column['Type'];
+					$definition .= 'PRI' === $column['Key'] ? ' PRIMARY KEY' : '';
+					$definition .= 'PRI' === $column['Key'] && 'INTEGER' === $column['Type'] ? ' AUTO_INCREMENT' : '';
+					$definition .= 'NO' === $column['Null'] ? ' NOT NULL' : '';
+					$definition .= $column['Default'] ? ' DEFAULT ' . $column['Default'] : '';
+					$entries[]   = $definition;
+				}
+				foreach ( $keys as $key ) {
+					$key         = (array) $key;
+					$definition  = '';
+					$definition .= '1' === $key['index']['unique'] ? 'UNIQUE ' : '';
+					$definition .= 'KEY ';
+					$definition .= $key['index']['name'];
+					$definition .= ' (';
+					$definition .= implode(
+						', ',
+						array_column( $key['columns'], 'name' )
+					);
+					$definition .= ')';
+					$entries[]   = $definition;
+				}
+				$create_table  = "CREATE TABLE $table_name (\n\t";
+				$create_table .= implode( ",\n\t", $entries );
+				$create_table .= "\n);";
+				$this->set_results_from_fetched_data(
+					array(
+						(object) array(
+							'Create Table' => $create_table,
+						),
+					)
+				);
+				return;
+
 			case 'TABLE STATUS':  // FROM `database`.
-				$this->rewriter->skip();
+				// Match the optional [{FROM | IN} db_name].
+				$database_expression = $this->rewriter->consume();
+				if ( 'FROM' === $database_expression->token || 'IN' === $database_expression->token ) {
+					$this->rewriter->consume();
+					$database_expression = $this->rewriter->consume();
+				}
+
+				$pattern = '%';
+				// [LIKE 'pattern' | WHERE expr]
+				if ( 'LIKE' === $database_expression->token ) {
+					$pattern = $this->rewriter->consume()->value;
+				} elseif ( 'WHERE' === $database_expression->token ) {
+					// @TODO Support me please.
+				} elseif ( ';' !== $database_expression->token ) {
+					throw new Exception( 'Syntax error: Unexpected token ' . $database_expression->token . ' in query ' . $this->mysql_query );
+				}
+
 				$database_expression = $this->rewriter->skip();
 				$stmt                = $this->execute_sqlite_query(
-					"SELECT name as `Name`, 'myisam' as `Engine`, 0 as `Data_length`, 0 as `Index_length`, 0 as `Data_free` FROM sqlite_master WHERE type='table' ORDER BY name"
+					"SELECT
+						name as `Name`,
+						'myisam' as `Engine`,
+						10 as `Version`,
+						'Fixed' as `Row_format`,
+						0 as `Rows`,
+						0 as `Avg_row_length`,
+						0 as `Data_length`,
+						0 as `Max_data_length`,
+						0 as `Index_length`,
+						0 as `Data_free` ,
+						0 as `Auto_increment`,
+						'2024-03-20 15:33:20' as `Create_time`,
+						'2024-03-20 15:33:20' as `Update_time`,
+						null as `Check_time`,
+						null as `Collation`,
+						null as `Checksum`,
+						'' as `Create_options`,
+						'' as `Comment`
+					FROM sqlite_master
+					WHERE
+						type='table'
+						AND name LIKE :pattern
+					ORDER BY name",
+					array(
+						':pattern' => $pattern,
+					)
 				);
-
-				$tables = $this->strip_sqlite_system_tables( $stmt->fetchAll( $this->pdo_fetch_mode ) );
+				$tables              = $this->strip_sqlite_system_tables( $stmt->fetchAll( $this->pdo_fetch_mode ) );
 				foreach ( $tables as $table ) {
 					$table_name  = $table->Name; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					$stmt        = $this->execute_sqlite_query( "SELECT COUNT(1) as `Rows` FROM $table_name" );
@@ -3194,6 +3476,51 @@ class WP_SQLite_Translator {
 						throw new Exception( 'Unknown show type: ' . $what );
 				}
 		}
+	}
+
+	/**
+	 * Gets the columns from a table.
+	 *
+	 * @param string $table_name The table name.
+	 *
+	 * @return array The columns.
+	 */
+	private function get_columns_from( $table_name ) {
+		$stmt = $this->execute_sqlite_query(
+			"PRAGMA table_info(\"$table_name\");"
+		);
+		/* @todo we may need to add the Extra column if anybdy needs it. 'auto_increment' is the value */
+		$name_map = array(
+			'name'       => 'Field',
+			'type'       => 'Type',
+			'dflt_value' => 'Default',
+			'cid'        => null,
+			'notnull'    => null,
+			'pk'         => null,
+		);
+		$columns  = $stmt->fetchAll( $this->pdo_fetch_mode );
+		$columns  = array_map(
+			function ( $row ) use ( $name_map ) {
+				$new       = array();
+				$is_object = is_object( $row );
+				$row       = $is_object ? (array) $row : $row;
+				foreach ( $row as $k => $v ) {
+					$k = array_key_exists( $k, $name_map ) ? $name_map [ $k ] : $k;
+					if ( $k ) {
+						$new[ $k ] = $v;
+					}
+				}
+				if ( array_key_exists( 'notnull', $row ) ) {
+					$new['Null'] = ( '1' === $row ['notnull'] ) ? 'NO' : 'YES';
+				}
+				if ( array_key_exists( 'pk', $row ) ) {
+					$new['Key'] = ( '1' === $row ['pk'] ) ? 'PRI' : '';
+				}
+				return $is_object ? (object) $new : $new;
+			},
+			$columns
+		);
+		return $columns;
 	}
 
 	/**

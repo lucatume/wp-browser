@@ -1,5 +1,5 @@
 diff --git a/includes/sqlite-database-integration/load.php b/includes/sqlite-database-integration/load.php
-index 3af80903..ddc5a9b6 100644
+index bd6d875b..c80dcdd7 100644
 --- a/includes/sqlite-database-integration/load.php
 +++ b/includes/sqlite-database-integration/load.php
 @@ -12,7 +12,9 @@
@@ -11,5 +11,5 @@ index 3af80903..ddc5a9b6 100644
 +    define('SQLITE_MAIN_FILE', __FILE__);
 +}
  
+ require_once __DIR__ . '/php-polyfills.php';
  require_once __DIR__ . '/admin-page.php';
- require_once __DIR__ . '/activate.php';
