@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Updated `sqlite-integration-plugin` and Core PHPUnit suite files.
+
 ## [3.5.7] 2024-04-12;
 
 ### Changed

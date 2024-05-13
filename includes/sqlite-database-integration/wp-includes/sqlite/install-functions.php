@@ -31,7 +31,7 @@ function sqlite_make_db_sqlite() {
 		wp_die( $message, 'Database Error!' );
 	}
 
-	$translator = new WP_SQLite_Translator( $pdo, $GLOBALS['table_prefix'] );
+	$translator = new WP_SQLite_Translator( $pdo );
 	$query      = null;
 
 	try {
