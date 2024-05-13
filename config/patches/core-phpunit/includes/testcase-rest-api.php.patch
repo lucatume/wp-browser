@@ -1,5 +1,5 @@
 diff --git a/includes/core-phpunit/includes/testcase-rest-api.php b/includes/core-phpunit/includes/testcase-rest-api.php
-index 54644f13..670a2cd1 100644
+index 27349809..2107abfc 100644
 --- a/includes/core-phpunit/includes/testcase-rest-api.php
 +++ b/includes/core-phpunit/includes/testcase-rest-api.php
 @@ -1,6 +1,8 @@
@@ -8,7 +8,7 @@ index 54644f13..670a2cd1 100644
 -abstract class WP_Test_REST_TestCase extends WP_UnitTestCase {
 +namespace lucatume\WPBrowser\TestCase;
 +
-+abstract class WPRestApiTestCase extends WPTestCase {
- 	protected function assertErrorResponse( $code, $response, $status = null ) {
++abstract class WP_Test_REST_TestCase extends WPTestCase {
  
- 		if ( $response instanceof WP_REST_Response ) {
+ 	/**
+ 	 * Asserts that the REST API response has the specified error.
