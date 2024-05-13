@@ -136,7 +136,7 @@ abstract class WPAjaxTestCase extends WPTestCase {
 	/**
 	 * Sets up the test fixture.
 	 *
-	 * Overrides wp_die(), pretends to be Ajax, and suppresses E_WARNINGs.
+	 * Overrides wp_die(), pretends to be Ajax, and suppresses warnings.
 	 */
 	public function set_up() {
 		parent::set_up();
@@ -164,7 +164,7 @@ abstract class WPAjaxTestCase extends WPTestCase {
 		$_GET  = array();
 		unset( $GLOBALS['post'] );
 		unset( $GLOBALS['comment'] );
-		remove_filter( 'wp_die_ajax_handler', array( $this, 'getDieHandler' ), 1, 1 );
+		remove_filter( 'wp_die_ajax_handler', array( $this, 'getDieHandler' ), 1 );
 		remove_action( 'clear_auth_cookie', array( $this, 'logout' ) );
 		error_reporting( $this->_error_level );
 		set_current_screen( 'front' );

@@ -58,25 +58,25 @@ function sqlite_integration_admin_screen() {
 			<?php elseif ( file_exists( WP_CONTENT_DIR . '/db.php' ) && ! defined( 'SQLITE_DB_DROPIN_VERSION' ) ) : ?>
 				<?php if ( defined( 'PERFLAB_SQLITE_DB_DROPIN_VERSION' ) ) : ?>
 					<div class="notice notice-warning">
-					<p>
+						<p>
+							<?php
+							printf(
+								/* translators: %s: db.php drop-in path */
+								esc_html__( 'An older %s file was detected. Please click the button below to update the file.', 'sqlite-database-integration' ),
+								'<code>' . esc_html( basename( WP_CONTENT_DIR ) ) . '/db.php</code>'
+							);
+							?>
+						</p>
+					</div>
+					<a class="button button-primary" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=sqlite-integration&confirm-install&upgrade-from-pl' ), 'sqlite-install' ) ); ?>">
 						<?php
 						printf(
 							/* translators: %s: db.php drop-in path */
-							esc_html__( 'An older %s file was detected. Please click the button below to update the file.', 'sqlite-database-integration' ),
+							esc_html__( 'Update %s file', 'sqlite-database-integration' ),
 							'<code>' . esc_html( basename( WP_CONTENT_DIR ) ) . '/db.php</code>'
 						);
 						?>
-					</p>
-				</div>
-				<a class="button button-primary" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=sqlite-integration&confirm-install&upgrade-from-pl' ), 'sqlite-install' ) ); ?>">
-					<?php
-					printf(
-						/* translators: %s: db.php drop-in path */
-						esc_html__( 'Update %s file', 'sqlite-database-integration' ),
-						'<code>' . esc_html( basename( WP_CONTENT_DIR ) ) . '/db.php</code>'
-					);
-					?>
-				</a>
+					</a>
 				<?php else : ?>
 					<div class="notice notice-error">
 						<p>
