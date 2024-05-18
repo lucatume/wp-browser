@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## Fixed
+
+- Avoid calling `wpdb::db_connect()` twice during `WPLoader` bootstrap. (thanks @calvinalkan)
+
 ## [4.1.8] 2024-05-13;
 
 ### Changed

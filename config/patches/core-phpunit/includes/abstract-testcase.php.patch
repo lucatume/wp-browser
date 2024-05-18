@@ -1,5 +1,5 @@
 diff --git a/includes/core-phpunit/includes/abstract-testcase.php b/includes/core-phpunit/includes/abstract-testcase.php
-index 3600722f..67c4d71c 100644
+index f2978644..e092beca 100644
 --- a/includes/core-phpunit/includes/abstract-testcase.php
 +++ b/includes/core-phpunit/includes/abstract-testcase.php
 @@ -20,6 +20,8 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
@@ -29,16 +29,23 @@ index 3600722f..67c4d71c 100644
  	}
  
  	/**
-@@ -69,7 +71,7 @@ public static function set_up_before_class() {
- 		$wpdb->db_connect();
- 		ini_set( 'display_errors', 1 );
+@@ -66,10 +68,12 @@ public static function set_up_before_class() {
+ 
+ 		$wpdb->suppress_errors = false;
+ 		$wpdb->show_errors     = true;
+-		$wpdb->db_connect();
+-		ini_set( 'display_errors', 1 );
++        if ( ! $wpdb->check_connection() ) {
++            $wpdb->db_connect();
++        }
++        ini_set( 'display_errors', 1 );
  
 -		$class = get_called_class();
 +		$class = self::$calledClass ?? get_called_class();
  
  		if ( method_exists( $class, 'wpSetUpBeforeClass' ) ) {
  			call_user_func( array( $class, 'wpSetUpBeforeClass' ), static::factory() );
-@@ -82,7 +84,7 @@ public static function set_up_before_class() {
+@@ -82,7 +86,7 @@ public static function set_up_before_class() {
  	 * Runs the routine after all tests have been run.
  	 */
  	public static function tear_down_after_class() {
@@ -47,7 +54,7 @@ index 3600722f..67c4d71c 100644
  
  		if ( method_exists( $class, 'wpTearDownAfterClass' ) ) {
  			call_user_func( array( $class, 'wpTearDownAfterClass' ) );
-@@ -646,7 +648,7 @@ public function expectedDeprecated() {
+@@ -651,7 +655,7 @@ public function expectedDeprecated() {
  	 *
  	 * @since 4.2.0
  	 */
@@ -56,7 +63,7 @@ index 3600722f..67c4d71c 100644
  		$this->expectedDeprecated();
  	}
  
-@@ -1655,4 +1657,9 @@ public static function touch( $file ) {
+@@ -1660,4 +1664,9 @@ public static function touch( $file ) {
  
  		touch( $file );
  	}
