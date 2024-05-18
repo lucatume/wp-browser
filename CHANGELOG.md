@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.1.9] 2024-05-18;
+
 ## Fixed
 
 - Avoid calling `wpdb::db_connect()` twice during `WPLoader` bootstrap. (thanks @calvinalkan)
@@ -2180,4 +2182,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.1.6]: https://github.com/lucatume/wp-browser/compare/4.1.5...4.1.6
 [4.1.7]: https://github.com/lucatume/wp-browser/compare/4.1.6...4.1.7
 [4.1.8]: https://github.com/lucatume/wp-browser/compare/4.1.7...4.1.8
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.1.8...HEAD
+[4.1.9]: https://github.com/lucatume/wp-browser/compare/4.1.8...4.1.9
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.1.9...HEAD
