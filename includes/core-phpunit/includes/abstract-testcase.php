@@ -20,8 +20,6 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	protected $expected_doing_it_wrong = array();
 	protected $caught_doing_it_wrong   = array();
 
-    private static ?string $calledClass = null;
-
 	protected static $hooks_saved = array();
 	protected static $ignore_files;
 
@@ -39,7 +37,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	 *
 	 * @return WP_UnitTest_Factory The fixture factory.
 	 */
-	public static function factory() {
+	protected static function factory() {
 		static $factory = null;
 		if ( ! $factory ) {
 			$factory = new WP_UnitTest_Factory();
@@ -55,7 +53,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	 * @return string The class name.
 	 */
 	public static function get_called_class() {
-		return self::$called_class ?? get_called_class();
+		return get_called_class();
 	}
 
 	/**
@@ -71,7 +69,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 		$wpdb->db_connect();
 		ini_set( 'display_errors', 1 );
 
-		$class = self::$calledClass ?? get_called_class();
+		$class = get_called_class();
 
 		if ( method_exists( $class, 'wpSetUpBeforeClass' ) ) {
 			call_user_func( array( $class, 'wpSetUpBeforeClass' ), static::factory() );
@@ -84,7 +82,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	 * Runs the routine after all tests have been run.
 	 */
 	public static function tear_down_after_class() {
-        $class = self::$calledClass ?? get_called_class();
+		$class = get_called_class();
 
 		if ( method_exists( $class, 'wpTearDownAfterClass' ) ) {
 			call_user_func( array( $class, 'wpTearDownAfterClass' ) );
@@ -653,7 +651,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	 *
 	 * @since 4.2.0
 	 */
-	public function assert_post_conditions() {
+	protected function assert_post_conditions() {
 		$this->expectedDeprecated();
 	}
 
@@ -1661,10 +1659,5 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 		}
 
 		touch( $file );
-	}
-
-	public function setCalledClass(string $class): void
-	{
-		self::$calledClass = $class;
 	}
 }
