@@ -648,17 +648,17 @@ class WPLoader extends Module
         $skipInstall = ($this->config['skipInstall'] ?? false)
             && !Debug::isEnabled()
             && $this->isWordPressInstalled();
+        $isMultisite = $this->config['multisite'];
+        $plugins = (array)$this->config['plugins'];
 
         Dispatcher::dispatch(self::EVENT_BEFORE_INSTALL, $this);
 
         if (!$skipInstall) {
             putenv('WP_TESTS_SKIP_INSTALL=0');
-            $isMultisite = $this->config['multisite'];
-            $plugins = (array)$this->config['plugins'];
 
             /*
              * The bootstrap file will load the `wp-settings.php` one that will load plugins and the theme.
-             * Hook on the option to get the the active plugins to run the plugins' and theme activation
+             * Hook on the option to get the active plugins to run the plugins' and theme activation
              * in a separate process.
              */
             if ($isMultisite) {
@@ -680,6 +680,8 @@ class WPLoader extends Module
             putenv('WP_TESTS_SKIP_INSTALL=1');
         }
 
+        $silentPlugins = $this->config['silentlyActivatePlugins'];
+        $this->includeAllPlugins(array_merge($plugins, $silentPlugins), $isMultisite);
         $this->includeCorePHPUniteSuiteBootstrapFile();
 
         Dispatcher::dispatch(self::EVENT_AFTER_INSTALL, $this);
@@ -1057,7 +1059,17 @@ class WPLoader extends Module
         // Flush the cache to force the refetch of the options' value.
         wp_cache_delete('alloptions', 'options');
 
-        return $plugins;
+        // Do not include external plugins, it would create issues at this stage.
+        $pluginsDir = $this->installation->getPluginsDir();
+
+        return array_values(
+            array_filter(
+                $plugins,
+                static function (string $plugin) use ($pluginsDir) {
+                    return is_file($pluginsDir . "/$plugin");
+                }
+            )
+        );
     }
 
     /**
@@ -1090,8 +1102,24 @@ class WPLoader extends Module
         // Flush the cache to force the refetch of the options' value.
         wp_cache_delete("1::active_sitewide_plugins", 'site-options');
 
+        // Do not include external plugins, it would create issues at this stage.
+        $pluginsDir = $this->installation->getPluginsDir();
+        $validPlugins = array_values(
+            array_filter(
+                $plugins,
+                static function (string $plugin) use ($pluginsDir) {
+                    return is_file($pluginsDir . "/$plugin");
+                }
+            )
+        );
+
         // Format for site-wide active plugins is `[ 'plugin-slug/plugin.php' => timestamp ]`.
-        return array_combine($plugins, array_fill(0, count($plugins), time()));
+        $validActiveSitewidePlugins = array_combine(
+            $validPlugins,
+            array_fill(0, count($validPlugins), time())
+        );
+
+        return $validActiveSitewidePlugins;
     }
 
     private function isWordPressInstalled(): bool
@@ -1105,5 +1133,55 @@ class WPLoader extends Module
         } catch (Throwable $exception) {
             return false;
         }
+    }
+
+    /**
+     * @param string[] $plugins
+     * @throws ModuleConfigException
+     */
+    private function includeAllPlugins(array $plugins, bool $isMultisite): void
+    {
+        PreloadFilters::addFilter('plugins_loaded', function () use ($plugins, $isMultisite) {
+            $activePlugins = $isMultisite ? get_site_option('active_sitewide_plugins') : get_option('active_plugins');
+
+            if (!is_array($activePlugins)) {
+                $activePlugins = [];
+            }
+
+            $pluginsDir = $this->installation->getPluginsDir();
+
+            foreach ($plugins as $plugin) {
+                if (!is_file($pluginsDir . "/$plugin")) {
+                    $pluginRealPath = realpath($plugin);
+
+                    if (!$pluginRealPath) {
+                        throw new ModuleConfigException(
+                            __CLASS__,
+                            "Plugin file $plugin does not exist."
+                        );
+                    }
+
+                    include_once $pluginRealPath;
+
+                    // Create a name for the external plugin in the format <directory>/<file.php>.
+                    $plugin = basename(dirname($pluginRealPath)) . '/' . basename($pluginRealPath);
+                }
+
+                if ($isMultisite) {
+                    // Network-activated plugins are stored in the format <plugins_name> => <timestamp>.
+                    $activePlugins[$plugin] = time();
+                } else {
+                    $activePlugins[] = $plugin;
+                }
+            }
+
+
+            // Update the active plugins to include all plugins, external or not.
+            if ($isMultisite) {
+                update_site_option('active_sitewide_plugins', $activePlugins);
+            } else {
+                update_option('active_plugins', array_values(array_unique($activePlugins)));
+            }
+        }, -100000);
     }
 }
