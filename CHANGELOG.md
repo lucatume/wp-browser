@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- Allow plugins to be loaded from arbitrary paths in the `WPLoader` module.
+
 ## [4.1.9] 2024-05-18;
 
 ## Fixed
