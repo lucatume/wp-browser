@@ -3,12 +3,10 @@
 namespace lucatume\WPBrowser\Tests\Traits;
 
 use Closure;
-use Codeception\Codecept;
 use Codeception\Util\Debug;
 use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
-use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Property;
 use ReflectionObject;
 use Throwable;

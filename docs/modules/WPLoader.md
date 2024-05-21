@@ -46,16 +46,18 @@ When used in this mode, the module supports the following configuration paramete
   and control the WordPress testing environment.
 * `pluginsFolder` - the path to the plugins folder to use when loading WordPress. Equivalent to defining the
   `WP_PLUGIN_DIR` constant.
-* `plugins` - a list of plugins to activate and load in the WordPress installation. Each plugin must be specified in a
-  format like `hello.php` or `my-plugin/my-plugin.php` format.
+* `plugins` - a list of plugins to activate and load in the WordPress installation. If the plugin is located in the
+  WordPress installation plugins directory, then the plugin name can be specified using the `directory/file.php` format.
+  If the plugin is located in an arbitrary path inside or outiside of the WordPress installation or project, then the
+  plugin name must be specified either as an absolute path or as a relative path to the project root folder.
 * `silentlyActivatePlugins` - a list of plugins to activate **silently**, without firing their activation hooks.
   Depending on the plugin, a silent activation might cause the plugin to not work correctly. The list must be in the
   same format as the `plugins` parameter and plugin should be activated silently only if they are not working correctly
-  during normal activation and are known to work correctly when activated silently.
+  during normal activation and are known to work correctly when activated silently. Plugin paths can be specified
+  following the same format of the `plugins` parameter.
 * `bootstrapActions` - a list of actions or callables to call **after** WordPress is loaded and before the tests run.
 * `theme` - the theme to activate and load in the WordPress installation. The theme must be specified in slug format
-  like
-  `twentytwentythree`.
+  like `twentytwentythree`.
 * `AUTH_KEY` - the `AUTH_KEY` constant value to use when loading WordPress. If the `wpRootFolder` path points at a
   configured installation, containing the `wp-config.php` file, then the value of the constant in the configuration file
   will be used, else it will be randomly generated.
@@ -126,9 +128,10 @@ modules:
         adminEmail: admin@wordpress.test
         title: 'Integration Tests'
         plugins:
-          - hello.php
-          - woocommerce/woocommerce.php
-          - my-plugin/my-plugin.php
+          - hello.php # This plugin will be loaded from the WordPress installation plugins directory.
+          - /home/plugins/woocommerce/woocommerce.php # This plugin will be loaded from an arbitrary absolute path.
+          - vendor/acme/project/plugin.php # This plugin will be loaded from an arbitrary relative path inside the project root folder.
+          - my-plugin.php # This plugin will be loaded from the project root folder.
         theme: twentytwentythree
 ```
 
@@ -148,9 +151,10 @@ modules:
         adminEmail: '%WP_ADMIN_EMAIL%'
         title: '%WP_TITLE%'
         plugins:
-          - hello.php
-          - woocommerce/woocommerce.php
-          - my-plugin/my-plugin.php
+          - hello.php # This plugin will be loaded from the WordPress installation plugins directory.
+          - /home/plugins/woocommerce/woocommerce.php # This plugin will be loaded from an arbitrary absolute path.
+          - my-plugin.php # This plugin will be loaded from the project root folder.
+          - vendor/acme/project/plugin.php # This plugin will be loaded from an arbitrary relative path inside the project root folder.
         theme: twentytwentythree
 ```
 
