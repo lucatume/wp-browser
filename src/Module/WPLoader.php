@@ -23,6 +23,7 @@ use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\Utils\CorePHPUnit;
 use lucatume\WPBrowser\Utils\Db as DbUtils;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use lucatume\WPBrowser\Utils\Property;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
 use lucatume\WPBrowser\WordPress\Database\DatabaseInterface;
@@ -105,7 +106,7 @@ class WPLoader extends Module
      *     plugins: string[],
      *     silentlyActivatePlugins: string[],
      *     bootstrapActions: string|string[],
-     *     theme: string,
+     *     theme: string|string[],
      *     AUTH_KEY: string,
      *     SECURE_AUTH_KEY: string,
      *     LOGGED_IN_KEY: string,
@@ -228,11 +229,13 @@ class WPLoader extends Module
 
         $this->config['theme'] = $this->config['WP_TESTS_MULTISITE'] ?? $this->config['theme'] ?? '';
 
-        if (!is_string($this->config['theme'])) {
+        if (!(
+            is_string($this->config['theme'])
+            || (is_array($this->config['theme']) && Arr::hasShape($this->config['theme'], ['string', 'string'])))
+        ) {
             throw new ModuleConfigException(
                 __CLASS__,
-                "The `theme` configuration parameter must be a string.\n" .
-                "For child themes, use the child theme slug."
+                "The `theme` configuration parameter must be either a string, or an array of two strings."
             );
         }
 
@@ -349,7 +352,7 @@ class WPLoader extends Module
          *     plugins: string[],
          *     silentlyActivatePlugins: string[],
          *     bootstrapActions: string|string[],
-         *     theme: string,
+         *     theme: string|string[],
          *     AUTH_KEY: string,
          *     SECURE_AUTH_KEY: string,
          *     LOGGED_IN_KEY: string,
@@ -589,7 +592,7 @@ class WPLoader extends Module
     }
 
     /**
-     * Returns the absolute path to the themes directory.
+     * Returns the absolute path to the themes' directory.
      *
      * @example
      * ```php
@@ -656,6 +659,11 @@ class WPLoader extends Module
 
         $silentPlugins = $this->config['silentlyActivatePlugins'];
         $this->includeAllPlugins(array_merge($plugins, $silentPlugins), $isMultisite);
+        if (!empty($this->config['theme'])) {
+            /** @var string|array{string,string} $theme */
+            $theme = $this->config['theme'];
+            $this->switchThemeFromFile($theme);
+        }
         $this->includeCorePHPUniteSuiteBootstrapFile();
 
         Dispatcher::dispatch(self::EVENT_AFTER_INSTALL, $this);
@@ -701,15 +709,15 @@ class WPLoader extends Module
             )
         );
 
-        /** @var string $stylesheet */
-        $stylesheet = $this->config['theme'];
-        if ($stylesheet) {
-            $jobs['stylesheet::' . $stylesheet] = $closuresFactory->toSwitchTheme($stylesheet, $multisite);
+        $themes = (array)$this->config['theme'];
+        foreach ($themes as $theme) {
+            $jobs['theme::' . basename($theme)] = $closuresFactory->toSwitchTheme($theme, $multisite);
         }
 
         $pluginsList = implode(', ', $plugins);
-        if ($stylesheet) {
-            codecept_debug('Activating plugins: ' . $pluginsList . ' and switching theme: ' . $stylesheet);
+        if ($themes) {
+            codecept_debug('Activating plugins: ' . $pluginsList
+                . ' and switching theme(s): ' . implode(', ', array_map('basename', $themes)));
         } else {
             codecept_debug('Activating plugins: ' . $pluginsList);
         }
@@ -731,7 +739,7 @@ class WPLoader extends Module
                     : $result->getStdoutBuffer();
                 $message = $type === 'plugin' ?
                     "Failed to activate plugin $name. $reason"
-                    : "Failed to switch theme $name. $reason";
+                    : "Failed to switch to theme $name. $reason";
                 throw new ModuleException(__CLASS__, $message);
             }
         }
@@ -1056,8 +1064,9 @@ class WPLoader extends Module
         $database = $this->db;
 
         if ($this->config['theme']) {
+            $themes = (array)$this->config['theme'];
             // Refresh the theme related options.
-            update_site_option('allowedthemes', [$this->config['theme'] => true]);
+            update_site_option('allowedthemes', array_combine($themes, array_fill(0, count($themes), true)));
             if ($database === null) {
                 throw new ModuleException(
                     __CLASS__,
@@ -1151,5 +1160,58 @@ class WPLoader extends Module
                 update_option('active_plugins', array_values(array_unique($activePlugins)));
             }
         }, -100000);
+    }
+
+    /**
+     * @param string|array{string,string} $theme
+     */
+    private function switchThemeFromFile(string|array $theme):void
+    {
+        [$template, $stylesheet] = is_array($theme) ? $theme : [$theme, $theme];
+        $templateRealpath = realpath($template);
+        $stylesheetRealpath = realpath($stylesheet);
+        $include = 0;
+
+        if ($templateRealpath) {
+            $include |= 1;
+        }
+
+        if ($stylesheetRealpath) {
+            $include |= 2;
+        }
+
+        if ($include === 0) {
+            return;
+        }
+
+        /** @var string $templateRealpath */
+        /** @var string $stylesheetRealpath */
+
+        PreloadFilters::addFilter('after_setup_theme', static function () use (
+            $include,
+            $templateRealpath,
+            $stylesheetRealpath
+        ) {
+            global $wp_stylesheet_path, $wp_template_path, $wp_theme_directories;
+            ($include & 1) && $wp_template_path = $templateRealpath;
+            ($include & 2) && $wp_stylesheet_path = $stylesheetRealpath;
+            ($include & 1) && ($wp_theme_directories[] = dirname($templateRealpath));
+            ($include & 2) && ($wp_theme_directories[] = dirname($stylesheetRealpath));
+            $wp_theme_directories = array_values(array_unique($wp_theme_directories));
+            // Stylesheet first, template second.
+            (($include & 2) && ($stylesheetRealpath !== $templateRealpath))
+                && include $stylesheetRealpath . '/functions.php';
+            ($include & 1) && include $templateRealpath . '/functions.php';
+        }, -100000);
+
+        $templateName = basename($templateRealpath);
+        $templateRoot = dirname($templateRealpath);
+        $stylesheetName = basename($stylesheetRealpath);
+        $stylesheetRoot = dirname($stylesheetRealpath);
+
+        PreloadFilters::addFilter('pre_option_template', static fn() => $templateName);
+        PreloadFilters::addFilter('pre_option_template_root', static fn() => $templateRoot);
+        PreloadFilters::addFilter('pre_option_stylesheet', static fn() => $stylesheetName);
+        PreloadFilters::addFilter('pre_option_stylesheet_root', static fn() => $stylesheetRoot);
     }
 }

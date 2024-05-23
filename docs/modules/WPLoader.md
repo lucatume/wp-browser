@@ -56,8 +56,9 @@ When used in this mode, the module supports the following configuration paramete
   during normal activation and are known to work correctly when activated silently. Plugin paths can be specified
   following the same format of the `plugins` parameter.
 * `bootstrapActions` - a list of actions or callables to call **after** WordPress is loaded and before the tests run.
-* `theme` - the theme to activate and load in the WordPress installation. The theme must be specified in slug format
-  like `twentytwentythree`.
+* `theme` - the theme to activate and load in the WordPress installation. The theme can be specified in slug format,
+  e.g., `twentytwentythree`, to load it from the WordPress installation themes directory. Alternatively, the theme can
+  be specified as an absolute or relative path to a theme folder, e.g., `/home/themes/my-theme` or `vendor/acme/vendor-theme`. To use both a parent and ha child theme from arbitrary absolute or relative paths, define the `theme` parameter as an array of theme paths, e.g., `['/home/themes/parent-theme', '.']`.
 * `AUTH_KEY` - the `AUTH_KEY` constant value to use when loading WordPress. If the `wpRootFolder` path points at a
   configured installation, containing the `wp-config.php` file, then the value of the constant in the configuration file
   will be used, else it will be randomly generated.
@@ -128,11 +129,15 @@ modules:
         adminEmail: admin@wordpress.test
         title: 'Integration Tests'
         plugins:
-          - hello.php # This plugin will be loaded from the WordPress installation plugins directory.
-          - /home/plugins/woocommerce/woocommerce.php # This plugin will be loaded from an arbitrary absolute path.
-          - vendor/acme/project/plugin.php # This plugin will be loaded from an arbitrary relative path inside the project root folder.
-          - my-plugin.php # This plugin will be loaded from the project root folder.
-        theme: twentytwentythree
+          # This plugin will be loaded from the WordPress installation plugins directory.
+          - hello.php 
+          # This plugin will be loaded from an arbitrary absolute path.
+          - /home/plugins/woocommerce/woocommerce.php 
+          # This plugin will be loaded from an arbitrary relative path inside the project root folder.
+          - vendor/acme/project/plugin.php
+          # This plugin will be loaded from the project root folder.
+          - my-plugin.php
+        theme: twentytwentythree # Load the theme from the WordPress installation themes directory.
 ```
 
 The following configuration uses [dynamic configuration parameters][3] to set the module configuration:
@@ -151,11 +156,12 @@ modules:
         adminEmail: '%WP_ADMIN_EMAIL%'
         title: '%WP_TITLE%'
         plugins:
-          - hello.php # This plugin will be loaded from the WordPress installation plugins directory.
-          - /home/plugins/woocommerce/woocommerce.php # This plugin will be loaded from an arbitrary absolute path.
-          - my-plugin.php # This plugin will be loaded from the project root folder.
-          - vendor/acme/project/plugin.php # This plugin will be loaded from an arbitrary relative path inside the project root folder.
-        theme: twentytwentythree
+          - hello.php
+          - /home/plugins/woocommerce/woocommerce.php
+          - my-plugin.php
+          - vendor/acme/project/plugin.php
+        # Parent theme from the WordPress installation themes directory, child theme from absolute path.
+        theme: [twentytwentythree, /home/themes/my-theme]
 ```
 
 The following example configuration uses a SQLite database and loads a database fixture before the tests run:
@@ -181,7 +187,11 @@ modules:
           - hello.php
           - woocommerce/woocommerce.php
           - my-plugin/my-plugin.php
-        theme: twentytwentythree
+        theme: 
+          # Parent theme from relative path.
+          - vendor/acme/parent-theme
+          # Child theme from the current working directory.
+          - .
 ```
 
 The follow example configuration prevents the backup of globals and static attributes in all the tests of the suite that
