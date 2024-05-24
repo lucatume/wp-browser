@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Throw on disconnected db in `WPTestCase::setUpBeforeClass`; iterates over the fix for #720.
+
 ## [3.6.0] 2024-05-24;
 
 ### Added
