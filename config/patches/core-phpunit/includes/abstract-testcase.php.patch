@@ -35,7 +35,7 @@ index f2978644..e092beca 100644
  		$wpdb->show_errors     = true;
 -		$wpdb->db_connect();
 -		ini_set( 'display_errors', 1 );
-+        if ( ! $wpdb->check_connection() ) {
++        if ( ! $wpdb->check_connection(false) ) {
 +            $wpdb->db_connect();
 +        }
 +        ini_set( 'display_errors', 1 );
