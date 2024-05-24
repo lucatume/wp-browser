@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.2.1] 2024-05-24;
+
 ### Fixed 
 
 - Throw on disconnected db in `WPTestCase::setUpBeforeClass`, iterates over the fix for #720.
@@ -2196,4 +2198,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.1.8]: https://github.com/lucatume/wp-browser/compare/4.1.7...4.1.8
 [4.1.9]: https://github.com/lucatume/wp-browser/compare/4.1.8...4.1.9
 [4.2.0]: https://github.com/lucatume/wp-browser/compare/4.1.9...4.2.0
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.2.0...HEAD
+[4.2.1]: https://github.com/lucatume/wp-browser/compare/4.2.0...4.2.1
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.2.1...HEAD
