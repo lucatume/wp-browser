@@ -54,10 +54,12 @@ if (!$wpInstalling && empty($wpLoaderIncludeWpSettings)) {
 }
 
 $abspath = rtrim($wpLoaderConfig['wpRootFolder'], '\\/') . '/';
+$themes = (array)$wpLoaderConfig['theme'];
+$stylesheet = end($themes);
 
 foreach ([
              'ABSPATH' => $abspath,
-             'WP_DEFAULT_THEME' => $wpLoaderConfig['theme'],
+             'WP_DEFAULT_THEME' => $stylesheet,
              'WP_TESTS_MULTISITE' => $wpLoaderConfig['multisite'],
              'WP_DEBUG' => true,
              'DB_NAME' => $wpLoaderConfig['dbName'],
@@ -91,7 +93,7 @@ foreach ([
         define($const, $value);
     }
 }
-unset($const);
+unset($const, $themes, $stylesheet);
 
 $table_prefix = $wpLoaderConfig['tablePrefix'];
 

@@ -9,7 +9,6 @@ use lucatume\WPBrowser\WordPress\InstallationState\Configured;
 use lucatume\WPBrowser\WordPress\InstallationState\EmptyDir;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use lucatume\WPBrowser\WordPress\InstallationState\Scaffolded;
-
 $dockerComposeEnvFile = escapeshellarg(dirname(__DIR__) . '/tests/.env');
 `docker compose --env-file $dockerComposeEnvFile up --wait`;
 

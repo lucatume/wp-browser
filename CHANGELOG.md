@@ -6,7 +6,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Allow plugins to be loaded from arbitrary paths in the `WPLoader` module.
+- Allow plugins to be loaded from arbitrary absolute or relative paths in the `WPLoader` module.
+- Allow themes to be loaded from arbitrary absolute or relative paths in the `WPLoader` module.
+- Support an array argument for the `theme` configuration parameter in the `WPLoader` module to define `[parent-theme, child-theme]` pairs.
 
 ## [4.1.9] 2024-05-18;
 

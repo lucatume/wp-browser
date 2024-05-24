@@ -1,4 +1,4 @@
-<?php  //[STAMP] b4b2d5c74a9a68974589fd65502547ce
+<?php  //[STAMP] a9a237b1518f3878f1c2f5e7920998b6
 // phpcs:ignoreFile
 namespace _generated;
 
@@ -67,7 +67,7 @@ trait WploaderTesterActions
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
-     * Returns the absolute path to the themes directory.
+     * Returns the absolute path to the themes' directory.
      *
      * @example
      * ```php

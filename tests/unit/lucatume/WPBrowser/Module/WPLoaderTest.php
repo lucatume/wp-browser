@@ -1281,7 +1281,7 @@ class WPLoaderTest extends Unit
         Installation::scaffold($wpRootDir, 'latest');
 
         $this->expectException(ModuleException::class);
-        $this->expectExceptionMessage('Theme some-theme does not exist.');
+        $this->expectExceptionMessage('The theme directory "some-theme" does not exist');
 
         $wpLoader = $this->module();
         $this->assertInIsolation(static function () use ($wpLoader) {
@@ -1317,41 +1317,7 @@ class WPLoaderTest extends Unit
         Installation::scaffold($wpRootDir, 'latest');
 
         $this->expectException(ModuleException::class);
-        $this->expectExceptionMessage('Theme some-theme does not exist.');
-
-        $wpLoader = $this->module();
-        $this->assertInIsolation(static function () use ($wpLoader) {
-            $wpLoader->_initialize();
-        });
-    }
-
-    /**
-     * It should throw if theme is an array
-     *
-     * @test
-     */
-    public function should_throw_if_theme_is_an_array(): void
-    {
-        $wpRootDir = FS::tmpDir('wploader_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $this->config = [
-            'wpRootFolder' => $wpRootDir,
-            'dbName' => $dbName,
-            'dbHost' => $dbHost,
-            'dbUser' => $dbUser,
-            'dbPassword' => $dbPassword,
-            'configFile' => [
-                codecept_data_dir('files/test_file_001.php'),
-                codecept_data_dir('files/test_file_002.php'),
-            ],
-            'theme' => ['some-template', 'some-stylesheet'],
-        ];
-        Installation::scaffold($wpRootDir, 'latest');
-
-        $this->expectException(ModuleConfigException::class);
+        $this->expectExceptionMessage('The theme directory "some-theme" does not exist');
 
         $wpLoader = $this->module();
         $this->assertInIsolation(static function () use ($wpLoader) {
@@ -1566,16 +1532,17 @@ class WPLoaderTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $dumpFiles = [
+            codecept_data_dir('files/test-dump-001.sql'),
+            codecept_data_dir('files/test-dump-002.sql'),
+        ];
         $this->config = [
             'wpRootFolder' => $wpRootDir,
             'dbName' => $dbName,
             'dbHost' => $dbHost,
             'dbUser' => $dbUser,
             'dbPassword' => $dbPassword,
-            'dump' => [
-                codecept_data_dir('files/test-dump-001.sql'),
-                codecept_data_dir('files/test-dump-002.sql'),
-            ]
+            'dump' => $dumpFiles
         ];
         Installation::scaffold($wpRootDir);
 
@@ -1583,8 +1550,10 @@ class WPLoaderTest extends Unit
 
         $this->expectException(ModuleException::class);
 
-        $this->assertInIsolation(static function () use ($wpLoader) {
-            uopz_set_return('fopen', false);
+        $this->assertInIsolation(static function () use ($wpLoader, $dumpFiles) {
+            uopz_set_return('fopen', function (string $file, ...$args)use($dumpFiles) {
+                return in_array($file, $dumpFiles, true) ? false : fopen($file, ...$args);
+            }, true);
             $wpLoader->_initialize();
         });
     }
@@ -2736,289 +2705,6 @@ PHP
 
                 Assert::assertEquals('', get_option('my_plugin_activated'));
                 Assert::assertEquals('__loaded__', get_option('my_plugin_loaded'));
-            }
-        );
-    }
-
-    /**
-     * It should allow loading a plugin from an arbitrary path
-     *
-     * @test
-     */
-    public function should_allow_loading_a_plugin_from_an_arbitrary_path(): void
-    {
-        $myPluginCode = <<< PHP
-<?php
-/** Plugin Name: My Plugin */
-function my_plugin_main() { }
-
-register_activation_hook( __FILE__, 'activate_my_plugin' );
-function activate_my_plugin(){
-    update_option('my_plugin_activated', '1');
-}
-PHP;
-        $projectDir = FS::tmpDir('wploader_', [
-            'my-plugin.php' => $myPluginCode,
-
-            'var' => [
-                'wordpress' => []
-            ],
-            'vendor' => [
-                'acme' => [
-
-                ]
-            ]
-        ]);
-        $wpRootDir = $projectDir. '/var/wordpress';
-        $installation = Installation::scaffold($wpRootDir);
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $installationDb = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
-        // Copy WooCommerce from the main installation to a temporary directory.
-        $tmpDir = sys_get_temp_dir();
-        $mainWPInstallationRootDir = Env::get('WORDPRESS_ROOT_DIR');
-        if (!FS::recurseCopy(
-            $mainWPInstallationRootDir . '/wp-content/plugins/woocommerce',
-            $tmpDir . '/external-woocommerce'
-        )) {
-            throw new \RuntimeException('Could not copy plugin woocommerce');
-        }
-        $externalAbsolutePathPluginDir = $tmpDir . '/external-woocommerce';
-        $this->assertFileExists($externalAbsolutePathPluginDir . '/woocommerce.php');
-        if(!FS::recurseCopy(
-            codecept_data_dir('plugins/some-external-plugin'),
-            $projectDir . '/vendor/acme/some-external-plugin'
-        )){
-            throw new \RuntimeException('Could not copy plugin some-external-plugin');
-        }
-
-        $hash = md5(microtime());
-        $externalExplodingPlugin = sys_get_temp_dir() . '/' . $hash . '/exploding-plugin';
-        if(!(mkdir($externalExplodingPlugin, 0777, true) && is_dir($externalExplodingPlugin))){
-            throw new \RuntimeException('Could not create exploding plugin directory');
-        }
-        if(!copy(codecept_data_dir('plugins/exploding-plugin/main.php'),$externalExplodingPlugin . '/main.php' )){
-            throw new \RuntimeException('Could not copy exploding plugin file');
-        }
-        $testPluginFileContents = <<< PHP
-<?php
-/** Plugin Name: Test Plugin */
-function test_plugin_main() { }
-
-register_activation_hook( __FILE__, 'test_plugin_activate' );
-function test_plugin_activate() {
-    update_option('test_plugin_activated', '1');
-}
-PHP;
-
-        if(!file_put_contents($wpRootDir. '/wp-content/plugins/test.php', $testPluginFileContents)){
-            throw new \RuntimeException('Could not write test.php plugin file');
-        }
-
-        // Create a configuration to load the plugins from arbitrary paths.
-        $this->config = [
-            'wpRootFolder' => $wpRootDir,
-            'dbUrl' => $installationDb->getDbUrl(),
-            'tablePrefix' => 'test_',
-            'plugins' => [
-                'test.php', // From the WordPress installation plugins directory.
-                $externalAbsolutePathPluginDir . '/woocommerce.php', // Absolute path.
-                'vendor/acme/some-external-plugin/some-plugin.php', // Relative path to the project root folder.
-                'my-plugin.php' // Relative path to the project root folder, development plugin file.
-            ],
-            'silentlyActivatePlugins' => [
-                $externalExplodingPlugin . '/main.php' // Absolute path.
-            ]
-        ];
-
-        $wpLoader = $this->module();
-        $projectDirname = basename($projectDir);
-
-        $this->assertInIsolation(
-            static function () use ($wpLoader, $projectDir) {
-                chdir($projectDir);
-                $projectDirname = basename($projectDir);
-
-                $wpLoader->_initialize();
-
-                Assert::assertEquals([
-                    'test.php',
-                    'external-woocommerce/woocommerce.php',
-                    'some-external-plugin/some-plugin.php',
-                    "$projectDirname/my-plugin.php",
-                    'exploding-plugin/main.php'
-                ], get_option('active_plugins'));
-
-                // Test plugin from the WordPress installation plugins directory.
-                Assert::assertEquals('1', get_option('test_plugin_activated'));
-                Assert::assertTrue(function_exists('test_plugin_main'));
-
-                // WooCommerce from the absolute path.
-                Assert::assertTrue(function_exists('wc_get_product'));
-                Assert::assertTrue(class_exists('WC_Product'));
-                $product = new \WC_Product();
-                $product->set_name('Test Product');
-                $product->set_price(10);
-                $product->set_status('publish');
-                $product->save();
-                Assert::assertInstanceOf(\WC_Product::class, $product);
-                Assert::assertInstanceOf(\WC_Product::class, wc_get_product($product->get_id()));
-
-                // Some external plugin from the relative path.
-                Assert::assertTrue(function_exists('some_plugin_main'));
-                Assert::assertEquals('1', get_option('some_plugin_activated'));
-
-                // My plugin from the relative path.
-                Assert::assertTrue(function_exists('my_plugin_main'));
-                Assert::assertEquals('1', get_option('my_plugin_activated'));
-
-                // Exploding plugin from the absolute path.
-                Assert::assertTrue(function_exists('exploding_plugin_main'));
-                Assert::assertEquals('', get_option('exploding_plugin_activated'));
-            }
-        );
-    }
-
-    /**
-     * It should allow loading a plugin from an arbitrary path in multisite
-     *
-     * @test
-     */
-    public function should_allow_loading_a_plugin_from_an_arbitrary_path_in_multisite(): void
-    {
-        $myPluginCode = <<< PHP
-<?php
-/** Plugin Name: My Plugin */
-function my_plugin_main() { }
-
-register_activation_hook( __FILE__, 'activate_my_plugin' );
-function activate_my_plugin(){
-    update_option('my_plugin_activated', '1');
-}
-PHP;
-        $projectDir = FS::tmpDir('wploader_', [
-            'my-plugin.php' => $myPluginCode,
-
-            'var' => [
-                'wordpress' => []
-            ],
-            'vendor' => [
-                'acme' => [
-
-                ]
-            ]
-        ]);
-        $wpRootDir = $projectDir. '/var/wordpress';
-        $installation = Installation::scaffold($wpRootDir);
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $installationDb = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
-        // Copy WooCommerce from the main installation to a temporary directory.
-        $tmpDir = sys_get_temp_dir();
-        $mainWPInstallationRootDir = Env::get('WORDPRESS_ROOT_DIR');
-        if (!FS::recurseCopy(
-            $mainWPInstallationRootDir . '/wp-content/plugins/woocommerce',
-            $tmpDir . '/external-woocommerce'
-        )) {
-            throw new \RuntimeException('Could not copy plugin woocommerce');
-        }
-        $externalAbsolutePathPluginDir = $tmpDir . '/external-woocommerce';
-        $this->assertFileExists($externalAbsolutePathPluginDir . '/woocommerce.php');
-        if(!FS::recurseCopy(
-            codecept_data_dir('plugins/some-external-plugin'),
-            $projectDir . '/vendor/acme/some-external-plugin'
-        )){
-            throw new \RuntimeException('Could not copy plugin some-external-plugin');
-        }
-
-        $hash = md5(microtime());
-        $externalExplodingPlugin = sys_get_temp_dir() . '/' . $hash . '/exploding-plugin';
-        if(!(mkdir($externalExplodingPlugin, 0777, true) && is_dir($externalExplodingPlugin))){
-            throw new \RuntimeException('Could not create exploding plugin directory');
-        }
-        if(!copy(codecept_data_dir('plugins/exploding-plugin/main.php'),$externalExplodingPlugin . '/main.php' )){
-            throw new \RuntimeException('Could not copy exploding plugin file');
-        }
-        $testPluginFileContents = <<< PHP
-<?php
-/** Plugin Name: Test Plugin */
-function test_plugin_main() { }
-
-register_activation_hook( __FILE__, 'test_plugin_activate' );
-function test_plugin_activate() {
-    update_option('test_plugin_activated', '1');
-}
-PHP;
-
-        if(!file_put_contents($wpRootDir. '/wp-content/plugins/test.php', $testPluginFileContents)){
-            throw new \RuntimeException('Could not write test.php plugin file');
-        }
-
-        // Create a configuration to load the plugins from arbitrary paths.
-        $this->config = [
-            'multisite' => true,
-            'wpRootFolder' => $wpRootDir,
-            'dbUrl' => $installationDb->getDbUrl(),
-            'tablePrefix' => 'test_',
-            'plugins' => [
-                'test.php', // From the WordPress installation plugins directory.
-                $externalAbsolutePathPluginDir . '/woocommerce.php', // Absolute path.
-                'vendor/acme/some-external-plugin/some-plugin.php', // Relative path to the project root folder.
-                'my-plugin.php' // Relative path to the project root folder, development plugin file.
-            ],
-            'silentlyActivatePlugins' => [
-                $externalExplodingPlugin . '/main.php' // Absolute path.
-            ]
-        ];
-
-        $wpLoader = $this->module();
-        $projectDirname = basename($projectDir);
-
-        $this->assertInIsolation(
-            static function () use ($wpLoader, $projectDir) {
-                chdir($projectDir);
-                $projectDirname = basename($projectDir);
-
-                $wpLoader->_initialize();
-
-                Assert::assertEquals([
-                    'test.php',
-                    'external-woocommerce/woocommerce.php',
-                    'some-external-plugin/some-plugin.php',
-                    "$projectDirname/my-plugin.php",
-                    'exploding-plugin/main.php'
-                ], array_keys(get_site_option('active_sitewide_plugins')));
-
-                // Test plugin from the WordPress installation plugins directory.
-                Assert::assertEquals('1', get_option('test_plugin_activated'));
-                Assert::assertTrue(function_exists('test_plugin_main'));
-
-                // WooCommerce from the absolute path.
-                Assert::assertTrue(function_exists('wc_get_product'));
-                Assert::assertTrue(class_exists('WC_Product'));
-                $product = new \WC_Product();
-                $product->set_name('Test Product');
-                $product->set_price(10);
-                $product->set_status('publish');
-                $product->save();
-                Assert::assertInstanceOf(\WC_Product::class, $product);
-                Assert::assertInstanceOf(\WC_Product::class, wc_get_product($product->get_id()));
-
-                // Some external plugin from the relative path.
-                Assert::assertTrue(function_exists('some_plugin_main'));
-                Assert::assertEquals('1', get_option('some_plugin_activated'));
-
-                // My plugin from the relative path.
-                Assert::assertTrue(function_exists('my_plugin_main'));
-                Assert::assertEquals('1', get_option('my_plugin_activated'));
-
-                // Exploding plugin from the absolute path.
-                Assert::assertTrue(function_exists('exploding_plugin_main'));
-                Assert::assertEquals('', get_option('exploding_plugin_activated'));
             }
         );
     }

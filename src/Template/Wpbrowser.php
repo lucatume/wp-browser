@@ -127,11 +127,12 @@ class Wpbrowser extends Bootstrap
     {
         $plugins = '';
         if ($project instanceof PluginProject) {
-            $plugins = "'{$project->getActivationString()}'";
+            $basename = basename($project->getActivationString());
+            $plugins = "'." . DIRECTORY_SEPARATOR . "{$basename}'";
         }
         $theme = '';
         if ($project instanceof ThemeProject) {
-            $theme = $project->getActivationString();
+            $theme = '.';
         }
 
         $suiteConfig = <<<EOF

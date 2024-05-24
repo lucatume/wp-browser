@@ -1,3 +1,16 @@
+>>> /functions.php >>>
+<?php
+function theme_23_some_function() {
+    return 'test-test-test';
+}
+
+add_action('after_setup_theme', 'theme_23_some_function');
+<<< /functions.php <<<
+
+>>> /index.php >>>
+<?php // This file is required for the theme to work. ?>
+<<< /index.php <<<
+
 >>> /composer >>>
 #!/bin/sh
 touch composer.lock
@@ -92,7 +105,7 @@ modules:
            adminEmail: 'admin@%WORDPRESS_DOMAIN%'
            title: 'Integration Tests'
            plugins: []
-           theme: 'theme_23'
+           theme: '.'
 <<< /tests/Integration.suite.yml <<<
 
 >>> /tests/Support/IntegrationTester.php >>>
