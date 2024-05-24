@@ -68,8 +68,8 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 
 		$wpdb->suppress_errors = false;
 		$wpdb->show_errors     = true;
-        if ( ! $wpdb->check_connection(false) ) {
-            $wpdb->db_connect();
+        if ( empty( lucatume\WPBrowser\Utils\Property::readPrivate( $wpdb, 'dbh' ) ) ) {
+            self::fail( 'The database connection went away. A `setUpBeforeClassMethod` likely closed the connection.' );
         }
         ini_set( 'display_errors', 1 );
 
