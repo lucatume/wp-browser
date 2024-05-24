@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.6.0] 2024-05-24;
+
 ### Added
 
 - Allow plugins to be loaded from arbitrary absolute or relative paths in the `WPLoader` module.
@@ -1940,4 +1942,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.5.7]: https://github.com/lucatume/wp-browser/compare/3.5.6...3.5.7
 [3.5.8]: https://github.com/lucatume/wp-browser/compare/3.5.7...3.5.8
 [3.5.9]: https://github.com/lucatume/wp-browser/compare/3.5.8...3.5.9
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.5.9...HEAD
+[3.6.0]: https://github.com/lucatume/wp-browser/compare/3.5.9...3.6.0
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.6.0...HEAD
