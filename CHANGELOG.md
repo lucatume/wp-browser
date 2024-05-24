@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Better messaging when throwing due to disconnected database.
+
 ## [4.2.1] 2024-05-24;
 
 ### Fixed 
