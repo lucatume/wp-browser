@@ -333,6 +333,16 @@ EOT;
         $projectDir = FS::tmpDir('setup_', [
             'theme_23' => [
                 'style.css' => "/*\nTheme Name: Theme 23\n*/",
+                'functions.php' => <<<PHP
+<?php
+function theme_23_some_function() {
+    return 'test-test-test';
+}
+
+add_action('after_setup_theme', 'theme_23_some_function');
+PHP
+,
+                'index.php' => '<?php // This file is required for the theme to work. ?>',
                 'composer.json' => $composerFileCode,
                 'vendor' => [
                     'bin' => [
@@ -402,10 +412,20 @@ EOT;
                 'style.css' => <<<EOT
 /*
 Theme Name: Theme 23
-Template: twentytwenty
+Template: twentytwentyfour
 */
 EOT
 ,
+                'functions.php' => <<<PHP
+<?php
+function theme_23_some_function() {
+    return 'test-test-test';
+}
+
+add_action('after_setup_theme', 'theme_23_some_function');
+PHP
+,
+                'index.php' => '<?php // This file is required for the theme to work. ?>',
                 'composer.json' => $composerFileCode,
                 'vendor' => [
                     'bin' => [
@@ -478,6 +498,16 @@ Theme Name: Theme 23
 */
 EOT
 ,
+                'functions.php' => <<<PHP
+<?php
+function theme_23_some_function() {
+    return 'test-test-test';
+}
+
+add_action('after_setup_theme', 'theme_23_some_function');
+PHP
+,
+                'index.php' => '<?php // This file is required for the theme to work. ?>',
                 'composer.json' => $composerFileCode,
                 'vendor' => [
                     'bin' => [

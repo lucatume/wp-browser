@@ -39,8 +39,21 @@ class ThemeSwitchAction implements CodeExecutionActionInterface
     {
         // The `switch_theme` function will not complain about a missing theme: check it now.
         $theme = wp_get_theme($stylesheet);
-        if (!($theme instanceof WP_Theme && $theme->exists())) {
-            throw new InstallationException("Theme $stylesheet does not exist.");
+
+        if (!($theme instanceof WP_Theme && $theme->exists() && !$theme->errors())) {
+            $themeRealPath = realpath($stylesheet);
+
+            if ($themeRealPath && is_dir($themeRealPath) && is_file($themeRealPath . '/style.css')) {
+                $this->loadThemeFromFile($themeRealPath, $multisite);
+                return;
+            }
+
+            $message = "Errors with theme $stylesheet.";
+            if ($theme->errors()) {
+                $message = implode(', ', $theme->errors()->get_error_messages());
+            }
+
+            throw new InstallationException($message);
         }
 
         if ($multisite) {
@@ -57,5 +70,14 @@ class ThemeSwitchAction implements CodeExecutionActionInterface
         return static function () use ($request) {
             return $request->execute();
         };
+    }
+
+    private function loadThemeFromFile(string $themeRealPath, bool $multisite): void
+    {
+        include_once $themeRealPath . '/functions.php';
+        $basename = basename($themeRealPath);
+        update_option('template', $basename);
+        update_option('stylesheet', $basename);
+        do_action('after_setup_theme');
     }
 }
