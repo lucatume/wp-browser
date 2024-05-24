@@ -1281,7 +1281,7 @@ class WPLoaderTest extends Unit
         Installation::scaffold($wpRootDir, 'latest');
 
         $this->expectException(ModuleException::class);
-        $this->expectExceptionMessage('Theme some-theme does not exist.');
+        $this->expectExceptionMessage('The theme directory "some-theme" does not exist');
 
         $wpLoader = $this->module();
         $this->assertInIsolation(static function () use ($wpLoader) {
@@ -1317,41 +1317,7 @@ class WPLoaderTest extends Unit
         Installation::scaffold($wpRootDir, 'latest');
 
         $this->expectException(ModuleException::class);
-        $this->expectExceptionMessage('Theme some-theme does not exist.');
-
-        $wpLoader = $this->module();
-        $this->assertInIsolation(static function () use ($wpLoader) {
-            $wpLoader->_initialize();
-        });
-    }
-
-    /**
-     * It should throw if theme is an array
-     *
-     * @test
-     */
-    public function should_throw_if_theme_is_an_array(): void
-    {
-        $wpRootDir = FS::tmpDir('wploader_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $this->config = [
-            'wpRootFolder' => $wpRootDir,
-            'dbName' => $dbName,
-            'dbHost' => $dbHost,
-            'dbUser' => $dbUser,
-            'dbPassword' => $dbPassword,
-            'configFile' => [
-                codecept_data_dir('files/test_file_001.php'),
-                codecept_data_dir('files/test_file_002.php'),
-            ],
-            'theme' => ['some-template', 'some-stylesheet'],
-        ];
-        Installation::scaffold($wpRootDir, 'latest');
-
-        $this->expectException(ModuleConfigException::class);
+        $this->expectExceptionMessage('The theme directory "some-theme" does not exist');
 
         $wpLoader = $this->module();
         $this->assertInIsolation(static function () use ($wpLoader) {
@@ -1566,16 +1532,17 @@ class WPLoaderTest extends Unit
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $dumpFiles = [
+            codecept_data_dir('files/test-dump-001.sql'),
+            codecept_data_dir('files/test-dump-002.sql'),
+        ];
         $this->config = [
             'wpRootFolder' => $wpRootDir,
             'dbName' => $dbName,
             'dbHost' => $dbHost,
             'dbUser' => $dbUser,
             'dbPassword' => $dbPassword,
-            'dump' => [
-                codecept_data_dir('files/test-dump-001.sql'),
-                codecept_data_dir('files/test-dump-002.sql'),
-            ]
+            'dump' => $dumpFiles
         ];
         Installation::scaffold($wpRootDir);
 
@@ -1583,8 +1550,10 @@ class WPLoaderTest extends Unit
 
         $this->expectException(ModuleException::class);
 
-        $this->assertInIsolation(static function () use ($wpLoader) {
-            uopz_set_return('fopen', false);
+        $this->assertInIsolation(static function () use ($wpLoader, $dumpFiles) {
+            uopz_set_return('fopen', function (string $file, ...$args)use($dumpFiles) {
+                return in_array($file, $dumpFiles, true) ? false : fopen($file, ...$args);
+            }, true);
             $wpLoader->_initialize();
         });
     }
