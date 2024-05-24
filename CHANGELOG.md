@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Better messaging when throwing due to disconnected database.
+
 ### Fixed
 
 - Throw on disconnected db in `WPTestCase::setUpBeforeClass`; iterates over the fix for #720.
