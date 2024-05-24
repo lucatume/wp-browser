@@ -1,6 +1,6 @@
 <?php
 
-namespace unit\lucatume\WPBrowser\Module;
+namespace lucatume\WPBrowser\Module;
 
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Lib\Di;

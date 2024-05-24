@@ -1,6 +1,6 @@
 <?php
 
-namespace unit\lucatume\WPBrowser\Module;
+namespace lucatume\WPBrowser\Module;
 
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
