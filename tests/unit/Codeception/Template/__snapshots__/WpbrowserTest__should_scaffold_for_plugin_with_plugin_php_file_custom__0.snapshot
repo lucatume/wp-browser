@@ -89,7 +89,7 @@ modules:
            domain: '%WORDPRESS_DOMAIN%'
            adminEmail: 'admin@%WORDPRESS_DOMAIN%'
            title: 'Integration Tests'
-           plugins: ['plugin_89/plugin.php']
+           plugins: ['./plugin.php']
            theme: ''
 <<< /tests/Integration.suite.yml <<<
 

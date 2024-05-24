@@ -1,3 +1,16 @@
+>>> /functions.php >>>
+<?php
+function theme_23_some_function() {
+    return 'test-test-test';
+}
+
+add_action('after_setup_theme', 'theme_23_some_function');
+<<< /functions.php <<<
+
+>>> /index.php >>>
+<?php // This file is required for the theme to work. ?>
+<<< /index.php <<<
+
 >>> /tests/EndToEnd.suite.yml >>>
 # Integration suite configuration
 #
@@ -125,7 +138,7 @@ modules:
            adminEmail: 'admin@%WORDPRESS_DOMAIN%'
            title: 'Integration Tests'
            plugins: []
-           theme: 'theme_23'
+           theme: '.'
 <<< /tests/Integration.suite.yml <<<
 
 >>> /tests/Support/IntegrationTester.php >>>
@@ -257,8 +270,8 @@ TEST_TABLE_PREFIX=test_
 WORDPRESS_TABLE_PREFIX=wp_
 
 # The URL and domain of the WordPress site used in end-to-end tests.
-WORDPRESS_URL=http://localhost:61144
-WORDPRESS_DOMAIN=localhost:61144
+WORDPRESS_URL=http://localhost:8431
+WORDPRESS_DOMAIN=localhost:8431
 WORDPRESS_ADMIN_PATH=/wp-admin
 
 # The username and password of the administrator user of the WordPress site used in end-to-end tests.
@@ -267,10 +280,10 @@ WORDPRESS_ADMIN_PASSWORD=password
 
 # The host and port of the ChromeDriver server that will be used in end-to-end tests.
 CHROMEDRIVER_HOST=localhost
-CHROMEDRIVER_PORT=17476
+CHROMEDRIVER_PORT=44085
 
 # The port on which the PHP built-in server will serve the WordPress installation.
-BUILTIN_SERVER_PORT=61144
+BUILTIN_SERVER_PORT=8431
 
 <<< /tests/.env <<<
 
