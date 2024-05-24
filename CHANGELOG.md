@@ -4,7 +4,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- Allow plugins to be loaded from arbitrary absolute or relative paths in the `WPLoader` module.
+- Allow themes to be loaded from arbitrary absolute or relative paths in the `WPLoader` module.
+- Support an array argument for the `theme` configuration parameter in the `WPLoader` module to define `[parent-theme, child-theme]` pairs.
+
 ## [3.5.9] 2024-05-18;
+
+## Fixed
+
+- Avoid calling `wpdb::db_connect()` twice during `WPLoader` bootstrap. (thanks @calvinalkan)
 
 ## [3.5.8] 2024-05-13;
 
