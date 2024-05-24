@@ -2803,9 +2803,10 @@ class WP_SQLite_Translator {
 		$this->rewriter->add( new WP_SQLite_Token( '(', WP_SQLite_Token::TYPE_OPERATOR ) );
 
 		$max = count( $conflict_columns );
-		foreach ( $conflict_columns as $i => $conflict_column ) {
+		$i   = 0;
+		foreach ( $conflict_columns as $conflict_column ) {
 			$this->rewriter->add( new WP_SQLite_Token( '"' . $conflict_column . '"', WP_SQLite_Token::TYPE_KEYWORD, WP_SQLite_Token::FLAG_KEYWORD_KEY ) );
-			if ( $i !== $max - 1 ) {
+			if ( ++$i < $max ) {
 				$this->rewriter->add( new WP_SQLite_Token( ',', WP_SQLite_Token::TYPE_OPERATOR ) );
 				$this->rewriter->add( new WP_SQLite_Token( ' ', WP_SQLite_Token::TYPE_WHITESPACE ) );
 			}
