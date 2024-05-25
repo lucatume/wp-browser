@@ -4,12 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
-## [3.6.1] 2024-05-25;
-
 ### Changed
 
 - Better messaging when throwing due to disconnected database.
 - Add the `WPLoader::beStrictAboutWpdbConnectionId` configuration parameter, defaults to `true`, to throw if db connection changes during setup before class.
+
+## [3.6.1] 2024-05-24;
 
 ### Fixed
 
