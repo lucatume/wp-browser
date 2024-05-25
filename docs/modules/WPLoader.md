@@ -112,6 +112,8 @@ When used in this mode, the module supports the following configuration paramete
   the following runs. To force the installation to run again, rerun the suite using the WPLoader module using
   the `--debug` flag or delete the `_wploader-state.sql` file in the suite directory. This configuration parameter is
   ignored when the `loadOnly` parameter is set to `true`.
+* `beStrictAboutWpdbConnectionId` - a boolean value to indicate if the `WPTestCase` class should throw an exception if
+  the database connection is closed during any `setUpBeforeClass` method; default is `true`.
 
 This is an example of an integration suite configured to use the module:
 

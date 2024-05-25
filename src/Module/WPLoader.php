@@ -19,6 +19,7 @@ use lucatume\WPBrowser\Module\WPLoader\FactoryStore;
 use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
+use lucatume\WPBrowser\TestCase\WPTestCase;
 use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\Utils\CorePHPUnit;
 use lucatume\WPBrowser\Utils\Db as DbUtils;
@@ -127,6 +128,7 @@ class WPLoader extends Module
      *     backupStaticAttributes?: bool,
      *     backupStaticAttributesExcludeList?: array<string,string[]>,
      *     skipInstall?: bool,
+     *     beStrictAboutWpdbConnectionId?: bool
      * }
      */
     protected array $config = [
@@ -164,7 +166,8 @@ class WPLoader extends Module
         'backupGlobalsExcludeList' => [],
         'backupStaticAttributes' => false,
         'backupStaticAttributesExcludeList' => [],
-        'skipInstall' => false
+        'skipInstall' => false,
+        'beStrictAboutWpdbConnectionId' => true
     ];
 
     private string $wpBootstrapFile;
@@ -318,6 +321,14 @@ class WPLoader extends Module
             );
         }
 
+        if (isset($this->config['beStrictAboutWpdbConnectionId'])
+            && !is_bool($this->config['beStrictAboutWpdbConnectionId'])) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                'The `beStrictAboutWpdbConnectionId` configuration parameter must be a boolean.'
+            );
+        }
+
         parent::validateConfig();
     }
 
@@ -378,7 +389,8 @@ class WPLoader extends Module
          *     backupGlobalsExcludeList: string[],
          *     backupStaticAttributes: bool,
          *     backupStaticAttributesExcludeList: array<string,string[]>,
-         *     skipInstall: bool
+         *     skipInstall: bool,
+         *     beStrictAboutWpdbConnectionId: bool
          * } $config
          */
         $config = $this->config;
@@ -488,6 +500,8 @@ class WPLoader extends Module
 
         // If the database does not already exist, then create it now.
         $db->create();
+
+        WPTestCase::beStrictAboutWpdbConnectionId($config['beStrictAboutWpdbConnectionId']);
 
         $this->loadWordPress();
     }
@@ -1002,6 +1016,7 @@ class WPLoader extends Module
 
         try {
             require $this->wpBootstrapFile;
+            WPTestCase::setWpdbConnectionId((string)$GLOBALS['wpdb']->get_var('SELECT CONNECTION_ID()'));
         } catch (Throwable $t) {
             // Not an early exit: Codeception will handle the Exception and print it.
             $this->earlyExit = false;

@@ -1,8 +1,16 @@
 diff --git a/includes/core-phpunit/includes/abstract-testcase.php b/includes/core-phpunit/includes/abstract-testcase.php
-index f2978644..e092beca 100644
+index f2978644..22427643 100644
 --- a/includes/core-phpunit/includes/abstract-testcase.php
 +++ b/includes/core-phpunit/includes/abstract-testcase.php
-@@ -20,6 +20,8 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
+@@ -1,5 +1,7 @@
+ <?php
+ 
++use lucatume\WPBrowser\TestCase\WPTestCase;
++
+ require_once __DIR__ . '/factory.php';
+ require_once __DIR__ . '/trac.php';
+ 
+@@ -20,6 +22,8 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
  	protected $expected_doing_it_wrong = array();
  	protected $caught_doing_it_wrong   = array();
  
@@ -11,7 +19,7 @@ index f2978644..e092beca 100644
  	protected static $hooks_saved = array();
  	protected static $ignore_files;
  
-@@ -37,7 +39,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
+@@ -37,7 +41,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
  	 *
  	 * @return WP_UnitTest_Factory The fixture factory.
  	 */
@@ -20,7 +28,7 @@ index f2978644..e092beca 100644
  		static $factory = null;
  		if ( ! $factory ) {
  			$factory = new WP_UnitTest_Factory();
-@@ -53,7 +55,7 @@ protected static function factory() {
+@@ -53,7 +57,7 @@ protected static function factory() {
  	 * @return string The class name.
  	 */
  	public static function get_called_class() {
@@ -29,14 +37,16 @@ index f2978644..e092beca 100644
  	}
  
  	/**
-@@ -66,10 +68,12 @@ public static function set_up_before_class() {
+@@ -66,10 +70,14 @@ public static function set_up_before_class() {
  
  		$wpdb->suppress_errors = false;
  		$wpdb->show_errors     = true;
 -		$wpdb->db_connect();
 -		ini_set( 'display_errors', 1 );
-+        if ( empty( lucatume\WPBrowser\Utils\Property::readPrivate( $wpdb, 'dbh' ) ) ) {
++        if ( WPTestCase::isStrictAboutWpdbConnectionId() && $wpdb->get_var( 'SELECT CONNECTION_ID()' ) !== WPTestCase::getWpdbConnectionId() ) {
 +            self::fail( 'The database connection went away. A `setUpBeforeClassMethod` likely closed the connection.' );
++        } else {
++            $wpdb->check_connection(false);
 +        }
 +        ini_set( 'display_errors', 1 );
  
@@ -45,7 +55,7 @@ index f2978644..e092beca 100644
  
  		if ( method_exists( $class, 'wpSetUpBeforeClass' ) ) {
  			call_user_func( array( $class, 'wpSetUpBeforeClass' ), static::factory() );
-@@ -82,7 +86,7 @@ public static function set_up_before_class() {
+@@ -82,7 +90,7 @@ public static function set_up_before_class() {
  	 * Runs the routine after all tests have been run.
  	 */
  	public static function tear_down_after_class() {
@@ -54,7 +64,7 @@ index f2978644..e092beca 100644
  
  		if ( method_exists( $class, 'wpTearDownAfterClass' ) ) {
  			call_user_func( array( $class, 'wpTearDownAfterClass' ) );
-@@ -651,7 +655,7 @@ public function expectedDeprecated() {
+@@ -651,7 +659,7 @@ public function expectedDeprecated() {
  	 *
  	 * @since 4.2.0
  	 */
@@ -63,7 +73,7 @@ index f2978644..e092beca 100644
  		$this->expectedDeprecated();
  	}
  
-@@ -1660,4 +1664,9 @@ public static function touch( $file ) {
+@@ -1660,4 +1668,9 @@ public static function touch( $file ) {
  
  		touch( $file );
  	}
