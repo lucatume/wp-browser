@@ -79,6 +79,14 @@ class WPTestCase extends Unit
 {
     use WPTestCasePHPUnitMethodsTrait;
     /**
+     * @var bool
+     */
+    public static $beStrictAboutWpdbConnectionId = true;
+    /**
+     * @var string|null
+     */
+    private static $wpdbConnectionId;
+    /**
      * @var string[]|null
      */
     private $coreTestCaseProperties = null;
@@ -243,6 +251,22 @@ class WPTestCase extends Unit
         self::$coreTestCaseMap[static::class] = $coreTestCase;
 
         return $coreTestCase;
+    }
+    public static function isStrictAboutWpdbConnectionId(): bool
+    {
+        return self::$beStrictAboutWpdbConnectionId;
+    }
+    public static function beStrictAboutWpdbConnectionId(bool $beStrictAboutWpdbConnectionId): void
+    {
+        self::$beStrictAboutWpdbConnectionId = $beStrictAboutWpdbConnectionId;
+    }
+    public static function getWpdbConnectionId(): ?string
+    {
+        return self::$wpdbConnectionId;
+    }
+    public static function setWpdbConnectionId(string $wpdbConnectionId): void
+    {
+        self::$wpdbConnectionId = $wpdbConnectionId;
     }
     protected function backupAdditionalGlobals(): void
     {

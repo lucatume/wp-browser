@@ -1,5 +1,7 @@
 <?php
 
+use lucatume\WPBrowser\TestCase\WPTestCase;
+
 require_once __DIR__ . '/factory.php';
 require_once __DIR__ . '/trac.php';
 
@@ -71,8 +73,10 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 
 		$wpdb->suppress_errors = false;
 		$wpdb->show_errors     = true;
-        if ( empty( lucatume\WPBrowser\Utils\Property::readPrivate( $wpdb, 'dbh' ) ) ) {
+        if ( WPTestCase::isStrictAboutWpdbConnectionId() && $wpdb->get_var( 'SELECT CONNECTION_ID()' ) !== WPTestCase::getWpdbConnectionId() ) {
             self::fail( 'The database connection went away. A `setUpBeforeClassMethod` likely closed the connection.' );
+        } else {
+            $wpdb->check_connection(false);
         }
         ini_set( 'display_errors', 1 );
 
