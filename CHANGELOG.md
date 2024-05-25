@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.6.2] 2024-05-25;
+
 ### Changed
 
 - Better messaging when throwing due to disconnected database.
@@ -1955,4 +1957,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.5.9]: https://github.com/lucatume/wp-browser/compare/3.5.8...3.5.9
 [3.6.0]: https://github.com/lucatume/wp-browser/compare/3.5.9...3.6.0
 [3.6.1]: https://github.com/lucatume/wp-browser/compare/3.6.0...3.6.1
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.6.1...HEAD
+[3.6.2]: https://github.com/lucatume/wp-browser/compare/3.6.1...3.6.2
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.6.2...HEAD
