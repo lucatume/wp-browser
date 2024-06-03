@@ -1016,7 +1016,11 @@ class WPLoader extends Module
 
         try {
             require $this->wpBootstrapFile;
-            WPTestCase::setWpdbConnectionId((string)$GLOBALS['wpdb']->get_var('SELECT CONNECTION_ID()'));
+            if ($GLOBALS['wpdb'] instanceof \WP_SQLite_DB) {
+                WPTestCase::beStrictAboutWpdbConnectionId(false);
+            } else {
+                WPTestCase::setWpdbConnectionId((string)$GLOBALS['wpdb']->get_var('SELECT CONNECTION_ID()'));
+            }
         } catch (Throwable $t) {
             // Not an early exit: Codeception will handle the Exception and print it.
             $this->earlyExit = false;
