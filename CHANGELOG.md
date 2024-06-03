@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.2.3] 2024-06-03;
+
 ### Fixed
 
 - Disable strict connection ID check for SQLite databases to avoid errors in tests.
@@ -2210,4 +2212,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.1.9]: https://github.com/lucatume/wp-browser/compare/4.1.8...4.1.9
 [4.2.0]: https://github.com/lucatume/wp-browser/compare/4.1.9...4.2.0
 [4.2.1]: https://github.com/lucatume/wp-browser/compare/4.2.0...4.2.1
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.2.1...HEAD
+[4.2.3]: https://github.com/lucatume/wp-browser/compare/4.2.1...4.2.3
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.2.3...HEAD
