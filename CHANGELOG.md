@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Disable strict connection ID check for SQLite databases to avoid errors in tests.
+
 ## [3.6.2] 2024-05-25;
 
 ### Changed
