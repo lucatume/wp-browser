@@ -88,11 +88,6 @@ class ThemeProject extends ContentProject
         return [$name];
     }
 
-    protected function symlinkProjectInContentDir(string $wpRootDir): void
-    {
-        FS::symlink($this->workDir, $wpRootDir . "/wp-content/themes/" . $this->basename);
-    }
-
     /**
      * @throws WorkerException
      * @throws Throwable
@@ -203,5 +198,10 @@ EOT,
         if (!file_put_contents($this->workDir . '/tests/Integration/SampleTest.php', $testCode, LOCK_EX)) {
             throw new RuntimeException('Could not write tests/Integration/SampleTest.php.');
         }
+    }
+
+    protected function symlinkProjectInContentDir(string $wpRootDir): void
+    {
+        FS::symlink($this->workDir, $wpRootDir . '/wp-content/themes/' . basename($this->workDir));
     }
 }
