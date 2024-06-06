@@ -20,18 +20,11 @@ class PluginProject extends ContentProject
     public const ERR_PLUGIN_NOT_FOUND = 1;
     private string $pluginFile;
     private string $pluginName;
-    private string $pluginDir;
-
-    protected function getProjectType(): string
-    {
-        return 'plugin';
-    }
 
     public function __construct(InputInterface $input, OutputInterface $output, protected string $workDir)
     {
         parent::__construct($input, $output);
         $pluginNameAndFile = self::parseDir($workDir);
-        $this->pluginDir = basename($this->workDir);
 
         if ($pluginNameAndFile === false) {
             throw new InvalidArgumentException(
@@ -42,16 +35,6 @@ class PluginProject extends ContentProject
 
         [$this->pluginFile, $this->pluginName] = $pluginNameAndFile;
         $this->testEnvironment = new TestEnvironment();
-    }
-
-    public function getType(): string
-    {
-        return 'plugin';
-    }
-
-    public function getActivationString(): string
-    {
-        return basename($this->workDir) . '/' . basename($this->pluginFile);
     }
 
     /**
@@ -89,9 +72,9 @@ class PluginProject extends ContentProject
         return [$realpath, $pluginName];
     }
 
-    public function getName(): string
+    public function getType(): string
     {
-        return $this->pluginName;
+        return 'plugin';
     }
 
     public function getPluginFilePathName(): string
@@ -116,15 +99,22 @@ class PluginProject extends ContentProject
             $this->say($activationResult->getFile() . ":" . $activationResult->getLine());
             // @phpstan-ignore-next-line
             $dumpPath = Codecept::VERSION >= 5 ? 'tests/Support/Data/dump.sql' : 'tests/_data/dump.sql';
-            $this->say('This might happen because the plugin has unmet dependencies; wp-browser configuration ' .
+            $this->say(
+                'This might happen because the plugin has unmet dependencies; wp-browser configuration ' .
                 'will continue, but you will need to manually activate the plugin and update the dump in ' .
-                $dumpPath);
+                $dumpPath
+            );
             return false;
         }
 
         $this->sayInfo('Plugin activated.');
 
         return true;
+    }
+
+    protected function getProjectType(): string
+    {
+        return 'plugin';
     }
 
     protected function scaffoldEndToEndActivationCest(): void
@@ -167,6 +157,11 @@ EOT,
         if (!file_put_contents($this->workDir . '/tests/EndToEnd/ActivationCest.php', $cestCode, LOCK_EX)) {
             throw new RuntimeException('Could not write tests/EndToEnd/ActivationCest.php.');
         }
+    }
+
+    public function getName(): string
+    {
+        return $this->pluginName;
     }
 
     protected function scaffoldIntegrationActivationTest(): void
@@ -221,8 +216,13 @@ EOT,
         }
     }
 
+    public function getActivationString(): string
+    {
+        return basename($this->workDir) . '/' . basename($this->pluginFile);
+    }
+
     protected function symlinkProjectInContentDir(string $wpRootDir): void
     {
-        FS::symlink($this->workDir, $wpRootDir . "/wp-content/plugins/" . $this->pluginDir);
+        FS::symlink($this->workDir, $wpRootDir . '/wp-content/plugins/' . basename($this->workDir));
     }
 }

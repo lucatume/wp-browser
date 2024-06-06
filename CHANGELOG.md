@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- Re-added the `Symlinker` extension to allow for the symlinking of plugins and themes in place during tests.
+- Update setup to use the `Symlinker` extension.
+
 ## [4.2.3] 2024-06-03;
 
 ### Fixed
