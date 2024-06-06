@@ -227,6 +227,7 @@ extensions:
     "lucatume\\WPBrowser\\Extension\\Symlinker":
       wpRootFolder: /var/www/html
       plugins:
+        - '.' # Relative path, the current working directory.
         - /home/plugins/plugin-1 # Absolute path to a plugin directory.
         - vendor/acme/plugin-2 # Relative path to a plugin directory.
       themes:
