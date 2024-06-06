@@ -265,8 +265,8 @@ TEST_TABLE_PREFIX=test_
 WORDPRESS_TABLE_PREFIX=wp_
 
 # The URL and domain of the WordPress site used in end-to-end tests.
-WORDPRESS_URL=http://localhost:43626
-WORDPRESS_DOMAIN=localhost:43626
+WORDPRESS_URL=http://localhost:15609
+WORDPRESS_DOMAIN=localhost:15609
 WORDPRESS_ADMIN_PATH=/wp-admin
 
 # The username and password of the administrator user of the WordPress site used in end-to-end tests.
@@ -275,10 +275,10 @@ WORDPRESS_ADMIN_PASSWORD=password
 
 # The host and port of the ChromeDriver server that will be used in end-to-end tests.
 CHROMEDRIVER_HOST=localhost
-CHROMEDRIVER_PORT=35449
+CHROMEDRIVER_PORT=1350
 
 # The port on which the PHP built-in server will serve the WordPress installation.
-BUILTIN_SERVER_PORT=43626
+BUILTIN_SERVER_PORT=15609
 
 <<< /tests/.env <<<
 
@@ -305,6 +305,7 @@ extensions:
         - Codeception\Extension\RunFailed
         - lucatume\WPBrowser\Extension\ChromeDriverController
         - lucatume\WPBrowser\Extension\BuiltInServerController
+        - lucatume\WPBrowser\Extension\Symlinker
     config:
         lucatume\WPBrowser\Extension\ChromeDriverController:
             port: '%CHROMEDRIVER_PORT%'
@@ -317,6 +318,10 @@ extensions:
                 DB_ENGINE: sqlite
                 DB_DIR: '%codecept_root_dir%/tests/Support/Data'
                 DB_FILE: db.sqlite
+        lucatume\WPBrowser\Extension\Symlinker:
+            wpRootFolder: '%WORDPRESS_ROOT_DIR%'
+            plugins:
+                - .
     commands:
         - lucatume\WPBrowser\Command\RunOriginal
         - lucatume\WPBrowser\Command\RunAll
