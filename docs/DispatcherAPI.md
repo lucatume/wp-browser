@@ -118,7 +118,7 @@ The project dispatches its own events, allowing you to subscribe to them to cont
 To subscribe to the events dispatched by wp-browser, you **do not need** to use the
 [Event Dispatcher Bridge extension][1].
 
-#### Events dispatched by the WPLoader module
+#### WPLoader Module Events
 
 The [`WPLoader` module][2] will dispatch events during its initialization.  
 
@@ -326,7 +326,7 @@ Dispatcher::addListener(WPLoader::EVENT_AFTER_BOOTSTRAP, function (Event $event)
 });
 ```
 
-#### Events dispatched by the WPDb module
+#### WPDb Module Events
 
 ##### EVENT_BEFORE_SUITE
 
