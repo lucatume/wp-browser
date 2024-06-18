@@ -1,5 +1,3 @@
-## Built-in Server Controller
-
 This extension will start and stop the PHP built-in web server before and after the tests run.
 
 ### Configuration
@@ -51,6 +49,6 @@ extensions:
 
 ### This is a service extension
 
-This is a service extension that will be started and stopped by [the `dev:start`](commands.md#devstart)
-and [`dev:stop`](commands.md#devstop) commands.
+This is a service extension that will be started and stopped by [the `dev:start`](../commands.md#devstart)
+and [`dev:stop`](../commands.md#devstop) commands.
 

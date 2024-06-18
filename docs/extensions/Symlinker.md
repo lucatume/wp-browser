@@ -1,5 +1,3 @@
-## Symlinker Extension
-
 This extension will symlink the plugins and themes specified in the `plugins` and `themes` configuration parameters to
 the WordPress installation plugins and themes directories, respectively.
 

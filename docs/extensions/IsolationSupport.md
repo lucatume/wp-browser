@@ -1,5 +1,3 @@
-## Isolation Support Extension
-
 This extension provides support for the PHPUnit annotations `@runInSeparateProcess` and `@runTestsInSeparateProcesses`,
 and the PHPUnit attributes (PHPUnit 10+) `#[RunInSeparateProcess]` and `#[RunTestsInSeparateProcesses]`.  
 You can read more about these annotations and attributes in the [PHPUnit documentation about test isolation][1].
@@ -69,5 +67,5 @@ and [`monkey:cache:path`][3] commands to manage the monkey-patching cache.
 
 
 [1]: https://docs.phpunit.de/en/10.5/attributes.html#test-isolation
-[2]: commands.md#monkeycacheclear
-[3]:commands.md#monkeycachepath
+[2]: ../commands.md#monkeycacheclear
+[3]: ../commands.md#monkeycachepath

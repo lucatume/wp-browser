@@ -1,5 +1,3 @@
-## DockerCompose Controller Extension
-
 This extension will start and stop [a `docker compose` stack][1] before and after the tests are run.
 
 ### Configuration
@@ -40,7 +38,7 @@ extensions:
 
 ### This is a service extension
 
-This is a service extension that will be started and stopped by [the `dev:start`](commands.md#devstart)
-and [`wp:dev-stop`](commands.md#devstop) commands.
+This is a service extension that will be started and stopped by [the `dev:start`](../commands.md#devstart)
+and [`wp:dev-stop`](../commands.md#devstop) commands.
 
 [1]: https://docs.docker.com

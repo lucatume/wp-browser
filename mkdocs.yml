@@ -24,10 +24,11 @@ nav:
       - WPWebDriver: 'modules/WPWebDriver.md'
       - Airplane Mode: 'modules/AirplaneMode.md'
   - Extensions:
-      - PHP Built-in Server Controller: 'extensions#builtinservercontroller'
-      - ChromeDriver Controller: 'extensions#chromedrivercontroller'
-      - Docker Compose Controller: 'extensions#dockercomposecontroller'
-      - Isolation Support: 'extensions#isolationsupport'
+      - PHP Built-in Server Controller: 'extensions/BuiltInServerController.md'
+      - ChromeDriver Controller: 'extensions/ChromeDriverController.md'
+      - Docker Compose Controller: 'extensions/DockerComposeController.md'
+      - Isolation Support: 'extensions/IsolationSupport.md'
+      - Event Dispatcher Bridge: 'extensions/EventDispatcherBridge.md'
   - Commands:
       - run and codeception:run: 'commands#run-and-codeceptionrun'
       - dev:start: 'commands#devstart'
@@ -48,6 +49,7 @@ nav:
       - monkey:cache:clear: 'commands#monkeycacheclear'
   - Helpers:
       - UopzFunctions trait: 'traits/UopzFunctions.md'
+      - Dispatcher API: 'DispatcherAPI.md'
   - Troubleshooting: 'troubleshooting.md'
   - Changelog: 'https://github.com/lucatume/wp-browser/blob/master/CHANGELOG.md'
   - v3:

@@ -1,5 +1,3 @@
-## ChromeDriver Controller Extension
-
 This extension will start and stop the ChromeDriver before and after the tests are run.
 
 ### Configuration
@@ -42,10 +40,10 @@ extensions:
       binary: '%CHROMEDRIVER_BINARY%'
 ```
 
-You can use [the `chromedriver:update` command](commands.md#chromedriverupdate) to download the latest version of
+You can use [the `chromedriver:update` command](../commands.md#chromedriverupdate) to download the latest version of
 ChromeDriver compatible with your Chrome browser version and place it in the Composer `bin` directory.
 
 ### This is a service extension
 
-This is a service extension that will be started and stopped by [the `dev:start`](commands.md#devstart)
-and [`dev:stop`](commands.md#devstop) commands.
+This is a service extension that will be started and stopped by [the `dev:start`](../commands.md#devstart)
+and [`dev:stop`](../commands.md#devstop) commands.
