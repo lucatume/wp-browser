@@ -8,6 +8,7 @@ use Codeception\Exception\ModuleException;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Extension\Symlinker;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
+use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\WordPress\Installation;
 use PHPUnit\Framework\Assert;
@@ -15,6 +16,7 @@ use PHPUnit\Framework\Assert;
 class SymlinkerTest extends Unit
 {
     use LoopIsolation;
+    use TmpFilesCleanup;
 
     public function test_exists(): void
     {

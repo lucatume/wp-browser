@@ -93,10 +93,18 @@ class WPTestCase extends Unit
      */
     protected $tester;
 
-    // Backup, and reset, globals between tests.
+    /**
+     * Backup, and reset, globals between tests.
+     *
+     * @var bool
+     */
     protected $backupGlobals = false;
 
-    // A list of globals that should not be backed up: they are handled by the Core test case.
+    /**
+     * A list of globals that should not be backed up: they are handled by the Core test case.
+     *
+     * @var string[]
+     */
     protected $backupGlobalsExcludeList = [
         'wpdb',
         'wp_query',
@@ -131,10 +139,18 @@ class WPTestCase extends Unit
         '_wpTestsBackupStaticAttributesExcludeList'
     ];
 
-    // Backup, and reset, static class attributes between tests.
+    /**
+     * Backup, and reset, static class attributes between tests.
+     *
+     * @var bool
+     */
     protected $backupStaticAttributes = false;
 
-    // A list of static attributes that should not be backed up as they are wired to explode when doing so.
+    /**
+     * A list of static attributes that should not be backed up as they are wired to explode when doing so.
+     *
+     * @var array<string,string[]>
+     */
     protected $backupStaticAttributesExcludeList = [
         // WordPress
         'WP_Block_Type_Registry' => ['instance'],
@@ -156,6 +172,8 @@ class WPTestCase extends Unit
 
     /**
      * @param array<mixed> $data
+     * @param string $dataName
+     * @throws ReflectionException
      */
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
@@ -223,7 +241,8 @@ class WPTestCase extends Unit
             );
         }
 
-        parent::__construct($name, $data, $dataName);
+        // @phpstan-ignore-next-line PHPUnit < 10.0.0 will require the three parameters.
+        parent::__construct($name ?: 'testMethod', $data, $dataName);
     }
 
     /**
@@ -236,12 +255,13 @@ class WPTestCase extends Unit
      */
     private static array $coreTestCaseMap = [];
 
-    private static function getCoreTestCase(): WP_UnitTestCase
+    private static function getCoreTestCase(?string $name = null): WP_UnitTestCase
     {
         if (isset(self::$coreTestCaseMap[static::class])) {
             return self::$coreTestCaseMap[static::class];
         }
-        $coreTestCase = new class extends WP_UnitTestCase {
+        $methodName = $name ?: 'coreTestCase';
+        $coreTestCase = new class ($methodName)  extends WP_UnitTestCase {
             use WPUnitTestCasePolyfillsTrait;
         };
         $coreTestCase->setCalledClass(static::class);
@@ -332,7 +352,7 @@ class WPTestCase extends Unit
      */
     public function __call(string $name, array $arguments): mixed
     {
-        $coreTestCase = self::getCoreTestCase();
+        $coreTestCase = self::getCoreTestCase($name);
         $reflectionMethod = new ReflectionMethod($coreTestCase, $name);
         $reflectionMethod->setAccessible(true);
         return $reflectionMethod->invokeArgs($coreTestCase, $arguments);
@@ -373,14 +393,10 @@ class WPTestCase extends Unit
             return $this->{$name} ?? null;
         }
 
-        $coreTestCase = self::getCoreTestCase();
+        $coreTestCase = self::getCoreTestCase('__get');
         $reflectionProperty = new ReflectionProperty($coreTestCase, $name);
         $reflectionProperty->setAccessible(true);
         $value = $reflectionProperty->getValue($coreTestCase);
-
-//        if (is_array($value)) {
-//            return new ArrayReflectionPropertyAccessor($reflectionProperty, $coreTestCase);
-//        }
 
         return $value;
     }
@@ -396,7 +412,7 @@ class WPTestCase extends Unit
             return;
         }
 
-        $coreTestCase = self::getCoreTestCase();
+        $coreTestCase = self::getCoreTestCase('__set');
         $reflectionProperty = new ReflectionProperty($coreTestCase, $name);
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($coreTestCase, $value);
@@ -411,9 +427,20 @@ class WPTestCase extends Unit
             return isset($this->{$name});
         }
 
-        $coreTestCase = self::getCoreTestCase();
+        $coreTestCase = self::getCoreTestCase('__isset');
         $reflectionProperty = new ReflectionProperty($coreTestCase, $name);
         $reflectionProperty->setAccessible(true);
         return $reflectionProperty->isInitialized($coreTestCase);
+    }
+
+    public function getName(bool $withDataSet = true): string
+    {
+        if (method_exists(parent::class, 'getName')) {
+            // PHPUnit < 10.0.0.
+            return parent::getName($withDataSet);
+        }
+
+        // PHPUnit >= 10.0.0.
+        return $withDataSet ? $this->nameWithDataSet() : $this->name();
     }
 }

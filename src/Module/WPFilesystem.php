@@ -377,6 +377,7 @@ class WPFilesystem extends Filesystem
         if (method_exists(Assert::class, 'assertFileDoesNotExist')) {
             Assert::assertFileDoesNotExist($this->getUploadsPath($file, $date));
         } else {
+            // @phpstan-ignore-next-line PHPUnit checked above.
             Assert::assertFileNotExists($this->getUploadsPath($file, $date));
         }
     }
