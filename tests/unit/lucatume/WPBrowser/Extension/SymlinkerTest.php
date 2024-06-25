@@ -2,19 +2,32 @@
 
 namespace unit\lucatume\WPBrowser\Extension;
 
+use Codeception\Codecept;
 use Codeception\Event\SuiteEvent;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
+use Codeception\Suite;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Extension\Symlinker;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\WordPress\Installation;
 use PHPUnit\Framework\Assert;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class SymlinkerTest extends Unit
 {
     use LoopIsolation;
+
+    private function getSuiteEvent(): SuiteEvent
+    {
+        if (Codecept::VERSION >= 5) {
+            return new SuiteEvent(new Suite(new EventDispatcher(), 'test'));
+        }
+
+        // Codeception 4.x.
+        return new SuiteEvent(new Suite());
+    }
 
     public function test_exists(): void
     {
@@ -29,10 +42,11 @@ class SymlinkerTest extends Unit
     {
         $this->expectException(ModuleConfigException::class);
         $this->expectExceptionMessage('The `wpRootFolder` configuration parameter must be set.');
+        $suiteEvent = $this->getSuiteEvent();
 
         $symlinker = new Symlinker([
         ], []);
-        $symlinker->onModuleInit(new SuiteEvent());
+        $symlinker->onModuleInit($suiteEvent);
     }
 
     public function test_throw_if_wp_root_folder_does_not_point_to_a_valid_installation(): void
@@ -40,12 +54,13 @@ class SymlinkerTest extends Unit
         $symlinker = new Symlinker([
             'wpRootFolder' => __DIR__,
         ], []);
+        $suiteEvent = $this->getSuiteEvent();
 
         $this->expectException(ModuleConfigException::class);
         $this->expectExceptionMessage('The `wpRootFolder` does not point to a valid WordPress installation.');
 
-        $this->assertInIsolation(static function () use ($symlinker) {
-            $symlinker->onModuleInit(new SuiteEvent());
+        $this->assertInIsolation(static function () use ($symlinker, $suiteEvent) {
+            $symlinker->onModuleInit($suiteEvent);
         });
     }
 
@@ -53,24 +68,26 @@ class SymlinkerTest extends Unit
     {
         $this->expectException(ModuleConfigException::class);
         $this->expectExceptionMessage('The `plugins` configuration parameter must be an array.');
+        $suiteEvent = $this->getSuiteEvent();
 
         $symlinker = new Symlinker([
             'wpRootFolder' => __DIR__,
             'plugins' => 'not-an-array',
         ], []);
-        $symlinker->onModuleInit(new SuiteEvent());
+        $symlinker->onModuleInit($suiteEvent);
     }
 
     public function test_throw_if_themes_are_not_array(): void
     {
         $this->expectException(ModuleConfigException::class);
         $this->expectExceptionMessage('The `themes` configuration parameter must be an array.');
+        $suiteEvent = $this->getSuiteEvent();
 
         $symlinker = new Symlinker([
             'wpRootFolder' => __DIR__,
             'themes' => 'not-an-array',
         ], []);
-        $symlinker->onModuleInit(new SuiteEvent());
+        $symlinker->onModuleInit($suiteEvent);
     }
 
     public function test_without_plugins_or_themes(): void
@@ -78,18 +95,19 @@ class SymlinkerTest extends Unit
         $workingDir = FS::tmpDir('symlinker_');
         $wpRoot = FS::tmpDir('symlinker_');
         Installation::scaffold($wpRoot);
+        $suiteEvent = $this->getSuiteEvent();
 
         $symlinker = new Symlinker([
             'wpRootFolder' => $wpRoot,
         ], []);
 
-        $this->assertInIsolation(static function () use ($symlinker, $workingDir) {
+        $this->assertInIsolation(static function () use ($symlinker, $workingDir, $suiteEvent) {
             chdir($workingDir);
 
             Assert::assertSame($workingDir, getcwd());
 
-            $symlinker->onModuleInit(new SuiteEvent());
-            $symlinker->afterSuite(new SuiteEvent());
+            $symlinker->onModuleInit($suiteEvent);
+            $symlinker->afterSuite($suiteEvent);
         });
     }
 
@@ -104,7 +122,6 @@ class SymlinkerTest extends Unit
 
         $this->expectException(ModuleConfigException::class);
         $this->expectExceptionMessage('Plugin file not-a-file/plugin.php does not exist.');
-
 
         $symlinker = new Symlinker([
             'wpRootFolder' => $wpRoot,
@@ -200,8 +217,9 @@ class SymlinkerTest extends Unit
         ]);
         $wpRoot = FS::tmpDir('symlinker_');
         Installation::scaffold($wpRoot);
+        $suiteEvent = $this->getSuiteEvent();
 
-        $this->assertInIsolation(static function () use ($workingDir, $wpRoot) {
+        $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent) {
             chdir($workingDir);
 
             Assert::assertSame($workingDir, getcwd());
@@ -228,7 +246,7 @@ class SymlinkerTest extends Unit
             Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
             Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
-            $symlinker->onModuleInit(new SuiteEvent());
+            $symlinker->onModuleInit($suiteEvent);
 
             Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
             Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
@@ -239,7 +257,7 @@ class SymlinkerTest extends Unit
             Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/index.php');
             Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
-            $symlinker->afterSuite(new SuiteEvent());
+            $symlinker->afterSuite($suiteEvent);
 
             Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
             Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
@@ -318,8 +336,9 @@ class SymlinkerTest extends Unit
         ]);
         $wpRoot = FS::tmpDir('symlinker_');
         Installation::scaffold($wpRoot);
+        $suiteEvent = $this->getSuiteEvent();
 
-        $this->assertInIsolation(static function () use ($workingDir, $wpRoot) {
+        $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent) {
             chdir($workingDir);
 
             Assert::assertSame($workingDir, getcwd());
@@ -346,7 +365,7 @@ class SymlinkerTest extends Unit
             Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
             Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
-            $symlinker->onModuleInit(new SuiteEvent());
+            $symlinker->onModuleInit($suiteEvent);
 
             Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
             Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
@@ -357,7 +376,7 @@ class SymlinkerTest extends Unit
             Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/index.php');
             Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
-            $symlinker->afterSuite(new SuiteEvent());
+            $symlinker->afterSuite($suiteEvent);
 
             Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
             Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
@@ -436,8 +455,9 @@ class SymlinkerTest extends Unit
         ]);
         $wpRoot = FS::tmpDir('symlinker_');
         Installation::scaffold($wpRoot);
+        $suiteEvent = $this->getSuiteEvent();
 
-        $this->assertInIsolation(static function () use ($workingDir, $wpRoot) {
+        $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent) {
             chdir($workingDir);
 
             Assert::assertSame($workingDir, getcwd());
@@ -463,7 +483,7 @@ class SymlinkerTest extends Unit
             Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
             Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
-            $symlinker->onModuleInit(new SuiteEvent());
+            $symlinker->onModuleInit($suiteEvent);
 
             Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
             Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
@@ -474,7 +494,7 @@ class SymlinkerTest extends Unit
             Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/index.php');
             Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
-            $symlinker->afterSuite(new SuiteEvent());
+            $symlinker->afterSuite($suiteEvent);
 
             Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
             Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
@@ -553,8 +573,9 @@ class SymlinkerTest extends Unit
         ]);
         $wpRoot = FS::tmpDir('symlinker_');
         Installation::scaffold($wpRoot);
+        $suiteEvent = $this->getSuiteEvent();
 
-        $this->assertInIsolation(static function () use ($workingDir, $wpRoot) {
+        $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent) {
             chdir($workingDir);
 
             Assert::assertSame($workingDir, getcwd());
@@ -581,7 +602,7 @@ class SymlinkerTest extends Unit
             Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
             Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
-            $symlinker->onModuleInit(new SuiteEvent());
+            $symlinker->onModuleInit($suiteEvent);
 
             Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
             Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
@@ -592,7 +613,7 @@ class SymlinkerTest extends Unit
             Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/index.php');
             Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
-            $symlinker->afterSuite(new SuiteEvent());
+            $symlinker->afterSuite($suiteEvent);
 
             Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
             Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
@@ -671,8 +692,9 @@ class SymlinkerTest extends Unit
         ]);
         $wpRoot = FS::tmpDir('symlinker_');
         Installation::scaffold($wpRoot);
+        $suiteEvent = $this->getSuiteEvent();
 
-        $this->assertInIsolation(static function () use ($workingDir, $wpRoot) {
+        $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent) {
             chdir($workingDir);
 
             Assert::assertSame($workingDir, getcwd());
@@ -708,7 +730,7 @@ class SymlinkerTest extends Unit
             Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/index.php');
             Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
-            $symlinker->onModuleInit(new SuiteEvent());
+            $symlinker->onModuleInit($suiteEvent);
 
             Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
             Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
@@ -719,7 +741,7 @@ class SymlinkerTest extends Unit
             Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/index.php');
             Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
-            $symlinker->afterSuite(new SuiteEvent());
+            $symlinker->afterSuite($suiteEvent);
 
             Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
             Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
@@ -767,13 +789,14 @@ class SymlinkerTest extends Unit
         $wpRoot = FS::tmpDir('symlinker_');
         $otherDir = FS::tmpDir('symlinker_');
         Installation::scaffold($wpRoot);
+        $suiteEvent = $this->getSuiteEvent();
 
         $this->expectException(ModuleException::class);
         $this->expectExceptionMessage(
             "Could not symlink plugin $workingDir/vendor/acme/plugin-2 to $wpRoot/wp-content/plugins/plugin-2: link already exists and target is $otherDir."
         );
 
-        $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $otherDir) {
+        $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $otherDir, $suiteEvent) {
             chdir($workingDir);
 
             Assert::assertSame($workingDir, getcwd());
@@ -794,7 +817,7 @@ class SymlinkerTest extends Unit
                 throw new \RuntimeException('Could not create symlinks in ' . $wpRoot);
             }
 
-            $symlinker->onModuleInit(new SuiteEvent());
+            $symlinker->onModuleInit($suiteEvent);
         });
     }
 
@@ -809,8 +832,9 @@ class SymlinkerTest extends Unit
         ]);
         $wpRoot = FS::tmpDir('symlinker_');
         Installation::scaffold($wpRoot);
+        $suiteEvent = $this->getSuiteEvent();
 
-        $this->assertInIsolation(static function () use ($workingDir, $wpRoot) {
+        $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent) {
             chdir($workingDir);
 
             Assert::assertSame($workingDir, getcwd());
@@ -826,7 +850,7 @@ class SymlinkerTest extends Unit
 
             Assert::assertFileDoesNotExist($wpRoot . "/wp-content/plugins/{$workDirBasename}/plugin.php");
 
-            $symlinker->onModuleInit(new SuiteEvent());
+            $symlinker->onModuleInit($suiteEvent);
 
             Assert::assertFileExists($wpRoot . "/wp-content/plugins/{$workDirBasename}/plugin.php");
             Assert::assertTrue(is_link($wpRoot . "/wp-content/plugins/{$workDirBasename}"));
