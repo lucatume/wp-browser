@@ -10,7 +10,6 @@ use Codeception\Suite;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Extension\Symlinker;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
-use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\WordPress\Installation;
 use PHPUnit\Framework\Assert;
@@ -19,6 +18,16 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 class SymlinkerTest extends Unit
 {
     use LoopIsolation;
+
+    private function getSuiteEvent(): SuiteEvent
+    {
+        if (Codecept::VERSION >= 5) {
+            return new SuiteEvent(new Suite(new EventDispatcher(), 'test'));
+        }
+
+        // Codeception 4.x.
+        return new SuiteEvent(new Suite());
+    }
 
     public function test_exists(): void
     {
@@ -33,20 +42,11 @@ class SymlinkerTest extends Unit
     {
         $this->expectException(ModuleConfigException::class);
         $this->expectExceptionMessage('The `wpRootFolder` configuration parameter must be set.');
+        $suiteEvent = $this->getSuiteEvent();
 
         $symlinker = new Symlinker([
         ], []);
-        $symlinker->onModuleInit($this->getSuiteEvent());
-    }
-
-    private function getSuiteEvent(): SuiteEvent
-    {
-        if (Codecept::VERSION >= 5) {
-            return new SuiteEvent(new Suite(new EventDispatcher(), 'test'));
-        }
-
-        // Codeception 4.x.
-        return new SuiteEvent(new Suite());
+        $symlinker->onModuleInit($suiteEvent);
     }
 
     public function test_throw_if_wp_root_folder_does_not_point_to_a_valid_installation(): void
@@ -54,10 +54,10 @@ class SymlinkerTest extends Unit
         $symlinker = new Symlinker([
             'wpRootFolder' => __DIR__,
         ], []);
+        $suiteEvent = $this->getSuiteEvent();
 
         $this->expectException(ModuleConfigException::class);
         $this->expectExceptionMessage('The `wpRootFolder` does not point to a valid WordPress installation.');
-        $suiteEvent = $this->getSuiteEvent();
 
         $this->assertInIsolation(static function () use ($symlinker, $suiteEvent) {
             $symlinker->onModuleInit($suiteEvent);
@@ -68,24 +68,26 @@ class SymlinkerTest extends Unit
     {
         $this->expectException(ModuleConfigException::class);
         $this->expectExceptionMessage('The `plugins` configuration parameter must be an array.');
+        $suiteEvent = $this->getSuiteEvent();
 
         $symlinker = new Symlinker([
             'wpRootFolder' => __DIR__,
             'plugins' => 'not-an-array',
         ], []);
-        $symlinker->onModuleInit($this->getSuiteEvent());
+        $symlinker->onModuleInit($suiteEvent);
     }
 
     public function test_throw_if_themes_are_not_array(): void
     {
         $this->expectException(ModuleConfigException::class);
         $this->expectExceptionMessage('The `themes` configuration parameter must be an array.');
+        $suiteEvent = $this->getSuiteEvent();
 
         $symlinker = new Symlinker([
             'wpRootFolder' => __DIR__,
             'themes' => 'not-an-array',
         ], []);
-        $symlinker->onModuleInit($this->getSuiteEvent());
+        $symlinker->onModuleInit($suiteEvent);
     }
 
     public function test_without_plugins_or_themes(): void
@@ -93,12 +95,12 @@ class SymlinkerTest extends Unit
         $workingDir = FS::tmpDir('symlinker_');
         $wpRoot = FS::tmpDir('symlinker_');
         Installation::scaffold($wpRoot);
+        $suiteEvent = $this->getSuiteEvent();
 
         $symlinker = new Symlinker([
             'wpRootFolder' => $wpRoot,
         ], []);
 
-        $suiteEvent = $this->getSuiteEvent();
         $this->assertInIsolation(static function () use ($symlinker, $workingDir, $suiteEvent) {
             chdir($workingDir);
 
@@ -120,7 +122,6 @@ class SymlinkerTest extends Unit
 
         $this->expectException(ModuleConfigException::class);
         $this->expectExceptionMessage('Plugin file not-a-file/plugin.php does not exist.');
-
 
         $symlinker = new Symlinker([
             'wpRootFolder' => $wpRoot,
@@ -723,7 +724,7 @@ PHP
         Installation::scaffold($wpRoot);
         $suiteEvent = $this->getSuiteEvent();
 
-        $this->assertInIsolation(static function () use ($workingDir, $wpRoot,$suiteEvent) {
+        $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent) {
             chdir($workingDir);
 
             Assert::assertSame($workingDir, getcwd());

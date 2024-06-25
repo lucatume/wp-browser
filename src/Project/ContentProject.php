@@ -118,12 +118,10 @@ BUILTIN_SERVER_PORT=$serverLocalhostPort
 
 EOT;
 
-        $symlinkerConfig = [
-            'wpRootFolder' => '%WORDPRESS_ROOT_DIR%'
-        ];
+        $symlinkerConfig = [ 'wpRootFolder' => '%WORDPRESS_ROOT_DIR%' ];
 
         if ($this instanceof PluginProject) {
-            $symlinkerConfig['plugins']= ['.'];
+            $symlinkerConfig['plugins'] = ['.'];
         } elseif ($this instanceof ThemeProject) {
             $symlinkerConfig['themes'] = ['.'];
         }
