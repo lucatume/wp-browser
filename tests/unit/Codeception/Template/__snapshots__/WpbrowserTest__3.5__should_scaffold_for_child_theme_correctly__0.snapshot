@@ -290,8 +290,8 @@ TEST_TABLE_PREFIX=test_
 WORDPRESS_TABLE_PREFIX=wp_
 
 # The URL and domain of the WordPress site used in end-to-end tests.
-WORDPRESS_URL=http://localhost:61155
-WORDPRESS_DOMAIN=localhost:61155
+WORDPRESS_URL=http://localhost:33117
+WORDPRESS_DOMAIN=localhost:33117
 WORDPRESS_ADMIN_PATH=/wp-admin
 
 # The username and password of the administrator user of the WordPress site used in end-to-end tests.
@@ -300,10 +300,10 @@ WORDPRESS_ADMIN_PASSWORD=password
 
 # The host and port of the ChromeDriver server that will be used in end-to-end tests.
 CHROMEDRIVER_HOST=localhost
-CHROMEDRIVER_PORT=51523
+CHROMEDRIVER_PORT=45469
 
 # The port on which the PHP built-in server will serve the WordPress installation.
-BUILTIN_SERVER_PORT=61155
+BUILTIN_SERVER_PORT=33117
 
 <<< /tests/.env <<<
 
@@ -346,7 +346,6 @@ extensions:
                 DB_FILE: db.sqlite
         lucatume\WPBrowser\Extension\Symlinker:
             wpRootFolder: '%WORDPRESS_ROOT_DIR%'
-            plugins: {  }
             themes:
                 - .
     commands:
