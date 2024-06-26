@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Updated documentation entry in EndToEnd suite bootstrap file.
+
 ## [3.6.4] 2024-06-06;
 
 ### Added
