@@ -278,7 +278,7 @@ class SQLiteDatabase implements DatabaseInterface
         $db = new SQLite3($this->dbPathname);
         $db->busyTimeout(5000);
 
-        $sql = "";
+        $sql = "PRAGMA foreign_keys = OFF;\n\n";
 
         $tables = $db->query("SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%';");
 
@@ -293,7 +293,7 @@ class SQLiteDatabase implements DatabaseInterface
                 throw new DbException("Could not read table $table[0] from database.", DbException::FAILED_DUMP);
             }
 
-            $sql .= $tableSql . ";\n\n";
+            $sql .= "DROP TABLE IF EXISTS $table[0];\n" . $tableSql . ";\n\n";
             $rows = $db->query("SELECT * FROM $table[0]");
 
             if ($rows === false) {
@@ -330,6 +330,8 @@ class SQLiteDatabase implements DatabaseInterface
 
             $sql = rtrim($sql, ",") . ";\n\n";
         }
+
+        $sql .= "PRAGMA foreign_keys = ON\n";
 
         if (file_put_contents($dumpFilePath, $sql) === false) {
             throw new DbException("Could not write dump file $dumpFilePath.", DbException::FAILED_DUMP);
