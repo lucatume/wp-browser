@@ -67,7 +67,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "lucatume\\WPBrowser\\Tests\\": "tests/_support",
+      "lucatume\\WPBrowser\\Tests\\FSTemplates\\": "tests/_support/FSTemplates",
+      "lucatume\\WPBrowser\\Tests\\Traits\\": "tests/_support/Traits",
       "lucatume\\Rector\\": "config/rector/src"
     }
   },
