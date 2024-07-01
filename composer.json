@@ -30,7 +30,7 @@
     "codeception/codeception": "^5.0",
     "codeception/module-asserts": "^2.0 || ^3.0",
     "codeception/module-phpbrowser": "^2.0 || ^3.0",
-    "codeception/module-webdriver": "^2.0 || ^3.0",
+    "codeception/module-webdriver": "^2.0 || ^3.0 || ^4.0",
     "codeception/module-db": "^2.0 || ^3.0",
     "codeception/module-filesystem": "^2.0 || ^3.0",
     "codeception/module-cli": "^2.0 || ^3.0",

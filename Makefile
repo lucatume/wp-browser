@@ -13,6 +13,7 @@ clean:
 
 clean_tmp:
 	rm -rf var/_output var/_tmp
+	rm -f var/_output/tmp/_monkeypatch var/_output/tmp/*.sqlite var/_output/tmp/*.sqlite_snapshot
 .PHONY: clean_tmp
 
 update_core_phpunit_includes:

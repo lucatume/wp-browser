@@ -1,5 +1,5 @@
 diff --git a/includes/core-phpunit/includes/abstract-testcase.php b/includes/core-phpunit/includes/abstract-testcase.php
-index f2978644..22427643 100644
+index f2978644..5c823a53 100644
 --- a/includes/core-phpunit/includes/abstract-testcase.php
 +++ b/includes/core-phpunit/includes/abstract-testcase.php
 @@ -1,5 +1,7 @@
@@ -64,7 +64,49 @@ index f2978644..22427643 100644
  
  		if ( method_exists( $class, 'wpTearDownAfterClass' ) ) {
  			call_user_func( array( $class, 'wpTearDownAfterClass' ) );
-@@ -651,7 +659,7 @@ public function expectedDeprecated() {
+@@ -543,16 +551,31 @@ public function wp_die_handler( $message, $title, $args ) {
+ 	 * @since 3.7.0
+ 	 */
+ 	public function expectDeprecated() {
+-		if ( method_exists( $this, 'getAnnotations' ) ) {
+-			// PHPUnit < 9.5.0.
+-			$annotations = $this->getAnnotations();
+-		} else {
+-			// PHPUnit >= 9.5.0.
+-			$annotations = \PHPUnit\Util\Test::parseTestMethodAnnotations(
+-				static::class,
+-				$this->getName( false )
+-			);
+-		}
++        if ( method_exists( $this, 'getAnnotations' ) ) {
++            // PHPUnit < 9.5.0.
++            $annotations = $this->getAnnotations();
++        } else if( version_compare(tests_get_phpunit_version(),'10.0.0','<')) {
++            // PHPUnit >= 9.5.0 < 10.0.0.
++            $annotations = \PHPUnit\Util\Test::parseTestMethodAnnotations(
++                static::class,
++                $this->getName( false )
++            );
++        } else {
++            // PHPUnit >= 10.0.0.
++            if (method_exists(static::class, $this->name())) {
++                $reflectionMethod = new \ReflectionMethod(static::class, $this->name());
++                $docBlock = \PHPUnit\Metadata\Annotation\Parser\DocBlock::ofMethod($reflectionMethod);
++                $annotations = [
++                    'method' => $docBlock->symbolAnnotations(),
++                    'class' => [],
++                ];
++            } else {
++                $annotations = [
++                    'method' => null,
++                    'class' => [],
++                ];
++            }
++        }
+ 
+ 		foreach ( array( 'class', 'method' ) as $depth ) {
+ 			if ( ! empty( $annotations[ $depth ]['expectedDeprecated'] ) ) {
+@@ -651,7 +674,7 @@ public function expectedDeprecated() {
  	 *
  	 * @since 4.2.0
  	 */
@@ -73,7 +115,7 @@ index f2978644..22427643 100644
  		$this->expectedDeprecated();
  	}
  
-@@ -1660,4 +1668,9 @@ public static function touch( $file ) {
+@@ -1660,4 +1683,9 @@ public static function touch( $file ) {
  
  		touch( $file );
  	}
