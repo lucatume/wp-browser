@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.2.5] 2024-06-26;
+
+### Changed
+
+- Updated documentation entry in EndToEnd suite bootstrap file.
+
 ## [4.2.4] 2024-06-06;
 
 ### Added
@@ -2221,4 +2227,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.2.1]: https://github.com/lucatume/wp-browser/compare/4.2.0...4.2.1
 [4.2.3]: https://github.com/lucatume/wp-browser/compare/4.2.1...4.2.3
 [4.2.4]: https://github.com/lucatume/wp-browser/compare/4.2.3...4.2.4
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.2.4...HEAD
+[4.2.5]: https://github.com/lucatume/wp-browser/compare/4.2.4...4.2.5
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.2.5...HEAD
