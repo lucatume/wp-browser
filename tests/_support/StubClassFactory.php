@@ -12,6 +12,7 @@ use ReflectionMethod;
 
 class StubClassFactory
 {
+    private static ?int $phpunitVersion = null;
     private static string $classTemplate = 'class %1$s extends %2$s
 {
     public function __construct(%3$s)
@@ -29,6 +30,17 @@ class StubClassFactory
         self::$constructorAssertions = [];
     }
 
+    private static function getPHPUnitVersion(): int
+    {
+        if (self::$phpunitVersion === null) {
+            self::$phpunitVersion = class_exists('PHPUnit\Runner\Version') ?
+                (int)\PHPUnit\Runner\Version::id()
+                : (int)\PHPUnit_Runner_Version::id();
+        }
+
+        return self::$phpunitVersion;
+    }
+
     /**
      * @throws Exception
      */
@@ -37,23 +49,25 @@ class StubClassFactory
         $mockClassName = get_class($mock);
         [$class, $parameters] = self::$stubParametersByClassName[$mockClassName];
         $stub = Stub::makeEmpty($class, $parameters);
-        $phpuniStateProperty = null;
+        $phpunitVersion = self::getPHPUnitVersion();
 
-        try {
-            $phpuniStateProperty = Property::readPrivate($stub, '__phpunit_state');
-        } catch (\Throwable $t) {
-            // PHPUnit < 10.0.0.
-        }
-
-        if ($phpuniStateProperty) {
-            // PHPUnit >= 10.0.0.
-            Property::setPrivateProperties($mock, ['__phpunit_state' => $phpuniStateProperty]);
-        } else {
+        if ($phpunitVersion < 10) {
             Property::setPrivateProperties($mock, [
                 '__phpunit_originalObject' => Property::readPrivate($stub, '__phpunit_originalObject'),
                 '__phpunit_returnValueGeneration' => Property::readPrivate($stub, '__phpunit_returnValueGeneration'),
                 '__phpunit_invocationMocker' => Property::readPrivate($stub, '__phpunit_invocationMocker'),
             ]);
+        } elseif ($phpunitVersion === 10) {
+            Property::setPrivateProperties($mock, [
+                '__phpunit_returnValueGeneration' => Property::readPrivate($stub, '__phpunit_returnValueGeneration'),
+                '__phpunit_invocationMocker' => Property::readPrivate($stub, '__phpunit_invocationMocker'),
+            ]);
+        } else {
+            // PHPUnit >= 10.0.0.
+            Property::setPrivateProperties(
+                $mock,
+                ['__phpunit_state' => Property::readPrivate($stub, '__phpunit_state')]
+            );
         }
 
         unset($stub);
