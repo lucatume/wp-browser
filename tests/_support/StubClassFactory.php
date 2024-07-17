@@ -5,6 +5,8 @@ namespace lucatume\WPBrowser\Tests;
 use Codeception\Stub;
 use Exception;
 use lucatume\WPBrowser\Utils\Property;
+use PHPUnit\Event\Runtime\PHPUnit;
+use PHPUnit\Runner\Version;
 use ReflectionException;
 use ReflectionMethod;
 
@@ -35,11 +37,25 @@ class StubClassFactory
         $mockClassName = get_class($mock);
         [$class, $parameters] = self::$stubParametersByClassName[$mockClassName];
         $stub = Stub::makeEmpty($class, $parameters);
-        Property::setPrivateProperties($mock, [
-            '__phpunit_originalObject' => Property::readPrivate($stub, '__phpunit_originalObject'),
-            '__phpunit_returnValueGeneration' => Property::readPrivate($stub, '__phpunit_returnValueGeneration'),
-            '__phpunit_invocationMocker' => Property::readPrivate($stub, '__phpunit_invocationMocker'),
-        ]);
+        $phpuniStateProperty = null;
+
+        try {
+            $phpuniStateProperty = Property::readPrivate($stub, '__phpunit_state');
+        } catch (\Throwable $t) {
+            // PHPUnit < 10.0.0.
+        }
+
+        if ($phpuniStateProperty) {
+            // PHPUnit >= 10.0.0.
+            Property::setPrivateProperties($mock, ['__phpunit_state' => $phpuniStateProperty]);
+        } else {
+            Property::setPrivateProperties($mock, [
+                '__phpunit_originalObject' => Property::readPrivate($stub, '__phpunit_originalObject'),
+                '__phpunit_returnValueGeneration' => Property::readPrivate($stub, '__phpunit_returnValueGeneration'),
+                '__phpunit_invocationMocker' => Property::readPrivate($stub, '__phpunit_invocationMocker'),
+            ]);
+        }
+
         unset($stub);
     }
 
