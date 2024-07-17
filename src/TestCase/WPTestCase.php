@@ -149,7 +149,7 @@ class WPTestCase extends Unit
     /**
      * A list of static attributes that should not be backed up as they are wired to explode when doing so.
      *
-     * @var array<string,string[]>
+     * @var array<string,array<int,string>>
      */
     protected $backupStaticAttributesExcludeList = [
         // WordPress
@@ -241,7 +241,6 @@ class WPTestCase extends Unit
             );
         }
 
-        // @phpstan-ignore-next-line PHPUnit < 10.0.0 will require the three parameters.
         parent::__construct($name ?: 'testMethod', $data, $dataName);
     }
 
@@ -440,7 +439,7 @@ class WPTestCase extends Unit
             return parent::getName($withDataSet);
         }
 
-        // PHPUnit >= 10.0.0.
+        // @phpstan-ignore-next-line PHPUnit >= 10.0.0.
         return $withDataSet ? $this->nameWithDataSet() : $this->name();
     }
 }
