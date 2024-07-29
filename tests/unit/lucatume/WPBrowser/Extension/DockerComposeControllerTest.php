@@ -150,7 +150,8 @@ class DockerComposeControllerTest extends Unit
             $this->makeEmptyClass(Process::class, [
                 '__construct' => static function ($command, ...$args) use (&$constructCommands) {
                     $constructCommands[] = $command;
-                }
+                },
+                'mustRun' => '__itself'
             ])
         );
 
@@ -227,6 +228,7 @@ class DockerComposeControllerTest extends Unit
                 '__construct' => static function () use (&$constructed) {
                     $constructed++;
                 },
+                'mustRun' => '__itself',
                 'stop' => 0
             ])
         );
@@ -283,7 +285,9 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_throw_if_running_file_cannot_be_written(): void
     {
-        $this->setClassMock(Process::class, $this->makeEmptyClass(Process::class, []));
+        $this->setClassMock(Process::class, $this->makeEmptyClass(Process::class, [
+            'mustRun' => '__itself',
+        ]));
         $config = ['suites' => ['end2end'], 'compose-file' => 'docker-compose.yml'];
         $options = [];
 
@@ -341,6 +345,7 @@ class DockerComposeControllerTest extends Unit
         $this->setClassMock(
             Process::class,
             $this->makeEmptyClass(Process::class, [
+                'mustRun' => '__itself',
                 'stop' => 0
             ])
         );
@@ -373,6 +378,7 @@ class DockerComposeControllerTest extends Unit
         $this->setClassMock(
             Process::class,
             $this->makeEmptyClass(Process::class, [
+                'mustRun' => '__itself',
                 'getOutput' => static function () {
                     return Yaml::dump(['services' => ['foo' => ['ports' => ['8088:80']]]]);
                 },
