@@ -15,9 +15,7 @@ class StubClassFactory
 {
     public function __construct(%3$s)
     {
-        $this->__phpunit_originalObject = %4$s::getPhpunitOriginalObject(%1$s");
-        $this->__phpunit_returnValueGeneration = %4$s::getPhpunitReturnValueGeneration("%1$s");
-        $this->__phpunit_invocationMocker = %4$s::getPhpunitInvocationMocker("%1$s");
+        %4$s::connectToStub($this, true);
         %4$s::assertConstructorConditions("%1$s", func_get_args());
         %4$s::setMockForClassName("%1$s", $this);
     }
@@ -26,8 +24,7 @@ class StubClassFactory
 {
     public function __construct(%3$s)
     {
-        $this->__phpunit_returnValueGeneration = %4$s::getPhpunitReturnValueGeneration("%1$s");
-        $this->__phpunit_invocationMocker = %4$s::getPhpunitInvocationMocker("%1$s");
+        %4$s::connectToStub($this, false);
         %4$s::assertConstructorConditions("%1$s", func_get_args());
         %4$s::setMockForClassName("%1$s", $this);
     }
@@ -56,6 +53,10 @@ class StubClassFactory
      * @var array<string,object>
      */
     private static array $mockByClassName = [];
+    /**
+     * @var<string,array{0:string,1:array<string,mixed>}>
+     */
+    private static array $stubParametersByClassName = [];
 
     public static function setMockForClassName(string $mockClassName, object $mock): void
     {
@@ -69,46 +70,23 @@ class StubClassFactory
         self::$mockByClassName = [];
     }
 
-    /**
-     * @throws ReflectionException
-     */
-    public static function getPhpunitOriginalObject(string $mockClassName): object
-    {
-        $value = Property::readPrivate(self::$stubByClassName[$mockClassName], '__phpunit_originalObject');
-
-        if (!is_object($value)) {
-            throw new ReflectionException('No original object found for ' . $mockClassName);
+    public static function connectToStub(object $mock, bool $includeOriginalObject): void{
+        $mockClassName = get_class($mock);
+        [$class, $parameters] = self::$stubParametersByClassName[$mockClassName];
+        $stub = Stub::makeEmpty($class, $parameters);
+        if($includeOriginalObject){
+            Property::setPrivateProperties($mock, [
+                '__phpunit_originalObject' => Property::readPrivate($stub, '__phpunit_originalObject'),
+                '__phpunit_returnValueGeneration' => Property::readPrivate($stub, '__phpunit_returnValueGeneration'),
+                '__phpunit_invocationMocker' => Property::readPrivate($stub, '__phpunit_invocationMocker'),
+            ]);
+        } else {
+            Property::setPrivateProperties($mock, [
+                '__phpunit_returnValueGeneration' => Property::readPrivate($stub, '__phpunit_returnValueGeneration'),
+                '__phpunit_invocationMocker' => Property::readPrivate($stub, '__phpunit_invocationMocker'),
+            ]);
         }
-
-        return $value;
-    }
-
-    /**
-     * @throws ReflectionException
-     */
-    public static function getPhpunitReturnValueGeneration(string $mockClassName): object
-    {
-        $value = Property::readPrivate(self::$stubByClassName[$mockClassName], '__phpunit_returnValueGeneration');
-
-        if (!is_object($value)) {
-            throw new ReflectionException('No return value generation found for ' . $mockClassName);
-        }
-
-        return $value;
-    }
-
-    /**
-     * @throws ReflectionException
-     */
-    public static function getPhpunitInvocationMocker(string $mockClassName): object
-    {
-        $value = Property::readPrivate(self::$stubByClassName[$mockClassName], '__phpunit_invocationMocker');
-
-        if (!is_object($value)) {
-            throw new ReflectionException('No invocation mocker found for ' . $mockClassName);
-        }
-
-        return $value;
+        unset($stub);
     }
 
     /**
@@ -195,6 +173,7 @@ class StubClassFactory
         eval($classCode);
 
         self::$stubByClassName[$mockClassName] = $codeceptionStub;
+        self::$stubParametersByClassName[$mockClassName] = [$class, $parameters];
 
         return $mockClassName;
     }
