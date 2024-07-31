@@ -48,9 +48,13 @@ trait LoopIsolation
         }
 
         if ($result->getExitCode() !== 0) {
-            codecept_debug('STDOUT: ' . $result->getStdoutBuffer());
-            codecept_debug('STDERR: ' . $result->getStderrBuffer());
-            $this->fail('Loop execution failed with exit code ' . $result->getExitCode());
+            $failureMessage = sprintf(
+                "\nEXIT CODE: %s\n\nSTDOUT---\n%s\n\nSTDERR---\n%s\n",
+                $result->getExitCode(),
+                $result->getStdoutBuffer(),
+                $result->getStderrBuffer()
+            );
+            $this->fail($failureMessage);
         }
 
         return $returnValue;
