@@ -300,10 +300,10 @@ class WPFilesystemTest extends Unit
         $sut = $this->module();
 
         $sut->seeUploadedFileFound('file.txt', time());
-        $sut->dontSeeUploadedFileFound('file.txt', 'last month');
+        $sut->dontSeeUploadedFileFound('file.txt', 'next month');
         $this->expectException(AssertionFailedError::class);
         $sut->seeUploadedFileFound('some-other-file.txt', 'now');
-        $sut->dontSeeUploadedFileFound('some-other-file.txt', 'last month');
+        $sut->dontSeeUploadedFileFound('some-other-file.txt', 'next month');
     }
 
     /**
