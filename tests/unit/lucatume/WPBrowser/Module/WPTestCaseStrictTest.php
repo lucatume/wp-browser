@@ -17,6 +17,8 @@ use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
 use PHPUnit\Framework\Assert;
 
+// @group slow
+// @group isolated-2
 class WPTestCaseStrictTest extends Unit
 {
     use LoopIsolation;

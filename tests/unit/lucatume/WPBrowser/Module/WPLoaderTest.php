@@ -44,6 +44,7 @@ use const WP_DEBUG;
 
 /**
  * @group slow
+ * @group isolated-1
  */
 class WPLoaderTest extends Unit
 {

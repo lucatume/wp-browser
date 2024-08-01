@@ -37,7 +37,9 @@ jobs:
           - climodule
           - functional
           - muloader
-          - unit
+          - unit --skip-group=slow
+          - unit --group=isolated-1
+          - unit --group=isolated-2
           - webdriver
           - wpcli_module
           - wploader_multisite
@@ -70,10 +72,33 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
 
+      - name: Get Chrome version
+        id: chrome-version
+        run: |
+          echo "version=$(/usr/bin/google-chrome --version)" >> $GITHUB_OUTPUT
+
+      - name: Get the vendor/bin directory path
+        id: vendor-bin-dir
+        run: |
+          echo "dir=${{ github.workspace }}/vendor/bin" >> $GITHUB_OUTPUT
+
+      - name: Ensure the vendor/bin directory exists
+        run: mkdir -p ${{ steps.vendor-bin-dir.outputs.dir }}
+
+      - name: Restore vendor/bin from cache
+        uses: actions/cache@v3
+        id: vendor-bin-dir-cache
+        with:
+          path: ${{ steps.vendor-bin-dir.outputs.dir }}
+          key: ${{ runner.os }}-chromedriver-${{ steps.chrome-version.outputs.version }}
+          restore-keys: |
+            ${{ runner.os }}-chromedriver-
+
       - name: Install dependencies
         run: composer update
 
-      - name: Update ChromeDriver
+      - name: Update ChromeDriver if required
+        if: steps.vendor-bin-dir-cache.outputs.cache-hit != 'true'
         run: vendor/bin/codecept chromedriver:update --binary /usr/bin/google-chrome
 
       - name: Create var/wordpress directory
