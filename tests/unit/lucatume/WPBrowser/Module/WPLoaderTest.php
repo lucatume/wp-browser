@@ -655,7 +655,7 @@ class WPLoaderTest extends Unit
         $this->expectException(InstallationException::class);
         $this->expectExceptionMessage(InstallationException::becauseWordPressIsNotInstalled()->getMessage());
 
-        $this->assertInIsolation(static function () use ($wpRootDir, $wpLoader) {
+        $this->assertInIsolation(static function () use ($wpLoader) {
             $wpLoader->_initialize();
             $wpLoader->_loadWordPress();
         });
