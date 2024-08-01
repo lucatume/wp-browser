@@ -555,10 +555,14 @@ class WPLoader extends Module
      *
      * @throws Throwable
      *
-     * @internal This method is not covered by the backward compatibility promise for wp-browser.
+     * @internal This method is not part of the module API.
      */
-    public function _loadWordPress(bool $loadOnly = false): void
+    public function _loadWordPress(?bool $loadOnly = null): void
     {
+        $config = $this->config;
+        /** @var array{loadOnly: bool} $config */
+        $loadOnly = $loadOnly ?? $config['loadOnly'];
+
         $this->loadConfigFiles();
 
         if ($loadOnly) {
