@@ -270,7 +270,7 @@ your site to run tests using the default configuration based on PHP built-in ser
 
 ## Configuration with loadOnly: true
 
-The module will load WordPress from the location specified by the `wpRootFodler` parameter, relying
+The module will load WordPress from the location specified by the `wpRootFolder` parameter, relying
 on [the WPDb module](WPDb.md) to manage the database state.
 
 When used in this mode, the module supports the following configuration parameters:
