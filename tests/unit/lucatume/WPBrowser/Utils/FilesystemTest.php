@@ -256,4 +256,25 @@ class FilesystemTest extends Unit
         $fullRelPath = $from . '/' . $expected;
         $this->assertFileExists(str_replace('\\', '/', $fullRelPath));
     }
+
+    public static function normalizePathDataProvider(): array
+    {
+        return [
+            ['/foo/bar/baz', '/foo/bar/baz'],
+            ['C:\\foo\\bar\\baz', 'C:/foo/bar/baz'],
+            ['C:/foo/bar/baz', 'C:/foo/bar/baz'],
+            ['file:///foo/bar/baz', 'file:///foo/bar/baz'],
+            ['file://C:/foo/bar/baz', 'file://C:/foo/bar/baz'],
+            ['file://C:\\foo\\bar\\baz', 'file://C:/foo/bar/baz'],
+            ['c:\\foo\\bar/baz', 'C:/foo/bar/baz'],
+        ];
+    }
+
+    /**
+     * @dataProvider normalizePathDataProvider
+     */
+    public function testNormalizePath(string $path, string $expected): void
+    {
+        $this->assertEquals($expected, Filesystem::normalizePath($path));
+    }
 }

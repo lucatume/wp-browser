@@ -427,4 +427,58 @@ class Filesystem
         self::$symfonyFilesystem ??= new SymfonyFilesystem();
         return self::$symfonyFilesystem;
     }
+
+    /**
+     * Copy of `wp_is_stream` from `wp-includes/functions.php`.
+     */
+    public static function isStream(string $path):bool
+    {
+        $scheme_separator = strpos($path, '://');
+
+        if (false === $scheme_separator) {
+            // $path isn't a stream.
+            return false;
+        }
+
+        $stream = substr($path, 0, $scheme_separator);
+
+        return in_array($stream, stream_get_wrappers(), true);
+    }
+
+    /**
+     * Copy of `wp_normalize_path` from `wp-includes/functions.php`.
+     */
+    public static function normalizePath(string $path):string
+    {
+        if ($path === '') {
+            return '';
+        }
+
+        /** @var non-empty-string $path */
+
+        $wrapper = '';
+
+        if (self::isStream($path)) {
+            list( $wrapper, $path ) = explode('://', $path, 2);
+
+            $wrapper .= '://';
+        }
+
+        // Standardize all paths to use '/'.
+        $path = str_replace('\\', '/', $path);
+
+        // Replace multiple slashes down to a singular, allowing for network shares having two slashes.
+        $path = preg_replace('|(?<=.)/+|', '/', $path);
+
+        if (empty($path)) {
+            return (string)$path;
+        }
+
+        // Windows paths should uppercase the drive letter.
+        if (':' === $path[1]) {
+            $path = ucfirst($path);
+        }
+
+        return $wrapper . $path;
+    }
 }

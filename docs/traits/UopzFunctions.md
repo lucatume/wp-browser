@@ -155,15 +155,45 @@ class MyTest extends TestCase
 }
 ```
 
+If you need to reset a function return or mock during a test, you can use the unset Closure returned by each method setting up a mock or return value:
+
+```php
+<?php
+
+use lucatume\WPBrowser\Traits\UopzFunctions;
+
+function someFunction()
+{
+    return 'original-value';
+}
+
+class MyTestWithUopzFunctions extends WPTestCase
+{
+    use UopzFunctions;
+
+    public function test_can_mock_my_function()
+    {
+        $unsetSomeFunctionReturn = $this->setFunctionReturn('someFunction', 'mocked-value');
+        
+        $this->assertEquals('mocked-value', someFunction());
+
+        $unsetSomeFunctionReturn();
+
+        $this->assertEquals('original-value', someFunction());
+    }
+}
+```
+
 ### Methods
 
 The `UopzFunctions` trait provides the following methods:
 
 #### setFunctionReturn
 
-`setFunctionReturn(string $function, mixed $value, bool $execute = false): void`
+`setFunctionReturn(string $function, mixed $value, bool $execute = false): Closure`
 
 Set the return value for the function `$function` to `$value`.
+The Closure returned by this method can be used to unset the return value.
 
 If `$value` is a closure and `$execute` is `true`, then the return value will be the return value of the closure.
 
@@ -224,9 +254,10 @@ functions, methods and class attributes after each test.
 
 #### setMethodReturn
 
-`setMethodReturn(string $class, string $method, mixed $value, bool $execute = false): void`
+`setMethodReturn(string $class, string $method, mixed $value, bool $execute = false): Closure`
 
 Sets the return value for the static or instance method `$method` of the class `$class` to `$value`.
+The Closure returned by this method can be used to unset the return value.
 
 If `$value` is a closure and `$execute` is `true`, then the return value will be the return value of the closure.
 
@@ -314,7 +345,7 @@ class MyTest extends WPTestCase
 }
 ```
 
-#### unsetmethodreturn
+#### unsetMethodReturn
 
 `unsetmethodreturn(string $class, string $method): void`
 
@@ -327,9 +358,10 @@ functions, methods and class attributes after each test.
 
 #### setFunctionHook
 
-`setFunctionHook(string $function, Closure $hook): void`
+`setFunctionHook(string $function, Closure $hook): Closure`
 
 Execute `$hook` when entering the function `$function`.
+The Closure returned by this method can be used to unset the hook.
 
 Hooks can be set on both internal and user-defined functions.
 
@@ -379,9 +411,10 @@ functions, methods and class attributes after each test.
 
 #### setMethodHook
 
-`setMethodHook(string $class, string $method, Closure $hook): void`
+`setMethodHook(string $class, string $method, Closure $hook): Closure`
 
-Execute `$hook` when entering the static or instance method `$method` of the class `$class`.
+Execute `$hook` when entering the static or instance method `$method` of the class `$class`.  
+The Closure returned by this method can be used to unset the hook.
 
 The keywords `self` and `$this` will be correctly bound to the class and the class instance respectively.
 
@@ -461,9 +494,10 @@ functions, methods and class attributes after each test.
 
 #### setConstant
 
-`setConstant(string $constant, mixed $value): void`
+`setConstant(string $constant, mixed $value): Closure`
 
 Set the constant `$constant` to the value `$value`.
+The Closure returned by this method can be used to unset the constant or reset it to its original value.
 
 If the constant is not already defined, it will be defined and set to the value `$value`.
 
@@ -522,9 +556,10 @@ test.
 
 #### setClassConstant
 
-`setClassConstant(string $class, string $constant, mixed $value): void`
+`setClassConstant(string $class, string $constant, mixed $value): Closure`
 
 Set the constant `$constant` of the class `$class` to the value `$value`.
+The Closure returned by this method can be used to unset the constant or reset it to its original value.
 
 If the class constant is not already defined, it will be defined and set to the value `$value`.
 
@@ -565,9 +600,10 @@ functions, methods and class attributes after each test.
 
 #### setClassMock
 
-`setClassMock(string $class, string|object $mock): void`
+`setClassMock(string $class, string|object $mock): Closure`
 
 Use `$mock` instead of `$class` when creating new instances of the class `$class`.
+The Closure returned by this method can be used to unset the mock.
 
 This method allows you to override magic methods as well as you would do with a normal class extension.
 
@@ -727,9 +763,10 @@ attributes after each test.
 
 #### unsetClassFinalAttribute
 
-`unsetClassFinalAttribute(string $class): void`
+`unsetClassFinalAttribute(string $class): Closure`
 
 Remove the `final` attribute from the class `$class`.
+The Closure returned by this method can be used to reset the `final` attribute.
 
 ```php
 <?php
@@ -774,9 +811,10 @@ take care of cleaning up all the modifications made to the functions, methods an
 
 #### unsetMethodFinalAttribute
 
-`unsetMethodFinalAttribute(string $class, string $method): void`
+`unsetMethodFinalAttribute(string $class, string $method): Closure`
 
 Remove the `final` attribute from the static or instance method `$method` of the class `$class`.
+The Closure returned by this method can be used to reset the `final` attribute.
 
 ```php
 <?php
@@ -824,10 +862,11 @@ will take care of cleaning up all the modifications made to the functions, metho
 
 #### addClassMethod
 
-`addClassMethod(string $class, string $method, Closure $closure, bool $static = false): void`
+`addClassMethod(string $class, string $method, Closure $closure, bool $static = false): Closure`
 
 Add a `public` static (`$static = true`) or instance (`$static = false`) method to the class `$class` with the
 name `$method` and the code provided by the closure `$closure`.
+The Closure returned by this method can be used to remove the method.
 
 Differently from the [`setClassMock`](#setclassmock) method, this method will work on **already existing instances** of
 the class `$class`, not just new instances.
@@ -898,10 +937,11 @@ cleaning up all the modifications made to the functions, methods and class attri
 
 #### setObjectProperty
 
-`setObjectProperty(string|object $classOrObject, string $property, mixed $value): void`
+`setObjectProperty(string|object $classOrObject, string $property, mixed $value): Closure`
 
 If `$classOrInstance` is a string, set the property `$property` of the class `$classOrObject` to the value `$value`.
 If `$classOrInstance` is an object, set the property `$property` of the object `$classOrObject` to the value `$value`.
+The Closure returned by this method can be used to unset the property.
 
 ```php
 <?php
@@ -1043,9 +1083,10 @@ class MyTest extends WPTestCase
 
 #### setMethodStaticVariables
 
-`setMethodStaticVariables(string $class, string $method, array $values): void`
+`setMethodStaticVariables(string $class, string $method, array $values): Closure`
 
 Set the static variablesof the class `$class` and method `$method` to the values `$values`.
+The Closure returned by this method can be used to unset the static variables.
 
 This will work on both static and instance methods.
 
@@ -1103,9 +1144,10 @@ Resets the static variables of the class `$class` method `$method` to their orig
 
 #### setFunctionStaticVariable
 
-`setFunctionStaticVariables(string $function, string $variable, mixed $value): void`
+`setFunctionStaticVariables(string $function, string $variable, mixed $value): Closure`
 
 Set the static variable `$variable` of the function `$function` to the value `$value`.
+The Closure returned by this method can be used to unset the static variable.
 
 ```php
 <?php

@@ -46,7 +46,8 @@ wordpress_install:
 
 clean_procs:
 	pgrep -f 'php -S' | xargs kill
-	pgrep chromedriver | xargs kill
+	-pkill -9 -f chromedriver
+	-pkill -9 -f mysqld
 	rm -f var/_output/*.pid var/_output/*.running
 	set -o allexport && source tests/.env && set +o allexport && docker compose down
 .PHONY: clean_procs

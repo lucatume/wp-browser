@@ -32,6 +32,15 @@ namespace {
         $counter += $step;
         return $oldValue;
     }
+
+    function withStaticVariableTwo(): int
+    {
+        static $counter = 0;
+        static $step = 2;
+        $oldValue = $counter;
+        $counter += $step;
+        return $oldValue;
+    }
 }
 
 namespace lucatume\WPBrowser\Acme\Project {

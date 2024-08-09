@@ -18,12 +18,6 @@ coverage:
         - src/*
 wpFolder: '%WORDPRESS_ROOT_DIR%'
 extensions:
-    enabled:
-        - "lucatume\\WPBrowser\\Extension\\EventDispatcherBridge"
-        - "lucatume\\WPBrowser\\Extension\\BuiltInServerController"
-        - "lucatume\\WPBrowser\\Extension\\ChromeDriverController"
-        - "lucatume\\WPBrowser\\Extension\\DockerComposeController"
-        - "lucatume\\WPBrowser\\Extension\\IsolationSupport"
     config:
         "lucatume\\WPBrowser\\Extension\\BuiltInServerController":
             docroot: '%WORDPRESS_ROOT_DIR%'
@@ -35,6 +29,17 @@ extensions:
         "lucatume\\WPBrowser\\Extension\\DockerComposeController":
             compose-file: docker-compose.yml
             env-file: tests/.env
+        "lucatume\\WPBrowser\\Extension\\MysqlServerController":
+            port: '%WORDPRESS_DB_LOCALHOST_PORT%'
+            database: '%WORDPRESS_DB_NAME%'
+            user: '%WORDPRESS_DB_USER%'
+            password: '%WORDPRESS_DB_PASSWORD%'
+    enabled:
+        - "lucatume\\WPBrowser\\Extension\\EventDispatcherBridge"
+        - "lucatume\\WPBrowser\\Extension\\BuiltInServerController"
+        - "lucatume\\WPBrowser\\Extension\\ChromeDriverController"
+        - "lucatume\\WPBrowser\\Extension\\MysqlServerController"
+        - "lucatume\\WPBrowser\\Extension\\IsolationSupport"
     commands:
         - "lucatume\\WPBrowser\\Command\\RunOriginal"
         - "lucatume\\WPBrowser\\Command\\RunAll"
