@@ -63,7 +63,7 @@ class ChromeDriver implements ManagedProcessInterface
         $start = time();
         $output = $process->getOutput();
         while (time() < $start + 30) {
-            if (str_contains($output, 'ChromeDriver was started successfully.')) {
+            if (str_contains($output, 'ChromeDriver was started successfully')) {
                 return;
             }
             if ($process->getExitCode() !== null) {
