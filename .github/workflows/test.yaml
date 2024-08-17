@@ -31,23 +31,20 @@ jobs:
   test:
     strategy:
       matrix:
-#        php_version: [ '8.0', '8.1', '8.2', '8.3' ]
-#        suite:
-#          - acceptance
-#          - climodule
-#          - functional
-#          - muloader
-#          - unit --skip-group=slow
-#          - unit --group=isolated-1
-#          - unit --group=isolated-2
-#          - webdriver
-#          - wpcli_module
-#          - wploader_multisite
-#          - wploader_wpdb_interaction
-#          - wploadersuite
-            php_version: [ '8.0']
-            suite:
-              - muloader
+        php_version: [ '8.0', '8.1', '8.2', '8.3' ]
+        suite:
+          - acceptance
+          - climodule
+          - functional
+          - muloader
+          - unit --skip-group=slow
+          - unit --group=isolated-1
+          - unit --group=isolated-2
+          - webdriver
+          - wpcli_module
+          - wploader_multisite
+          - wploader_wpdb_interaction
+          - wploadersuite
     name: ${{ matrix.suite }} php@${{ matrix.php_version }}
     runs-on: ubuntu-22.04
     steps:
@@ -75,19 +72,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
 
-      - name: Setup Chrome
-        id: setup-chrome
-        uses: browser-actions/setup-chrome@v1
-        with:
-          install-dependencies: true
-
-      - name: Check Chrome version and path
-        run: |
-          ${{ steps.setup-chrome.outputs.chrome-path }} --version
-
-      - name: Ensure netstat is installed if not installed
-        run: which netstat || sudo apt-get install net-tools
-
       - name: Get the vendor/bin directory path
         id: vendor-bin-dir
         run: |
@@ -110,7 +94,7 @@ jobs:
 
       - name: Update ChromeDriver if required
         if: steps.vendor-bin-dir-cache.outputs.cache-hit != 'true'
-        run: vendor/bin/codecept chromedriver:update --binary ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: vendor/bin/codecept chromedriver:update --binary /usr/bin/google-chrome
 
       - name: Create var/wordpress directory
         run: mkdir -p var/wordpress
