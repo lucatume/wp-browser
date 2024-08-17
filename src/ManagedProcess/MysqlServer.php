@@ -21,15 +21,14 @@ class MysqlServer implements ManagedProcessInterface
     public const ERR_OS_NOT_SUPPORTED = 1;
     public const ERR_ARCH_NOT_SUPPORTED = 2;
     public const ERR_WINDOWS_ARM64_NOT_SUPPORTED = 3;
-    public const ERR_ARCHIVE_NOT_FOUND = 9;
     public const ERR_MYSQL_DIR_NOT_CREATED = 10;
     public const ERR_MYSQL_ARCHIVE_EXTRACTION_FAILED = 11;
     public const ERR_CUSTOM_BINARY_EXTRACTED_PATH = 12;
     public const ERR_CUSTOM_BINARY_SHARE_DIR_PATH = 13;
-    public const ERR_CUSTOM_BINARY_DOWNLOAD = 14;
     public const ERR_MYSQL_ARCHIVE_DOWNLOAD_FAILED = 15;
     public const ERR_MYSQL_SERVER_START_FAILED = 16;
     public const ERR_MYSQL_DATA_DIR_NOT_CREATED = 17;
+    public const ERR_MYSQL_SERVER_NEVER_BECAME_AVAILABLE = 18;
     private string $directory;
     private ?string $binary;
     private string $pidFile;
@@ -38,6 +37,7 @@ class MysqlServer implements ManagedProcessInterface
     private ?string $customShareDir = null;
     private string $prettyName = 'MySQL Server';
     private ?OutputInterface $output = null;
+    private float $startWaitTime = 10;
 
     /**
      * @throws RuntimeException
@@ -89,6 +89,11 @@ class MysqlServer implements ManagedProcessInterface
     public function setMachineInformation(MachineInformation $machineInformation): void
     {
         $this->machineInformation = $machineInformation;
+    }
+
+    public function setStartWaitTime(float $param): void
+    {
+        $this->startWaitTime = $param;
     }
 
     public function getDataDir(bool $normalize = false): string
@@ -201,6 +206,7 @@ class MysqlServer implements ManagedProcessInterface
             '--bind-address=localhost',
             '--lc-messages-dir=' . $this->getShareDir($normalize),
             '--socket=' . $this->getSocketPath($normalize),
+            '--log-error=' . $this->getErrorLogPath($normalize),
             '--port=' . $port,
             '--pid-file=' . $this->getPidFilePath($normalize)
         ];
@@ -220,12 +226,14 @@ class MysqlServer implements ManagedProcessInterface
         $process = new Process($startCommand);
         $process->createNewConsole();
         try {
-            // Try to start the server 40 times, 10 seconds apart.
-            $tries = 40;
             $process->start();
-            while (!$this->getRootPDOOrNot() && $tries--) {
-                // Sleep a .25 seconds to allow the server to start.
-                usleep(250000);
+            $startTime = microtime(true);
+            $pdo = $this->getRootPDOOrNot();
+            $sleepTime = $this->startWaitTime / 10;
+            $sleepTimeInMicroseconds = min((int)($sleepTime * 1000000), 1000000);
+            while (!$pdo && (microtime(true) - $startTime) < $this->startWaitTime) {
+                usleep($sleepTimeInMicroseconds);
+                $pdo = $this->getRootPDOOrNot();
             }
         } catch (\Exception $e) {
             throw new RuntimeException(
@@ -234,6 +242,15 @@ class MysqlServer implements ManagedProcessInterface
                 $e
             );
         }
+
+        if ($pdo === null) {
+            throw new RuntimeException(
+                "MySQL Server was started but never became available.\n" . $process->getOutput() . "\n" .
+                $process->getErrorOutput(),
+                self::ERR_MYSQL_SERVER_NEVER_BECAME_AVAILABLE
+            );
+        }
+
         return $process;
     }
 
@@ -241,7 +258,7 @@ class MysqlServer implements ManagedProcessInterface
     {
         try {
             return $this->getRootPDO();
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
             return null;
         }
     }
@@ -543,5 +560,13 @@ class MysqlServer implements ManagedProcessInterface
         return !$normalize && $this->machineInformation->isWindows() ?
             str_replace('/', '\\', $this->directory)
             : $this->directory;
+    }
+
+    public function getErrorLogPath(bool $normalize = false): string
+    {
+        $path = $this->getDataDir(false) . '/error.log';
+        return !$normalize && $this->machineInformation->isWindows() ?
+            str_replace('/', '\\', $path)
+            : $path;
     }
 }

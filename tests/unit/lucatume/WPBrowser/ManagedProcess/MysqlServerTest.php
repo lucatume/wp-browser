@@ -442,6 +442,7 @@ class MysqlServerTest extends Unit
                                 '--bind-address=localhost',
                                 '--lc-messages-dir=' . $mysqlServer->getShareDir(),
                                 '--socket=' . $mysqlServer->getSocketPath(),
+                                '--log-error=' . $mysqlServer->getErrorLogPath(),
                                 '--port=' . $mysqlServer->getPort(),
                                 '--pid-file=' . $mysqlServer->getPidFilePath()
                             ], $command);
@@ -603,6 +604,7 @@ class MysqlServerTest extends Unit
                                 '--bind-address=localhost',
                                 '--lc-messages-dir=' . $mysqlServer->getShareDir(),
                                 '--socket=' . $mysqlServer->getSocketPath(),
+                                '--log-error=' . $mysqlServer->getErrorLogPath(),
                                 '--port=' . $mysqlServer->getPort(),
                                 '--pid-file=' . $mysqlServer->getPidFilePath()
                             ], $command);
@@ -782,6 +784,7 @@ class MysqlServerTest extends Unit
                                 '--bind-address=localhost',
                                 '--lc-messages-dir=' . $mysqlServer->getShareDir(),
                                 '--socket=' . $mysqlServer->getSocketPath(),
+                                '--log-error=' . $mysqlServer->getErrorLogPath(),
                                 '--port=' . $mysqlServer->getPort(),
                                 '--pid-file=' . $mysqlServer->getPidFilePath()
                             ], $command);
@@ -942,5 +945,120 @@ class MysqlServerTest extends Unit
         $this->expectExceptionMessage("Could not remove PID file {$pidFile}.");
 
         $mysqlServer->stop();
+    }
+
+    public function testStartThrowsIfServerIsNotAvailable(): void
+    {
+        ($this->unsetMkdirFunctionReturn)();
+        $dir = FS::tmpDir('mysql-server_');
+        $mysqlServer = new MysqlServer($dir);
+        $mysqlServer->setStartWaitTime(.01);
+        $machineInformation = new MachineInformation(MachineInformation::OS_LINUX, MachineInformation::ARCH_X86_64);
+        $mysqlServer->setMachineInformation($machineInformation);
+
+        // Mock the download of the archive.
+        $this->setMethodReturn(
+            Download::class,
+            'fileFromUrl',
+            function (string $url, string $file) use ($mysqlServer): void {
+                Assert::assertEquals($mysqlServer->getArchiveUrl(), $url);
+                Assert::assertEquals($mysqlServer->getArchivePath(true), $file);
+                $archiveBasename = basename($mysqlServer->getArchiveUrl());
+                copy(codecept_data_dir('mysql-server/mock-archives/' . $archiveBasename), $file);
+            },
+            true
+        );
+
+        // Mock the processes to initialize and start the server.
+        $mockProcessStep = $machineInformation->isWindows() ? 'init' : 'extract';
+        $this->setClassMock(
+            Process::class,
+            $this->makeEmptyClass(
+                Process::class,
+                [
+                    '__construct' => function (array $command) use (&$mockProcessStep, $mysqlServer) {
+                        if ($mockProcessStep === 'extract') {
+                            Assert::assertEquals([
+                                'tar',
+                                '-xf',
+                                $mysqlServer->getArchivePath(),
+                                '-C',
+                                $mysqlServer->getDirectory(),
+                            ], $command);
+                            $mockProcessStep = 'init';
+                            $extractedPath = $mysqlServer->getExtractedPath(true);
+                            mkdir($extractedPath . '/share', 0777, true);
+                            mkdir($extractedPath . '/bin', 0777, true);
+                            touch($extractedPath . '/bin/mysqld');
+                            chmod($extractedPath . '/bin/mysqld', 0777);
+                            return;
+                        }
+
+                        if ($mockProcessStep === 'init') {
+                            Assert::assertEquals([
+                                $mysqlServer->getBinaryPath(),
+                                '--no-defaults',
+                                '--initialize-insecure',
+                                '--innodb-flush-method=nosync',
+                                '--datadir=' . $mysqlServer->getDataDir(),
+                                '--pid-file=' . $mysqlServer->getPidFilePath(),
+                            ], $command);
+                            $mockProcessStep = 'start';
+                            return;
+                        }
+
+                        if ($mockProcessStep === 'start') {
+                            Assert::assertEquals([
+                                $mysqlServer->getBinaryPath(),
+                                '--datadir=' . $mysqlServer->getDataDir(),
+                                '--skip-mysqlx',
+                                '--default-time-zone=+00:00',
+                                '--innodb-flush-method=nosync',
+                                '--innodb-flush-log-at-trx-commit=0',
+                                '--innodb-doublewrite=0',
+                                '--bind-address=localhost',
+                                '--lc-messages-dir=' . $mysqlServer->getShareDir(),
+                                '--socket=' . $mysqlServer->getSocketPath(),
+                                '--log-error=' . $mysqlServer->getErrorLogPath(),
+                                '--port=' . $mysqlServer->getPort(),
+                                '--pid-file=' . $mysqlServer->getPidFilePath()
+                            ], $command);
+                            $mockProcessStep = 'started';
+                            return;
+                        }
+
+                        throw new AssertionFailedError(
+                            'Unexpected Process::__construct call for ' . print_r($command, true)
+                        );
+                    },
+                    'mustRun' => '__itself',
+                    'isRunning' => function () use (&$mockProcessStep): bool {
+                        return $mockProcessStep === 'started';
+                    },
+                    'getPid' => 2389,
+                    'stop' => function () use (&$mockProcessStep): int {
+                        Assert::assertTrue(in_array($mockProcessStep, ['started', 'stopped'], true));
+                        $mockProcessStep = 'stopped';
+                        return 0;
+                    }
+                ]
+            ));
+
+        // Mock the PDO connection.
+        $queries = [];
+        $this->setClassMock(PDO::class, $this->makeEmptyClass(PDO::class, [
+            '__construct' => function () {
+                throw new \PDOException('Cannot connect to MySQL server');
+            },
+            'exec' => function (string $query) use (&$queries): int|false {
+                $queries[] = $query;
+                return 1;
+            }
+        ]));
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(MysqlServer::ERR_MYSQL_SERVER_NEVER_BECAME_AVAILABLE);
+
+        $mysqlServer->start();
     }
 }

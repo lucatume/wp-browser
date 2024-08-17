@@ -22,14 +22,14 @@ The extension can be configured with the following parameters:
     * `port` - the localhost port to use for the MySQL server, defaults to `8906`.
     * `database` - the database that will be created when starting the server, defaults to `wordpress`.
     * `user` - the user that will be created when starting the server, defaults to `wordpress`. The user will be granted
-      all privileges on the database specified by the `database` parameter. If the user is `root`, no furhter user will
+      all privileges on the database specified by the `database` parameter. If the user is `root`, no further user will
       be created.
     * `password` - the password to use for the user specified by the `user` parameter, defaults to `wordpress`. If the
       user is `root`, the root user will be set to the password specified by this parameter.
 * optional
     * `suites` - an array of Codeception suites to run the server for; if not set the server will be started for all the
       suites.
-    * `binary` - the path to the MySQL server binary to use, defaults to `mysqld`, deafults to `null` to download and
+    * `binary` - the path to the MySQL server binary to use, defaults to `mysqld`, defaults to `null` to download and
       initialize the correct version of MySQL server for the current platform and architecture.
     * `shareDir` - the path to the directory to use for the MySQL server share, defaults to `null`. **This is required
       when providing a custom binary**.
