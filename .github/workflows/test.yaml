@@ -85,6 +85,9 @@ jobs:
         run: |
           ${{ steps.setup-chrome.outputs.chrome-path }} --version
 
+      - name: Ensure netstat is installed if not installed
+        run: which netstat || sudo apt-get install net-tools
+
       - name: Get the vendor/bin directory path
         id: vendor-bin-dir
         run: |
