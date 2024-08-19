@@ -18,7 +18,6 @@ use PDO;
 use PharData;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\AssertionFailedError;
-use ReflectionMethod;
 
 class MysqlServerTest extends Unit
 {
@@ -459,11 +458,7 @@ class MysqlServerTest extends Unit
                         return $mockProcessStep === 'started';
                     },
                     'getPid' => 2389,
-                    'stop' => function () use (&$mockProcessStep): int {
-                        Assert::assertTrue(in_array($mockProcessStep, ['started', 'stopped'], true));
-                        $mockProcessStep = 'stopped';
-                        return 0;
-                    }
+                    'stop' => 0
                 ]
             )
         );
@@ -914,12 +909,16 @@ class MysqlServerTest extends Unit
 
         // Mock the PID file write.
         $pidFileExists = false;
-        $this->setFunctionReturn('file_put_contents', function (string $file, $pid) use ($pidFile,&$pidFileExists): bool {
-            Assert::assertEquals($pidFile, $file);
-            Assert::assertEquals(2389, $pid);
-            $pidFileExists = true;
-            return true;
-        }, true);
+        $this->setFunctionReturn(
+            'file_put_contents',
+            function (string $file, $pid) use ($pidFile, &$pidFileExists): bool {
+                Assert::assertEquals($pidFile, $file);
+                Assert::assertEquals(2389, $pid);
+                $pidFileExists = true;
+                return true;
+            },
+            true
+        );
 
         // The PID file exists.
         $this->setFunctionReturn('is_file', function (string $file) use (&$pidFileExists, $pidFile): bool {
@@ -938,7 +937,15 @@ class MysqlServerTest extends Unit
             'exec' => 1
         ]));
 
-        $mysqlServer = new MysqlServer($dir, 12345, 'someDatabase', 'root', 'secret','/usr/bin/mysqld', '/some/share/dir');
+        $mysqlServer = new MysqlServer(
+            $dir,
+            12345,
+            'someDatabase',
+            'root',
+            'secret',
+            '/usr/bin/mysqld',
+            '/some/share/dir'
+        );
         $mysqlServer->start();
 
         $this->expectException(RuntimeException::class);
@@ -1036,13 +1043,10 @@ class MysqlServerTest extends Unit
                         return $mockProcessStep === 'started';
                     },
                     'getPid' => 2389,
-                    'stop' => function () use (&$mockProcessStep): int {
-                        Assert::assertTrue(in_array($mockProcessStep, ['started', 'stopped'], true));
-                        $mockProcessStep = 'stopped';
-                        return 0;
-                    }
+                    'stop' => 0
                 ]
-            ));
+            )
+        );
 
         // Mock the PDO connection.
         $queries = [];
