@@ -7,3 +7,4 @@ file, `codeception.yml` or `codeception.dist.yml` by default, in the `extensions
 * [IsolationSupport](extensions/IsolationSupport.md)
 * [Symlinker](extensions/Symlinker.md)
 * [EventDispatcherBridge](extensions/EventDispatcherBridge.md)
+* [MySqlServerController](extensions/MySqlServerController.md)

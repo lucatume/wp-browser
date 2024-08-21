@@ -10,6 +10,7 @@ use Codeception\Suite;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Extension\Symlinker;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
+use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\WordPress\Installation;
 use PHPUnit\Framework\Assert;
@@ -18,6 +19,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 class SymlinkerTest extends Unit
 {
     use LoopIsolation;
+    use TmpFilesCleanup;
 
     private function getSuiteEvent(): SuiteEvent
     {

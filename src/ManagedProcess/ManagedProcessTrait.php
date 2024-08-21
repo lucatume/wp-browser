@@ -43,8 +43,9 @@ trait ManagedProcessTrait
         $exitCode = $process->stop();
 
         if (is_file(static::getPidFile()) && !unlink(static::getPidFile())) {
+            $pidFile = static::getPidFile();
             throw new RuntimeException(
-                "Could not remove PID file '{static::getPidFile(}'.",
+                "Could not remove PID file {$pidFile}.",
                 ManagedProcessInterface::ERR_PID_FILE_DELETE
             );
         }

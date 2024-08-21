@@ -27,6 +27,7 @@ nav:
       - PHP Built-in Server Controller: 'extensions/BuiltInServerController.md'
       - ChromeDriver Controller: 'extensions/ChromeDriverController.md'
       - Docker Compose Controller: 'extensions/DockerComposeController.md'
+      - MySqlServer Controller: 'extensions/MySqlServerController.md'
       - Isolation Support: 'extensions/IsolationSupport.md'
       - Event Dispatcher Bridge: 'extensions/EventDispatcherBridge.md'
   - Commands:

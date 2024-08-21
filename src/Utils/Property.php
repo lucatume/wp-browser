@@ -47,14 +47,19 @@ class Property
      * @param object|null $object $object The object to set the properties of, `null` if using a class.
      * @param string $class The object class to set the properties for.
      * @param array<string,mixed> $props A map of the names and values of the properties to set.
+     * @param array<string>|null $propsToSet An array, modified by reference, of the properties left to set.
      *
      * @return object The updated object.
      *
      * @throws ReflectionException If there's an issue reflecting on the object or its properties.
      * @throws InvalidArgumentException If the class does not exists or the constructor parameters are missing.
      */
-    public static function setPropertiesForClass(?object $object, string $class, array $props): object
-    {
+    public static function setPropertiesForClass(
+        ?object $object,
+        string $class,
+        array $props,
+        array &$propsToSet = null
+    ): object {
         if (!class_exists($class)) {
             throw new InvalidArgumentException(
                 sprintf('Class "%s" does not exists', $class)
@@ -87,6 +92,9 @@ class Property
             if (isset($props[$property->name])) {
                 $property->setAccessible(true);
                 $property->setValue($object, $props[$property->name]);
+                if (is_array($propsToSet)) {
+                    unset($propsToSet[array_search($property->name, $propsToSet, true)]);
+                }
             }
         }
 
@@ -113,9 +121,10 @@ class Property
             $class = $object::class;
         }
 
+        $propsToSet = array_keys($props);
         do {
-            $object = self::setPropertiesForClass($object, $class, $props);
+            $object = self::setPropertiesForClass($object, $class, $props, $propsToSet);
             $class = get_parent_class($class);
-        } while ($class);
+        } while ($class && $propsToSet);
     }
 }

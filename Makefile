@@ -13,6 +13,7 @@ clean:
 
 clean_tmp:
 	rm -rf var/_output var/_tmp
+	rm -f var/_output/tmp/_monkeypatch var/_output/tmp/*.sqlite var/_output/tmp/*.sqlite_snapshot
 .PHONY: clean_tmp
 
 update_core_phpunit_includes:
@@ -45,7 +46,8 @@ wordpress_install:
 
 clean_procs:
 	pgrep -f 'php -S' | xargs kill
-	pgrep chromedriver | xargs kill
+	-pkill -9 -f chromedriver
+	-pkill -9 -f mysqld
 	rm -f var/_output/*.pid var/_output/*.running
 	set -o allexport && source tests/.env && set +o allexport && docker compose down
 .PHONY: clean_procs

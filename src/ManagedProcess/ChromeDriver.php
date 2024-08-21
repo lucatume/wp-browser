@@ -44,7 +44,7 @@ class ChromeDriver implements ManagedProcessInterface
     /**
      * @throws RuntimeException
      */
-    public function doStart(): void
+    private function doStart(): void
     {
         $command = [$this->chromeDriverBinary, '--port=' . $this->port, ...$this->arguments];
         $process = new Process($command);
@@ -63,7 +63,7 @@ class ChromeDriver implements ManagedProcessInterface
         $start = time();
         $output = $process->getOutput();
         while (time() < $start + 30) {
-            if (str_contains($output, 'ChromeDriver was started successfully.')) {
+            if (str_contains($output, 'ChromeDriver was started successfully')) {
                 return;
             }
             if ($process->getExitCode() !== null) {

@@ -490,7 +490,7 @@ class WPLoader extends Module
             $this->debug('The WordPress installation will be loaded after all other modules have been initialized.');
 
             Dispatcher::addListener(Events::SUITE_BEFORE, function (): void {
-                $this->loadWordPress(true);
+                $this->_loadWordPress(true);
             });
 
             return;
@@ -503,7 +503,7 @@ class WPLoader extends Module
 
         WPTestCase::beStrictAboutWpdbConnectionId($config['beStrictAboutWpdbConnectionId']);
 
-        $this->loadWordPress();
+        $this->_loadWordPress();
     }
 
     /**
@@ -553,11 +553,16 @@ class WPLoader extends Module
     /**
      * Loads WordPress calling the bootstrap file.
      *
-     *
      * @throws Throwable
+     *
+     * @internal This method is not part of the module API.
      */
-    private function loadWordPress(bool $loadOnly = false): void
+    public function _loadWordPress(?bool $loadOnly = null): void
     {
+        $config = $this->config;
+        /** @var array{loadOnly: bool} $config */
+        $loadOnly = $loadOnly ?? $config['loadOnly'];
+
         $this->loadConfigFiles();
 
         if ($loadOnly) {

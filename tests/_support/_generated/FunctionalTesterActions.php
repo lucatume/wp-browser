@@ -1,4 +1,4 @@
-<?php  //[STAMP] bd1028620a38ed11a3e63c8225e63e2e
+<?php  //[STAMP] 02b7af53b9cad8b206225f139140b021
 // phpcs:ignoreFile
 namespace _generated;
 
@@ -6379,13 +6379,13 @@ trait FunctionalTesterActions
      * $I->seeFileFound('shop.log');
      * ```
      *
-     * @param string|null $path The path, relative to the site uploads folder.
+     * @param string|int|null $path The path, relative to the site uploads folder.
      *
      *
      * @throws Exception If the path is a date string and is not parsable by the `strtotime` function.
      * @see \lucatume\WPBrowser\Module\WPFilesystem::amInUploadsPath()
      */
-    public function amInUploadsPath(?string $path = NULL): void {
+    public function amInUploadsPath(string|int|null $path = NULL): void {
         $this->getScenario()->runStep(new \Codeception\Step\Condition('amInUploadsPath', func_get_args()));
     }
 

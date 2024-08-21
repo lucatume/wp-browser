@@ -103,6 +103,9 @@ class ChromeDriverController extends ServiceExtension
         return (int)($config['port'] ?? 4444);
     }
 
+    /**
+     * @throws ExtensionException
+     */
     private function getBinary(): ?string
     {
         $config = $this->config;
