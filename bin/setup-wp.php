@@ -23,7 +23,7 @@ $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__) . '/tests');
 $env = $dotenv->load();
 
 $mysqlServer = new MysqlServer(
-    codecept_output_dir('_mysql-server'),
+    codecept_output_dir('_mysql_server'),
     $_ENV['WORDPRESS_DB_LOCALHOST_PORT'],
     $_ENV['WORDPRESS_DB_NAME'],
     $_ENV['WORDPRESS_DB_USER'],
