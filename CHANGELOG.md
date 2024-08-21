@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## Added
+
+- Support for PHPUnit 10 and 11.
+- The `MysqlServerController` extension.
+
 ## [4.2.5] 2024-06-26;
 
 ### Changed
