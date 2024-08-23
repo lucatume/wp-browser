@@ -178,6 +178,7 @@ class WPLoader extends Module
     private bool $earlyExit = true;
     private ?DatabaseInterface $db = null;
     private ?CodeExecutionFactory $codeExecutionFactory = null;
+    private bool $didLoadWordPress = false;
 
     public function _getBootstrapOutput(): string
     {
@@ -187,6 +188,11 @@ class WPLoader extends Module
     public function _getInstallationOutput(): string
     {
         return $this->installationOutput;
+    }
+
+    public function _didLoadWordPress(): bool
+    {
+        return $this->didLoadWordPress;
     }
 
     protected function validateConfig(): void
@@ -489,10 +495,6 @@ class WPLoader extends Module
             $this->checkInstallationToLoadOnly();
             $this->debug('The WordPress installation will be loaded after all other modules have been initialized.');
 
-            Dispatcher::addListener(Events::SUITE_BEFORE, function (): void {
-                $this->_loadWordPress(true);
-            });
-
             return;
         }
 
@@ -503,6 +505,17 @@ class WPLoader extends Module
 
         WPTestCase::beStrictAboutWpdbConnectionId($config['beStrictAboutWpdbConnectionId']);
 
+        $this->_loadWordPress();
+    }
+
+    /**
+     * @param array<string,mixed> $settings
+     *
+     * @return void
+     */
+    public function _beforeSuite(array $settings = [])
+    {
+        parent::_beforeSuite($settings);
         $this->_loadWordPress();
     }
 
@@ -559,6 +572,10 @@ class WPLoader extends Module
      */
     public function _loadWordPress(?bool $loadOnly = null): void
     {
+        if ($this->didLoadWordPress) {
+            return;
+        }
+
         $config = $this->config;
         /** @var array{loadOnly: bool} $config */
         $loadOnly = $loadOnly ?? $config['loadOnly'];
@@ -573,6 +590,8 @@ class WPLoader extends Module
         } else {
             $this->installAndBootstrapInstallation();
         }
+
+        $this->didLoadWordPress = true;
 
         wp_cache_flush();
 

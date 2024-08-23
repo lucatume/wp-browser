@@ -69,6 +69,7 @@ class LoadSandbox
         if (did_action('wp_loaded') >= 1) {
             return true;
         }
+        $reason = 'action wp_loaded not fired.';
 
         if (count($this->redirects) > 0
             && $this->redirects[0][1] === 302
@@ -101,7 +102,7 @@ class LoadSandbox
         }
 
         // We do not know what happened, throw and try to be helpful.
-        throw InstallationException::becauseWordPressFailedToLoad($bodyContent);
+        throw InstallationException::becauseWordPressFailedToLoad($bodyContent ?: $reason);
     }
 
     public function logRedirection(string $location, int $status): string
