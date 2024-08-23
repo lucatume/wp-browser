@@ -16,6 +16,7 @@ rm -rf "${root_dir}"/includes/core-phpunit/includes &&
   cd .. &&
   mv  wordpress-develop/tests/phpunit/includes ./includes &&
   rm -rf wordpress-develop &&
+  git apply "${root_dir}"/config/patches/core-phpunit/includes/install.php.patch &&
   git apply "${root_dir}"/config/patches/core-phpunit/includes/abstract-testcase.php.patch &&
   git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-ajax.php.patch &&
   git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-canonical.php.patch &&
