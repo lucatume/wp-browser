@@ -109,8 +109,10 @@ abstract class WPRestPostTypeControllerTestCase extends WPRestControllerTestCase
 		// Check filtered values.
 		if ( post_type_supports( $post->post_type, 'title' ) ) {
 			add_filter( 'protected_title_format', array( $this, 'protected_title_format' ) );
+			add_filter( 'private_title_format', array( $this, 'protected_title_format' ) );
 			$this->assertSame( get_the_title( $post->ID ), $data['title']['rendered'] );
 			remove_filter( 'protected_title_format', array( $this, 'protected_title_format' ) );
+			remove_filter( 'private_title_format', array( $this, 'protected_title_format' ) );
 			if ( 'edit' === $context ) {
 				$this->assertSame( $post->post_title, $data['title']['raw'] );
 			} else {
