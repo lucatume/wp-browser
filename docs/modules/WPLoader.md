@@ -1,5 +1,7 @@
 ## WPLoader module
 
+// @todo update this
+
 A module to load WordPress and make its code available in tests.
 
 Depending on the value of the `loadOnly` configuration parameter, the module will behave differently:
@@ -45,7 +47,18 @@ When used in this mode, the module supports the following configuration paramete
 * `configFile` - a configuration file, or a set of configuration files, to load before the tests to further customize
   and control the WordPress testing environment.
 * `pluginsFolder` - the path to the plugins folder to use when loading WordPress. Equivalent to defining the
-  `WP_PLUGIN_DIR` constant.
+  `WP_PLUGIN_DIR` constant. If both this parameter and the `WP_PLUGIN_DIR` parameter are set, the `WP_PLUGIN_DIR`
+  parameter will override the value of this one.
+* `WP_CONTENT_DIR` - the path to the content folder to use when loading WordPress in the context of tests. If the
+  installation used by the `WPLoader` module defines a `WP_CONTENT_DIR` constant in its `wp-config.php` file, the module
+  will throw an exception if this parameter is set. Setting this parameter will affect the `WP_PLUGIN_DIR` and the `WPMU_PLUGIN_DIR`
+  parameters.
+* `WP_PLUGIN_DIR` - the path to the plugins folder to use when loading WordPress in the context of tests. If the
+  installation used by the `WPLoader` module defines a `WP_PLUGIN_DIR` constant in its `wp-config.php` file, the module
+  will throw an exception if this parameter is set.
+* `WPMU_PLUGIN_DIR` - the path to the mu-plugins folder to use when loading WordPress in the context of tests. If the
+  installation used by the `WPLoader` module defines a `WPMU_PLUGIN_DIR` constant in its `wp-config.php` file, the module
+  will throw an exception if this parameter is set.
 * `plugins` - a list of plugins to activate and load in the WordPress installation. If the plugin is located in the
   WordPress installation plugins directory, then the plugin name can be specified using the `directory/file.php` format.
   If the plugin is located in an arbitrary path inside or outiside of the WordPress installation or project, then the
@@ -58,7 +71,9 @@ When used in this mode, the module supports the following configuration paramete
 * `bootstrapActions` - a list of actions or callables to call **after** WordPress is loaded and before the tests run.
 * `theme` - the theme to activate and load in the WordPress installation. The theme can be specified in slug format,
   e.g., `twentytwentythree`, to load it from the WordPress installation themes directory. Alternatively, the theme can
-  be specified as an absolute or relative path to a theme folder, e.g., `/home/themes/my-theme` or `vendor/acme/vendor-theme`. To use both a parent and ha child theme from arbitrary absolute or relative paths, define the `theme` parameter as an array of theme paths, e.g., `['/home/themes/parent-theme', '.']`.
+  be specified as an absolute or relative path to a theme folder, e.g., `/home/themes/my-theme`
+  or `vendor/acme/vendor-theme`. To use both a parent and ha child theme from arbitrary absolute or relative paths,
+  define the `theme` parameter as an array of theme paths, e.g., `['/home/themes/parent-theme', '.']`.
 * `AUTH_KEY` - the `AUTH_KEY` constant value to use when loading WordPress. If the `wpRootFolder` path points at a
   configured installation, containing the `wp-config.php` file, then the value of the constant in the configuration file
   will be used, else it will be randomly generated.
@@ -132,9 +147,9 @@ modules:
         title: 'Integration Tests'
         plugins:
           # This plugin will be loaded from the WordPress installation plugins directory.
-          - hello.php 
+          - hello.php
           # This plugin will be loaded from an arbitrary absolute path.
-          - /home/plugins/woocommerce/woocommerce.php 
+          - /home/plugins/woocommerce/woocommerce.php
           # This plugin will be loaded from an arbitrary relative path inside the project root folder.
           - vendor/acme/project/plugin.php
           # This plugin will be loaded from the project root folder.
@@ -163,7 +178,7 @@ modules:
           - my-plugin.php
           - vendor/acme/project/plugin.php
         # Parent theme from the WordPress installation themes directory, child theme from absolute path.
-        theme: [twentytwentythree, /home/themes/my-theme]
+        theme: [ twentytwentythree, /home/themes/my-theme ]
 ```
 
 The following example configuration uses a SQLite database and loads a database fixture before the tests run:
@@ -189,7 +204,7 @@ modules:
           - hello.php
           - woocommerce/woocommerce.php
           - my-plugin/my-plugin.php
-        theme: 
+        theme:
           # Parent theme from relative path.
           - vendor/acme/parent-theme
           # Child theme from the current working directory.
