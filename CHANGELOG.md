@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - Ensure the `WPLoader` module will initialize correctly when used in `loadOnly` mode not using the `EventDispatcherBridge` extension. (thanks @lxbdr)
 - Support loading the `wpdb` class from either the `class-wpdb.php` file or the `wp-db.php` one, supporting older versions of WordPress (thanks @BrianHenryIE)
+- Read content, plugins and mu-plugins directories paths from the `WPLoader` configuration parameters correctly.
 
 ## [4.2.5] 2024-06-26;
 
