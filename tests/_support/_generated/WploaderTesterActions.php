@@ -1,4 +1,4 @@
-<?php  //[STAMP] 99485bb9e0d9c8892cecb0507c40dcf3
+<?php  //[STAMP] 897ecf22339f109a2db2de00e8fdd4ad
 // phpcs:ignoreFile
 namespace _generated;
 
@@ -27,6 +27,25 @@ trait WploaderTesterActions
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
+     * Get the absolute path to the mu-plugins directory.
+     *
+     * The value will first look at the `WPMU_PLUGIN_DIR` constant, then the `WP_CONTENT_DIR` configuration parameter,
+     * and will, finally, look in the default path from the WordPress root directory.
+     *
+     * @param string $path
+     *
+     * @return string
+     * @since TBD
+     * @see \lucatume\WPBrowser\Module\WPLoader::getMuPluginsFolder()
+     */
+    public function getMuPluginsFolder(string $path = ""): string {
+        return $this->getScenario()->runStep(new \Codeception\Step\Action('getMuPluginsFolder', func_get_args()));
+    }
+
+ 
+    /**
+     * [!] Method is generated. Documentation taken from corresponding module.
+     *
      * Returns the absolute path to the WordPress root folder or a path within it..
      *
      * @param string|null $path The path to append to the WordPress root folder.
@@ -44,8 +63,9 @@ trait WploaderTesterActions
      *
      * Returns the absolute path to the plugins directory.
      *
-     * The value will first look at the `WP_PLUGIN_DIR` constant, then the `pluginsFolder` configuration parameter
-     * and will, finally, look in the default path from the WordPress root directory.
+     * The value will first look at the `WP_PLUGIN_DIR` constant, then the `pluginsFolder` configuration parameter,
+     * then the `WP_CONTENT_DIR` configuration parameter, and will, finally, look in the default path from the
+     * WordPress root directory.
      *
      * @example
      * ```php
@@ -114,6 +134,9 @@ trait WploaderTesterActions
      * [!] Method is generated. Documentation taken from corresponding module.
      *
      * Returns the absolute path to the WordPress content directory.
+     *
+     * The value will first look at the `WP_CONTENT_DIR` configuration parameter, and will, finally, look in the
+     * default path from the WordPress root directory.
      *
      * @example
      * ```php

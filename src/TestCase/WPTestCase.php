@@ -172,6 +172,10 @@ class WPTestCase extends Unit
 
     private ?float $requestTimeFloat = null;
     private ?int $requestTime = null;
+    /**
+     * @var array<int>
+     */
+    private array $attachmentsAddedDuringTest = [];
 
     private function initBackupGlobalsProperties():void
     {
@@ -477,5 +481,21 @@ class WPTestCase extends Unit
 
         // @phpstan-ignore-next-line PHPUnit >= 10.0.0.
         return $withDataSet ? $this->nameWithDataSet() : $this->name();
+    }
+
+    // @phpstan-ignore-next-line Used in the setUp method of the test case trait.
+    private function recordAttachmentAddedDuringTest(): void
+    {
+        add_action('add_attachment', function (int $post_id): void {
+            $this->attachmentsAddedDuringTest[] = $post_id;
+        });
+    }
+
+    // @phpstan-ignore-next-line Used in the tearDown method of the test case trait.
+    private function removeAttachmentsAddedDuringTest(): void
+    {
+        foreach ($this->attachmentsAddedDuringTest as $post_id) {
+            wp_delete_attachment($post_id, true);
+        }
     }
 }
