@@ -300,10 +300,10 @@ class WPFilesystemTest extends Unit
         $sut = $this->module();
 
         $sut->seeUploadedFileFound('file.txt', time());
-        $sut->dontSeeUploadedFileFound('file.txt', 'last month');
+        $sut->dontSeeUploadedFileFound('file.txt', 'next month');
         $this->expectException(AssertionFailedError::class);
         $sut->seeUploadedFileFound('some-other-file.txt', 'now');
-        $sut->dontSeeUploadedFileFound('some-other-file.txt', 'last month');
+        $sut->dontSeeUploadedFileFound('some-other-file.txt', 'next month');
     }
 
     /**
@@ -999,7 +999,7 @@ PHP;
         $this->assertEquals(Strings::normalizeNewLine($expected),
             Strings::normalizeNewLine(file_get_contents($pluginFile)));
 
-        $sut->_after(new class extends Unit {
+        $sut->_after(new class('test-test-test') extends Unit {
         });
 
         $this->assertFileNotExists($pluginFile);
@@ -1042,7 +1042,7 @@ PHP;
         $this->assertEquals(Strings::normalizeNewLine($expected),
             Strings::normalizeNewLine(file_get_contents($pluginFile)));
 
-        $sut->_after(new class extends Unit {
+        $sut->_after(new class('test-test-test') extends Unit {
         });
 
         $this->assertFileNotExists($pluginFile);
@@ -1087,7 +1087,7 @@ PHP;
         $this->assertEquals(Strings::normalizeNewLine($expected),
             Strings::normalizeNewLine(file_get_contents($muPluginFile)));
 
-        $sut->_after(new class extends Unit {
+        $sut->_after(new class('test-test-test') extends Unit {
         });
 
         $this->assertFileNotExists($muPluginFile);
@@ -1139,7 +1139,7 @@ PHP;
         $this->assertEquals(Strings::normalizeNewLine($expectedIndex),
             Strings::normalizeNewLine(file_get_contents($themeIndexFile)));
 
-        $sut->_after(new class extends Unit {
+        $sut->_after(new class('test-test-test') extends Unit {
         });
 
         $this->assertFileNotExists($themeStyleFile);
@@ -1195,7 +1195,7 @@ PHP;
         $this->assertEquals(Strings::normalizeNewLine($expectedIndex),
             Strings::normalizeNewLine(file_get_contents($themeFunctionsFile)));
 
-        $sut->_after(new class extends Unit {
+        $sut->_after(new class('test-test-test') extends Unit {
         });
 
         $this->assertFileNotExists($themeStyleFile);
@@ -1242,7 +1242,7 @@ PHP;
         $this->assertEquals(Strings::normalizeNewLine($expected),
             Strings::normalizeNewLine(file_get_contents($pluginFile)));
 
-        $sut->_after(new class extends Unit {
+        $sut->_after(new class('test-test-test') extends Unit {
         });
 
         $this->assertFileNotExists($pluginFile);
@@ -1289,7 +1289,7 @@ PHP;
         $this->assertEquals(Strings::normalizeNewLine($expected),
             Strings::normalizeNewLine(file_get_contents($muPluginFile)));
 
-        $sut->_after(new class extends Unit {
+        $sut->_after(new class('test-test-test') extends Unit {
         });
 
         $this->assertFileNotExists($muPluginFile);
@@ -1346,7 +1346,7 @@ PHP;
         $this->assertEquals(Strings::normalizeNewLine($expectedIndex),
             Strings::normalizeNewLine(file_get_contents($themeFunctionsFile)));
 
-        $sut->_after(new class extends Unit {
+        $sut->_after(new class('test-test-test') extends Unit {
         });
 
         $this->assertFileNotExists($themeStyleFile);
@@ -1401,7 +1401,7 @@ PHP;
         $this->assertEquals(Strings::normalizeNewLine($expected),
             Strings::normalizeNewLine(file_get_contents($pluginFile)));
 
-        $sut->_after(new class extends Unit {
+        $sut->_after(new class('test-test-test') extends Unit {
         });
 
         $this->assertFileNotExists($pluginFile);

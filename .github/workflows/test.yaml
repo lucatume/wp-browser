@@ -32,13 +32,21 @@ jobs:
   test_without_uopz:
     strategy:
       matrix:
-        php_version: [ '7.1', '7.2', '7.3', '7.4' ]
+        php_version: [
+          # '7.1', # Disabled since WordPress minimum requirement is 7.2.
+          '7.2',
+          '7.3',
+          '7.4'
+        ]
         suite:
           - acceptance
           - climodule
           - functional
           - muloader
-          - webdriver
+          - unit --skip-group=slow
+          - unit --group=isolated-1
+          - unit --group=isolated-2
+          # - webdriver # Disabled until the webdriver tests are fixed.
           - wpcli_module
           - wploader_multisite
           - wploader_wpdb_interaction
@@ -147,4 +155,14 @@ jobs:
 
       - name: Run tests
         id: test
-        run: vendor/bin/codecept run unit
+        run: vendor/bin/codecept run ${{ matrix.suite }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: ${{ matrix.suite }}-php@${{ matrix.php_version }}-screenshots
+          path: |
+            var/_output/*.html
+            var/_output/*.png
+          retention-days: 3

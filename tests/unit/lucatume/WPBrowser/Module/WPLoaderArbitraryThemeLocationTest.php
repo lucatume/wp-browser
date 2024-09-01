@@ -19,6 +19,8 @@ use lucatume\WPBrowser\WordPress\Installation;
 use PHPUnit\Framework\Assert;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
+// @group slow
+// @group isolated-2
 class WPLoaderArbitraryThemeLocationTest extends Unit
 {
     use SnapshotAssertions;

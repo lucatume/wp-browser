@@ -69,7 +69,7 @@ trait UopzFunctions
     /**
      * @param mixed $value
      */
-    protected function setFunctionReturn(string $function, $value, bool $execute = false): void
+    protected function setFunctionReturn(string $function, $value, bool $execute = false): Closure
     {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -77,6 +77,10 @@ trait UopzFunctions
 
         uopz_set_return($function, $value, $execute);
         self::$uopzSetFunctionReturns[$function] = true;
+
+        return function () use ($function) {
+            $this->unsetFunctionReturn($function);
+        };
     }
 
     protected function unsetFunctionReturn(string $function): void
@@ -92,11 +96,15 @@ trait UopzFunctions
     /**
      * @param mixed $value
      */
-    protected function setMethodReturn(string $class, string $method, $value, bool $execute = false): void
+    protected function setMethodReturn(string $class, string $method, $value, bool $execute = false): Closure
     {
         $classAndMethod = "$class::$method";
         uopz_set_return($class, $method, $value, $execute);
         self::$uopzSetFunctionReturns[$classAndMethod] = true;
+
+        return function () use ($class, $method) {
+            $this->unsetMethodReturn($class, $method);
+        };
     }
 
     protected function unsetMethodReturn(string $class, string $method): void
@@ -111,7 +119,7 @@ trait UopzFunctions
         unset(self::$uopzSetFunctionReturns[$classAndMethod]);
     }
 
-    protected function setFunctionHook(string $function, Closure $hook): void
+    protected function setFunctionHook(string $function, Closure $hook): Closure
     {
         if (!function_exists('uopz_set_hook')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -119,6 +127,10 @@ trait UopzFunctions
 
         uopz_set_hook($function, $hook);
         self::$uopzSetFunctionHooks[$function] = true;
+
+        return function () use ($function) {
+            $this->unsetFunctionHook($function);
+        };
     }
 
     protected function unsetFunctionHook(string $function): void
@@ -131,7 +143,7 @@ trait UopzFunctions
         unset(self::$uopzSetFunctionHooks[$function]);
     }
 
-    protected function setMethodHook(string $class, string $method, Closure $hook): void
+    protected function setMethodHook(string $class, string $method, Closure $hook): Closure
     {
         if (!function_exists('uopz_set_hook')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -140,6 +152,10 @@ trait UopzFunctions
         $classAndMethod = "$class::$method";
         uopz_set_hook($class, $method, $hook);
         self::$uopzSetFunctionHooks[$classAndMethod] = true;
+
+        return function () use ($class, $method) {
+            $this->unsetMethodHook($class, $method);
+        };
     }
 
     protected function unsetMethodHook(string $class, string $method): void
@@ -157,7 +173,7 @@ trait UopzFunctions
     /**
      * @param mixed $value
      */
-    protected function setConstant(string $constant, $value): void
+    protected function setConstant(string $constant, $value): Closure
     {
         if (!function_exists('uopz_redefine')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -170,6 +186,10 @@ trait UopzFunctions
             uopz_redefine($constant, $value);
         }
         self::$uopzSetConstants[$constant] = $previousValue;
+
+        return function () use ($constant) {
+            $this->unsetConstant($constant);
+        };
     }
 
     protected function unsetConstant(string $constant): void
@@ -191,7 +211,7 @@ trait UopzFunctions
     /**
      * @param mixed $value
      */
-    protected function setClassConstant(string $class, string $constant, $value): void
+    protected function setClassConstant(string $class, string $constant, $value): Closure
     {
         if (!function_exists('uopz_redefine')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -202,6 +222,10 @@ trait UopzFunctions
             : '__NOT_PREVIOUSLY_DEFINED__';
         uopz_redefine($class, $constant, $value);
         self::$uopzSetConstants["$class::$constant"] = $previousValue;
+
+        return function () use ($class, $constant) {
+            $this->unsetClassConstant($class, $constant);
+        };
     }
 
     protected function unsetClassConstant(string $class, string $constant): void
@@ -223,7 +247,7 @@ trait UopzFunctions
     /**
      * @param mixed $mock
      */
-    protected function setClassMock(string $class, $mock): void
+    protected function setClassMock(string $class, $mock): Closure
     {
         if (!function_exists('uopz_set_mock')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -231,6 +255,10 @@ trait UopzFunctions
 
         uopz_set_mock($class, $mock);
         self::$uopzSetClassMocks[$class] = true;
+
+        return function () use ($class) {
+            $this->unsetClassMock($class);
+        };
     }
 
     protected function unsetClassMock(string $class): void
@@ -243,7 +271,7 @@ trait UopzFunctions
         unset(self::$uopzSetClassMocks[$class]);
     }
 
-    protected function unsetClassFinalAttribute(string $class): void
+    protected function unsetClassFinalAttribute(string $class): Closure
     {
         if (!function_exists('uopz_unset_return')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -252,6 +280,10 @@ trait UopzFunctions
         $flags = uopz_flags($class, '');
         uopz_flags($class, '', $flags & ~ZEND_ACC_FINAL);
         self::$uopzUnsetClassFinalAttribute[$class] = true;
+
+        return function () use ($class) {
+            $this->resetClassFinalAttribute($class);
+        };
     }
 
     protected function resetClassFinalAttribute(string $class): void
@@ -265,7 +297,7 @@ trait UopzFunctions
         unset(self::$uopzUnsetClassFinalAttribute[$class]);
     }
 
-    protected function unsetMethodFinalAttribute(string $class, string $method): void
+    protected function unsetMethodFinalAttribute(string $class, string $method): Closure
     {
         if (!function_exists('uopz_unset_return')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -274,6 +306,10 @@ trait UopzFunctions
         $flags = uopz_flags($class, $method);
         uopz_flags($class, $method, $flags & ~ZEND_ACC_FINAL);
         self::$uopzUnsetClassMethodFinalAttribute["$class::$method"] = true;
+
+        return function () use ($class, $method) {
+            $this->resetMethodFinalAttribute($class, $method);
+        };
     }
 
     protected function resetMethodFinalAttribute(string $class, string $method): void
@@ -288,7 +324,7 @@ trait UopzFunctions
         unset(self::$uopzUnsetClassMethodFinalAttribute[$classAndMethod]);
     }
 
-    protected function addClassMethod(string $class, string $method, Closure $closure, bool $static = false): void
+    protected function addClassMethod(string $class, string $method, Closure $closure, bool $static = false): Closure
     {
         if (!function_exists('uopz_add_function')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -300,6 +336,10 @@ trait UopzFunctions
         }
         uopz_add_function($class, $method, $closure, $flags);
         self::$uopzAddClassMethods["$class::$method"] = true;
+
+        return function () use ($class, $method) {
+            $this->removeClassMethod($class, $method);
+        };
     }
 
     protected function removeClassMethod(string $class, string $method): void
@@ -321,7 +361,7 @@ trait UopzFunctions
         $classOrObject,
         string $property,
         $value
-    ): void {
+    ): Closure {
         if (!function_exists('uopz_set_property')) {
             $this->markTestSkipped('This test requires the uopz extension');
         }
@@ -330,6 +370,10 @@ trait UopzFunctions
         uopz_set_property($classOrObject, $property, $value);
         $id = is_string($classOrObject) ? $classOrObject : spl_object_hash($classOrObject);
         self::$uopzSetObjectProperties["$id::$property"] = [$previousValue, $classOrObject];
+
+        return function () use ($classOrObject, $property) {
+            $this->resetObjectProperty($classOrObject, $property);
+        };
     }
 
     /**
@@ -364,7 +408,7 @@ trait UopzFunctions
     /**
      * @param array<string,mixed> $values
      */
-    protected function setMethodStaticVariables(string $class, string $method, array $values): void
+    protected function setMethodStaticVariables(string $class, string $method, array $values): Closure
     {
         if (!function_exists('uopz_set_static')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -379,6 +423,10 @@ trait UopzFunctions
         }
 
         uopz_set_static($class, $method, $values);
+
+        return function () use ($class, $method) {
+            $this->resetMethodStaticVariables($class, $method);
+        };
     }
 
     /**
@@ -427,7 +475,7 @@ trait UopzFunctions
     /**
      * @param array<string,mixed> $values
      */
-    protected function setFunctionStaticVariables(string $function, array $values): void
+    protected function setFunctionStaticVariables(string $function, array $values): Closure
     {
         if (!function_exists('uopz_set_static')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -442,6 +490,10 @@ trait UopzFunctions
         }
 
         uopz_set_static($function, array_merge($currentValues, $values));
+
+        return function () use ($function) {
+            $this->resetFunctionStaticVariables($function);
+        };
     }
 
     protected function resetFunctionStaticVariables(string $function): void
@@ -455,7 +507,7 @@ trait UopzFunctions
         unset(self::$uopzSetFunctionStaticVariables[$function]);
     }
 
-    protected function addFunction(string $function, Closure $handler): void
+    protected function addFunction(string $function, Closure $handler): Closure
     {
         if (!function_exists('uopz_add_function')) {
             $this->markTestSkipped('This test requires the uopz extension');
@@ -463,6 +515,10 @@ trait UopzFunctions
 
         self::$uopzAddedFunctions[$function] = true;
         uopz_add_function($function, $handler);
+
+        return function () use ($function) {
+            $this->removeFunction($function);
+        };
     }
 
     protected function removeFunction(string $function): void

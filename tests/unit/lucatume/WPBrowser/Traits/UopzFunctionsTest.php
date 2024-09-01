@@ -1298,4 +1298,323 @@ class UopzFunctionsTest extends Unit
     {
         $this->assertEquals(1, ini_get('uopz.exit'));
     }
+
+    public function testSetFunctionReturnReturnsUnsetClosure(): void
+    {
+        $unsetReturn = $this->setFunctionReturn('someTestFunction', 23);
+
+        $this->assertEquals(23, someTestFunction());
+
+        $unsetReturn();
+
+        $this->assertEquals('test-test-test', someTestFunction());
+    }
+
+    public function testSetInstanceMethodReturnReturnsUnsetClosure(): void
+    {
+        $unsetReturn = $this->setMethodReturn(SomeGlobalClassOne::class, 'getValueOne', 23);
+
+        $this->assertEquals(23, (new SomeGlobalClassOne())->getValueOne());
+
+        $unsetReturn();
+
+        $this->assertEquals('original-value-one', (new SomeGlobalClassOne())->getValueOne());
+    }
+
+    public function testSetStaticMethodReturnReturnsUnsetClosure(): void
+    {
+        $unsetReturn = $this->setMethodReturn(SomeGlobalClassOne::class, 'getStaticValueOne', 23);
+
+        $this->assertEquals(23, SomeGlobalClassOne::getStaticValueOne());
+
+        $unsetReturn();
+
+        $this->assertEquals('original-static-value-one', SomeGlobalClassOne::getStaticValueOne());
+    }
+
+    public function testSetFunctionHookReturnsUnsetClosure(): void
+    {
+        $headers = [];
+        $hook = function (string $header, bool $replace = true, int $response_code = 0) use (
+            &$headers
+        ): void {
+            $headers[] = [
+                'header' => $header,
+                'replace' => $replace,
+                'response_code' => $response_code,
+            ];
+        };
+
+        $headers = [];
+        $unsetFunctionHook = $this->setFunctionHook('header', $hook);
+
+        header('Location: http://example.com', true, 301);
+
+        $this->assertEquals([
+            [
+                'header' => 'Location: http://example.com',
+                'replace' => true,
+                'response_code' => 301,
+            ],
+        ], $headers);
+
+        $unsetFunctionHook();
+
+        header('X-Test: hello', true);
+
+        $this->assertEquals([
+            [
+                'header' => 'Location: http://example.com',
+                'replace' => true,
+                'response_code' => 301,
+            ],
+        ], $headers);
+    }
+
+    public function testSetInstanceMethodHookReturnsUnsetClosure(): void
+    {
+        $gotten = 0;
+        $unsetMethodHook = $this->setMethodHook(SomeGlobalClassOne::class, 'getValueOne', function () use (&$gotten) {
+            $gotten++;
+        });
+        $someGlobalClassOne = new SomeGlobalClassOne();
+        $someGlobalClassOne->getValueOne();
+        $someGlobalClassOne->getValueOne();
+        $someGlobalClassOne->getValueOne();
+
+        $this->assertEquals(3, $gotten);
+
+        $unsetMethodHook();
+
+        $someGlobalClassOne->getValueOne();
+        $someGlobalClassOne->getValueOne();
+        $someGlobalClassOne->getValueOne();
+
+        $this->assertEquals(3, $gotten);
+    }
+
+    public function testSetStaticMethodHookReturnsUnsetClosure(): void
+    {
+        $gotten = 0;
+        $unsetMethodHook = $this->setMethodHook(
+            SomeGlobalClassOne::class,
+            'getStaticValueOne',
+            function () use (&$gotten): void {
+                $gotten++;
+            }
+        );
+
+        SomeGlobalClassOne::getStaticValueOne();
+        SomeGlobalClassOne::getStaticValueOne();
+        SomeGlobalClassOne::getStaticValueOne();
+
+        $this->assertEquals(3, $gotten);
+
+        $unsetMethodHook();
+
+        SomeGlobalClassOne::getStaticValueOne();
+        SomeGlobalClassOne::getStaticValueOne();
+        SomeGlobalClassOne::getStaticValueOne();
+
+        $this->assertEquals(3, $gotten);
+    }
+
+    public function testSetConstantUnsetClosure(): void
+    {
+        $unsetConstant = $this->setConstant('EXISTING_CONSTANT', 'hello');
+
+        $this->assertEquals('hello', EXISTING_CONSTANT);
+
+        $unsetConstant();
+
+        $this->assertEquals('test-constant', EXISTING_CONSTANT);
+    }
+
+    public function testSetClassConstantUnsetClosure(): void
+    {
+        $unsetClassConstant = $this->setClassConstant(SomeGlobalClassOne::class, 'EXISTING_CONSTANT', 'hello');
+
+        $this->assertEquals('hello', SomeGlobalClassOne::EXISTING_CONSTANT);
+
+        $unsetClassConstant();
+
+        $this->assertEquals('test-constant', SomeGlobalClassOne::EXISTING_CONSTANT);
+    }
+
+    public function testSetClassMockUnsetClosure(): void
+    {
+        $mockSomeGlobalClassOne = new class extends SomeGlobalClassOne {
+            public function getValueOne(): string
+            {
+                return 'mocked-value-one';
+            }
+        };
+
+        $unsetClassMock = $this->setClassMock(SomeGlobalClassOne::class, $mockSomeGlobalClassOne);
+
+        $mockSomeGlobalClassOneInstanceOne = new SomeGlobalClassOne();
+        $mockSomeGlobalClassOneInstanceTwo = new SomeGlobalClassOne();
+
+        $this->assertSame($mockSomeGlobalClassOne, $mockSomeGlobalClassOneInstanceOne);
+        $this->assertSame($mockSomeGlobalClassOne, $mockSomeGlobalClassOneInstanceTwo);
+        $this->assertEquals('mocked-value-one', $mockSomeGlobalClassOneInstanceOne->getValueOne());
+        $this->assertEquals('mocked-value-one', $mockSomeGlobalClassOneInstanceTwo->getValueOne());
+
+        $unsetClassMock();
+
+        $mockSomeGlobalClassOneInstanceOne = new SomeGlobalClassOne();
+        $mockSomeGlobalClassOneInstanceTwo = new SomeGlobalClassOne();
+
+        $this->assertNotSame($mockSomeGlobalClassOne, $mockSomeGlobalClassOneInstanceOne);
+        $this->assertNotSame($mockSomeGlobalClassOne, $mockSomeGlobalClassOneInstanceTwo);
+        $this->assertEquals('original-value-one', $mockSomeGlobalClassOneInstanceOne->getValueOne());
+        $this->assertEquals('original-value-one', $mockSomeGlobalClassOneInstanceTwo->getValueOne());
+    }
+
+    public function testUnsetClassFinalAttributeUnsetClosure(): void
+    {
+        $unsetClassFinalAttribute = $this->unsetClassFinalAttribute(SomeGlobalFinalClass::class);
+
+        $globalExtension = new class extends SomeGlobalFinalClass {
+            public function someMethod(): int
+            {
+                return 89;
+            }
+        };
+
+        $this->assertEquals(89, $globalExtension->someMethod());
+
+        $unsetClassFinalAttribute();
+
+        $this->assertTrue((new ReflectionClass(SomeGlobalFinalClass::class))->isFinal());
+    }
+
+    public function testUnsetMethodFinalAttributeUnsetClosure(): void
+    {
+        $unsetMethodFinalAttribute = $this->unsetMethodFinalAttribute(
+            SomeGlobalClassWithFinalMethods::class,
+            'someFinalMethod'
+        );
+
+        $globalExtension = new class extends SomeGlobalClassWithFinalMethods {
+            public function someFinalMethod(): int
+            {
+                return 123;
+            }
+        };
+
+        $this->assertEquals(123, $globalExtension->someFinalMethod());
+
+        $unsetMethodFinalAttribute();
+
+        $this->assertTrue((new ReflectionMethod(SomeGlobalClassWithFinalMethods::class, 'someFinalMethod'))->isFinal());
+    }
+
+    public function testAddClassMethodUnsetClosure(): void
+    {
+        $unsetAddClassInstanceMethod = $this->addClassMethod(
+            SomeGlobalClassWithoutMethods::class,
+            'testInstanceMethod',
+            function (): int {
+                return $this->number;
+            }
+        );
+        $unsetAddClassStaticMethod = $this->addClassMethod(
+            SomeGlobalClassWithoutMethods::class,
+            'testStaticMethod',
+            function (): string {
+                return self::$name;
+            },
+            true
+        );
+
+        $this->assertTrue(method_exists(SomeGlobalClassWithoutMethods::class, 'testInstanceMethod'));
+        $this->assertTrue(method_exists(SomeGlobalClassWithoutMethods::class, 'testStaticMethod'));
+
+        $someGlobalClassWithoutMethods = new SomeGlobalClassWithoutMethods();
+        $someGlobalClassWithoutMethods->testInstanceMethod();
+        $someGlobalClassWithoutMethods->testStaticMethod();
+
+        $unsetAddClassInstanceMethod();
+
+        $this->assertFalse(method_exists(SomeGlobalClassWithoutMethods::class, 'testInstanceMethod'));
+        $this->assertTrue(method_exists(SomeGlobalClassWithoutMethods::class, 'testStaticMethod'));
+    }
+
+    public function testSetObjectPropertyUnsetClosure(): void
+    {
+        $someNamespacedClassWithoutMethods = new SomeNamespacedClassWithoutMethods();
+        $resetSetObjectProperty = $this->setObjectProperty($someNamespacedClassWithoutMethods, 'number', 89);
+        $resetStaticSetObjectProperty = $this->setObjectProperty(
+            SomeNamespacedClassWithoutMethods::class,
+            'name',
+            'Bob'
+        );
+
+        $this->assertEquals(89, $this->getObjectProperty($someNamespacedClassWithoutMethods, 'number'));
+        $this->assertEquals('Bob', $this->getObjectProperty(SomeNamespacedClassWithoutMethods::class, 'name'));
+
+        $resetSetObjectProperty();
+        $resetStaticSetObjectProperty();
+
+        $this->assertEquals(23, $this->getObjectProperty($someNamespacedClassWithoutMethods, 'number'));
+        $this->assertEquals('Luca', $this->getObjectProperty(SomeNamespacedClassWithoutMethods::class, 'name'));
+    }
+
+    public function testSetMethodStaticVariablesUnsetClosure(): void
+    {
+        $someNamespacedClassWithStaticVariables = new NamespacedClassWithStaticVariables();
+        $resetSetMethodStaticVariables = $this->setMethodStaticVariables(
+            NamespacedClassWithStaticVariables::class,
+            'theCounter',
+            ['counter' => 23]
+        );
+        $resetStaticSetMethodStaticVariables = $this->setMethodStaticVariables(
+            NamespacedClassWithStaticVariables::class,
+            'theStaticCounter',
+            ['counter' => 89]
+        );
+
+        $this->assertEquals(['counter' => 23],
+            $this->getMethodStaticVariables(NamespacedClassWithStaticVariables::class, 'theCounter'));
+        $this->assertEquals(['counter' => 89],
+            $this->getMethodStaticVariables(NamespacedClassWithStaticVariables::class, 'theStaticCounter'));
+
+        $resetSetMethodStaticVariables();
+        $resetStaticSetMethodStaticVariables();
+
+        $this->assertEquals(['counter' => 0],
+            $this->getMethodStaticVariables(NamespacedClassWithStaticVariables::class, 'theCounter'));
+        $this->assertEquals(['counter' => 0],
+            $this->getMethodStaticVariables(NamespacedClassWithStaticVariables::class, 'theStaticCounter'));
+    }
+
+    public function testSetFunctionStaticVariablesUnsetClosure(): void
+    {
+        $resetFunctionStaticVariables = $this->setFunctionStaticVariables(
+            'withStaticVariableTwo',
+            ['counter' => 23, 'step' => 89]
+        );
+
+        $this->assertEquals(['counter' => 23, 'step' => 89],
+            $this->getFunctionStaticVariables('withStaticVariableTwo'));
+
+        $resetFunctionStaticVariables();
+
+        $this->assertEquals(['counter' => 0, 'step' => 2], $this->getFunctionStaticVariables('withStaticVariableTwo'));
+    }
+
+    public function testAddFunctionRemoveClosure(): void
+    {
+        $removeFunction = $this->addFunction('someTestFunctionOfMine', function (): int {
+            return 23;
+        });
+
+        $this->assertTrue(function_exists('someTestFunctionOfMine'));
+        $this->assertEquals(23, someTestFunctionOfMine());
+
+        $removeFunction();
+
+        $this->assertFalse(function_exists('someTestFunctionOfMine'));
+    }
 }

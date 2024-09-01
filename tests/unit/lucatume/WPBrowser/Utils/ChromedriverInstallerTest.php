@@ -276,6 +276,9 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
     public function should_throw_if_existing_zip_file_cannot_be_removed(): void
     {
         $this->setFunctionReturn('sys_get_temp_dir', codecept_output_dir());
+        $this->setFunctionReturn('is_file', function (string $file): bool {
+            return preg_match('~chromedriver\\.zip$~', $file) ? true : is_file($file);
+        },true);
         $this->setFunctionReturn('unlink', function (string $file): bool {
             return preg_match('~chromedriver\\.zip$~', $file) ? false : unlink($file);
         }, true);

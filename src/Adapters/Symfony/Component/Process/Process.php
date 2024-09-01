@@ -44,8 +44,6 @@ class Process extends SymfonyProcess
             // @phpstan-ignore-next-line
             $this->inheritEnvironmentVariables(true);
         }
-
-        parent::__construct($command, $cwd, $env, $input, $timeout);
     }
 
     public function getStartTime(): float

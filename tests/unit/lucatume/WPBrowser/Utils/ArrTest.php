@@ -13,39 +13,39 @@ class ArrTest extends Unit
     {
         return [
             'empty haystack, return true isNeedle' => [
-                'isNeedle' => static function (): bool {
+                static function (): bool {
                     return true;
                 },
-                'haystack' => [],
-                'expected' => false
+                [],
+                false
             ],
             'empty haystack, return false isNeedle' => [
-                'isNeedle' => static function (): bool {
+                static function (): bool {
                     return false;
                 },
-                'haystack' => [],
-                'expected' => false
+                [],
+                false
             ],
             'return false isNeedle' => [
-                'isNeedle' => static function (): bool {
+                static function (): bool {
                     return false;
                 },
-                'haystack' => [1, 2, 3],
-                'expected' => false
+                [1, 2, 3],
+                false
             ],
             'isNeedle is true for first item' => [
-                'isNeedle' => static function (int $item): bool {
+                static function (int $item): bool {
                     return $item === 1;
                 },
-                'haystack' => [1, 2, 3],
-                'expected' => 0
+                [1, 2, 3],
+                0
             ],
             'isNeedle true for 3rd and 4th argument' => [
-                'isNeedle' => static function (int $item, int $key): bool {
+                static function (int $item, int $key): bool {
                     return $item === 3 || $key === 3;
                 },
-                'haystack' => [1, 2, 3, 4],
-                'expected' => 2
+                [1, 2, 3, 4],
+                2
             ],
         ];
     }
@@ -64,29 +64,29 @@ class ArrTest extends Unit
     {
         return [
             'empty' => [
-                'value' => [],
-                'default' => null,
-                'expected' => null
+                [],
+                null,
+                null
             ],
             'empty, default value is 23' => [
-                'value' => [],
-                'default' => 23,
-                'expected' => 23
+                [],
+                23,
+                23
             ],
             'object value' => [
-                'value' => new stdClass(),
-                'default' => null,
-                'expected' => null
+                new stdClass(),
+                null,
+                null
             ],
             'array of numbers' => [
-                'value' => [1, 2, 3],
-                'default' => null,
-                'expected' => 1
+                [1, 2, 3],
+                null,
+                1
             ],
             'array of numbers, default value is 23' => [
-                'value' => [1, 2, 3],
-                'default' => 23,
-                'expected' => 1
+                [1, 2, 3],
+                23,
+                1
             ]
         ];
     }
@@ -107,71 +107,71 @@ class ArrTest extends Unit
     {
         return [
             'empty array, empty shapes' => [
-                'array' => [],
-                'expected' => true,
+                [],
+                true,
                 []
             ],
             'empty array, 3 numbers shapes' => [
-                'array' => [],
-                'expected' => false,
+                [],
+                false,
                 ['int', 'int', 'int']
             ],
             'array has wrong shape' => [
-                'array' => [1, 2, 3],
-                'expected' => false,
+                [1, 2, 3],
+                false,
                 ['int', 'int', 'string']
             ],
             'array has 3 objects shape' => [
-                'array' => [new stdClass, new stdClass, new stdClass],
-                'expected' => true,
+                [new stdClass, new stdClass, new stdClass],
+                true,
                 ['stdClass', 'stdClass', 'stdClass']
             ],
             'array has 3 objects shape, misses 1' => [
-                'array' => [new stdClass, new stdClass],
-                'expected' => false,
+                [new stdClass, new stdClass],
+                false,
                 ['stdClass', 'stdClass', 'stdClass']
             ],
             'array has mixed shape' => [
-                'array' => [new stdClass, 2, '3'],
-                'expected' => true,
+                [new stdClass, 2, '3'],
+                true,
                 ['stdClass', 'int', 'string']
             ],
             'array has mixed shape, misses one' => [
-                'array' => [new stdClass, 2],
-                'expected' => false,
+                [new stdClass, 2],
+                false,
                 ['stdClass', 'int', 'string']
             ],
             'array has mixed shape, 3rd type is Closure' => [
-                'array' => [new stdClass, 2, '3'],
-                'expected' => true,
+                [new stdClass, 2, '3'],
+                true,
                 ['stdClass', 'int', function (string $value) : bool {
                     return $value === '3';
                 }]
             ],
             'array has mixed shape, 3rd type is Closure, misses one' => [
-                'array' => [new stdClass, 2],
-                'expected' => false,
+                [new stdClass, 2],
+                false,
                 ['stdClass', 'int', function (string $value) : bool {
                     return $value === '3';
                 }]
             ],
             'array has mixed shape with associative type' => [
-                'array' => ['a' => new stdClass, 'b' => 2, 'c' => '3'],
-                'expected' => true,
+                ['a' => new stdClass, 'b' => 2, 'c' => '3'],
+                true,
                 ['a' => 'stdClass', 'b' => 'int', 'c' => function (string $value) : bool {
                     return $value === '3';
                 }]
             ],
             'array shape does not match mixed types' => [
-                'array' => ['a' => new stdClass, 'b' => 2, 'c' => '3'],
-                'expected' => false,
+                ['a' => new stdClass, 'b' => 2, 'c' => '3'],
+                false,
                 ['a' => 'stdClass', 'b' => 'int', 'c' => function (string $value) : bool {
                     return $value === '4';
                 }]
             ],
             'array shape matches in different order' => [
-                'array' => ['a' => new stdClass, 'b' => 2, 'c' => '3'],
-                'expected' => true,
+                ['a' => new stdClass, 'b' => 2, 'c' => '3'],
+                true,
                 ['b' => 'int', 'c' => function (string $value) : bool {
                     return $value === '3';
                 }, 'a' => 'stdClass']
