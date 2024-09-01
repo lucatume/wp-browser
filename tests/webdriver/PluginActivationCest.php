@@ -71,22 +71,8 @@ class PluginActivationCest
 
     protected function scaffoldTestPlugins(WebDriverTester $I): void
     {
-        $template
-            = <<< HANDLEBARS
-/*
-Plugin Name: Plugin {{letter}}
-Plugin URI: https://wordpress.org/plugins/{{letter}}/
-Description: Plugin {{letter}} description
-Version: 0.1.0
-Author: Plugin {{letter}} author
-Author URI: http://example.com/{{letter}}-plugin
-Text Domain: {{letter}}_plugin
-Domain Path: /languages
-*/
-HANDLEBARS;
-
         foreach (range('A', 'Z') as $letter) {
-            $compiled = str_replace('{{letter}}', $letter, $template);
+            $compiled = "function {$letter}_main(){}";
             $I->havePlugin("plugin-{$letter}/plugin-{$letter}.php", $compiled);
         }
     }

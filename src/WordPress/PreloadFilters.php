@@ -34,7 +34,7 @@ class PreloadFilters
         if (!isset($wp_filter[$hookName])) {
             $wp_filter[$hookName] = [];
         }
-        if (!isset($wp_filter['string'][$priority])) {
+        if (!isset($wp_filter[$hookName][$priority])) {
             $wp_filter[$hookName][$priority] = [];
         }
         $wp_filter[$hookName][$priority][] = [

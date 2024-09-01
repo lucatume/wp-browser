@@ -52,6 +52,7 @@ class RunAllTest extends Unit
             'isSuccessful' => function () {
                 return true;
             },
+            'setTimeout' => '__itself',
         ];
         $this->setClassMock(Process::class, $this->makeEmptyClass(Process::class, $mockParams));
         $this->setMethodReturn(Configuration::class, 'suites', ['suite-1', 'suite-2', 'suite-3']);
@@ -90,6 +91,7 @@ class RunAllTest extends Unit
             'isSuccessful' => function () use ($failingSuite, &$currentSuite) {
                 return $currentSuite++ !== $failingSuite;
             },
+            'setTimeout' => '__itself',
         ];
         $this->setClassMock(Process::class, $this->makeEmptyClass(Process::class, $mockParams));
         $this->setMethodReturn(Configuration::class, 'suites', ['suite-1', 'suite-2', 'suite-3']);

@@ -202,6 +202,10 @@ class WPLoader extends Module
      * @var \lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory|null
      */
     private $codeExecutionFactory;
+    /**
+     * @var bool
+     */
+    private $didLoadWordPress = false;
 
     public function _getBootstrapOutput(): string
     {
@@ -211,6 +215,37 @@ class WPLoader extends Module
     public function _getInstallationOutput(): string
     {
         return $this->installationOutput;
+    }
+
+    public function _didLoadWordPress(): bool
+    {
+        return $this->didLoadWordPress;
+    }
+
+    /**
+     * Get the absolute path to the mu-plugins directory.
+     *
+     * The value will first look at the `WPMU_PLUGIN_DIR` constant, then the `WP_CONTENT_DIR` configuration parameter,
+     * and will, finally, look in the default path from the WordPress root directory.
+     *
+     * @param string $path
+     *
+     * @return string
+     * @since TBD
+     */
+    public function getMuPluginsFolder(string $path = ''): string
+    {
+        /** @var array{WPMU_PLUGIN_DIR?: string, WP_CONTENT_DIR?: string} $config */
+        $config = $this->config;
+        $candidates = array_filter([
+            $config['WPMU_PLUGIN_DIR'] ?? null,
+            isset($config['WP_CONTENT_DIR']) ? rtrim($config['WP_CONTENT_DIR'], '\\/') . '/mu-plugins' : null,
+            $this->installation->getMuPluginsDir()
+        ]);
+        /** @var string $muPluginsDir */
+        $muPluginsDir = reset($candidates);
+
+        return rtrim($muPluginsDir, '\\/') . '/' . ($path ? ltrim($path, '\\/') : '');
     }
 
     protected function validateConfig(): void
@@ -460,10 +495,10 @@ class WPLoader extends Module
                 $this->installation = new Installation($wpRootDir);
             }
 
-            if ($db instanceof SqliteDatabase && !is_file($this->installation->getContentDir('db.php'))) {
+            if ($db instanceof SqliteDatabase && !is_file($this->getContentFolder('db.php'))) {
                 Installation::placeSqliteMuPlugin(
-                    $this->installation->getMuPluginsDir(),
-                    $this->installation->getContentDir()
+                    $this->getMuPluginsFolder(),
+                    $this->getContentFolder()
                 );
             }
 
@@ -496,7 +531,16 @@ class WPLoader extends Module
         if ($this->installation->isConfigured()) {
             foreach (['WP_CONTENT_DIR', 'WP_PLUGIN_DIR', 'WPMU_PLUGIN_DIR'] as $pathConst) {
                 $constValue = $this->installation->getState()->getConstant($pathConst);
+
                 if ($constValue && is_string($constValue)) {
+                    if (isset($config[$pathConst])) {
+                        throw new ModuleConfigException(
+                            $this,
+                            "Both the installation wp-config.php file and the module configuration define a " .
+                            "{$pathConst} constant: only one can be set."
+                        );
+                    }
+
                     $config[$pathConst] = $constValue;
                 }
             }
@@ -515,10 +559,6 @@ class WPLoader extends Module
             $this->checkInstallationToLoadOnly();
             $this->debug('The WordPress installation will be loaded after all other modules have been initialized.');
 
-            Dispatcher::addListener(Events::SUITE_BEFORE, function (): void {
-                $this->loadWordPress(true);
-            });
-
             return;
         }
 
@@ -529,7 +569,18 @@ class WPLoader extends Module
 
         WPTestCase::beStrictAboutWpdbConnectionId($config['beStrictAboutWpdbConnectionId']);
 
-        $this->loadWordPress();
+        $this->_loadWordPress();
+    }
+
+    /**
+     * @param array<string,mixed> $settings
+     *
+     * @return void
+     */
+    public function _beforeSuite(array $settings = [])
+    {
+        parent::_beforeSuite($settings);
+        $this->_loadWordPress();
     }
 
     /**
@@ -579,11 +630,20 @@ class WPLoader extends Module
     /**
      * Loads WordPress calling the bootstrap file.
      *
-     *
      * @throws Throwable
+     *
+     * @internal This method is not part of the module API.
      */
-    private function loadWordPress(bool $loadOnly = false): void
+    public function _loadWordPress(?bool $loadOnly = null): void
     {
+        if ($this->didLoadWordPress) {
+            return;
+        }
+
+        $config = $this->config;
+        /** @var array{loadOnly: bool} $config */
+        $loadOnly = $loadOnly ?? $config['loadOnly'];
+
         $this->loadConfigFiles();
 
         if ($loadOnly) {
@@ -594,6 +654,8 @@ class WPLoader extends Module
         } else {
             $this->installAndBootstrapInstallation();
         }
+
+        $this->didLoadWordPress = true;
 
         wp_cache_flush();
 
@@ -612,8 +674,9 @@ class WPLoader extends Module
     /**
      * Returns the absolute path to the plugins directory.
      *
-     * The value will first look at the `WP_PLUGIN_DIR` constant, then the `pluginsFolder` configuration parameter
-     * and will, finally, look in the default path from the WordPress root directory.
+     * The value will first look at the `WP_PLUGIN_DIR` constant, then the `pluginsFolder` configuration parameter,
+     * then the `WP_CONTENT_DIR` configuration parameter, and will, finally, look in the default path from the
+     * WordPress root directory.
      *
      * @example
      * ```php
@@ -628,7 +691,18 @@ class WPLoader extends Module
      */
     public function getPluginsFolder(string $path = ''): string
     {
-        return $this->installation->getPluginsDir($path);
+        /** @var array{pluginsFolder?: string, WP_PLUGIN_DIR?: string,WP_CONTENT_DIR?: string} $config */
+        $config = $this->config;
+        $candidates = array_filter([
+            $config['WP_PLUGIN_DIR'] ?? null,
+            $config['pluginsFolder'] ?? null,
+            isset($config['WP_CONTENT_DIR']) ? rtrim($config['WP_CONTENT_DIR'], '\\/') . '/plugins' : null,
+            $this->installation->getPluginsDir()
+        ]);
+        /** @var string $pluginDir */
+        $pluginDir = reset($candidates);
+
+        return rtrim($pluginDir, '\\/') . '/' . ($path ? ltrim($path, '\\/') : '');
     }
 
     /**
@@ -860,6 +934,9 @@ class WPLoader extends Module
     /**
      * Returns the absolute path to the WordPress content directory.
      *
+     * The value will first look at the `WP_CONTENT_DIR` configuration parameter, and will, finally, look in the
+     * default path from the WordPress root directory.
+     *
      * @example
      * ```php
      * $content = $this->getContentFolder();
@@ -873,7 +950,16 @@ class WPLoader extends Module
      */
     public function getContentFolder(string $path = ''): string
     {
-        return $this->installation->getContentDir($path);
+        /** @var array{WP_CONTENT_DIR?: string} $config */
+        $config = $this->config;
+        $candidates = array_filter([
+            $config['WP_CONTENT_DIR'] ?? null,
+            $this->installation->getContentDir()
+        ]);
+        /** @var string $contentDir */
+        $contentDir = reset($candidates);
+
+        return rtrim($contentDir, '\\/') . '/' . ($path ? ltrim($path, '\\/') : '');
     }
 
     private function getCodeExecutionFactory(): CodeExecutionFactory
@@ -1087,7 +1173,7 @@ class WPLoader extends Module
         wp_cache_delete('alloptions', 'options');
 
         // Do not include external plugins, it would create issues at this stage.
-        $pluginsDir = $this->installation->getPluginsDir();
+        $pluginsDir = $this->getPluginsFolder();
 
         return array_values(
             array_filter(
@@ -1131,7 +1217,7 @@ class WPLoader extends Module
         wp_cache_delete("1::active_sitewide_plugins", 'site-options');
 
         // Do not include external plugins, it would create issues at this stage.
-        $pluginsDir = $this->installation->getPluginsDir();
+        $pluginsDir = $this->getPluginsFolder();
         $validPlugins = array_values(
             array_filter(
                 $plugins,
@@ -1176,7 +1262,7 @@ class WPLoader extends Module
                 $activePlugins = [];
             }
 
-            $pluginsDir = $this->installation->getPluginsDir();
+            $pluginsDir = $this->getPluginsFolder();
 
             foreach ($plugins as $plugin) {
                 if (!is_file($pluginsDir . "/$plugin")) {

@@ -554,16 +554,31 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	 * @since 3.7.0
 	 */
 	public function expectDeprecated() {
-		if ( method_exists( $this, 'getAnnotations' ) ) {
-			// PHPUnit < 9.5.0.
-			$annotations = $this->getAnnotations();
-		} else {
-			// PHPUnit >= 9.5.0.
-			$annotations = \PHPUnit\Util\Test::parseTestMethodAnnotations(
-				static::class,
-				$this->getName( false )
-			);
-		}
+        if ( method_exists( $this, 'getAnnotations' ) ) {
+            // PHPUnit < 9.5.0.
+            $annotations = $this->getAnnotations();
+        } else if( version_compare(tests_get_phpunit_version(),'10.0.0','<')) {
+            // PHPUnit >= 9.5.0 < 10.0.0.
+            $annotations = \PHPUnit\Util\Test::parseTestMethodAnnotations(
+                static::class,
+                $this->getName( false )
+            );
+        } else {
+            // PHPUnit >= 10.0.0.
+            if (method_exists(static::class, $this->name())) {
+                $reflectionMethod = new \ReflectionMethod(static::class, $this->name());
+                $docBlock = \PHPUnit\Metadata\Annotation\Parser\DocBlock::ofMethod($reflectionMethod);
+                $annotations = [
+                    'method' => $docBlock->symbolAnnotations(),
+                    'class' => [],
+                ];
+            } else {
+                $annotations = [
+                    'method' => null,
+                    'class' => [],
+                ];
+            }
+        }
 
 		foreach ( array( 'class', 'method' ) as $depth ) {
 			if ( ! empty( $annotations[ $depth ]['expectedDeprecated'] ) ) {

@@ -65,7 +65,7 @@ class PhpBuiltInServer implements ManagedProcessInterface
     /**
      * @throws RuntimeException
      */
-    public function doStart(): void
+    private function doStart(): void
     {
         $routerPathname = dirname(__DIR__, 2) . '/includes/cli-server/router.php';
         $command = [

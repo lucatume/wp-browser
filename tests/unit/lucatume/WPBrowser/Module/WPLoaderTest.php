@@ -2,6 +2,7 @@
 
 namespace lucatume\WPBrowser\Module;
 
+use Codeception\Event\SuiteEvent;
 use Codeception\Events;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
@@ -30,7 +31,10 @@ use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use lucatume\WPBrowser\WordPress\InstallationState\Scaffolded;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestResult;
+use PHPUnit\Runner\Version as PHPUnitVersion;
+use PHPUnit\TextUI\Configuration\Registry as ConfigurationRegistry;
 use stdClass;
+use Symfony\Component\VarDumper\VarDumper;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use UnitTester;
 use WP_Theme;
@@ -40,6 +44,7 @@ use const WP_DEBUG;
 
 /**
  * @group slow
+ * @group isolated-1
  */
 class WPLoaderTest extends Unit
 {
@@ -128,15 +133,6 @@ class WPLoaderTest extends Unit
     }
 
     /**
-     * @return WPLoader
-     */
-    private function module(array $moduleContainerConfig = [], ?array $moduleConfig = null): WPLoader
-    {
-        $this->mockModuleContainer = new ModuleContainer(new Di(), $moduleContainerConfig);
-        return new WPLoader($this->mockModuleContainer, ($moduleConfig ?? $this->config));
-    }
-
-    /**
      * It should throw if cannot connect to the database
      *
      * @test
@@ -155,6 +151,15 @@ class WPLoaderTest extends Unit
         $this->expectException(ModuleConfigException::class);
 
         $this->module()->_initialize();
+    }
+
+    /**
+     * @return WPLoader
+     */
+    private function module(array $moduleContainerConfig = [], ?array $moduleConfig = null): WPLoader
+    {
+        $this->mockModuleContainer = new ModuleContainer(new Di(), $moduleContainerConfig);
+        return new WPLoader($this->mockModuleContainer, ($moduleConfig ?? $this->config));
     }
 
     /**
@@ -651,10 +656,9 @@ class WPLoaderTest extends Unit
         $this->expectException(InstallationException::class);
         $this->expectExceptionMessage(InstallationException::becauseWordPressIsNotInstalled()->getMessage());
 
-        $this->assertInIsolation(static function () use ($wpRootDir, $wpLoader) {
+        $this->assertInIsolation(static function () use ($wpLoader) {
             $wpLoader->_initialize();
-
-            Dispatcher::dispatch(Events::SUITE_BEFORE);
+            $wpLoader->_loadWordPress();
         });
     }
 
@@ -707,7 +711,7 @@ class WPLoaderTest extends Unit
                 $actions[] = WPLoader::EVENT_AFTER_LOADONLY;
             });
 
-            Dispatcher::dispatch(Events::SUITE_BEFORE);
+            $wpLoader->_loadWordPress();
 
             Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
             Assert::assertEquals($wpRootDir . '/', ABSPATH);
@@ -797,7 +801,7 @@ class WPLoaderTest extends Unit
         $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
             $wpLoader->_initialize();
 
-            Dispatcher::dispatch(Events::SUITE_BEFORE);
+            $wpLoader->_loadWordPress();
 
             Assert::assertEquals($wpRootDir . '/', ABSPATH);
         });
@@ -1551,7 +1555,7 @@ class WPLoaderTest extends Unit
         $this->expectException(ModuleException::class);
 
         $this->assertInIsolation(static function () use ($wpLoader, $dumpFiles) {
-            uopz_set_return('fopen', function (string $file, ...$args)use($dumpFiles) {
+            uopz_set_return('fopen', function (string $file, ...$args) use ($dumpFiles) {
                 return in_array($file, $dumpFiles, true) ? false : fopen($file, ...$args);
             }, true);
             $wpLoader->_initialize();
@@ -1751,7 +1755,7 @@ class WPLoaderTest extends Unit
 
         $this->assertInIsolation(static function () use ($wpLoader) {
             $wpLoader->_initialize();
-            Dispatcher::dispatch(Events::SUITE_BEFORE);
+            $wpLoader->_loadWordPress();
 
             Assert::assertTrue(function_exists('do_action'));
             Assert::assertInstanceOf(\WP_User::class, wp_get_current_user());
@@ -1923,8 +1927,18 @@ PHP
             'dbUrl' => $db->getDbUrl(),
         ];
         $wpLoader = $this->module();
+        $serializedPhpunitConfiguration = (int)PHPUnitVersion::series() >= 10 ?
+            serialize(ConfigurationRegistry::get())
+            : null;
 
-        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
+        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile, $serializedPhpunitConfiguration) {
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $reflector = new \ReflectionClass(ConfigurationRegistry::class);
+                $instanceProp = $reflector->getProperty('instance');
+                $instanceProp->setAccessible(true);
+                $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
+            }
+
             $wpLoader->_initialize();
 
             Assert::assertTrue(function_exists('do_action'));
@@ -1932,10 +1946,14 @@ PHP
             require_once $testcaseFile;
 
             $testCase = new \BackupControlTestCase('testBackupGlobalsIsFalse');
-            /** @var TestResult $result */
-            $result = $testCase->run();
-
-            Assert::assertTrue($result->wasSuccessful());
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $testCase->run();
+                $status = $testCase->status();
+                Assert::assertTrue($status->isSuccess());
+            } else {
+                $result = $testCase->run();
+                Assert::assertTrue($result->wasSuccessful());
+            }
         });
     }
 
@@ -1965,6 +1983,9 @@ PHP
         );
         $testcaseFile = codecept_data_dir('files/BackupControlTestCase.php');
         $overridingTestCaseFile = codecept_data_dir('files/BackupControlTestCaseOverridingTestCase.php');
+        $serializedPhpunitConfiguration = (int)PHPUnitVersion::series() >= 10 ?
+            serialize(ConfigurationRegistry::get())
+            : null;
 
         // Set`WPLoader.backupGlobals` to `false`.
         $this->config = [
@@ -1974,7 +1995,14 @@ PHP
         ];
         $wpLoader = $this->module();
 
-        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
+        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile, $serializedPhpunitConfiguration) {
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $reflector = new \ReflectionClass(ConfigurationRegistry::class);
+                $instanceProp = $reflector->getProperty('instance');
+                $instanceProp->setAccessible(true);
+                $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
+            }
+
             $wpLoader->_initialize();
 
             Assert::assertTrue(function_exists('do_action'));
@@ -1982,10 +2010,15 @@ PHP
             require_once $testcaseFile;
 
             $testCase = new \BackupControlTestCase('testBackupGlobalsIsFalse');
-            /** @var TestResult $result */
-            $result = $testCase->run();
-
-            Assert::assertTrue($result->wasSuccessful());
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $testCase->run();
+                $status = $testCase->status();
+                Assert::assertTrue($status->isSuccess());
+            } else {
+                /** @var TestResult $result */
+                $result = $testCase->run();
+                Assert::assertTrue($result->wasSuccessful());
+            }
         });
 
         // Set `WPLoader.backupGlobals` to `true`.
@@ -1996,7 +2029,13 @@ PHP
         ];
         $wpLoader = $this->module();
 
-        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
+        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile, $serializedPhpunitConfiguration) {
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $reflector = new \ReflectionClass(ConfigurationRegistry::class);
+                $instanceProp = $reflector->getProperty('instance');
+                $instanceProp->setAccessible(true);
+                $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
+            }
             $wpLoader->_initialize();
 
             Assert::assertTrue(function_exists('do_action'));
@@ -2004,10 +2043,15 @@ PHP
             require_once $testcaseFile;
 
             $testCase = new \BackupControlTestCase('testBackupGlobalsIsTrue');
-            /** @var TestResult $result */
-            $result = $testCase->run();
-
-            Assert::assertTrue($result->wasSuccessful());
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $testCase->run();
+                $status = $testCase->status();
+                Assert::assertTrue($status->isSuccess());
+            } else {
+                /** @var TestResult $result */
+                $result = $testCase->run();
+                Assert::assertTrue($result->wasSuccessful());
+            }
         });
 
         // Do not set `WPLoader.backupGlobals`, but use the default value of `false`.
@@ -2017,7 +2061,13 @@ PHP
         ];
         $wpLoader = $this->module();
 
-        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
+        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile, $serializedPhpunitConfiguration) {
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $reflector = new \ReflectionClass(ConfigurationRegistry::class);
+                $instanceProp = $reflector->getProperty('instance');
+                $instanceProp->setAccessible(true);
+                $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
+            }
             $wpLoader->_initialize();
 
             Assert::assertTrue(function_exists('do_action'));
@@ -2025,10 +2075,16 @@ PHP
             require_once $testcaseFile;
 
             $testCase = new \BackupControlTestCase('testBackupGlobalsIsFalse');
-            /** @var TestResult $result */
-            $result = $testCase->run();
 
-            Assert::assertTrue($result->wasSuccessful());
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $testCase->run();
+                $status = $testCase->status();
+                Assert::assertTrue($status->isSuccess());
+            } else {
+                /** @var TestResult $result */
+                $result = $testCase->run();
+                Assert::assertTrue($result->wasSuccessful());
+            }
         });
 
         // Set `WPLoader.backupGlobals` to `true`, but use a use-case that sets it explicitly to `false`.
@@ -2039,7 +2095,13 @@ PHP
         ];
         $wpLoader = $this->module();
 
-        $this->assertInIsolation(static function () use ($wpLoader, $overridingTestCaseFile) {
+        $this->assertInIsolation(static function () use ($wpLoader, $overridingTestCaseFile, $serializedPhpunitConfiguration) {
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $reflector = new \ReflectionClass(ConfigurationRegistry::class);
+                $instanceProp = $reflector->getProperty('instance');
+                $instanceProp->setAccessible(true);
+                $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
+            }
             $wpLoader->_initialize();
 
             Assert::assertTrue(function_exists('do_action'));
@@ -2047,10 +2109,16 @@ PHP
             require_once $overridingTestCaseFile;
 
             $testCase = new \BackupControlTestCaseOverridingTestCase('testBackupGlobalsIsFalse');
-            /** @var TestResult $result */
-            $result = $testCase->run();
 
-            Assert::assertTrue($result->wasSuccessful());
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $testCase->run();
+                $status = $testCase->status();
+                Assert::assertTrue($status->isSuccess());
+            } else {
+                /** @var TestResult $result */
+                $result = $testCase->run();
+                Assert::assertTrue($result->wasSuccessful());
+            }
         });
 
         $this->config = [
@@ -2060,7 +2128,13 @@ PHP
         $wpLoader = $this->module();
 
         // Test that globals defined before the test runs should not be backed up by default.
-        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
+        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile, $serializedPhpunitConfiguration) {
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $reflector = new \ReflectionClass(ConfigurationRegistry::class);
+                $instanceProp = $reflector->getProperty('instance');
+                $instanceProp->setAccessible(true);
+                $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
+            }
             $wpLoader->_initialize();
 
             Assert::assertTrue(function_exists('do_action'));
@@ -2072,10 +2146,16 @@ PHP
             require_once $testcaseFile;
 
             $testCase = new \BackupControlTestCase('testWillUpdateTheValueOfGlobalVar');
-            /** @var TestResult $result */
-            $result = $testCase->run();
 
-            Assert::assertTrue($result->wasSuccessful());
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $testCase->run();
+                $status = $testCase->status();
+                Assert::assertTrue($status->isSuccess());
+            } else {
+                /** @var TestResult $result */
+                $result = $testCase->run();
+                Assert::assertTrue($result->wasSuccessful());
+            }
 
             // Check that the value of the global variable has been updated.
             Assert::assertEquals('updated_value', $_wpbrowser_test_global_var);
@@ -2089,7 +2169,13 @@ PHP
         $wpLoader = $this->module();
 
         // Test that adding a global to the list of `backupGlobalsExcludeList` will not back it up.
-        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
+        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile, $serializedPhpunitConfiguration) {
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $reflector = new \ReflectionClass(ConfigurationRegistry::class);
+                $instanceProp = $reflector->getProperty('instance');
+                $instanceProp->setAccessible(true);
+                $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
+            }
             $wpLoader->_initialize();
 
             Assert::assertTrue(function_exists('do_action'));
@@ -2101,10 +2187,16 @@ PHP
             require_once $testcaseFile;
 
             $testCase = new \BackupControlTestCase('testWillUpdateTheValueOfGlobalVar');
-            /** @var TestResult $result */
-            $result = $testCase->run();
 
-            Assert::assertTrue($result->wasSuccessful());
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $testCase->run();
+                $status = $testCase->status();
+                Assert::assertTrue($status->isSuccess());
+            } else {
+                /** @var TestResult $result */
+                $result = $testCase->run();
+                Assert::assertTrue($result->wasSuccessful());
+            }
 
             // Check that the value of the global variable has been updated.
             Assert::assertEquals('updated_value', $_wpbrowser_test_global_var);
@@ -2136,7 +2228,11 @@ PHP
             'Test'
         );
         $testcaseFile = codecept_data_dir('files/BackupControlTestCase.php');
-        $overridingTestCaseFile = codecept_data_dir('files/BackupControlTestCaseOverridingTestCase.php');
+        if ((int)PHPUnitVersion::series() >= 10) {
+            $overridingTestCaseFile = codecept_data_dir('files/BackupControlTestCaseOverridingTestCasePHPUnit10.php');
+        } else {
+            $overridingTestCaseFile = codecept_data_dir('files/BackupControlTestCaseOverridingTestCase.php');
+        }
 
         // Set`WPLoader.backupStaticAttributes` to `false`.
         $this->config = [
@@ -2145,8 +2241,17 @@ PHP
             'backupStaticAttributes' => false,
         ];
         $wpLoader = $this->module();
+        $serializedPhpunitConfiguration = (int)PHPUnitVersion::series() >= 10 ?
+            serialize(ConfigurationRegistry::get())
+            : null;
 
-        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
+        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile, $serializedPhpunitConfiguration) {
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $reflector = new \ReflectionClass(ConfigurationRegistry::class);
+                $instanceProp = $reflector->getProperty('instance');
+                $instanceProp->setAccessible(true);
+                $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
+            }
             $wpLoader->_initialize();
 
             Assert::assertTrue(function_exists('do_action'));
@@ -2154,10 +2259,16 @@ PHP
             require_once $testcaseFile;
 
             $testCase = new \BackupControlTestCase('testWillAlterStoreStaticAttribute');
-            /** @var TestResult $result */
-            $result = $testCase->run();
 
-            Assert::assertTrue($result->wasSuccessful());
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $testCase->run();
+                $status = $testCase->status();
+                Assert::assertTrue($status->isSuccess());
+            } else {
+                /** @var TestResult $result */
+                $result = $testCase->run();
+                Assert::assertTrue($result->wasSuccessful());
+            }
 
             Assert::assertEquals('updated_value', \BackupControlTestCaseStore::$staticAttribute);
         });
@@ -2169,7 +2280,13 @@ PHP
         ];
         $wpLoader = $this->module();
 
-        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile) {
+        $this->assertInIsolation(static function () use ($wpLoader, $testcaseFile, $serializedPhpunitConfiguration) {
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $reflector = new \ReflectionClass(ConfigurationRegistry::class);
+                $instanceProp = $reflector->getProperty('instance');
+                $instanceProp->setAccessible(true);
+                $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
+            }
             $wpLoader->_initialize();
 
             Assert::assertTrue(function_exists('do_action'));
@@ -2177,10 +2294,16 @@ PHP
             require_once $testcaseFile;
 
             $testCase = new \BackupControlTestCase('testWillAlterStoreStaticAttribute');
-            /** @var TestResult $result */
-            $result = $testCase->run();
 
-            Assert::assertTrue($result->wasSuccessful());
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $testCase->run();
+                $status = $testCase->status();
+                Assert::assertTrue($status->isSuccess());
+            } else {
+                /** @var TestResult $result */
+                $result = $testCase->run();
+                Assert::assertTrue($result->wasSuccessful());
+            }
 
             Assert::assertEquals('updated_value', \BackupControlTestCaseStore::$staticAttribute);
         });
@@ -2193,7 +2316,13 @@ PHP
         ];
         $wpLoader = $this->module();
 
-        $this->assertInIsolation(static function () use ($wpLoader, $overridingTestCaseFile) {
+        $this->assertInIsolation(static function () use ($wpLoader, $overridingTestCaseFile, $serializedPhpunitConfiguration) {
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $reflector = new \ReflectionClass(ConfigurationRegistry::class);
+                $instanceProp = $reflector->getProperty('instance');
+                $instanceProp->setAccessible(true);
+                $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
+            }
             $wpLoader->_initialize();
 
             Assert::assertTrue(function_exists('do_action'));
@@ -2201,10 +2330,16 @@ PHP
             require_once $overridingTestCaseFile;
 
             $testCase = new \BackupControlTestCaseOverridingTestCase('testWillAlterStoreStaticAttribute');
-            /** @var TestResult $result */
-            $result = $testCase->run();
 
-            Assert::assertTrue($result->wasSuccessful());
+            if ((int)PHPUnitVersion::series() >= 10) {
+                $testCase->run();
+                $status = $testCase->status();
+                Assert::assertTrue($status->isSuccess());
+            } else {
+                /** @var TestResult $result */
+                $result = $testCase->run();
+                Assert::assertTrue($result->wasSuccessful());
+            }
 
             Assert::assertEquals('updated_value', \BackupControlTestCaseOverridingStore::$staticAttribute);
         });
@@ -2222,7 +2357,13 @@ PHP
         $wpLoader = $this->module();
 
         $this->assertInIsolation(
-            static function () use ($wpLoader, $testcaseFile) {
+            static function () use ($wpLoader, $testcaseFile, $serializedPhpunitConfiguration) {
+                if ((int)PHPUnitVersion::series() >= 10) {
+                    $reflector = new \ReflectionClass(ConfigurationRegistry::class);
+                    $instanceProp = $reflector->getProperty('instance');
+                    $instanceProp->setAccessible(true);
+                    $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
+                }
                 $wpLoader->_initialize();
 
                 Assert::assertTrue(function_exists('do_action'));
@@ -2230,10 +2371,16 @@ PHP
                 require_once $testcaseFile;
 
                 $testCase = new \BackupControlTestCase('testWillAlterStoreStaticAttribute');
-                /** @var TestResult $result */
-                $result = $testCase->run();
 
-                Assert::assertTrue($result->wasSuccessful());
+                if ((int)PHPUnitVersion::series() >= 10) {
+                    $testCase->run();
+                    $status = $testCase->status();
+                    Assert::assertTrue($status->isSuccess());
+                } else {
+                    /** @var TestResult $result */
+                    $result = $testCase->run();
+                    Assert::assertTrue($result->wasSuccessful());
+                }
 
                 Assert::assertEquals('updated_value', \BackupControlTestCaseStore::$staticAttribute);
                 Assert::assertEquals('initial_value', \BackupControlTestCaseStore::$staticAttributeTwo);

@@ -13,6 +13,8 @@ use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use PDO;
+use PDOStatement;
+use PHPUnit\Framework\AssertionFailedError;
 use RuntimeException;
 
 class WPDbTest extends Unit
@@ -202,17 +204,24 @@ SQL;
         $sut->_initialize();
         $sut->_beforeSuite();
 
-        $this->assertEquals('https://some-other-site.dev',
-            $sut->grabFromDatabase('wp_options', 'option_value', ['option_name' => 'siteurl']));
-        $this->assertEquals('https://some-other-site.dev/home',
-            $sut->grabFromDatabase('wp_options', 'option_value', ['option_name' => 'home']));
-        $this->assertEquals('https://some-wp.dev',
+        $this->assertEquals(
+            'https://some-other-site.dev',
+            $sut->grabFromDatabase('wp_options', 'option_value', ['option_name' => 'siteurl'])
+        );
+        $this->assertEquals(
+            'https://some-other-site.dev/home',
+            $sut->grabFromDatabase('wp_options', 'option_value', ['option_name' => 'home'])
+        );
+        $this->assertEquals(
+            'https://some-wp.dev',
             self::$pdo->query("SELECT url FROM test_urls WHERE id = 1")->fetchColumn()
         );
-        $this->assertEquals('https://some-other-site.dev',
+        $this->assertEquals(
+            'https://some-other-site.dev',
             self::$pdo->query("SELECT url FROM test_urls WHERE id = 2")->fetchColumn()
         );
-        $this->assertEquals('https://localhost:8080',
+        $this->assertEquals(
+            'https://localhost:8080',
             self::$pdo->query("SELECT url FROM test_urls WHERE id = 3")->fetchColumn()
         );
     }
@@ -249,7 +258,6 @@ SQL;
         $this->expectException(ModuleConfigException::class);
 
         $wpdb = new WPDb(new ModuleContainer(new Di, []), $config);
-
     }
 
     /**
@@ -486,5 +494,137 @@ SQL;
         $this->assertGreaterThan(0, $postID);
         $this->assertEquals('Alice in Wonderland', $wpdb->grabPostFieldFromDatabase($postID, 'post_title'));
         $this->assertEquals('book', $wpdb->grabPostFieldFromDatabase($postID, 'post_type'));
+    }
+
+    public function modesProvider(): array
+    {
+        return [
+            'mixed bags' => [
+                [
+                    'SOME_MODE_1',
+                    'NO_ZERO_DATE',
+                    'ONLY_FULL_GROUP_BY',
+                    'SOME_MODE_2',
+                    'STRICT_TRANS_TABLES',
+                    'STRICT_ALL_TABLES',
+                    'TRADITIONAL',
+                    'ANSI',
+                    'SOME_MODE_3'
+                ],
+                "'SOME_MODE_1,SOME_MODE_2,SOME_MODE_3'"
+            ],
+            'empty' => [
+                [],
+                "''"
+            ],
+            'only incompatible modes' => [
+                [
+                    'NO_ZERO_DATE',
+                    'ONLY_FULL_GROUP_BY',
+                    'STRICT_TRANS_TABLES',
+                    'STRICT_ALL_TABLES',
+                    'TRADITIONAL',
+                    'ANSI',
+                ],
+                "''"
+            ],
+            'only some compatible modes' => [
+                [
+                    'NO_ZERO_DATE',
+                    'ONLY_FULL_GROUP_BY',
+                    'STRICT_TRANS_TABLES',
+                ],
+                "''"
+            ],
+            'only compatible modes' => [
+                [
+                    'SOME_MODE_1',
+                    'SOME_MODE_2',
+                    'SOME_MODE_3',
+                ],
+                "'SOME_MODE_1,SOME_MODE_2,SOME_MODE_3'"
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider modesProvider
+     */
+    public function testGetDbhSetsModesOnDbh(array $currentModes, string $expectedModes): void
+    {
+        $config = [
+            'url' => 'http://example.com',
+            'dbUrl' => 'mysql://User:Pa55word@localhost:3306/test'
+        ];
+        $setModes = null;
+        $mockSelectModesStatement = $this->makeEmpty(PDOStatement::class, [
+            'fetchColumn' => function () use ($currentModes) {
+                return implode(',', $currentModes);
+            }
+        ]);
+        $mockPdo = $this->makeEmpty(PDO::class, [
+            'getAttribute' => function (int $mode) {
+                if ($mode === PDO::ATTR_DRIVER_NAME) {
+                    return 'mysql';
+                }
+
+                throw new AssertionFailedError("Unexpected call to PDO::getAttribute with mode $mode");
+            },
+            'query' => function (string $query) use ($mockSelectModesStatement) {
+                if ($query === 'SELECT @@SESSION.sql_mode') {
+                    return $mockSelectModesStatement;
+                }
+
+                throw new AssertionFailedError("Unexpected call to PDO::query: $query");
+            },
+            'exec' => function ($query) use (&$setModes) {
+                if (strncmp($query, 'SET SESSION sql_mode=', strlen('SET SESSION sql_mode=')) === 0) {
+                    $setModes = str_replace('SET SESSION sql_mode=', '', $query);
+                    return 1;
+                }
+
+                throw new AssertionFailedError("Unexpected call to PDO::exec: $query");
+            }
+        ]);
+        $this->setClassMock(PDO::class, $mockPdo);
+
+        $wpdb = new WPDb(new ModuleContainer(new Di, []), $config);
+        $wpdb->_initialize();
+        $dbh = $wpdb->_getDbh();
+
+        $this->assertSame($mockPdo, $dbh);
+        $this->assertEquals($expectedModes, $setModes);
+    }
+
+    public function testGetDbhWillNotSetModesOnSqlite(): void
+    {
+        $config = [
+            'url' => 'http://example.com',
+            'dbUrl' => 'sqlite:///path/to/db.sqlite',
+            'urlReplacement' => false,
+        ];
+        $queries = [];
+        $mockPdo = $this->makeEmpty(PDO::class, [
+            'getAttribute' => function (int $mode) {
+                if ($mode === PDO::ATTR_DRIVER_NAME) {
+                    return 'sqlite';
+                }
+
+                throw new AssertionFailedError("Unexpected call to PDO::getAttribute with mode $mode");
+            },
+            'query' => function (string $query) use (&$queries) {
+                $queries[] = $query;
+            },
+            'exec' => function ($query) use(&$queries) {
+                $queries[] = $query;
+            }
+        ]);
+        $this->setClassMock(PDO::class, $mockPdo);
+
+        $wpdb = new WPDb(new ModuleContainer(new Di, []), $config);
+        $wpdb->_initialize();
+        $dbh = $wpdb->_getDbh();
+
+        $this->assertEmpty($queries);
     }
 }

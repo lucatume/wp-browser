@@ -13,6 +13,8 @@ use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Tests\Traits\ClassStubs;
 use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Composer;
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\AssertionFailedError;
 use stdClass;
 use Symfony\Component\Yaml\Yaml;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
@@ -48,30 +50,32 @@ class DockerComposeControllerTest extends Unit
         // Silence output.
         $this->output = new Output(['verbosity' => Output::VERBOSITY_QUIET]);
         $this->setClassMock(Output::class, $this->output);
-    }
-
-    /**
-     * @before
-     */
-    public static function backupRunFile(): void
-    {
-        $runFile = DockerComposeController::getRunningFile();
-
-        if (is_file($runFile)) {
-            rename($runFile, $runFile . '.bak');
-        }
-    }
-
-    /**
-     * @after
-     */
-    public static function restoreRunFile(): void
-    {
-        $runFile = DockerComposeController::getRunningFile();
-
-        if (is_file($runFile . '.bak')) {
-            rename($runFile . '.bak', $runFile);
-        }
+        // Intercept reading and writing of the running file.
+        $runningFile = DockerComposeController::getRunningFile();
+        $this->setFunctionReturn('is_file', function (string $file) use ($runningFile): bool {
+            return $file === $runningFile ? false : is_file($file);
+        }, true);
+        $this->setFunctionReturn(
+            'file_put_contents',
+            function (string $file, string $contents) use ($runningFile): bool {
+                if ($file === $runningFile) {
+                    return false;
+                }
+                return file_put_contents($file, $contents);
+            },
+            true
+        );
+        $this->setFunctionReturn('unlink', function (string $file) use ($runningFile): bool {
+            if ($file === $runningFile) {
+                return true;
+            }
+            return unlink($file);
+        }, true);
+        $this->setClassMock(Process::class, $this->makeEmptyClass(Process::class, [
+            '__construct' => function (...$args) {
+                throw new AssertionFailedError('Unexpected Process::__construct call for ' . print_r($args, true));
+            }
+        ]));
     }
 
     public function notArrayOfStringsProvider(): array
@@ -115,13 +119,16 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_not_run_any_command_if_already_running(): void
     {
-        file_put_contents(DockerComposeController::getRunningFile(), 'yes');
+        $this->setFunctionReturn('is_file', function (string $file): bool {
+            return $file === DockerComposeController::getRunningFile() ? true : is_file($file);
+        }, true);
         $constructed = 0;
         $this->setClassMock(
             Process::class,
             $this->makeEmptyClass(Process::class, [
                 '__construct' => static function (...$args) use (&$constructed) {
                     $constructed++;
+                    throw new AssertionFailedError('Unexpected Process::__construct call for ' . print_r($args, true));
                 }
             ])
         );
@@ -130,7 +137,6 @@ class DockerComposeControllerTest extends Unit
         $options = [];
 
         $extension = new DockerComposeController($config, $options);
-
         $mockSuite = $this->make(Suite::class, ['getName' => 'end2end']);
         $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
 
@@ -138,19 +144,42 @@ class DockerComposeControllerTest extends Unit
     }
 
     /**
-     * It should up stack correctly
+     * It should start stack correctly
      *
      * @test
      */
-    public function should_up_stack_correctly(): void
+    public function should_start_the_stack_correctly(): void
     {
-        $constructCommands = [];
+        $runningFileExists = false;
+        $this->setFunctionReturn('is_file', function (string $file) use ($runningFileExists): bool {
+            return $file === DockerComposeController::getRunningFile() ? $runningFileExists : is_file($file);
+        }, true);
+        $this->setFunctionReturn(
+            'file_put_contents',
+            function (string $file, string $contents) use (&$runningFileExists): bool {
+                if ($file === DockerComposeController::getRunningFile()) {
+                    $runningFileExists = true;
+                    return true;
+                }
+                return file_put_contents($file, $contents);
+            },
+            true
+        );
         $this->setClassMock(
             Process::class,
             $this->makeEmptyClass(Process::class, [
-                '__construct' => static function ($command, ...$args) use (&$constructCommands) {
-                    $constructCommands[] = $command;
-                }
+                '__construct' => static function ($command, ...$args) use (&$constructedProcesses) {
+                    Assert::assertEquals([
+                        'docker',
+                        'compose',
+                        '-f',
+                        'docker-compose.yml',
+                        'up',
+                        '--wait'
+                    ], $command);
+                },
+                'mustRun' => '__itself',
+                'getPid' => 2389,
             ])
         );
 
@@ -158,15 +187,10 @@ class DockerComposeControllerTest extends Unit
         $options = [];
 
         $extension = new DockerComposeController($config, $options);
-
         $mockSuite = $this->make(Suite::class, ['getName' => 'end2end']);
         $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
 
-        $this->assertEquals(
-            ['docker', 'compose', '-f', 'docker-compose.yml', 'up', '--wait'],
-            $constructCommands[0]
-        );
-        $this->assertFileExists(DockerComposeController::getRunningFile());
+        $this->assertTrue($runningFileExists);
     }
 
     /**
@@ -176,8 +200,6 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_throw_if_config_compose_file_is_not_valid_existing_file(): void
     {
-        $this->setClassMock(Process::class, $this->makeEmptyClass(Process::class, []));
-
         $config = ['suites' => ['end2end'], 'compose-file' => 'not-a-file.yml'];
         $options = [];
 
@@ -198,8 +220,6 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_throw_if_config_env_file_is_not_valid_file(): void
     {
-        $this->setClassMock(Process::class, $this->makeEmptyClass(Process::class, []));
-
         $config = ['suites' => ['end2end'], 'compose-file' => 'docker-compose.yml', 'env-file' => 'not-an-env-file'];
         $options = [];
 
@@ -220,14 +240,58 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_correctly_handle_stack_lifecycle(): void
     {
-        $constructed = 0;
+        $runningFileExists = false;
+        $this->setFunctionReturn('is_file', function (string $file) use (&$runningFileExists): bool {
+            return $file === DockerComposeController::getRunningFile() ? $runningFileExists : is_file($file);
+        }, true);
+        $this->setFunctionReturn(
+            'file_put_contents',
+            function (string $file, string $contents) use (&$runningFileExists): bool {
+                if ($file === DockerComposeController::getRunningFile()) {
+                    $runningFileExists = true;
+                    return true;
+                }
+                return file_put_contents($file, $contents);
+            },
+            true
+        );
+        $this->setFunctionReturn('unlink', function (string $file) use (&$runningFileExists): bool {
+            if ($file === DockerComposeController::getRunningFile()) {
+                $runningFileExists = false;
+                return true;
+            }
+            return unlink($file);
+        }, true);
+        $step = 'not-running';
         $this->setClassMock(
             Process::class,
             $this->makeEmptyClass(Process::class, [
-                '__construct' => static function () use (&$constructed) {
-                    $constructed++;
+                '__construct' => static function ($command) use (&$step) {
+                    if ($step === 'not-running') {
+                        $step = 'started';
+                        Assert::assertEquals([
+                            'docker',
+                            'compose',
+                            '-f',
+                            'docker-compose.yml',
+                            'up',
+                            '--wait'
+                        ], $command);
+                        return;
+                    }
+
+                    $step = 'stopped';
+                    Assert::assertEquals([
+                        'docker',
+                        'compose',
+                        '-f',
+                        'docker-compose.yml',
+                        'down'
+                    ], $command);
                 },
-                'stop' => 0
+                'mustRun' => '__itself',
+                'stop' => 0,
+                'getPid' => 2389
             ])
         );
         $config = ['suites' => ['end2end'], 'compose-file' => 'docker-compose.yml'];
@@ -236,15 +300,13 @@ class DockerComposeControllerTest extends Unit
         $extension = new DockerComposeController($config, $options);
 
         $mockSuite = $this->make(Suite::class, ['getName' => 'end2end']);
-
         $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
 
-        $this->assertEquals(1, $constructed);
-        $this->assertFileExists(DockerComposeController::getRunningFile());
+        $this->assertTrue($runningFileExists);
 
         $extension->stop($this->output);
 
-        $this->assertFileNotExists(DockerComposeController::getRunningFile());
+        $this->assertFalse($runningFileExists);
 
         $extension->stop($this->output);
     }
@@ -260,7 +322,7 @@ class DockerComposeControllerTest extends Unit
             Process::class,
             $this->makeEmptyClass(Process::class, [
                 'mustRun' => static function () {
-                    throw new Exception('something went wrong');
+                    throw new Exception('Something went wrong.');
                 }
             ])
         );
@@ -283,7 +345,33 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_throw_if_running_file_cannot_be_written(): void
     {
-        $this->setClassMock(Process::class, $this->makeEmptyClass(Process::class, []));
+        $this->setFunctionReturn('is_file', function (string $file): bool {
+            return $file === DockerComposeController::getRunningFile() ? false : is_file($file);
+        }, true);
+        $this->setFunctionReturn(
+            'file_put_contents',
+            function (string $file, string $contents): bool {
+                if ($file === DockerComposeController::getRunningFile()) {
+                    return false;
+                }
+                return file_put_contents($file, $contents);
+            },
+            true
+        );
+        $this->setClassMock(Process::class, $this->makeEmptyClass(Process::class, [
+            '__construct' => static function ($command) {
+                Assert::assertEquals([
+                    'docker',
+                    'compose',
+                    '-f',
+                    'docker-compose.yml',
+                    'up',
+                    '--wait'
+                ], $command);
+            },
+            'mustRun' => '__itself',
+            'getPid' => 2389
+        ]));
         $config = ['suites' => ['end2end'], 'compose-file' => 'docker-compose.yml'];
         $options = [];
 
@@ -293,7 +381,6 @@ class DockerComposeControllerTest extends Unit
 
         $this->expectException(ExtensionException::class);
         $this->expectExceptionMessage('Failed to write Docker Compose running file.');
-        $this->setFunctionReturn('file_put_contents', false);
 
         $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
     }
@@ -305,25 +392,30 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_throw_if_stack_stopping_fails(): void
     {
+        $this->setFunctionReturn('is_file', function (string $file): bool {
+            return $file === DockerComposeController::getRunningFile() ? true : is_file($file);
+        }, true);
+        $this->setClassMock(
+            Process::class,
+            $this->makeEmptyClass(Process::class, [
+                '__construct' => static function ($command) {
+                    Assert::assertEquals([
+                        'docker',
+                        'compose',
+                        '-f',
+                        'docker-compose.yml',
+                        'down'
+                    ], $command);
+                },
+                'mustRun' => function () {
+                    throw new Exception('Failed to stop Docker Compose.');
+                }
+            ])
+        );
         $config = ['suites' => ['end2end'], 'compose-file' => 'docker-compose.yml'];
         $options = [];
 
         $extension = new DockerComposeController($config, $options);
-
-        $mockSuite = $this->make(Suite::class, ['getName' => 'end2end']);
-
-        $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
-
-        $this->assertFileExists(DockerComposeController::getRunningFile());
-
-        $this->setClassMock(
-            Process::class,
-            $this->makeEmptyClass(Process::class, [
-                'mustRun' => static function () {
-                    throw new Exception('something went wrong');
-                }
-            ])
-        );
 
         $this->expectException(ExtensionException::class);
         $this->expectExceptionMessageRegExp('/Failed to stop Docker Compose/');
@@ -338,24 +430,34 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_throw_if_running_file_cannot_be_removed_while_stopping(): void
     {
+        $this->setFunctionReturn('is_file', function (string $file): bool {
+            return $file === DockerComposeController::getRunningFile() ? true : is_file($file);
+        }, true);
         $this->setClassMock(
             Process::class,
             $this->makeEmptyClass(Process::class, [
-                'stop' => 0
+                '__construct' => static function ($command) {
+                    Assert::assertEquals([
+                        'docker',
+                        'compose',
+                        '-f',
+                        'docker-compose.yml',
+                        'down'
+                    ], $command);
+                },
+                'mustRun' => '__itself'
             ])
         );
+        $this->setFunctionReturn('unlink', function ($file) {
+            if ($file === DockerComposeController::getRunningFile()) {
+                return false;
+            }
+            return unlink($file);
+        }, true);
         $config = ['suites' => ['end2end'], 'compose-file' => 'docker-compose.yml'];
         $options = [];
 
         $extension = new DockerComposeController($config, $options);
-
-        $mockSuite = $this->make(Suite::class, ['getName' => 'end2end']);
-
-        $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
-
-        $this->assertFileExists(DockerComposeController::getRunningFile());
-
-        $this->setFunctionReturn('unlink', false);
 
         $this->expectException(ExtensionException::class);
         $this->expectExceptionMessage('Failed to remove Docker Compose running file.');
@@ -370,13 +472,83 @@ class DockerComposeControllerTest extends Unit
      */
     public function should_produce_information_correctly(): void
     {
+        $runningFileExists = false;
+        $this->setFunctionReturn('is_file', function (string $file) use (&$runningFileExists): bool {
+            return $file === DockerComposeController::getRunningFile() ? $runningFileExists : is_file($file);
+        }, true);
+        $this->setFunctionReturn(
+            'file_put_contents',
+            function (string $file, string $contents) use (&$runningFileExists): bool {
+                if ($file === DockerComposeController::getRunningFile()) {
+                    $runningFileExists = true;
+                    return true;
+                }
+                return file_put_contents($file, $contents);
+            },
+            true
+        );
+        $this->setFunctionReturn('unlink', function (string $file) use (&$runningFileExists): bool {
+            if ($file === DockerComposeController::getRunningFile()) {
+                $runningFileExists = false;
+                return true;
+            }
+            return unlink($file);
+        }, true);
+        $step = 'not-running';
         $this->setClassMock(
             Process::class,
             $this->makeEmptyClass(Process::class, [
-                'getOutput' => static function () {
-                    return Yaml::dump(['services' => ['foo' => ['ports' => ['8088:80']]]]);
+                '__construct' => static function ($command) use (&$step) {
+                    if ($step === 'not-running') {
+                        $step = 'started-fetch-config';
+                        Assert::assertEquals([
+                            'docker',
+                            'compose',
+                            '-f',
+                            'docker-compose.yml',
+                            'up',
+                            '--wait'
+                        ], $command);
+                        return;
+                    }
+
+                    if ($step === 'started-fetch-config') {
+                        $step = 'started';
+                        Assert::assertEquals([
+                            'docker',
+                            'compose',
+                            '-f',
+                            'docker-compose.yml',
+                            'config'
+                        ], $command);
+                        return;
+                    }
+
+                    if ($step === 'started') {
+                        $step = 'stopped';
+                        Assert::assertEquals([
+                            'docker',
+                            'compose',
+                            '-f',
+                            'docker-compose.yml',
+                            'down'
+                        ], $command);
+                        return;
+                    }
+
+                    throw new AssertionFailedError(
+                        'Unexpected Process::__construct call for ' . print_r($command, true)
+                    );
                 },
-                'stop' => 0
+                'mustRun' => '__itself',
+                'getOutput' => static function () use (&$step) {
+                    if ($step === 'started') {
+                        return Yaml::dump(['services' => ['foo' => ['ports' => ['8088:80']]]]);
+                    }
+                    return '';
+                },
+                'stop' => 0,
+                'getPid' => 2389
             ])
         );
         $config = ['suites' => ['end2end'], 'compose-file' => 'docker-compose.yml'];
@@ -388,7 +560,7 @@ class DockerComposeControllerTest extends Unit
 
         $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
 
-        $this->assertFileExists(DockerComposeController::getRunningFile());
+        $this->assertTrue($runningFileExists);
 
         $this->assertEquals(
             ['status' => 'up', 'config' => ['services' => ['foo' => ['ports' => [0 => '8088:80']]]]],
@@ -398,5 +570,6 @@ class DockerComposeControllerTest extends Unit
         $extension->stop($this->output);
 
         $this->assertEquals(['status' => 'down', 'config' => ''], $extension->getInfo());
+        $this->assertFalse($runningFileExists);
     }
 }

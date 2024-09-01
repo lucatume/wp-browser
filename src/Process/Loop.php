@@ -91,6 +91,7 @@ class Loop
      *     rethrow?: bool,
      *     requireFiles?: array<string>,
      *     cwd?: string,
+     *     use_file_payloads?: bool,
      * } $options
      *
      * @throws ProcessException
@@ -99,7 +100,13 @@ class Loop
      */
     public static function executeClosure(Closure $closure, int $timeout = 30, array $options = []): Result
     {
-        $loop = (new self([$closure], 1, true, $timeout, $options))->run();
+        $loop = new self([$closure], 1, true, $timeout, $options);
+
+        if (!empty($options['use_file_payloads'])) {
+            $loop->setUseFilePayloads(true);
+        }
+
+        $loop->run();
         $results = $loop->getResults();
         $result = $results[0];
         $returnValue = $result->getReturnValue();
