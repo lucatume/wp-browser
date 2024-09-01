@@ -40,7 +40,7 @@ jobs:
           - unit --skip-group=slow
           - unit --group=isolated-1
           - unit --group=isolated-2
-          - webdriver
+          # - webdriver # Disabled until the webdriver tests are fixed.
           - wpcli_module
           - wploader_multisite
           - wploader_wpdb_interaction

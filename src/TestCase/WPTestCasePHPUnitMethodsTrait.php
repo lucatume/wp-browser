@@ -33,10 +33,12 @@ if (version_compare(Version::id(), '8.0', '<')) {
 
             $this->set_up(); //@phpstan-ignore-line magic __call
             $this->backupAdditionalGlobals();
+            $this->recordAttachmentAddedDuringTest();
         }
 
         protected function tearDown() //@phpstan-ignore-line
         {
+            $this->removeAttachmentsAddedDuringTest();
             $this->restoreAdditionalGlobals();
             $this->tear_down(); //@phpstan-ignore-line magic __call
             parent::tearDown();
@@ -71,10 +73,12 @@ if (version_compare(Version::id(), '8.0', '<')) {
 
             $this->set_up(); //@phpstan-ignore-line magic __call
             $this->backupAdditionalGlobals();
+            $this->recordAttachmentAddedDuringTest();
         }
 
         protected function tearDown(): void
         {
+            $this->removeAttachmentsAddedDuringTest();
             $this->restoreAdditionalGlobals();
             $this->tear_down(); //@phpstan-ignore-line magic __call
             parent::tearDown();
