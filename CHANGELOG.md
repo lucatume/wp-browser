@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.7.0] 2024-09-01;
+
 ## Added
 
 - The `MysqlServerController` extension.
@@ -1991,4 +1993,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.6.3]: https://github.com/lucatume/wp-browser/compare/3.6.2...3.6.3
 [3.6.4]: https://github.com/lucatume/wp-browser/compare/3.6.3...3.6.4
 [3.6.5]: https://github.com/lucatume/wp-browser/compare/3.6.4...3.6.5
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.6.5...HEAD
+[3.7.0]: https://github.com/lucatume/wp-browser/compare/3.6.5...3.7.0
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.0...HEAD
