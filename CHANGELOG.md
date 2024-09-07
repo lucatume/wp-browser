@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.7.1] 2024-09-07;
+
 ### Fixed
 
 - `mysql` command output in the `MysqlServerController` information output.
@@ -1998,4 +2000,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.6.4]: https://github.com/lucatume/wp-browser/compare/3.6.3...3.6.4
 [3.6.5]: https://github.com/lucatume/wp-browser/compare/3.6.4...3.6.5
 [3.7.0]: https://github.com/lucatume/wp-browser/compare/3.6.5...3.7.0
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.0...HEAD
+[3.7.1]: https://github.com/lucatume/wp-browser/compare/3.7.0...3.7.1
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.1...HEAD
