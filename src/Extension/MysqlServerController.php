@@ -185,7 +185,7 @@ class MysqlServerController extends ServiceExtension
             return "mysql -h 127.0.0.1 -P {$this->getPort()} -u {$this->getUser()}";
         }
 
-        return "mysql -h 127.0.0.1 -P {$this->getPort()} -u {$this->getUser()} -p '{$this->getPassword()}'";
+        return "mysql -h 127.0.0.1 -P {$this->getPort()} -u {$this->getUser()} -p'{$this->getPassword()}'";
     }
 
     private function getRootCliConnectionCommandline(): string
@@ -195,7 +195,7 @@ class MysqlServerController extends ServiceExtension
             return "mysql -h 127.0.0.1 -P {$this->getPort()} -u root";
         }
 
-        return "mysql -h 127.0.0.1 -P {$this->getPort()} -u root -p '{$rootPassword}'";
+        return "mysql -h 127.0.0.1 -P {$this->getPort()} -u root -p'{$rootPassword}'";
     }
 
     private function getBinary(): ?string
