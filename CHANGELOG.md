@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- `mysql` command output in the `MysqlServerController` information output.
+
 ## [4.3.0] 2024-09-01;
 
 ## Added

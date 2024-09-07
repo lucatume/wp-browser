@@ -542,7 +542,7 @@ class MysqlServerControllerTest extends \Codeception\Test\Unit
             'password' => 'wordpress',
             'root user' => 'root',
             'root password' => '',
-            'mysql command' => "mysql -h 127.0.0.1 -P {$port} -u wordpress -p 'wordpress'",
+            'mysql command' => "mysql -h 127.0.0.1 -P {$port} -u wordpress -p'wordpress'",
             'mysql root command' => "mysql -h 127.0.0.1 -P {$port} -u root"
         ], $controller->getInfo());
     }
@@ -584,7 +584,7 @@ class MysqlServerControllerTest extends \Codeception\Test\Unit
             'password' => 'secret',
             'root user' => 'root',
             'root password' => '',
-            'mysql command' => "mysql -h 127.0.0.1 -P {$port} -u luca -p 'secret'",
+            'mysql command' => "mysql -h 127.0.0.1 -P {$port} -u luca -p'secret'",
             'mysql root command' => "mysql -h 127.0.0.1 -P {$port} -u root"
         ], $controller->getInfo());
     }
@@ -626,8 +626,8 @@ class MysqlServerControllerTest extends \Codeception\Test\Unit
             'password' => 'secret',
             'root user' => 'root',
             'root password' => 'secret',
-            'mysql command' => "mysql -h 127.0.0.1 -P {$port} -u root -p 'secret'",
-            'mysql root command' => "mysql -h 127.0.0.1 -P {$port} -u root -p 'secret'"
+            'mysql command' => "mysql -h 127.0.0.1 -P {$port} -u root -p'secret'",
+            'mysql root command' => "mysql -h 127.0.0.1 -P {$port} -u root -p'secret'"
         ], $controller->getInfo());
     }
 }
