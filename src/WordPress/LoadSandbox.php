@@ -2,6 +2,11 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
+use lucatume\WPBrowser\Utils\MonkeyPatch;
+use lucatume\WPBrowser\Utils\Property;
+use lucatume\WPBrowser\WordPress\Database\DatabaseInterface;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
+
 class LoadSandbox
 {
     private string $wpRootDir;
@@ -19,7 +24,7 @@ class LoadSandbox
     /**
      * @throws InstallationException
      */
-    public function load(): void
+    public function load(?DatabaseInterface $db = null): void
     {
         $this->setUpServerVars();
         PreloadFilters::addFilter('wp_fatal_error_handler_enabled', [$this, 'returnFalse'], 100);
@@ -28,8 +33,61 @@ class LoadSandbox
         // Setting the `chunk_size` to `0` means the function will only be called when the output buffer is closed.
         ob_start([$this, 'obCallback'], 0);
 
+        // ISSUE #753
+        if ($db instanceof MysqlDatabase) {
+            // Define the `DB_` constants.
+            define('DB_NAME', $db->getDbName());
+            define('DB_USER', $db->getDbUser());
+            define('DB_PASSWORD', $db->getDbPassword());
+            define('DB_HOST', $db->getDbHost());
+
+            // Silence errors about the redeclaration of the `DB_` constants.
+            $previousErrorHandler = set_error_handler(callback: static function ($errno, $errstr) {
+                if ($errno === E_USER_ERROR && str_contains($errstr, 'Cannot redeclare') && str_contains($errstr, 'DB_')) {
+                    return true;
+                }
+
+                return false;
+            });
+
+            if(class_exists('\Roots\WPConfig\Config')){
+                $configArray = new class implements \ArrayAccess {
+                    private $configMap = [];
+
+                    public function offsetExists( $offset ) {
+                        return isset( $this->configMap[ $offset ] );
+                    }
+
+                    public function offsetGet( $offset ) {
+                        return $this->configMap[ $offset ];
+                    }
+
+                    public function offsetSet( $offset, $value ) {
+                        if ( in_array( $offset, [ 'DB_NAME', 'DB_USER', 'DB_PASSWORD', 'DB_HOST' ], true ) ) {
+                            return;
+                        }
+                        $this->configMap[ $offset ] = $value;
+                    }
+
+                    public function offsetUnset( $offset ) {
+                        unset( $this->configMap[ $offset ] );
+                    }
+                };
+
+                Property::setPrivateProperties( '\Roots\WPConfig\Config', [
+                    'configMap' => $configArray
+                ] );
+        }
+        // END ISSUE #753
+
         // Exceptions thrown during loading are not wrapped on purpose to remove debug overhead.
         include_once $this->wpRootDir . '/wp-load.php';
+
+        // ISSUE #753
+        if (!empty($previousErrorHandler)) {
+            set_error_handler($previousErrorHandler);
+        }
+        // END ISSUE #753
 
         ob_end_clean();
         // If this is reached, then WordPress has loaded correctly.

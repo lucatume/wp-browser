@@ -620,7 +620,7 @@ class WPLoader extends Module
         if ($loadOnly) {
             Dispatcher::dispatch(self::EVENT_BEFORE_LOADONLY, $this);
             $loadSandbox = new LoadSandbox($this->installation->getWpRootDir(), $this->config['domain']);
-            $loadSandbox->load();
+            $loadSandbox->load($this->db);
             Dispatcher::dispatch(self::EVENT_AFTER_LOADONLY, $this);
         } else {
             $this->installAndBootstrapInstallation();
