@@ -577,7 +577,7 @@ class WPLoader extends Module
      *
      * @return void
      */
-    public function _beforeSuite(array $settings = [])
+    public function _beforeSuite($settings = [])
     {
         parent::_beforeSuite($settings);
         $this->_loadWordPress();

@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- `WPLoader::_beforeSuite` method signature to avoid breaking compatibility with Codeception 4.x.
+
 ## [3.7.1] 2024-09-07;
 
 ### Fixed
