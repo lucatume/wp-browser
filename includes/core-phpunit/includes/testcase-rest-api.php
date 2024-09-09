@@ -11,7 +11,7 @@ abstract class WPRestApiTestCase extends WPTestCase {
 	 * @since 6.6.0 Added the `$message` parameter.
 	 *
 	 * @param string|int                $code     Expected error code.
-	 * @param WP_REST_Response|WP_Error $response REST API response.
+	 * @param \WP_REST_Response|\WP_Error $response REST API response.
 	 * @param int                       $status   Optional. Status code.
 	 * @param string                    $message  Optional. Message to display when the assertion fails.
 	 */
