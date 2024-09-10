@@ -7,6 +7,8 @@ use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Tests\Traits\Fork;
 use lucatume\WPBrowser\Tests\Traits\InstallationMocks;
+use lucatume\WPBrowser\Utils\Env;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
 
 class WPLoaderLoadOnlyTest extends Unit
 {
@@ -77,6 +79,58 @@ class WPLoaderLoadOnlyTest extends Unit
             $module->_beforeSuite();
 
             $this->assertTrue($module->_didLoadWordPress());
+        });
+    }
+
+    public function testWillDefineDBConstantsWhenLoadOnlyTrue(): void{
+        [$wpRootFolder] = $this->makeMockConfiguredInstallation('', [
+            'dbUser' => 'production_user',
+            'dbPassword' => 'production_password',
+            'dbHost' => '10.0.0.1:8876',
+            'dbName' => 'test_db',
+        ]);
+        file_put_contents($wpRootFolder . '/wp-load.php', '<?php include_once __DIR__ . "/wp-config.php"; do_action("wp_loaded");');
+        $testDbUser = Env::get('WORDPRESS_DB_USER');
+        $testDbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $testDbHost = '127.0.0.1:' . Env::get('WORDPRESS_DB_LOCALHOST_PORT');
+        $testDbName = Env::get('WORDPRESS_DB_NAME');
+        $testDbUrl = sprintf(
+            'mysql://%s:%s@%s/%s',
+            $testDbUser,
+            $testDbPassword,
+            $testDbHost,
+            $testDbName
+        );
+        $moduleContainer = new ModuleContainer(new Di(), []);
+        $module = new WPLoader($moduleContainer, [
+            'dbUrl' => $testDbUrl,
+            'wpRootFolder' => $wpRootFolder,
+            'loadOnly' => true,
+        ]);
+
+        Fork::executeClosure(function () use ($testDbName, $testDbHost, $testDbPassword, $testDbUser, $module) {
+            // WordPress' functions are stubbed by wordpress-stubs in unit tests: override them to do something.
+            $did_actions = [];
+            uopz_set_return('do_action', static function ($action) use (&$did_actions) {
+                $did_actions[$action] = true;
+            }, true);
+            uopz_set_return('did_action', static function ($action) use (&$did_actions) {
+                return isset($did_actions[$action]);
+            }, true);
+            // Partial mocking the function that would load WordPress.
+            uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
+                return true;
+            }, true);
+
+            $module->_initialize();
+            $module->_beforeSuite();
+
+            $this->assertTrue($module->_didLoadWordPress());
+            $this->assertEquals($testDbUser, DB_USER);
+            $this->assertEquals($testDbPassword, DB_PASSWORD);
+            $this->assertEquals($testDbHost, DB_HOST);
+            $this->assertEquals($testDbName, DB_NAME);
+            $this->assertEquals('1', getenv('WPBROWSER_LOAD_ONLY'));
         });
     }
 }
