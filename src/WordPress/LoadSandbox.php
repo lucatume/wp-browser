@@ -41,11 +41,8 @@ class LoadSandbox
 
             // Silence errors about the redeclaration of the above `DB_` constants.
             $previousErrorHandler = set_error_handler(callback: static function ($errno, $errstr) {
-                if ($errno === E_WARNING && preg_match('/^Constant DB_(NAME|USER|PASSWORD|HOST) already defined/i', $errstr)) {
-                    return true;
-                }
-
-                return false;
+                return $errno === E_WARNING
+                    && preg_match('/^Constant DB_(NAME|USER|PASSWORD|HOST) already defined/i', $errstr);
             });
         }
 
