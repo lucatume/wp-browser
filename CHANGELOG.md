@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- Doc-block namespace in the `WPRestApiTestCase` class, thanks @TimothyBJacobs.
+
+## [3.7.2] 2024-09-09;
+
 - `WPLoader::_beforeSuite` method signature to avoid breaking compatibility with Codeception 4.x.
 
 ## [3.7.1] 2024-09-07;
