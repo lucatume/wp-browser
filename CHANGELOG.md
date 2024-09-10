@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.7.3] 2024-09-10;
+
 ### Fixed
 
 - Doc-block namespace in the `WPRestApiTestCase` class, thanks @TimothyBJacobs.
@@ -2009,4 +2011,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.6.5]: https://github.com/lucatume/wp-browser/compare/3.6.4...3.6.5
 [3.7.0]: https://github.com/lucatume/wp-browser/compare/3.6.5...3.7.0
 [3.7.1]: https://github.com/lucatume/wp-browser/compare/3.7.0...3.7.1
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.1...HEAD
+[3.7.3]: https://github.com/lucatume/wp-browser/compare/3.7.1...3.7.3
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.3...HEAD
