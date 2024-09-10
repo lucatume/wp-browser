@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## Fixed
+
+- Doc-block namespace in the `WPRestApiTestCase` class, thanks @TimothyBJacobs.
+
 ## [4.3.1] 2024-09-07;
 
 ### Fixed
