@@ -618,11 +618,13 @@ class WPLoader extends Module
         $this->loadConfigFiles();
 
         if ($loadOnly) {
+            putenv('WPBROWSER_LOAD_ONLY=1');
             Dispatcher::dispatch(self::EVENT_BEFORE_LOADONLY, $this);
             $loadSandbox = new LoadSandbox($this->installation->getWpRootDir(), $this->config['domain']);
-            $loadSandbox->load();
+            $loadSandbox->load($this->db);
             Dispatcher::dispatch(self::EVENT_AFTER_LOADONLY, $this);
         } else {
+            putenv('WPBROWSER_LOAD_ONLY=0');
             $this->installAndBootstrapInstallation();
         }
 

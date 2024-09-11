@@ -1,7 +1,5 @@
 ## WPLoader module
 
-// @todo update this
-
 A module to load WordPress and make its code available in tests.
 
 Depending on the value of the `loadOnly` configuration parameter, the module will behave differently:
@@ -21,6 +19,11 @@ will:
 
 * take care of running any test method in a database transaction rolled back after each test
 * manage and clean up the global environment and context between tests
+
+!!! note
+
+    The module will set the environment variable `WPBROWSER_LOAD_ONLY=0` when running in this mode. This environment variable
+    can be used to detect whether WordPress is being loaded by WPBrowser and in which mode.
 
 When used in this mode, the module supports the following configuration parameters:
 
@@ -45,7 +48,7 @@ When used in this mode, the module supports the following configuration paramete
 * `phpBinary` - the path to the PHP binary to use to run tests. Defaults to the `WP_PHP_BINARY` constant.
 * `language` - the language to use when loading WordPress. Equivalent to defining the `WPLANG` constant.
 * `configFile` - a configuration file, or a set of configuration files, to load before the tests to further customize
-  and control the WordPress testing environment.
+  and control the WordPress testing environment. This file(s) will be loaded before the WordPress installation is loaded.
 * `pluginsFolder` - the path to the plugins folder to use when loading WordPress. Equivalent to defining the
   `WP_PLUGIN_DIR` constant. If both this parameter and the `WP_PLUGIN_DIR` parameter are set, the `WP_PLUGIN_DIR`
   parameter will override the value of this one.
@@ -288,6 +291,11 @@ your site to run tests using the default configuration based on PHP built-in ser
 The module will load WordPress from the location specified by the `wpRootFolder` parameter, relying
 on [the WPDb module](WPDb.md) to manage the database state.
 
+!!! note
+
+    The module will set the environment variable `WPBROWSER_LOAD_ONLY=1` when running in this mode. This environment variable
+    can be used to detect whether WordPress is being loaded by WPBrowser and in which mode.
+
 When used in this mode, the module supports the following configuration parameters:
 
 * `loadOnly` - `true` to load WordPress and make it available in the context of tests.
@@ -299,6 +307,17 @@ When used in this mode, the module supports the following configuration paramete
   use a SQLite database. Alternatively, you can use the `dbName`, `dbUser`, `dbPassword`, `dbHost` configuration
   parameters to specify the database connection details.
 * `domain` - the domain to use when loading WordPress. Equivalent to defining the `WP_TESTS_DOMAIN` constant.
+* `configFile` - a configuration file, or a set of configuration files, to load before the tests to further customize
+  and control the WordPress testing environment. This file(s) will be loaded before the WordPress installation is loaded.
+
+!!! warning
+
+    The module will define the `DB_NAME`, `DB_USER`, `DB_PASSWORD` and `DB_HOST` constants in the context of loading WordPress.
+    This is done to allow the WordPress database connection to be configured using the `dbUrl` configuration parameter.
+    **The module will silence the warnings about the redeclaration of these constants**, but in some cases with stricter error
+    checking (e.g. Bedrock) this may not be enough. In those cases, you can use the `WPBROWSER_LOAD_ONLY` environment
+    variable to detect whether WordPress is being loaded by WPBrowser and in which mode and configured your installation
+    accordingly.
 
 The following is an example of the module configuration to run end-to-end tests on the site served
 at `http://localhost:8080` URL and served from the  `/var/wordpress` directory:
