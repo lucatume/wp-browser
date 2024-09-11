@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.7.4] 2024-09-11;
+
 ## Fixed
 
 - Ensure the `WPLoader` module will set the db constants when in `loadOnly: true` mode.
@@ -2018,4 +2020,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.7.0]: https://github.com/lucatume/wp-browser/compare/3.6.5...3.7.0
 [3.7.1]: https://github.com/lucatume/wp-browser/compare/3.7.0...3.7.1
 [3.7.3]: https://github.com/lucatume/wp-browser/compare/3.7.1...3.7.3
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.3...HEAD
+[3.7.4]: https://github.com/lucatume/wp-browser/compare/3.7.3...3.7.4
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.4...HEAD
