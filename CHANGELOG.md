@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## Fixed
+
+- Ensure the `WPLoader` module will set the db constants when in `loadOnly: true` mode.
+- The `WPLoader` module will now set the `WPBROWSER_LOAD_ONLY` environment variable to `1` when in `loadOnly: true` and to `0` when in `loadOnly: false` mode.
+- Updated documentation for the `WPLoader` module to explicitly state that the `configFlile` parameter will be used both when in `loadOnly: true` and `loadOnly: false` modes.
+
 ## [3.7.3] 2024-09-10;
 
 ### Fixed
