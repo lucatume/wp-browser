@@ -2,6 +2,11 @@
 
 namespace lucatume\WPBrowser\WordPress;
 
+use lucatume\WPBrowser\Utils\MonkeyPatch;
+use lucatume\WPBrowser\Utils\Property;
+use lucatume\WPBrowser\WordPress\Database\DatabaseInterface;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
+
 class LoadSandbox
 {
     /**
@@ -30,7 +35,7 @@ class LoadSandbox
     /**
      * @throws InstallationException
      */
-    public function load(): void
+    public function load(?DatabaseInterface $db = null): void
     {
         $this->setUpServerVars();
         PreloadFilters::addFilter('wp_fatal_error_handler_enabled', [$this, 'returnFalse'], 100);
@@ -39,8 +44,25 @@ class LoadSandbox
         // Setting the `chunk_size` to `0` means the function will only be called when the output buffer is closed.
         ob_start([$this, 'obCallback'], 0);
 
+        if ($db instanceof MysqlDatabase) {
+            define('DB_NAME', $db->getDbName());
+            define('DB_USER', $db->getDbUser());
+            define('DB_PASSWORD', $db->getDbPassword());
+            define('DB_HOST', $db->getDbHost());
+
+            // Silence errors about the redeclaration of the above `DB_` constants.
+            $previousErrorHandler = set_error_handler(static function ($errno, $errstr) {
+                return $errno === E_WARNING
+                    && preg_match('/^Constant DB_(NAME|USER|PASSWORD|HOST) already defined/i', $errstr);
+            });
+        }
+
         // Exceptions thrown during loading are not wrapped on purpose to remove debug overhead.
         include_once $this->wpRootDir . '/wp-load.php';
+
+        if (!empty($previousErrorHandler)) {
+            set_error_handler($previousErrorHandler);
+        }
 
         ob_end_clean();
         // If this is reached, then WordPress has loaded correctly.
