@@ -110,7 +110,12 @@ jobs:
   test_with_uopz:
     strategy:
       matrix:
-        php_version: [ '7.1', '7.2', '7.3', '7.4' ]
+        php_version: [
+          # '7.1', # Disabled since WordPress minimum requirement is 7.2.
+          '7.2',
+          '7.3',
+          '7.4'
+        ]
     name: v3.5 unit php@${{ matrix.php_version }}
     runs-on: ubuntu-22.04
     steps:
