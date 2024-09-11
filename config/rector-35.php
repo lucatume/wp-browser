@@ -76,6 +76,14 @@ return static function (RectorConfig $rectorConfig): void {
             'assertDirectoryExists' => [
                 RemoveTypeHinting::REMOVE_ALL => true
             ]
+        ],
+        'lucatume\WPBrowser\Module\WPLoader' => [
+            // from: public function _beforeSuite(array $settings = [])
+            // to: public function _beforeSuite($settings = [])
+            '_beforeSuite' => [
+                RemoveTypeHinting::REMOVE_RETURN_TYPE_HINTING => true,
+                RemoveTypeHinting::REMOVE_PARAM_TYPE_HINTING => ['settings']
+            ],
         ]
     ]);
 };
