@@ -48,7 +48,7 @@ When used in this mode, the module supports the following configuration paramete
 * `phpBinary` - the path to the PHP binary to use to run tests. Defaults to the `WP_PHP_BINARY` constant.
 * `language` - the language to use when loading WordPress. Equivalent to defining the `WPLANG` constant.
 * `configFile` - a configuration file, or a set of configuration files, to load before the tests to further customize
-  and control the WordPress testing environment.
+  and control the WordPress testing environment. This file(s) will be loaded before the WordPress installation is loaded.
 * `pluginsFolder` - the path to the plugins folder to use when loading WordPress. Equivalent to defining the
   `WP_PLUGIN_DIR` constant. If both this parameter and the `WP_PLUGIN_DIR` parameter are set, the `WP_PLUGIN_DIR`
   parameter will override the value of this one.
@@ -307,6 +307,8 @@ When used in this mode, the module supports the following configuration paramete
   use a SQLite database. Alternatively, you can use the `dbName`, `dbUser`, `dbPassword`, `dbHost` configuration
   parameters to specify the database connection details.
 * `domain` - the domain to use when loading WordPress. Equivalent to defining the `WP_TESTS_DOMAIN` constant.
+* `configFile` - a configuration file, or a set of configuration files, to load before the tests to further customize
+  and control the WordPress testing environment. This file(s) will be loaded before the WordPress installation is loaded.
 
 !!! warning
 

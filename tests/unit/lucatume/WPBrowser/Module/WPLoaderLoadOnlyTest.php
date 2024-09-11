@@ -8,7 +8,7 @@ use Codeception\Test\Unit;
 use lucatume\WPBrowser\Tests\Traits\Fork;
 use lucatume\WPBrowser\Tests\Traits\InstallationMocks;
 use lucatume\WPBrowser\Utils\Env;
-use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 class WPLoaderLoadOnlyTest extends Unit
 {
@@ -131,6 +131,78 @@ class WPLoaderLoadOnlyTest extends Unit
             $this->assertEquals($testDbHost, DB_HOST);
             $this->assertEquals($testDbName, DB_NAME);
             $this->assertEquals('1', getenv('WPBROWSER_LOAD_ONLY'));
+        });
+    }
+
+    public function testWillLoadConfigFileWhenLoadOnlyTrue(): void{
+        [$wpRootFolder, $dbUrl] = $this->makeMockConfiguredInstallation();
+        $configDir = FS::tmpDir('config_', [
+            'test-config.php' => '<?php define("TEST_CONFIG", true);'
+        ]);
+        $moduleContainer = new ModuleContainer(new Di(), []);
+        $module = new WPLoader($moduleContainer, [
+            'dbUrl' => $dbUrl,
+            'wpRootFolder' => $wpRootFolder,
+            'loadOnly' => true,
+            'configFile' => $configDir . '/test-config.php'
+        ]);
+
+        Fork::executeClosure(function () use ($module) {
+            // WordPress' functions are stubbed by wordpress-stubs in unit tests: override them to do something.
+            $did_actions = [];
+            uopz_set_return('do_action', static function ($action) use (&$did_actions) {
+                $did_actions[$action] = true;
+            }, true);
+            uopz_set_return('did_action', static function ($action) use (&$did_actions) {
+                return isset($did_actions[$action]);
+            }, true);
+            // Partial mocking the function that would load WordPress.
+            uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
+                return true;
+            }, true);
+
+            $module->_initialize();
+            $module->_beforeSuite();
+
+            $this->assertTrue($module->_didLoadWordPress());
+            $this->assertTrue(defined('TEST_CONFIG'));
+        });
+    }
+
+    public function testWillLoadMultipleConfigFilesWhenLoadOnlyTrue(): void{
+        [$wpRootFolder, $dbUrl] = $this->makeMockConfiguredInstallation();
+        $configDir = FS::tmpDir('config_', [
+            'test-config.php' => '<?php define("TEST_CONFIG", true);',
+            'test-config2.php' => '<?php define("TEST_CONFIG2", true);'
+        ]);
+        $moduleContainer = new ModuleContainer(new Di(), []);
+        $module = new WPLoader($moduleContainer, [
+            'dbUrl' => $dbUrl,
+            'wpRootFolder' => $wpRootFolder,
+            'loadOnly' => true,
+            'configFile' => [$configDir . '/test-config.php', $configDir . '/test-config2.php']
+        ]);
+
+        Fork::executeClosure(function () use ($module) {
+            // WordPress' functions are stubbed by wordpress-stubs in unit tests: override them to do something.
+            $did_actions = [];
+            uopz_set_return('do_action', static function ($action) use (&$did_actions) {
+                $did_actions[$action] = true;
+            }, true);
+            uopz_set_return('did_action', static function ($action) use (&$did_actions) {
+                return isset($did_actions[$action]);
+            }, true);
+            // Partial mocking the function that would load WordPress.
+            uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
+                return true;
+            }, true);
+
+            $module->_initialize();
+            $module->_beforeSuite();
+
+            $this->assertTrue($module->_didLoadWordPress());
+            $this->assertTrue(defined('TEST_CONFIG'));
+            $this->assertTrue(defined('TEST_CONFIG2'));
         });
     }
 }
