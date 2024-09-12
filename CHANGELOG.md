@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## Fixed
+
+- Set proper factory() return type in `WPTestCase` class, so IDE autocompletion works (thanks @defunctl).
+
 ## [4.3.3] 2024-09-11;
 
 ## Fixed
