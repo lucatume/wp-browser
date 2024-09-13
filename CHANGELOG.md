@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.7.5] 2024-09-13;
+
 ## Fixed
 
 - Set proper `WPTetCase::factory()` return type, so IDE autocompletion works (thanks @defunctl).
@@ -2025,4 +2027,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.7.1]: https://github.com/lucatume/wp-browser/compare/3.7.0...3.7.1
 [3.7.3]: https://github.com/lucatume/wp-browser/compare/3.7.1...3.7.3
 [3.7.4]: https://github.com/lucatume/wp-browser/compare/3.7.3...3.7.4
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.4...HEAD
+[3.7.5]: https://github.com/lucatume/wp-browser/compare/3.7.4...3.7.5
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.5...HEAD
