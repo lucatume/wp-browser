@@ -27,7 +27,8 @@ $mysqlServer = new MysqlServer(
     $_ENV['WORDPRESS_DB_LOCALHOST_PORT'],
     $_ENV['WORDPRESS_DB_NAME'],
     $_ENV['WORDPRESS_DB_USER'],
-    $_ENV['WORDPRESS_DB_PASSWORD'],);
+    $_ENV['WORDPRESS_DB_PASSWORD']
+);
 $mysqlServer->start();
 
 $wpRootDir = $env['WORDPRESS_ROOT_DIR'];
