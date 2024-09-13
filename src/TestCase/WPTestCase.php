@@ -18,7 +18,7 @@ use PHPUnit\Runner\Version as PHPUnitVersion;
 /**
  * @method static commit_transaction()
  * @method static delete_user($user_id)
- * @method static factory()
+ * @method \WP_UnitTest_Factory factory()
  * @method static flush_cache()
  * @method static forceTicket($ticket)
  * @method static get_called_class()
