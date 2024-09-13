@@ -1,6 +1,7 @@
 <?php
 
 use Codeception\Configuration;
+use lucatume\WPBrowser\ManagedProcess\MysqlServer;
 use lucatume\WPBrowser\Utils\Filesystem;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
 use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
@@ -9,9 +10,6 @@ use lucatume\WPBrowser\WordPress\InstallationState\Configured;
 use lucatume\WPBrowser\WordPress\InstallationState\EmptyDir;
 use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use lucatume\WPBrowser\WordPress\InstallationState\Scaffolded;
-
-$dockerComposeEnvFile = escapeshellarg(dirname(__DIR__) . '/tests/.env');
-`docker compose --env-file $dockerComposeEnvFile up --wait`;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -23,6 +21,15 @@ Configuration::append(['paths' => ['output' => dirname(__DIR__) . '/var/_output'
 // Source the tests/.env file.
 $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__) . '/tests');
 $env = $dotenv->load();
+
+$mysqlServer = new MysqlServer(
+    codecept_output_dir('_mysql_server'),
+    $_ENV['WORDPRESS_DB_LOCALHOST_PORT'],
+    $_ENV['WORDPRESS_DB_NAME'],
+    $_ENV['WORDPRESS_DB_USER'],
+    $_ENV['WORDPRESS_DB_PASSWORD']
+);
+$mysqlServer->start();
 
 $wpRootDir = $env['WORDPRESS_ROOT_DIR'];
 
