@@ -29,85 +29,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test_without_uopz:
-    strategy:
-      matrix:
-        php_version: [
-          # '7.1', # Disabled since WordPress minimum requirement is 7.2.
-          '7.2',
-          '7.3',
-          '7.4'
-        ]
-        suite:
-          - acceptance
-          - climodule
-          - functional
-          - muloader
-          - unit --skip-group=slow
-          - unit --group=isolated-1
-          - unit --group=isolated-2
-          # - webdriver # Disabled until the webdriver tests are fixed.
-          - wpcli_module
-          - wploader_multisite
-          - wploader_wpdb_interaction
-          - wploadersuite
-    name: v3.5 ${{ matrix.suite }} php@${{ matrix.php_version }}
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php_version }}
-          extensions: sqlite3, gd
-          ini-values: post_max_size=256M, max_execution_time=180, uopz.exit=1
-          tools: composer
-
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: |
-          echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-
-      - name: Restore Composer dependencies
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ matrix.php_version }}-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-
-      - name: Install dependencies
-        run: composer update
-
-      - name: Update ChromeDriver
-        run: vendor/bin/codecept chromedriver:update --binary /usr/bin/google-chrome
-
-      - name: Create var/wordpress directory
-        run: mkdir -p var/wordpress
-
-      - name: Start services
-        run: vendor/bin/codecept dev:start
-
-      - name: Setup WordPress
-        run: php bin/setup-wp.php
-
-      - name: Run tests
-        id: test
-        run: vendor/bin/codecept run ${{ matrix.suite }}
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
-        if: ${{ failure() }}
-        with:
-          name: v3.5-${{ matrix.suite }}-php@${{ matrix.php_version }}-screenshots
-          path: |
-            var/_output/*.html
-            var/_output/*.png
-          retention-days: 3
-
-  test_with_uopz:
+  test:
     strategy:
       matrix:
         php_version: [
@@ -163,7 +85,7 @@ jobs:
         run: vendor/bin/codecept run ${{ matrix.suite }}
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
           name: ${{ matrix.suite }}-php@${{ matrix.php_version }}-screenshots
