@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## Fixed
+
+- Set proper `WPTetCase::factory()` return type, so IDE autocompletion works (thanks @defunctl).
+
 ## [3.7.4] 2024-09-11;
 
 ## Fixed
