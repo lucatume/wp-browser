@@ -3,10 +3,14 @@
 
 namespace Unit\lucatume\WPBrowser\WordPress;
 
+use Codeception\Subscriber\ErrorHandler;
 use Codeception\Test\Unit;
 use Exception;
+use lucatume\WPBrowser\Process\ProcessException;
+use lucatume\WPBrowser\Process\WorkerException;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
+use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
@@ -24,6 +28,7 @@ class LoadSandboxTest extends Unit
 {
     use LoopIsolation;
     use TmpFilesCleanup;
+	use UopzFunctions;
 
     /**
      * It should correctly load installed WordPress
@@ -315,6 +320,64 @@ PHP;
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('WordPress failed to load for the following reason: ' .
             'error establishing a database connection.');
+
+        $loadSandbox = new LoadSandbox($wpRootDir, 'wordpress.test');
+
+        $this->assertInIsolation(static function () use ($loadSandbox) {
+            $loadSandbox->load();
+        });
+    }
+
+    /**
+     * It should handle an unexpected early exit if something interferes with Codeception
+     *
+     * @test
+     */
+    public function should_handle_codeception_command_not_finished_error(): void {
+        $wpRootDir = FS::tmpDir('sandbox_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        $installation = Installation::scaffold($wpRootDir, '6.1.1')
+            ->configure($db)
+            ->install(
+                'http://wordpress.test',
+                'admin',
+                'admin',
+                'admin@wordpress.test',
+                'Sandbox'
+            );
+
+        $exitingPluginCode = <<<'PHP'
+<?php
+/**
+ * Plugin Name: Codeception Early Shutdown Mock
+ *
+ * Suppose a plugin or CLI package messes up and exits early, e.g. `exit(1)`, prior to `wp_loaded`.
+ * That will trigger Codeception's shutdown handler. If the suite is not finished running, and an error has not occurred,
+ * Codeception echoes a message and exits. LoadSandbox's output buffer will catch this.
+ * This plugin mocks the Codeception behavior.
+ *
+ * @see \Codeception\Subscriber\ErrorHandler::shutdownHandler()
+ */
+add_action('after_setup_theme', function () {
+    // Output and exit from \Codeception\Subscriber\ErrorHandler::shutdownHandler
+    echo "\n\n\nCOMMAND DID NOT FINISH PROPERLY.\n";
+    exit(125);
+});
+PHP;
+
+        if (!file_exists($installation->getMuPluginsDir())) {
+            mkdir($installation->getMuPluginsDir());
+        }
+        file_put_contents($installation->getMuPluginsDir() . '/exiting-mu-plugin.php', $exitingPluginCode);
+
+        $this->preventExit();
+
+        $this->expectException(InstallationException::class);
+        $this->expectExceptionMessageMatches('WordPress exited early during sandbox installation');
 
         $loadSandbox = new LoadSandbox($wpRootDir, 'wordpress.test');
 
