@@ -76,7 +76,8 @@ class InstallationException extends Exception
     public static function becauseCodeceptionCommandDidNotFinish(): self
     {
         return new self(
-            "Codeception `run` command did not finish properly; WordPress exited early prior to wp_loaded.\n",
+            "Codeception `run` command did not finish properly; WordPress exited early during sandbox installation. "
+            ."A plugin, theme, or WP-CLI package may have exited before the wp_loaded action could run.",
             self::COMMAND_DID_NOT_FINISH_PROPERLY
         );
     }

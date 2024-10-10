@@ -127,7 +127,7 @@ class LoadSandbox
             // we got here from \Codeception\Subscriber\ErrorHandler::shutdownHandler()
             codecept_debug('Codeception error: ' .$bodyContent);
             codecept_debug(
-                'DEBUG: Something caused WordPress to exit early. If there is output above, it may provide clues. '
+                'DEBUG: Something caused WordPress to exit early. If there is error output above, it may provide clues. '
                 .'(For instance, a WP-CLI package mistakenly attempting to handle the `codecept run` command.)'
             );
             throw InstallationException::becauseCodeceptionCommandDidNotFinish();
