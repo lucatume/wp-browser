@@ -3,11 +3,9 @@
 
 namespace Unit\lucatume\WPBrowser\WordPress;
 
-use Codeception\Subscriber\ErrorHandler;
 use Codeception\Test\Unit;
 use Exception;
-use lucatume\WPBrowser\Process\ProcessException;
-use lucatume\WPBrowser\Process\WorkerException;
+use lucatume\WPBrowser\Tests\Traits\Fork;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Traits\UopzFunctions;
@@ -363,25 +361,31 @@ PHP;
  * @see \Codeception\Subscriber\ErrorHandler::shutdownHandler()
  */
 add_action('after_setup_theme', function () {
-    // Output and exit from \Codeception\Subscriber\ErrorHandler::shutdownHandler
+    // Output and exit from \Codeception\Subscriber\ErrorHandler::shutdownHandler.
     echo "\n\n\nCOMMAND DID NOT FINISH PROPERLY.\n";
     exit(125);
 });
 PHP;
 
-        if (!file_exists($installation->getMuPluginsDir())) {
-            mkdir($installation->getMuPluginsDir());
+        $muPluginsDir = $installation->getMuPluginsDir();
+        if (
+            !is_dir($muPluginsDir)
+            && !(
+                mkdir($muPluginsDir, 0755, true)
+                && is_dir($muPluginsDir)
+            )
+        ) {
+            throw new \RuntimeException('Could not create mu-plugins directory.');
         }
-        file_put_contents($installation->getMuPluginsDir() . '/exiting-mu-plugin.php', $exitingPluginCode);
-
-        $this->preventExit();
+        if(!file_put_contents($muPluginsDir . '/exiting-mu-plugin.php', $exitingPluginCode)){
+            throw new \RuntimeException('Could not write exiting-mu-plugin.php.');
+        }
 
         $this->expectException(InstallationException::class);
-        $this->expectExceptionMessageMatches('WordPress exited early during sandbox installation');
+        $this->expectExceptionMessage(InstallationException::becauseCodeceptionCommandDidNotFinish()->getMessage());
 
-        $loadSandbox = new LoadSandbox($wpRootDir, 'wordpress.test');
-
-        $this->assertInIsolation(static function () use ($loadSandbox) {
+        $this->assertInIsolation(static function () use ($wpRootDir) {
+            $loadSandbox = new LoadSandbox($wpRootDir, 'wordpress.test');
             $loadSandbox->load();
         });
     }

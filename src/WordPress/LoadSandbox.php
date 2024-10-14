@@ -124,12 +124,8 @@ class LoadSandbox
         }
 
         if ($bodyContent === 'COMMAND DID NOT FINISH PROPERLY.') {
-            // we got here from \Codeception\Subscriber\ErrorHandler::shutdownHandler()
-            codecept_debug('Codeception error: ' .$bodyContent);
-            codecept_debug(
-                'DEBUG: Something caused WordPress to exit early. If there is error output above, it may provide clues. '
-                .'(For instance, a WP-CLI package mistakenly attempting to handle the `codecept run` command.)'
-            );
+            // We got here from \Codeception\Subscriber\ErrorHandler::shutdownHandler().
+            // We'll try to provide some clues to the user by adding some debug output.
             throw InstallationException::becauseCodeceptionCommandDidNotFinish();
         }
 
