@@ -10,7 +10,7 @@ Airplane Mode
 * [Mark Jaquith](https://github.com/markjaquith)
 
 ## About
-Control loading of external files when developing locally. WP loads certain external files (fonts, Gravatar, etc.) and makes external HTTP calls. This isn't usually an issue, unless you're working in an evironment without a web connection. This plugin removes/unhooks those actions to reduce load time and avoid errors due to missing files.
+Control loading of external files when developing locally. WP loads certain external files (fonts, Gravatar, etc.) and makes external HTTP calls. This isn't usually an issue, unless you're working in an environment without a web connection. This plugin removes/unhooks those actions to reduce load time and avoid errors due to missing files.
 
 ## Current Actions
 * removes external JS and CSS files from loading
