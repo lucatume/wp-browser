@@ -43,6 +43,7 @@ class InstallationException extends Exception
     public const SQLITE_PLUGIN_NOT_FOUND = 37;
     public const DB_DROPIN_ALREADY_EXISTS = 38;
     public const WORDPRESS_NOT_FOUND = 39;
+    public const COMMAND_DID_NOT_FINISH_PROPERLY = 40;
 
     public static function becauseWordPressFailedToLoad(string $bodyContent): self
     {
@@ -70,5 +71,15 @@ class InstallationException extends Exception
         }
 
         return new self('WordPress multisite (sub-folder) is not installed.', self::MULTISITE_SUBFOLDER_NOT_INSTALLED);
+    }
+
+    public static function becauseCodeceptionCommandDidNotFinish(): self
+    {
+        return new self(
+            "The current Codeception command did not finish properly. WordPress exited early while loading. "
+            ."A plugin, theme, or WP-CLI package may have exited before the wp_loaded action could be fired. " .
+            "If there is error output above, it may provide clues.",
+            self::COMMAND_DID_NOT_FINISH_PROPERLY
+        );
     }
 }
