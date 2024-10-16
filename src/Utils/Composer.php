@@ -30,8 +30,21 @@ class Composer
 
     public static function autoloadPath(): string
     {
+        /**
+         * if $_composer_autoload_path is undefined, fall back to vendor/autoload.php in the parent project's directory.
+         *
+         * @link https://getcomposer.org/doc/articles/vendor-binaries.md#finding-the-composer-autoloader-from-a-binary
+         */
         global $_composer_autoload_path;
-        return realpath($_composer_autoload_path) ?: $_composer_autoload_path;
+        if (isset($_composer_autoload_path)) {
+            $autoload_path = $_composer_autoload_path;
+        } elseif (is_dir(codecept_root_dir('vendor'))) {
+            $autoload_path = codecept_root_dir('vendor') . DIRECTORY_SEPARATOR . 'autoload.php';
+        } else {
+            // vendor-dir was renamed, try our best to find the right directory based on where wp-browser is installed
+            $autoload_path = dirname(__FILE__, 5) . DIRECTORY_SEPARATOR . 'autoload.php';
+        }
+        return realpath($autoload_path) ?: $autoload_path;
     }
 
     public static function binDir(?string $path = null): string

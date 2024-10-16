@@ -216,4 +216,67 @@ class ComposerTest extends \Codeception\Test\Unit
             $composer->getDecodedContents()
         );
     }
+
+    /**
+     * The `autoloadPath` static method should return `$_composer_autoload_path` if it is defined
+     *
+     * @test
+     * @backupGlobals enabled
+     */
+    public function static_autoload_path_should_return_global_composer_autoload_path(): void
+    {
+        global $_composer_autoload_path;
+        // ensure that it's set for this test
+        $_composer_autoload_path = codecept_root_dir() . 'vendor/autoload.php';
+
+        $this->assertSame($_composer_autoload_path, Composer::autoloadPath() );
+    }
+
+    /**
+     * The `autoloadPath` static method should return a best-guess fallback if the global `$_composer_autoload_path` is undefined
+     *
+     * @test
+     * @backupGlobals enabled
+     */
+    public function static_autoload_path_should_use_fallback(): void
+    {
+        global $_composer_autoload_path;
+        // clear value to enable fallback
+        unset($GLOBALS['_composer_autoload_path']);
+
+        $autoloadPath = Composer::autoloadPath();
+
+        $this->assertSame(codecept_root_dir() . 'vendor/autoload.php', $autoloadPath );
+        $this->assertFileExists( $autoloadPath );
+    }
+
+    /**
+     * The `autoloadPath` static method should still return a best-guess fallback for `$_composer_autoload_path`
+     * if Composer's vendor-dir was renamed.
+     *
+     * @test
+     * @backupGlobals enabled
+     */
+    public function static_autoload_path_should_use_fallback_if_vendor_dir_renamed_or_missing(): void
+    {
+        global $_composer_autoload_path;
+        // clear value to enable fallback
+        unset($GLOBALS['_composer_autoload_path']);
+        // pretend that wp-browser's own vendor dir does not exist
+        $this->setFunctionReturn('is_dir', false );
+
+        // The method has to find the renamed vendor-dir by directory traversal.
+        // i.e. if wp-browser is installed in `project/pkgs/lucatume/wp-browser`, find the `project/pkgs` dir.
+        // Let's figure out how far it has to go:
+        $mockVendorDir = dirname(codecept_root_dir(), 2);
+        $pathToClass = (new \ReflectionClass(Composer::class))->getFileName();
+        $relPathToVendorDir = substr($pathToClass, strlen($mockVendorDir));
+
+        $this->assertSame(5,
+            // counting directory levels
+            substr_count($relPathToVendorDir, '/'),
+            "The method is hardcoded to look 5 levels up for the parent project's vendor-dir. If this test fails, the class has moved."
+        );
+        $this->assertSame( dirname( $pathToClass, 5 ) . '/autoload.php', Composer::autoloadPath() );
+    }
 }
