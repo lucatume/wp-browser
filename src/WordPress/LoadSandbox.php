@@ -125,7 +125,8 @@ class LoadSandbox
 
         if ($bodyContent === 'COMMAND DID NOT FINISH PROPERLY.') {
             // We got here from \Codeception\Subscriber\ErrorHandler::shutdownHandler().
-            // We'll try to provide some clues to the user by adding some debug output.
+            // We'll try to provide some clues to the user in the exception message.
+            codecept_debug('Codeception error: ' . $bodyContent . ' Check logs for details.');
             throw InstallationException::becauseCodeceptionCommandDidNotFinish();
         }
 
