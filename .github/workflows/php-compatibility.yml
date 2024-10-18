@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+
+name: PHP Compatibility
+
+on: # yamllint disable-line rule:truthy
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'includes/**'
+      - 'tests/**'
+      - 'composer.json'
+      - '.github/workflows/test.yaml'
+  push:
+    paths:
+      - 'src/**'
+      - 'includes/**'
+      - 'tests/**'
+      - 'composer.json'
+      - '.github/workflows/test.yaml'
+    branches:
+      - "v3.5"
+  workflow_dispatch: # yamllint disable-line rule:truthy
+
+permissions:
+  contents: "read"
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  php-compatibility:
+    name: "PHP 7.1 compatibility"
+    runs-on: "ubuntu-22.04"
+    timeout-minutes: 10
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+      - name: "Analyze for PHP 7.1 compatibility"
+        uses: pantheon-systems/phpcompatibility-action@v1
+        with:
+          test-versions: 7.1-7.4
+          paths: ${{ github.workspace }}/src
