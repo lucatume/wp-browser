@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Improve `LoadSandbox` error and messaging (used by the `WPLoader` module when `loadOnly: true`) around Codeception early exits. (thanks @andronocean)
+
 ## [3.7.5] 2024-09-13;
 
 ## Fixed

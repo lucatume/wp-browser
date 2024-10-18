@@ -34,8 +34,8 @@ jobs:
       matrix:
         php_version: [
           # '7.1', # Disabled since WordPress minimum requirement is 7.2.
-          '7.2',
-          '7.3',
+          # '7.2', # Disabled since this version of PHP is not compatible with MySQL 8.0.
+          # '7.3', # Disabled since this version of PHP is not compatible with MySQL 8.0.
           '7.4'
         ]
     name: v3.5 unit php@${{ matrix.php_version }}

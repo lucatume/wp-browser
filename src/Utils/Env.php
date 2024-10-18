@@ -81,7 +81,7 @@ class Env
      */
     public static function os(): string
     {
-        $osSlug = strtolower(substr(PHP_OS_FAMILY, 0, 3));
+        $osSlug = strtolower(substr(PHP_OS, 0, 3));
 
         $map = [
             'win' => 'Windows',
