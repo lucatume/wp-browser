@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.7.6] 2024-10-18;
+
 ### Changed
 
 - Improve `LoadSandbox` error and messaging (used by the `WPLoader` module when `loadOnly: true`) around Codeception early exits. (thanks @andronocean)
@@ -2032,4 +2034,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.7.3]: https://github.com/lucatume/wp-browser/compare/3.7.1...3.7.3
 [3.7.4]: https://github.com/lucatume/wp-browser/compare/3.7.3...3.7.4
 [3.7.5]: https://github.com/lucatume/wp-browser/compare/3.7.4...3.7.5
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.5...HEAD
+[3.7.6]: https://github.com/lucatume/wp-browser/compare/3.7.5...3.7.6
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.6...HEAD
