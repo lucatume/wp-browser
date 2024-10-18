@@ -30,7 +30,7 @@ concurrency:
 
 jobs:
   php-compatibility:
-    name: "PHP 7.1 compatibility"
+    name: "PHP 7.1-7.4 compatibility"
     runs-on: "ubuntu-22.04"
     timeout-minutes: 10
     steps:
