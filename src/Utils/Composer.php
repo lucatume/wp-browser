@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Utils;
 
+use Codeception\Codecept;
 use JsonException;
 use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
@@ -37,14 +38,13 @@ class Composer
          */
         global $_composer_autoload_path;
         if (isset($_composer_autoload_path)) {
-            $autoload_path = $_composer_autoload_path;
-        } elseif (is_dir(codecept_root_dir('vendor'))) {
-            $autoload_path = codecept_root_dir('vendor') . DIRECTORY_SEPARATOR . 'autoload.php';
+            $autoloadPath = $_composer_autoload_path;
         } else {
-            // vendor-dir was renamed, try our best to find the right directory based on where wp-browser is installed
-            $autoload_path = dirname(__FILE__, 5) . DIRECTORY_SEPARATOR . 'autoload.php';
+            // we use the Codecept class to find the location of Composer's vendor-dir, even if a project has renamed it
+            $vendorDir = dirname((string)(new \ReflectionClass(Codecept::class))->getFilename(), 5);
+            $autoloadPath = $vendorDir . DIRECTORY_SEPARATOR . 'autoload.php';
         }
-        return realpath($autoload_path) ?: $autoload_path;
+        return realpath($autoloadPath) ?: $autoloadPath;
     }
 
     public static function binDir(?string $path = null): string
