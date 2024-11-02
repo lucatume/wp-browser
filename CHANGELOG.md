@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## Fixed
+
+- Fallback for missing `$_composer_autoload_path` file. (thanks @andronocean)
+
 ## [4.3.5] 2024-10-16;
 
 ### Changed
