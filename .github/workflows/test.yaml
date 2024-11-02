@@ -38,6 +38,19 @@ jobs:
           # '7.3', # Disabled since this version of PHP is not compatible with MySQL 8.0.
           '7.4'
         ]
+        suite:
+          - acceptance
+          - climodule
+          - functional
+          - muloader
+          - unit --skip-group=slow
+          - unit --group=isolated-1
+          - unit --group=isolated-2
+          # - webdriver # Disabled until the webdriver tests are fixed.
+          - wpcli_module
+          - wploader_multisite
+          - wploader_wpdb_interaction
+          - wploadersuite
     name: v3.5 unit php@${{ matrix.php_version }}
     runs-on: ubuntu-22.04
     steps:
