@@ -32,7 +32,7 @@ class Composer
     public static function autoloadPath(): string
     {
         /**
-         * if $_composer_autoload_path is undefined, fall back to vendor/autoload.php in the parent project's directory.
+         * If `$_composer_autoload_path` is undefined, fall back to `vendor/autoload.php` in the parent project's directory.
          *
          * @link https://getcomposer.org/doc/articles/vendor-binaries.md#finding-the-composer-autoloader-from-a-binary
          */
@@ -40,7 +40,7 @@ class Composer
         if (isset($_composer_autoload_path)) {
             $autoloadPath = $_composer_autoload_path;
         } else {
-            // we use the Codecept class to find the location of Composer's vendor-dir, even if a project has renamed it
+            // We use the Codecept class to find the location of Composer's vendor-dir, even if a project has renamed it.
             $vendorDir = dirname((string)(new \ReflectionClass(Codecept::class))->getFilename(), 5);
             $autoloadPath = $vendorDir . DIRECTORY_SEPARATOR . 'autoload.php';
         }

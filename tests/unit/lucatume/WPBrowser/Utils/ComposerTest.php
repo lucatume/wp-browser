@@ -225,8 +225,8 @@ class ComposerTest extends \Codeception\Test\Unit
      */
     public function static_autoload_path_should_return_global_composer_autoload_path(): void
     {
+        // Ensure that it's set for this test.
         global $_composer_autoload_path;
-        // ensure that it's set for this test
         $_composer_autoload_path = codecept_root_dir() . 'vendor/autoload.php';
 
         $this->assertSame($_composer_autoload_path, Composer::autoloadPath() );
@@ -240,7 +240,6 @@ class ComposerTest extends \Codeception\Test\Unit
      */
     public function static_autoload_path_should_use_fallback(): void
     {
-        global $_composer_autoload_path;
         // clear value to enable fallback
         unset($GLOBALS['_composer_autoload_path']);
 
