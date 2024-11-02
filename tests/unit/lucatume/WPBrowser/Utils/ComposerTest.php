@@ -228,4 +228,36 @@ class ComposerTest extends \Codeception\Test\Unit
             $composer->getDecodedContents()
         );
     }
+
+    /**
+     * The `autoloadPath` static method should return `$_composer_autoload_path` if it is defined
+     *
+     * @test
+     * @backupGlobals enabled
+     */
+    public function static_autoload_path_should_return_global_composer_autoload_path(): void
+    {
+        // Ensure that it's set for this test.
+        global $_composer_autoload_path;
+        $_composer_autoload_path = codecept_root_dir() . 'vendor/autoload.php';
+
+        $this->assertSame($_composer_autoload_path, Composer::autoloadPath() );
+    }
+
+    /**
+     * The `autoloadPath` static method should find the autoload.php file itself if the global `$_composer_autoload_path` is undefined
+     *
+     * @test
+     * @backupGlobals enabled
+     */
+    public function static_autoload_path_should_use_fallback(): void
+    {
+        // clear value to enable fallback
+        unset($GLOBALS['_composer_autoload_path']);
+
+        $autoloadPath = Composer::autoloadPath();
+
+        $this->assertSame(codecept_root_dir() . 'vendor/autoload.php', $autoloadPath );
+        $this->assertFileExists( $autoloadPath );
+    }
 }
