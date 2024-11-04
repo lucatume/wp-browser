@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.7.7] 2024-11-04;
+
 ## Fixed
 
 - Fallback for missing `$_composer_autoload_path` file. (thanks @andronocean)
@@ -2040,4 +2042,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.7.4]: https://github.com/lucatume/wp-browser/compare/3.7.3...3.7.4
 [3.7.5]: https://github.com/lucatume/wp-browser/compare/3.7.4...3.7.5
 [3.7.6]: https://github.com/lucatume/wp-browser/compare/3.7.5...3.7.6
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.6...HEAD
+[3.7.7]: https://github.com/lucatume/wp-browser/compare/3.7.6...3.7.7
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.7...HEAD
