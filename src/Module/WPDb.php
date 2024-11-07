@@ -3405,8 +3405,11 @@ class WPDb extends Db
     protected function getWpFilesystemModule(): WPFilesystem
     {
         try {
+            // Support both a prefixed and not prefixed module name.
             /** @var WPFilesystem $fs */
-            $fs = $this->getModule('\\' . WPFilesystem::class);
+            $fs = $this->hasModule('\\' . WPFilesystem::class)
+                ? $this->getModule('\\' . WPFilesystem::class)
+                : $this->getModule(WPFilesystem::class);
 
             return $fs;
         } catch (ModuleException) {
