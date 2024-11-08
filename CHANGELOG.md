@@ -4,9 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## Fixed
+
+- In `WPDb` module look up the `WPFilesystem` module with and without leading slash.
+
 ## [4.3.6] 2024-11-02;
 
-## Fixed
+### Fixed
 
 - Fallback for missing `$_composer_autoload_path` file. (thanks @andronocean)
 
