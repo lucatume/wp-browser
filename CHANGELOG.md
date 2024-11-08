@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.3.7] 2024-11-08;
+
 ## Fixed
 
 - In `WPDb` module look up the `WPFilesystem` module with and without leading slash.
@@ -2291,4 +2293,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.3.4]: https://github.com/lucatume/wp-browser/compare/4.3.3...4.3.4
 [4.3.5]: https://github.com/lucatume/wp-browser/compare/4.3.4...4.3.5
 [4.3.6]: https://github.com/lucatume/wp-browser/compare/4.3.5...4.3.6
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.3.6...HEAD
+[4.3.7]: https://github.com/lucatume/wp-browser/compare/4.3.6...4.3.7
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.3.7...HEAD
