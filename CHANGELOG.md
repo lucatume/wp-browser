@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## Fixed
+
+- In `WPDb` module look up the `WPFilesystem` module with and without leading slash.
+
 ## [3.7.7] 2024-11-04;
 
 ## Fixed
