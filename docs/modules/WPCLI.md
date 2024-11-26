@@ -46,6 +46,7 @@ This module should be with [Cest][2] and [Cept][3] test cases.
   variable.
 * `packages-dir` - the directory to use to store the packages downloaded by the `wp package` command. Equivalent to
   setting the `WP_CLI_PACKAGES_DIR` environment variable.
+* `bin` - the path to a custom WP-CLI binary.
 
 The following is an example of the module configuration to run WPCLI commands on the `/var/wordpress` directory:
 
@@ -65,6 +66,16 @@ modules:
     lucatume\WPBrowser\Module\WPCLI:
       path: '%WP_ROOT_DIR%'
       throw: true
+```
+
+The following configuration uses a custom WP-CLI binary:
+
+```yaml
+modules:
+  enabled:
+    lucatume\WPBrowser\Module\WPCLI:
+      path: /var/wordpress
+      bin: /usr/local/bin/wp
 ```
 
 ## Methods

@@ -10,6 +10,7 @@ namespace lucatume\WPBrowser\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Module;
+use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\Utils\Filesystem;
 use lucatume\WPBrowser\WordPress\CliProcess;
@@ -40,7 +41,7 @@ class WPCLI extends Module
         'color' => true,
         'no-color' => true,
         'debug' => true,
-        'quiet' => true
+        'quiet' => true,
     ];
     /**
      * @var array<string>
@@ -75,7 +76,8 @@ class WPCLI extends Module
      *    cache-dir?: string,
      *    config-path?: string,
      *    custom-shell?: string,
-     *    packages-dir?: string
+     *    packages-dir?: string,
+     *    bin?: string
      * }
      */
     protected array $config = [
@@ -129,7 +131,8 @@ class WPCLI extends Module
          *    cache-dir?: string,
          *    config-path?: string,
          *    custom-shell?: string,
-         *    packages-dir?: string
+         *    packages-dir?: string,
+         *    bin?: string
          * } $config
          */
         $config = $this->config;
@@ -141,7 +144,22 @@ class WPCLI extends Module
 
         $command = $this->addStrictOptionsFromConfig($command);
 
-        $cliProcess = new CliProcess($command, $config['path'], $env, $input, $config['timeout']);
+        try {
+            $cliProcess = new CliProcess(
+                $command,
+                $config['path'],
+                $env,
+                $input,
+                $config['timeout'],
+                $config['bin'] ?? null
+            );
+        } catch (\Exception $e) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                $e->getMessage(),
+                $e
+            );
+        }
 
         $this->debugSection('WPCLI command', $cliProcess->getCommandLine());
 
