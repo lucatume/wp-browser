@@ -571,7 +571,7 @@ class WPCLI extends Module
 
     /**
      * @return array{
-     *     WP_CLI_CACHE_DIR: string,
+     *     WP_CLI_CACHE_DIR?: string,
      *     WP_CLI_CONFIG_PATH?: string,
      *     WP_CLI_CUSTOM_SHELL?: string,
      *     WP_CLI_PACKAGES_DIR?: string,
@@ -587,12 +587,16 @@ class WPCLI extends Module
          *     cache-dir?: non-empty-string,
          *     config-path?: non-empty-string,
          *     custom-shell?: non-empty-string,
-         *     packages-dir?: non-empty-string
+         *     packages-dir?: non-empty-string,
+         *     bin?: string
          * } $config Validated config.
          */
         $config = $this->config;
-        $cacheDir = $config['cache-dir'] ?? (Filesystem::cacheDir() . '/wp-cli');
-        $env['WP_CLI_CACHE_DIR'] = Filesystem::mkdirp($cacheDir);
+
+        if (empty($config['bin'])) {
+            $cacheDir = $config['cache-dir'] ?? (Filesystem::cacheDir() . '/wp-cli');
+            $env['WP_CLI_CACHE_DIR'] = Filesystem::mkdirp($cacheDir);
+        }
 
         if (isset($config['config-path'])) {
             $env['WP_CLI_CONFIG_PATH'] = $config['config-path'];
