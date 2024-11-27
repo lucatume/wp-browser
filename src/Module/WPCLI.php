@@ -10,6 +10,7 @@ namespace lucatume\WPBrowser\Module;
 use Codeception\Exception\ModuleConfigException;
 use Codeception\Exception\ModuleException;
 use Codeception\Module;
+use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Utils\Arr;
 use lucatume\WPBrowser\Utils\Filesystem;
 use lucatume\WPBrowser\WordPress\CliProcess;
@@ -40,7 +41,7 @@ class WPCLI extends Module
         'color' => true,
         'no-color' => true,
         'debug' => true,
-        'quiet' => true
+        'quiet' => true,
     ];
     /**
      * @var array<string>
@@ -75,7 +76,8 @@ class WPCLI extends Module
      *    cache-dir?: string,
      *    config-path?: string,
      *    custom-shell?: string,
-     *    packages-dir?: string
+     *    packages-dir?: string,
+     *    bin?: string
      * }
      */
     protected array $config = [
@@ -129,7 +131,8 @@ class WPCLI extends Module
          *    cache-dir?: string,
          *    config-path?: string,
          *    custom-shell?: string,
-         *    packages-dir?: string
+         *    packages-dir?: string,
+         *    bin?: string
          * } $config
          */
         $config = $this->config;
@@ -141,7 +144,22 @@ class WPCLI extends Module
 
         $command = $this->addStrictOptionsFromConfig($command);
 
-        $cliProcess = new CliProcess($command, $config['path'], $env, $input, $config['timeout']);
+        try {
+            $cliProcess = new CliProcess(
+                $command,
+                $config['path'],
+                $env,
+                $input,
+                $config['timeout'],
+                $config['bin'] ?? null
+            );
+        } catch (\Exception $e) {
+            throw new ModuleConfigException(
+                __CLASS__,
+                $e->getMessage(),
+                $e
+            );
+        }
 
         $this->debugSection('WPCLI command', $cliProcess->getCommandLine());
 
@@ -553,7 +571,7 @@ class WPCLI extends Module
 
     /**
      * @return array{
-     *     WP_CLI_CACHE_DIR: string,
+     *     WP_CLI_CACHE_DIR?: string,
      *     WP_CLI_CONFIG_PATH?: string,
      *     WP_CLI_CUSTOM_SHELL?: string,
      *     WP_CLI_PACKAGES_DIR?: string,
@@ -569,12 +587,16 @@ class WPCLI extends Module
          *     cache-dir?: non-empty-string,
          *     config-path?: non-empty-string,
          *     custom-shell?: non-empty-string,
-         *     packages-dir?: non-empty-string
+         *     packages-dir?: non-empty-string,
+         *     bin?: string
          * } $config Validated config.
          */
         $config = $this->config;
-        $cacheDir = $config['cache-dir'] ?? (Filesystem::cacheDir() . '/wp-cli');
-        $env['WP_CLI_CACHE_DIR'] = Filesystem::mkdirp($cacheDir);
+
+        if (empty($config['bin'])) {
+            $cacheDir = $config['cache-dir'] ?? (Filesystem::cacheDir() . '/wp-cli');
+            $env['WP_CLI_CACHE_DIR'] = Filesystem::mkdirp($cacheDir);
+        }
 
         if (isset($config['config-path'])) {
             $env['WP_CLI_CONFIG_PATH'] = $config['config-path'];

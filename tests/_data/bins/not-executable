@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+echo "This binary was never modded to be executable"
+exit 0
