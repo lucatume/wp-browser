@@ -36,7 +36,7 @@ class Running implements WorkerInterface
     /**
      * @throws ConfigurationException|ProcessException
      */
-    public static function fromWorker(Worker $worker, bool $useFilePayloads = false): Running
+    public static function fromWorker(Worker $worker, bool $useFilePayloads = false, bool $inheritEnv = false): Running
     {
         $workerCallable = $worker->getCallable();
         $workerClosure = $workerCallable instanceof Closure ?
@@ -48,10 +48,16 @@ class Running implements WorkerInterface
 
         $workerScriptPathname = __DIR__ . '/worker-script.php';
         $control = $worker->getControl();
+
+        if ($inheritEnv) {
+            $control['env'] = array_merge($control['env'] ?? [], getenv());
+        }
+
         $workerSerializableClosure = new SerializableClosure($workerClosure);
 
         $request = new Request($control, $workerSerializableClosure);
         $request->setUseFilePayloads($useFilePayloads);
+
 
         try {
             $workerProcess = new WorkerProcess([PHP_BINARY, $workerScriptPathname, $request->getPayload()]);
