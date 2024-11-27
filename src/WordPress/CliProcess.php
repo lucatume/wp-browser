@@ -3,8 +3,10 @@
 namespace lucatume\WPBrowser\WordPress;
 
 use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
+use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Utils\Download;
+use lucatume\WPBrowser\Utils\Filesystem;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 class CliProcess extends Process
@@ -22,9 +24,30 @@ class CliProcess extends Process
         ?string $cwd = null,
         ?array $env = null,
         $input = null,
-        ?float $timeout = 60
+        ?float $timeout = 60,
+        ?string $bin = null
     ) {
-        $wpCliPhar = self::getWpCliPharPath();
+        if ($bin === null) {
+            $wpCliPhar = self::getWpCliPharPath();
+        } else {
+            try {
+                $binAbsolutePath = Filesystem::resolvePath($bin);
+            } catch (\Exception $e) {
+                throw new InvalidArgumentException(
+                    'Failed to resolve custom binary path: does it exist?',
+                    $e->getCode(),
+                    $e
+                );
+            }
+
+            if ($binAbsolutePath === false || !is_executable($binAbsolutePath)) {
+                throw new InvalidArgumentException(
+                    'WPCLI bin not found or not executable: ' . $binAbsolutePath
+                );
+            }
+            $wpCliPhar = $binAbsolutePath;
+        }
+
         array_unshift($command, PHP_BINARY, $wpCliPhar);
         parent::__construct($command, $cwd, $env, $input, $timeout);
     }
