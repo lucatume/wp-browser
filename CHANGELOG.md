@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.3.8] 2024-11-27;
+
+## Added
+
+- Support custom binaries for WP-CLI in the `WPCLI` module.
+
 ## [4.3.7] 2024-11-08;
 
 ## Fixed
@@ -2294,4 +2300,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.3.5]: https://github.com/lucatume/wp-browser/compare/4.3.4...4.3.5
 [4.3.6]: https://github.com/lucatume/wp-browser/compare/4.3.5...4.3.6
 [4.3.7]: https://github.com/lucatume/wp-browser/compare/4.3.6...4.3.7
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.3.7...HEAD
+[4.3.8]: https://github.com/lucatume/wp-browser/compare/4.3.7...4.3.8
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.3.8...HEAD
