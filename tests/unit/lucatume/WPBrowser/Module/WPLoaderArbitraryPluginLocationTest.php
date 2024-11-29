@@ -5,7 +5,6 @@ namespace lucatume\WPBrowser\Module;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
-use lucatume\WPBrowser\Module\WPLoader;
 use lucatume\WPBrowser\Tests\Traits\DatabaseAssertions;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
 use lucatume\WPBrowser\Tests\Traits\MainInstallationAccess;
@@ -54,6 +53,72 @@ class WPLoaderArbitraryPluginLocationTest extends Unit
     {
         $this->mockModuleContainer = new ModuleContainer(new Di(), $moduleContainerConfig);
         return new WPLoader($this->mockModuleContainer, ($moduleConfig ?? $this->config));
+    }
+
+    public function test_loads_plugins_from_default_location_correctly(): void
+    {
+        $projectDir = FS::tmpDir('wploader_');
+        $installation = Installation::scaffold($projectDir);
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $installationDb = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        if (!mkdir($projectDir . '/wp-content/plugins/test-one', 0777, true)) {
+            throw new \RuntimeException('Unable to create test directory for plugin test-one');
+        }
+        if (!file_put_contents(
+            $projectDir . '/wp-content/plugins/test-one/plugin.php',
+            <<< PHP
+<?php
+/**
+ * Plugin Name: Test One
+ */
+ 
+ function test_one_loaded(){}
+PHP
+        )) {
+            throw new \RuntimeException('Unable to create test plugin file for plugin test-one');
+        }
+        if (!mkdir($projectDir . '/wp-content/plugins/test-two', 0777, true)) {
+            throw new \RuntimeException('Unable to create test directory for plugin test-two');
+        }
+        if (!file_put_contents(
+            $projectDir . '/wp-content/plugins/test-two/plugin.php',
+            <<< PHP
+<?php
+/**
+ * Plugin Name: Test Two
+ */
+ 
+ function test_two_loaded(){}
+PHP
+        )) {
+            throw new \RuntimeException('Unable to create test plugin file for plugin test-two');
+        }
+
+        $this->config = [
+            'wpRootFolder' => $projectDir,
+            'dbUrl' => $installationDb->getDbUrl(),
+            'tablePrefix' => 'test_',
+            'plugins' => [
+                'test-one/plugin.php',
+                'test-two/plugin.php',
+            ]
+        ];
+        $wpLoader = $this->module();
+        $projectDirname = basename($projectDir);
+
+        $this->assertInIsolation(
+            static function () use ($wpLoader, $projectDir) {
+                chdir($projectDir);
+
+                $wpLoader->_initialize();
+
+                Assert::assertTrue(function_exists('test_one_loaded'));
+                Assert::assertTrue(function_exists('test_two_loaded'));
+            }
+        );
     }
 
     /**
