@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.7.10] 2024-11-29;
+
 ## Fixed
 
 - Check the PID file for the PHP built-in server, MySQL and Chromedriver controllers to make sure the PID maps to an actually running process.
@@ -2065,4 +2067,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.7.7]: https://github.com/lucatume/wp-browser/compare/3.7.6...3.7.7
 [3.7.8]: https://github.com/lucatume/wp-browser/compare/3.7.7...3.7.8
 [3.7.9]: https://github.com/lucatume/wp-browser/compare/3.7.8...3.7.9
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.9...HEAD
+[3.7.10]: https://github.com/lucatume/wp-browser/compare/3.7.9...3.7.10
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.10...HEAD
