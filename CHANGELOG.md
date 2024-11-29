@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## Changed
+
+- Inherit environment variables while parsing configuration files in the `WPConfigFile` class.
+
 ## [4.3.8] 2024-11-27;
 
 ## Added

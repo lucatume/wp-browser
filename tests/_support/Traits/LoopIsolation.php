@@ -32,7 +32,7 @@ trait LoopIsolation
         }
 
         $options['cwd'] = !empty($options['cwd']) ? $options['cwd'] : getcwd();
-        $options['use_file_payloads'] = true;
+        $options['useFilePayloads'] = true;
 
         $timeout = Debug::isEnabled() ? PHP_INT_MAX : 30;
         $result = Loop::executeClosure($runAssertions, $timeout, $options);

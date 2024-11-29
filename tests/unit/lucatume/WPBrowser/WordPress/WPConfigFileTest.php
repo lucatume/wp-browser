@@ -8,6 +8,21 @@ use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 class WPConfigFileTest extends Unit
 {
+    private string|null $isDdevProjectEnvVar = null;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->isDdevProjectEnvVar = (string)getenv('IS_DDEV_PROJECT');
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        putenv('IS_DDEV_PROJECT=' . (string)$this->isDdevProjectEnvVar);
+    }
+
+
     /**
      * It should throw if building on non existing root directory
      *
@@ -224,5 +239,14 @@ PHP;
 
         $this->assertFalse($wpConfigFile->usesMySQL());
         $this->assertTrue($wpConfigFile->usesSQLite());
+    }
+
+    public function test_it_inherits_env():void{
+        $configFile = codecept_data_dir('wp-config-files/ddev/wp-config.php');
+        putenv('IS_DDEV_PROJECT=true');
+
+        $wpConfigFile = new WPConfigFile(dirname($configFile), $configFile);
+
+        $this->assertEquals($wpConfigFile->getConstant('DB_NAME'),'db');
     }
 }
