@@ -19,7 +19,7 @@ class BuiltInServerController extends ServiceExtension
     {
         $pidFile = $this->getPidFile();
 
-        if (is_file($pidFile)) {
+        if ($this->isProcessRunning($pidFile)) {
             $output->writeln('PHP built-in server already running.');
             return;
         }

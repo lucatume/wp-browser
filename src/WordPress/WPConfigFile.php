@@ -129,7 +129,7 @@ class WPConfigFile
         try {
             $result = Loop::executeClosure(function () use ($wpSettingsFile, $wpConfigFile): array {
                 return $this->toIncludeFile($wpConfigFile, $wpSettingsFile);
-            });
+            }, 30, ['inheritEnv' => true]);
 
             $returnValue = $result->getReturnValue();
 

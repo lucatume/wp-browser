@@ -23,7 +23,7 @@ class MysqlServerController extends ServiceExtension
     {
         $pidFile = $this->getPidFile();
 
-        if (is_file($pidFile)) {
+        if ($this->isProcessRunning($pidFile)) {
             $output->writeln('MySQL server already running.');
 
             return;

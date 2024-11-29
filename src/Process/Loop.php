@@ -62,6 +62,10 @@ class Loop
      * @var bool
      */
     private $useFilePayloads = false;
+    /**
+     * @var bool
+     */
+    private $inheritEnv = false;
 
     /**
      * @param array<int|string,Worker|callable> $workers
@@ -91,7 +95,8 @@ class Loop
      *     rethrow?: bool,
      *     requireFiles?: array<string>,
      *     cwd?: string,
-     *     use_file_payloads?: bool,
+     *     useFilePayloads?: bool,
+     *     inheritEnv?: bool
      * } $options
      *
      * @throws ProcessException
@@ -102,8 +107,12 @@ class Loop
     {
         $loop = new self([$closure], 1, true, $timeout, $options);
 
-        if (!empty($options['use_file_payloads'])) {
+        if (!empty($options['useFilePayloads'])) {
             $loop->setUseFilePayloads(true);
+        }
+
+        if (!empty($options['inheritEnv'])) {
+            $loop->setInheritEnv(true);
         }
 
         $loop->run();
@@ -215,7 +224,7 @@ class Loop
         }
 
         try {
-            $w = Running::fromWorker($runnableWorker, $this->useFilePayloads);
+            $w = Running::fromWorker($runnableWorker, $this->useFilePayloads, $this->inheritEnv);
             $this->started[$w->getId()] = $w;
             $this->running[$w->getId()] = $w;
             $this->peakParallelism = max((int)$this->peakParallelism, count($this->running));
@@ -406,5 +415,10 @@ class Loop
     private function buildWorker(string $id, callable $worker): Worker
     {
         return new Worker($id, $worker, [], []);
+    }
+
+    public function setInheritEnv(bool $inheritEnv):void
+    {
+        $this->inheritEnv = $inheritEnv;
     }
 }
