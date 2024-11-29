@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.3.9] 2024-11-29;
+
 ## Changed
 
 - Inherit environment variables while parsing configuration files in the `WPConfigFile` class.
@@ -2305,4 +2307,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.3.6]: https://github.com/lucatume/wp-browser/compare/4.3.5...4.3.6
 [4.3.7]: https://github.com/lucatume/wp-browser/compare/4.3.6...4.3.7
 [4.3.8]: https://github.com/lucatume/wp-browser/compare/4.3.7...4.3.8
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.3.8...HEAD
+[4.3.9]: https://github.com/lucatume/wp-browser/compare/4.3.8...4.3.9
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.3.9...HEAD
