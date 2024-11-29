@@ -20,7 +20,7 @@ class ChromeDriverController extends ServiceExtension
     {
         $pidFile = $this->getPidFile();
 
-        if (is_file($pidFile)) {
+        if ($this->isProcessRunning($pidFile)) {
             $output->writeln('ChromeDriver already running.');
 
             return;

@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## Fixed
+
+- Check the PID file for the PHP built-in server, MySQL and Chromedriver controllers to make sure the PID maps to an actually running process.
+
 ## [4.3.9] 2024-11-29;
 
 ## Changed
