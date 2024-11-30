@@ -25,7 +25,7 @@ class WP
      *
      * @return array<string> The list of dropped tables.
      */
-    public static function dropWpTables(?wpdb $wpdb, ?array $tables = null): array
+    public static function dropWpTables(wpdb $wpdb, ?array $tables = null): array
     {
         $allTables = $wpdb->tables('all');
         $tablesList = $tables !== null ? array_intersect($allTables, $tables) : $allTables;
@@ -59,7 +59,7 @@ class WP
      *
      * @return array<string> The list of emptied tables.
      */
-    public static function emptyWpTables(?wpdb $wpdb, ?array $tables = null): array
+    public static function emptyWpTables(wpdb $wpdb, ?array $tables = null): array
     {
         $allTables = $wpdb->tables('all');
         $tablesList = $tables !== null ? array_intersect($allTables, $tables) : $allTables;
