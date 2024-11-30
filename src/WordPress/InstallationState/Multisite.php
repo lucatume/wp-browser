@@ -29,7 +29,7 @@ class Multisite implements InstallationStateInterface
      * @throws Throwable
      * @throws WorkerException
      */
-    public function __construct(string $wpRootDir, string $wpConfigFilePath, DatabaseInterface $db = null)
+    public function __construct(string $wpRootDir, string $wpConfigFilePath, ?DatabaseInterface $db = null)
     {
         $this->buildConfigured($wpRootDir, $wpConfigFilePath);
 

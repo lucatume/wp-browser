@@ -132,7 +132,7 @@ trait WPBrowserMethods
      *
      * @return FacebookWebdriverCookie|Cookie|null The WordPress authorization cookie or `null` if not found.
      */
-    protected function grabWordPressAuthCookie(string $pattern = null): Cookie|FacebookWebdriverCookie|null
+    protected function grabWordPressAuthCookie(?string $pattern = null): Cookie|FacebookWebdriverCookie|null
     {
         $pattern = $pattern ?: '/^wordpress_[a-z0-9]{32}$/';
         $cookies = $this->grabCookiesWithPattern($pattern);
@@ -147,7 +147,7 @@ trait WPBrowserMethods
      *
      * @return FacebookWebdriverCookie|Cookie|null The WordPress login cookie or `null` if not found.
      */
-    protected function grabWordPressLoginCookie(string $pattern = null): Cookie|FacebookWebdriverCookie|null
+    protected function grabWordPressLoginCookie(?string $pattern = null): Cookie|FacebookWebdriverCookie|null
     {
         $pattern = $pattern ?: '/^wordpress_logged_in_[a-z0-9]{32}$/';
         $cookies = $this->grabCookiesWithPattern($pattern);
@@ -365,7 +365,7 @@ trait WPBrowserMethods
      *
      * @return Cookie|null Either a cookie object or `null`.
      */
-    public function grabWordPressTestCookie(string $name = null): ?Cookie
+    public function grabWordPressTestCookie(?string $name = null): ?Cookie
     {
         $name = $name ?: 'wordpress_test_cookie';
 
@@ -410,7 +410,7 @@ trait WPBrowserMethods
      *
      * @param string|array<string,mixed> $queryVars A string or array of query variables to append to the AJAX path.
      */
-    public function amOnAdminAjaxPage(string|array $queryVars = null): void
+    public function amOnAdminAjaxPage(string|array|null $queryVars = null): void
     {
         $path = 'admin-ajax.php';
         if ($queryVars !== null) {
@@ -431,7 +431,7 @@ trait WPBrowserMethods
      *
      * @param string|array<string,mixed> $queryVars A string or array of query variables to append to the Cron path.
      */
-    public function amOnCronPage(string|array $queryVars = null): void
+    public function amOnCronPage(string|array|null $queryVars = null): void
     {
         $path = 'wp-cron.php';
         if ($queryVars !== null) {

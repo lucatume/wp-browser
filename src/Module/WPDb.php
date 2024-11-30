@@ -207,7 +207,7 @@ class WPDb extends Db
      *
      * @return void
      */
-    public function __construct(ModuleContainer $moduleContainer, ?array $config = null, DbDump $dbDump = null)
+    public function __construct(ModuleContainer $moduleContainer, ?array $config = null, ?DbDump $dbDump = null)
     {
         parent::__construct($moduleContainer, $config);
         $this->dbDump = $dbDump ?? new DbDump();
@@ -347,7 +347,7 @@ class WPDb extends Db
      *
      * @throws ModuleException It the database cannot be correctly initialized.
      */
-    public function _initialize(Tables $table = null): void
+    public function _initialize(?Tables $table = null): void
     {
         /**
          * Dispatches an event before the WPDb module initializes.
@@ -387,7 +387,7 @@ class WPDb extends Db
      *
      * @throws ModuleConfigException|ModuleException If there's an issue during the cleanup phase.
      */
-    public function importSqlDumpFile(string $dumpFile = null): void
+    public function importSqlDumpFile(?string $dumpFile = null): void
     {
         if ($dumpFile !== null) {
             if (!is_file($dumpFile) || !is_readable($dumpFile)) {
@@ -421,7 +421,7 @@ class WPDb extends Db
      *
      * @throws ModuleException|ModuleConfigException If there's a configuration or operation issue.
      */
-    public function _cleanup(string $databaseKey = null, array $databaseConfig = null): void
+    public function _cleanup(?string $databaseKey = null, ?array $databaseConfig = null): void
     {
         parent::_cleanup($databaseKey, $databaseConfig);
         $this->blogId = 0;
@@ -3571,7 +3571,7 @@ class WPDb extends Db
      * @param string|null $themeName The theme name, e.g. `Acme`, defaults to the "title" version of
      *                                     `$stylesheet`.
      */
-    public function useTheme(string $stylesheet, string $template = null, string $themeName = null): void
+    public function useTheme(string $stylesheet, ?string $template = null, ?string $themeName = null): void
     {
         $template = $template ?: $stylesheet;
         $themeName = $themeName ?: ucwords($stylesheet, ' _');
@@ -3899,7 +3899,7 @@ class WPDb extends Db
      *
      * @return string The current site URL
      */
-    public function grabSiteUrl(string $path = null): string
+    public function grabSiteUrl(?string $path = null): string
     {
         /** @var array{url: string} $config Validated module config. */
         $config = $this->config;
@@ -4490,7 +4490,7 @@ class WPDb extends Db
      * @param string|null $databaseKey The key of the database to load.
      * @param array<string,mixed>|null $databaseConfig The configuration for the database to load.
      */
-    public function _loadDump(string $databaseKey = null, array $databaseConfig = null): void
+    public function _loadDump(?string $databaseKey = null, ?array $databaseConfig = null): void
     {
         parent::_loadDump($databaseKey, $databaseConfig);
         $this->prepareDb();

@@ -227,7 +227,7 @@ class FileStreamWrapper
         return $result;
     }
 
-    public function rmdir(string $path, int $options = null): bool
+    public function rmdir(string $path, ?int $options = null): bool
     {
         static::unregister();
 

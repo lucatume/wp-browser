@@ -294,7 +294,7 @@ class DbDump
      * @param string|null $originalUrl The site URL that should be replaced in the dump, or `null` to unset the
      *                                 property.
      */
-    public function setOriginalUrl(string $originalUrl = null): void
+    public function setOriginalUrl(?string $originalUrl = null): void
     {
         if ($originalUrl === null) {
             $this->originalUrl = null;

@@ -359,7 +359,7 @@ class Installation
      *
      * @return array<string, mixed>
      */
-    public function report(array $checkKeys = null): array
+    public function report(?array $checkKeys = null): array
     {
         $map = [
             'rootDir' => fn(): string => $this->installationState->getWpRootDir(),

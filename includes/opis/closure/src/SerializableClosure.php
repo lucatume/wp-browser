@@ -321,7 +321,7 @@ class SerializableClosure implements Serializable
      *
      * @internal
      */
-    public static function wrapClosures(&$data, SplObjectStorage $storage = null)
+    public static function wrapClosures(&$data, ?SplObjectStorage $storage = null)
     {
         if ($storage === null) {
             $storage = static::$context->scope;
@@ -395,7 +395,7 @@ class SerializableClosure implements Serializable
      *
      * @internal
      */
-    public static function unwrapClosures(&$data, SplObjectStorage $storage = null)
+    public static function unwrapClosures(&$data, ?SplObjectStorage $storage = null)
     {
         if ($storage === null) {
             $storage = static::$context->scope;

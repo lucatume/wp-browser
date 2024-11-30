@@ -16,7 +16,7 @@ class MachineInformation
     private string $operatingSystem;
     private string $architecture;
 
-    public function __construct(string $operatingSystem = null, string $architecture = null)
+    public function __construct(?string $operatingSystem = null, ?string $architecture = null)
     {
         $this->operatingSystem = $operatingSystem ?? match (strtolower(substr(php_uname('s'), 0, 3))) {
             'dar' => self::OS_DARWIN,

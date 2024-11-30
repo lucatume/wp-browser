@@ -110,7 +110,7 @@ class Filesystem
      *
      * @throws InvalidArgumentException If the root or path cannot be resolved.
      */
-    public static function resolvePath(string $path, string $root = null): bool|string
+    public static function resolvePath(string $path, ?string $root = null): bool|string
     {
         $root = $root ?? getcwd();
 

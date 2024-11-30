@@ -43,7 +43,7 @@ class MysqlServer implements ManagedProcessInterface
      * @throws RuntimeException
      */
     public function __construct(
-        string $directory = null,
+        ?string $directory = null,
         private int $port = self::PORT_DEFAULT,
         private string $database = 'wordpress',
         private string $user = 'wordpress',
@@ -550,7 +550,7 @@ class MysqlServer implements ManagedProcessInterface
         return $this->usingCustomBinary;
     }
 
-    public function setOutput(OutputInterface $output = null): void
+    public function setOutput(?OutputInterface $output = null): void
     {
         $this->output = $output;
     }
