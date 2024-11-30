@@ -340,7 +340,7 @@ namespace tad\WPBrowser {
     /**
      * @deprecated Use `Codeception\Util\Debug::isEnabled` instead.
      */
-    function isDebug(bool ?$activate = null): bool
+    function isDebug(?bool $activate = null): bool
     {
         return Debug::isEnabled();
     }
