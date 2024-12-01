@@ -602,8 +602,8 @@ class WPDb extends Db
     public function seePostWithTermInDatabase(
         int $post_id,
         int $term_taxonomy_id,
-        int $term_order = null,
-        string $taxonomy = null
+        ?int $term_order = null,
+        ?string $taxonomy = null
     ): void {
         if ($taxonomy !== null) {
             $match = $this->grabTermTaxonomyIdFromDatabase([
@@ -3651,7 +3651,7 @@ class WPDb extends Db
     public function haveMenuItemInDatabase(
         string $menuSlug,
         string $title,
-        int $menuOrder = null,
+        ?int $menuOrder = null,
         array $meta = []
     ): int {
         if (empty($this->stylesheet)) {
@@ -3748,7 +3748,7 @@ class WPDb extends Db
         string $file,
         string|int $date = 'now',
         array $overrides = [],
-        array $imageSizes = null
+        ?array $imageSizes = null
     ): int {
         if (!class_exists(ImageResize::class)) {
             $message = 'The "haveAttachmentInDatabase" method requires the "gumlet/php-image-resize:^1.6" package.' .
@@ -4525,8 +4525,8 @@ class WPDb extends Db
     public function dontSeePostWithTermInDatabase(
         int $post_id,
         int $term_taxonomy_id,
-        int $term_order = null,
-        string $taxonomy = null
+        ?int $term_order = null,
+        ?string $taxonomy = null
     ): void {
         if ($taxonomy !== null) {
             $match = $this->grabTermTaxonomyIdFromDatabase([

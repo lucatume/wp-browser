@@ -20,8 +20,8 @@ trait LoopIsolation
      */
     protected function assertInIsolation(
         Closure $runAssertions,
-        string $cwd = null,
-        array $requireFiles = [],
+        ?string $cwd = null,
+        ?array $requireFiles = [],
     ): mixed {
         $options = ['cwd' => $cwd, 'rethrow' => false];
 

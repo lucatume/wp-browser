@@ -1300,7 +1300,7 @@ CSS;
     public function getBlogUploadsPath(
         int $blogId,
         string $file = '',
-        DateTimeImmutable|DateTime|string $date = null
+        DateTimeImmutable|DateTime|string|null $date = null
     ): string {
         $dateFrag = $date !== null ?
             $this->buildDateFrag($date)

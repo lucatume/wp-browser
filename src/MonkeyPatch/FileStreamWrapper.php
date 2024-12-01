@@ -30,7 +30,7 @@ class FileStreamWrapper
         string $file,
         PatcherInterface $patcher,
         bool $redirectOpenedPath = true,
-        string $context = null
+        ?string $context = null
     ): void {
         $fromFilePath = FS::realpath($file) ?: $file;
         self::$fileToPatcherMap[$fromFilePath] = [$patcher, $redirectOpenedPath, $context ?? ''];
@@ -71,7 +71,7 @@ class FileStreamWrapper
     /**
      * @throws MonkeyPatchingException
      */
-    public function stream_open(string $path, string $mode, int $options, string &$openedPath = null): bool
+    public function stream_open(string $path, string $mode, int $options, ?string &$openedPath = null): bool
     {
         self::unregister();
 

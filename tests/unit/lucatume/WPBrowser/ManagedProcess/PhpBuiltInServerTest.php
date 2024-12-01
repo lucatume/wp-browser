@@ -16,8 +16,8 @@ class PhpBuiltinServerProcessMock extends Process
 
     public function __construct(
         array $command,
-        string $cwd = null,
-        array $env = null,
+        ?string $cwd = null,
+        ?array $env = null,
         mixed $input = null,
         ?float $timeout = 60
     ) {
