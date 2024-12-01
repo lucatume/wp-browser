@@ -189,7 +189,7 @@ class Installation
     public function configure(
         DatabaseInterface $db,
         int $multisite = InstallationStateInterface::SINGLE_SITE,
-        ConfigurationData $configurationData = null
+        ?ConfigurationData $configurationData = null
     ): self {
         $this->installationState = $this->installationState->configure($db, $multisite, $configurationData);
 

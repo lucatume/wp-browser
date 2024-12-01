@@ -14,7 +14,7 @@ class Result
         private string $stdoutBuffer = '',
         private string $stderrBuffer = '',
         private mixed $returnValue = null,
-        int $memoryUsage = null
+        ?int $memoryUsage = null
     ) {
         $this->memoryUsage = $memoryUsage;
     }

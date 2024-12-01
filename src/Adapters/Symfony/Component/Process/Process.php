@@ -20,11 +20,11 @@ class Process extends SymfonyProcess
      */
     public function __construct(
         array $command,
-        string $cwd = null,
-        array $env = null,
+        ?string $cwd = null,
+        ?array $env = null,
         mixed $input = null,
         ?float $timeout = 60,
-        array $options = null
+        ?array $options = null
     ) {
         parent::__construct($command, $cwd, $env, $input, $timeout, $options); //@phpstan-ignore-line
 

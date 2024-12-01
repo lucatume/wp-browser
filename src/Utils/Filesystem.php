@@ -325,7 +325,7 @@ class Filesystem
         string $prefix = '',
         array $contents = [],
         int $mode = 0777,
-        string $tmpRootDir = null
+        ?string $tmpRootDir = null
     ): string {
         if ($tmpRootDir === null) {
             $tmpRootDir = Env::get('TEST_TMP_ROOT_DIR') ?? codecept_output_dir('tmp');
