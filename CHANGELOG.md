@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.4.0] 2024-12-08;
+
 ## Added
 
 - Support for PHP 8.4. (thanks @kagg-design)
@@ -2319,4 +2321,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.3.8]: https://github.com/lucatume/wp-browser/compare/4.3.7...4.3.8
 [4.3.9]: https://github.com/lucatume/wp-browser/compare/4.3.8...4.3.9
 [4.3.10]: https://github.com/lucatume/wp-browser/compare/4.3.9...4.3.10
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.3.10...HEAD
+[4.4.0]: https://github.com/lucatume/wp-browser/compare/4.3.10...4.4.0
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.4.0...HEAD
