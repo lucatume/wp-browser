@@ -283,7 +283,7 @@ class WPCLI extends Module
      */
     public function cliToArray(
         array $command,
-        callable $splitCallback = null,
+        ?callable $splitCallback = null,
         ?array $env = null,
         mixed $input = null
     ): array {

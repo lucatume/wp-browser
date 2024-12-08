@@ -561,7 +561,7 @@ class WPLoader extends Module
      *
      * @return string The absolute path to the WordPress root folder or a path within it.
      */
-    public function getWpRootFolder(string $path = null): string
+    public function getWpRootFolder(?string $path = null): string
     {
         return $this->installation->getWpRootDir($path);
     }

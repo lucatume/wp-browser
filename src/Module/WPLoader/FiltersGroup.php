@@ -40,8 +40,8 @@ class FiltersGroup
          * An array detailing each filter callback, priority and arguments.
          */
         protected array $filters = [],
-        callable $removeWith = null,
-        callable $addWith = null
+        ?callable $removeWith = null,
+        ?callable $addWith = null
     ) {
         $this->removeCallback = $removeWith ?? 'remove_filter';
         $this->addCallback    = $addWith ?? 'add_filter';

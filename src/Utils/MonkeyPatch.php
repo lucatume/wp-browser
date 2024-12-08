@@ -14,7 +14,7 @@ class MonkeyPatch
         string $fromFile,
         string $toFile,
         bool $redirectOpenedPath = true,
-        string $context = null
+        ?string $context = null
     ): void {
         FileStreamWrapper::setPatcherForFile(
             $fromFile,
@@ -33,7 +33,7 @@ class MonkeyPatch
         string $fromFile,
         string $fileContents,
         bool $redirectOpenedPath = true,
-        string $context = null
+        ?string $context = null
     ): void {
         FileStreamWrapper::setPatcherForFile(
             $fromFile,

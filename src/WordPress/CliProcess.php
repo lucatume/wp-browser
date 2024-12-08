@@ -57,8 +57,8 @@ class CliProcess extends Process
      */
     public static function fromShellCommandline(
         string $command,
-        string $cwd = null,
-        array $env = null,
+        ?string $cwd = null,
+        ?array $env = null,
         mixed $input = null,
         ?float $timeout = 60
     ): static {

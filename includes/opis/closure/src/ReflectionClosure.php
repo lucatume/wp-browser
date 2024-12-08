@@ -40,7 +40,7 @@ class ReflectionClosure extends ReflectionFunction
      *
      * @throws \ReflectionException
      */
-    public function __construct(Closure $closure, string $code = null)
+    public function __construct(Closure $closure, ?string $code = null)
     {
         parent::__construct($closure);
     }

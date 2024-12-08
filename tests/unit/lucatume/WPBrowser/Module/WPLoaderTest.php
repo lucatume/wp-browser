@@ -704,11 +704,11 @@ class WPLoaderTest extends Unit
             Assert::assertFalse(defined('ABSPATH'));
 
             $actions = [];
-            Dispatcher::addListener(WPLoader::EVENT_BEFORE_LOADONLY, static function () use (&$actions) {
-                $actions[] = WPLoader::EVENT_BEFORE_LOADONLY;
+            Dispatcher::addListener(\lucatume\WPBrowser\Module\WPLoader::EVENT_BEFORE_LOADONLY, static function () use (&$actions) {
+                $actions[] = \lucatume\WPBrowser\Module\WPLoader::EVENT_BEFORE_LOADONLY;
             });
-            Dispatcher::addListener(WPLoader::EVENT_AFTER_LOADONLY, static function () use (&$actions) {
-                $actions[] = WPLoader::EVENT_AFTER_LOADONLY;
+            Dispatcher::addListener(\lucatume\WPBrowser\Module\WPLoader::EVENT_AFTER_LOADONLY, static function () use (&$actions) {
+                $actions[] = \lucatume\WPBrowser\Module\WPLoader::EVENT_AFTER_LOADONLY;
             });
 
             $wpLoader->_loadWordPress();
@@ -716,8 +716,8 @@ class WPLoaderTest extends Unit
             Assert::assertEquals('test_file_002.php', getenv('LOADED_2'));
             Assert::assertEquals($wpRootDir . '/', ABSPATH);
             Assert::assertEquals([
-                WPLoader::EVENT_BEFORE_LOADONLY,
-                WPLoader::EVENT_AFTER_LOADONLY,
+                \lucatume\WPBrowser\Module\WPLoader::EVENT_BEFORE_LOADONLY,
+                \lucatume\WPBrowser\Module\WPLoader::EVENT_AFTER_LOADONLY,
             ], $actions);
             Assert::assertInstanceOf(FactoryStore::class, $wpLoader->factory());
         });
@@ -1022,10 +1022,10 @@ class WPLoaderTest extends Unit
         $wpLoader = $this->module();
         $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
             $actions = [];
-            Dispatcher::addListener(WPLoader::EVENT_BEFORE_INSTALL, function () use (&$actions) {
+            Dispatcher::addListener(\lucatume\WPBrowser\Module\WPLoader::EVENT_BEFORE_INSTALL, function () use (&$actions) {
                 $actions[] = 'before_install';
             });
-            Dispatcher::addListener(WPLoader::EVENT_AFTER_INSTALL, function () use (&$actions) {
+            Dispatcher::addListener(\lucatume\WPBrowser\Module\WPLoader::EVENT_AFTER_INSTALL, function () use (&$actions) {
                 $actions[] = 'after_install';
             });
 
@@ -1113,10 +1113,10 @@ class WPLoaderTest extends Unit
         $wpLoader = $this->module();
         $installationOutput = $this->assertInIsolation(static function () use ($wpLoader, $wpRootDir) {
             $actions = [];
-            Dispatcher::addListener(WPLoader::EVENT_BEFORE_INSTALL, function () use (&$actions) {
+            Dispatcher::addListener(\lucatume\WPBrowser\Module\WPLoader::EVENT_BEFORE_INSTALL, function () use (&$actions) {
                 $actions[] = 'before_install';
             });
-            Dispatcher::addListener(WPLoader::EVENT_AFTER_INSTALL, function () use (&$actions) {
+            Dispatcher::addListener(\lucatume\WPBrowser\Module\WPLoader::EVENT_AFTER_INSTALL, function () use (&$actions) {
                 $actions[] = 'after_install';
             });
 
@@ -2581,13 +2581,13 @@ PHP
                 $beforeInstallCalled = false;
                 $afterInstallCalled = false;
                 $afterBootstrapCalled = false;
-                Dispatcher::addListener(WPLoader::EVENT_BEFORE_INSTALL, function () use (&$beforeInstallCalled) {
+                Dispatcher::addListener(\lucatume\WPBrowser\Module\WPLoader::EVENT_BEFORE_INSTALL, function () use (&$beforeInstallCalled) {
                     $beforeInstallCalled = true;
                 });
-                Dispatcher::addListener(WPLoader::EVENT_AFTER_INSTALL, function () use (&$afterInstallCalled) {
+                Dispatcher::addListener(\lucatume\WPBrowser\Module\WPLoader::EVENT_AFTER_INSTALL, function () use (&$afterInstallCalled) {
                     $afterInstallCalled = true;
                 });
-                Dispatcher::addListener(WPLoader::EVENT_AFTER_BOOTSTRAP, function () use (&$afterBootstrapCalled) {
+                Dispatcher::addListener(\lucatume\WPBrowser\Module\WPLoader::EVENT_AFTER_BOOTSTRAP, function () use (&$afterBootstrapCalled) {
                     $afterBootstrapCalled = true;
                 });
 
@@ -2628,13 +2628,13 @@ PHP
                 $beforeInstallCalled = false;
                 $afterInstallCalled = false;
                 $afterBootstrapCalled = false;
-                Dispatcher::addListener(WPLoader::EVENT_BEFORE_INSTALL, function () use (&$beforeInstallCalled) {
+                Dispatcher::addListener(\lucatume\WPBrowser\Module\WPLoader::EVENT_BEFORE_INSTALL, function () use (&$beforeInstallCalled) {
                     $beforeInstallCalled = true;
                 });
-                Dispatcher::addListener(WPLoader::EVENT_AFTER_INSTALL, function () use (&$afterInstallCalled) {
+                Dispatcher::addListener(\lucatume\WPBrowser\Module\WPLoader::EVENT_AFTER_INSTALL, function () use (&$afterInstallCalled) {
                     $afterInstallCalled = true;
                 });
-                Dispatcher::addListener(WPLoader::EVENT_AFTER_BOOTSTRAP, function () use (&$afterBootstrapCalled) {
+                Dispatcher::addListener(\lucatume\WPBrowser\Module\WPLoader::EVENT_AFTER_BOOTSTRAP, function () use (&$afterBootstrapCalled) {
                     $afterBootstrapCalled = true;
                 });
 
@@ -2664,13 +2664,13 @@ PHP
                 $beforeInstallCalled = false;
                 $afterInstallCalled = false;
                 $afterBootstrapCalled = false;
-                Dispatcher::addListener(WPLoader::EVENT_BEFORE_INSTALL, function () use (&$beforeInstallCalled) {
+                Dispatcher::addListener(\lucatume\WPBrowser\Module\WPLoader::EVENT_BEFORE_INSTALL, function () use (&$beforeInstallCalled) {
                     $beforeInstallCalled = true;
                 });
-                Dispatcher::addListener(WPLoader::EVENT_AFTER_INSTALL, function () use (&$afterInstallCalled) {
+                Dispatcher::addListener(\lucatume\WPBrowser\Module\WPLoader::EVENT_AFTER_INSTALL, function () use (&$afterInstallCalled) {
                     $afterInstallCalled = true;
                 });
-                Dispatcher::addListener(WPLoader::EVENT_AFTER_BOOTSTRAP, function () use (&$afterBootstrapCalled) {
+                Dispatcher::addListener(\lucatume\WPBrowser\Module\WPLoader::EVENT_AFTER_BOOTSTRAP, function () use (&$afterBootstrapCalled) {
                     $afterBootstrapCalled = true;
                 });
                 uopz_set_return(Debug::class, 'isEnabled', true);

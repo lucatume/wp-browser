@@ -7,7 +7,7 @@ interface PatcherInterface
     /**
      * @return array{string, string}
      */
-    public function patch(string $fileContents, string $pathname, string $context = null): array;
+    public function patch(string $fileContents, string $pathname, ?string $context = null): array;
 
     /**
      * @return array{

@@ -42,7 +42,7 @@ namespace tad\WPBrowser {
     /**
      * @deprecated Use \lucatume\WPBrowser\Utils\MysqlDatabase::db instead.
      */
-    function db(string $dsn, string $user, string $pass, string $dbName = null): callable
+    function db(string $dsn, string $user, string $pass, ?string $dbName = null): callable
     {
         return Db::db($dsn, $user, $pass, $dbName);
     }
@@ -73,7 +73,7 @@ namespace tad\WPBrowser {
      * }
      * @deprecated Use \lucatume\WPBrowser\Utils\MysqlDatabase::dbCredentials instead.
      */
-    function dbCredentials(array $dsn, string $dbuser, string $dbpass, string $dbname = null): array
+    function dbCredentials(array $dsn, string $dbuser, string $dbpass, ?string $dbname = null): array
     {
         return Db::dbCredentials($dsn, $dbuser, $dbpass, $dbname);
     }
@@ -159,7 +159,7 @@ namespace tad\WPBrowser {
     /**
      * @deprecated Use `lucatume\WPBrowser\Utils\Filesystem::resolvePath` instead.
      */
-    function resolvePath(string $path, string $root = null): bool|string
+    function resolvePath(string $path, ?string $root = null): bool|string
     {
         return Filesystem::resolvePath($path, $root);
     }
@@ -340,7 +340,7 @@ namespace tad\WPBrowser {
     /**
      * @deprecated Use `Codeception\Util\Debug::isEnabled` instead.
      */
-    function isDebug(bool $activate = null): bool
+    function isDebug(?bool $activate = null): bool
     {
         return Debug::isEnabled();
     }
@@ -406,7 +406,7 @@ namespace tad\WPBrowser {
      * @return array<string>
      * @deprecated Use `lucatume\WPBrowser\Utils\WP::dropWpTables` instead.
      */
-    function dropWpTables(wpdb $wpdb, array $tables = null): array
+    function dropWpTables(wpdb $wpdb, ?array $tables = null): array
     {
         return WP::dropWpTables($wpdb, $tables);
     }
@@ -416,7 +416,7 @@ namespace tad\WPBrowser {
      * @return array<string>
      * @deprecated Use `lucatume\WPBrowser\Utils\WP::emptyWpTables` instead.
      */
-    function emptyWpTables(wpdb $wpdb, array $tables = null): array
+    function emptyWpTables(wpdb $wpdb, ?array $tables = null): array
     {
         return WP::emptyWpTables($wpdb, $tables);
     }
