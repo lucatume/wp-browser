@@ -74,8 +74,8 @@ class WPLoaderArbitraryPluginLocationTest extends Unit
 /**
  * Plugin Name: Test One
  */
- 
- function test_one_loaded(){}
+
+function test_one_loaded(){}
 PHP
         )) {
             throw new \RuntimeException('Unable to create test plugin file for plugin test-one');
@@ -91,7 +91,7 @@ PHP
  * Plugin Name: Test Two
  */
  
- function test_two_loaded(){}
+function test_two_loaded(){}
 PHP
         )) {
             throw new \RuntimeException('Unable to create test plugin file for plugin test-two');
@@ -117,6 +117,97 @@ PHP
 
                 Assert::assertTrue(function_exists('test_one_loaded'));
                 Assert::assertTrue(function_exists('test_two_loaded'));
+                Assert::assertEquals(
+                    ['test-one/plugin.php','test-two/plugin.php'],
+                    get_option('active_plugins')
+                );
+                global $wpdb;
+                Assert::assertEquals(
+                    serialize(['test-one/plugin.php','test-two/plugin.php']),
+                    $wpdb->get_var("select option_value from {$wpdb->prefix}options where option_name = 'active_plugins'")
+                );
+            }
+        );
+    }
+
+    public function test_loads_plugins_and_ensures_them_loaded(): void
+    {
+        $projectDir = FS::tmpDir('wploader_');
+        $installation = Installation::scaffold($projectDir);
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $installationDb = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
+        if (!mkdir($projectDir . '/wp-content/plugins/test-one', 0777, true)) {
+            throw new \RuntimeException('Unable to create test directory for plugin test-one');
+        }
+        if (!file_put_contents(
+            $projectDir . '/wp-content/plugins/test-one/plugin.php',
+            <<< PHP
+<?php
+/**
+ * Plugin Name: Test One
+ */
+
+function test_one_loaded(){}
+PHP
+        )) {
+            throw new \RuntimeException('Unable to create test plugin file for plugin test-one');
+        }
+        if (!mkdir($projectDir . '/wp-content/plugins/test-two', 0777, true)) {
+            throw new \RuntimeException('Unable to create test directory for plugin test-two');
+        }
+        if (!file_put_contents(
+            $projectDir . '/wp-content/plugins/test-two/plugin.php',
+            <<< PHP
+<?php
+/**
+ * Plugin Name: Test Two
+ * Description: During activation this plugin will clear the `active_plugins` option for reasons.
+ */
+ 
+function test_two_loaded(){ }
+
+function test_two_activated(){
+    update_option('active_plugins', []);
+}
+
+register_activation_hook(__FILE__, 'test_two_activated');
+PHP
+        )) {
+            throw new \RuntimeException('Unable to create test plugin file for plugin test-two');
+        }
+
+        $this->config = [
+            'wpRootFolder' => $projectDir,
+            'dbUrl' => $installationDb->getDbUrl(),
+            'tablePrefix' => 'test_',
+            'plugins' => [
+                'test-one/plugin.php',
+                'test-two/plugin.php',
+            ]
+        ];
+        $wpLoader = $this->module();
+        $projectDirname = basename($projectDir);
+
+        $this->assertInIsolation(
+            static function () use ($wpLoader, $projectDir) {
+                chdir($projectDir);
+
+                $wpLoader->_initialize();
+
+                Assert::assertTrue(function_exists('test_one_loaded'));
+                Assert::assertTrue(function_exists('test_two_loaded'));
+                Assert::assertEquals(
+                    ['test-one/plugin.php','test-two/plugin.php'],
+                    get_option('active_plugins')
+                );
+                global $wpdb;
+                Assert::assertEquals(
+                    serialize(['test-one/plugin.php','test-two/plugin.php']),
+                    $wpdb->get_var("select option_value from {$wpdb->prefix}options where option_name = 'active_plugins'")
+                );
             }
         );
     }
