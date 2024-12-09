@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.7.11] 2024-12-09;
+
 ### Fixed
 
 - Ensure plugin activation is respected indifferent of plugins that might deactivate others during activation.
@@ -2072,4 +2074,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.7.8]: https://github.com/lucatume/wp-browser/compare/3.7.7...3.7.8
 [3.7.9]: https://github.com/lucatume/wp-browser/compare/3.7.8...3.7.9
 [3.7.10]: https://github.com/lucatume/wp-browser/compare/3.7.9...3.7.10
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.10...HEAD
+[3.7.11]: https://github.com/lucatume/wp-browser/compare/3.7.10...3.7.11
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.11...HEAD
