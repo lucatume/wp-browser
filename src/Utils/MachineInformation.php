@@ -22,7 +22,7 @@ class MachineInformation
      */
     private $architecture;
 
-    public function __construct(string $operatingSystem = null, string $architecture = null)
+    public function __construct(?string $operatingSystem = null, ?string $architecture = null)
     {
         switch (strtolower(substr(php_uname('s'), 0, 3))) {
             case 'dar':

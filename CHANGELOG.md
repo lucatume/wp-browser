@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Ensure plugin activation is respected indifferent of plugins that might deactivate others during activation.
+
 ## [3.7.10] 2024-11-29;
 
 ## Fixed

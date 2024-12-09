@@ -37,7 +37,7 @@ class Result
         string $stdoutBuffer = '',
         string $stderrBuffer = '',
         $returnValue = null,
-        int $memoryUsage = null
+        ?int $memoryUsage = null
     ) {
         $this->id = $id;
         $this->exitCode = $exitCode;

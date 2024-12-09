@@ -132,7 +132,7 @@ trait WPBrowserMethods
      *
      * @return FacebookWebdriverCookie|Cookie|null The WordPress authorization cookie or `null` if not found.
      */
-    protected function grabWordPressAuthCookie(string $pattern = null)
+    protected function grabWordPressAuthCookie(?string $pattern = null)
     {
         $pattern = $pattern ?: '/^wordpress_[a-z0-9]{32}$/';
         $cookies = $this->grabCookiesWithPattern($pattern);
@@ -147,7 +147,7 @@ trait WPBrowserMethods
      *
      * @return FacebookWebdriverCookie|Cookie|null The WordPress login cookie or `null` if not found.
      */
-    protected function grabWordPressLoginCookie(string $pattern = null)
+    protected function grabWordPressLoginCookie(?string $pattern = null)
     {
         $pattern = $pattern ?: '/^wordpress_logged_in_[a-z0-9]{32}$/';
         $cookies = $this->grabCookiesWithPattern($pattern);
@@ -365,7 +365,7 @@ trait WPBrowserMethods
      *
      * @return Cookie|null Either a cookie object or `null`.
      */
-    public function grabWordPressTestCookie(string $name = null): ?Cookie
+    public function grabWordPressTestCookie(?string $name = null): ?Cookie
     {
         $name = $name ?: 'wordpress_test_cookie';
 

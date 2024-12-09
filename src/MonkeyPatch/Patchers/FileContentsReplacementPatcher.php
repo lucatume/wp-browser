@@ -20,7 +20,7 @@ class FileContentsReplacementPatcher implements PatcherInterface
     /**
      * @throws MonkeyPatchingException
      */
-    public function patch(string $fileContents, string $pathname, string $context = null): array
+    public function patch(string $fileContents, string $pathname, ?string $context = null): array
     {
         $replacementFile = MonkeyPatch::getReplacementFileName($pathname, $context ?? $this->fileContents);
 

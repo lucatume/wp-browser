@@ -108,7 +108,7 @@ class Composer
     /**
      * @throws JsonException
      */
-    public function update(string $package = null): void
+    public function update(?string $package = null): void
     {
         $this->write();
         $this->runUpdate($package);
@@ -133,7 +133,7 @@ class Composer
     /**
      * @throws RuntimeException
      */
-    private function runUpdate(string $package = null): void
+    private function runUpdate(?string $package = null): void
     {
         $lockFileExists = file_exists(dirname($this->composerJsonFile) . '/composer.lock');
         $command = $package && $lockFileExists ?

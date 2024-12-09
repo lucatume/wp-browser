@@ -466,7 +466,7 @@ class WPLoader extends Module
             if (empty($config['dbHost']) && strncmp($config['dbName'], codecept_root_dir(), strlen(codecept_root_dir())) === 0) {
                 $dbFile = (array_reverse(explode(DIRECTORY_SEPARATOR, $config['dbName']))[0]);
                 $dbDir = rtrim(str_replace($dbFile, '', $config['dbName']), DIRECTORY_SEPARATOR);
-                $db = new SqliteDatabase($dbDir, $dbFile);
+                $db = new SqliteDatabase($dbDir, $dbFile, $config['tablePrefix']);
             } else {
                 $db = new MysqlDatabase(
                     $config['dbName'],
@@ -590,7 +590,7 @@ class WPLoader extends Module
      *
      * @return string The absolute path to the WordPress root folder or a path within it.
      */
-    public function getWpRootFolder(string $path = null): string
+    public function getWpRootFolder(?string $path = null): string
     {
         return $this->installation->getWpRootDir($path);
     }
@@ -1171,13 +1171,10 @@ class WPLoader extends Module
             $database->updateOption('stylesheet', $database->getOption('stylesheet'));
         }
 
-        // Flush the cache to force the refetch of the options' value.
-        wp_cache_delete('alloptions', 'options');
-
         // Do not include external plugins, it would create issues at this stage.
         $pluginsDir = $this->getPluginsFolder();
 
-        return array_values(
+        $activePlugins = array_values(
             array_filter(
                 $plugins,
                 static function (string $plugin) use ($pluginsDir) {
@@ -1185,6 +1182,15 @@ class WPLoader extends Module
                 }
             )
         );
+
+        // During activation some plugins could deactivate other plugins: protect from it.
+        $database->updateOption('active_plugins', $activePlugins);
+
+        // Flush the cache to force the refetch of the options' value.
+        wp_cache_delete('alloptions', 'options');
+
+
+        return $activePlugins;
     }
 
     /**

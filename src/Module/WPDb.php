@@ -216,7 +216,7 @@ class WPDb extends Db
      *
      * @return void
      */
-    public function __construct(ModuleContainer $moduleContainer, ?array $config = null, DbDump $dbDump = null)
+    public function __construct(ModuleContainer $moduleContainer, ?array $config = null, ?DbDump $dbDump = null)
     {
         parent::__construct($moduleContainer, $config);
         $this->dbDump = $dbDump ?? new DbDump();
@@ -356,7 +356,7 @@ class WPDb extends Db
      *
      * @throws ModuleException It the database cannot be correctly initialized.
      */
-    public function _initialize(Tables $table = null): void
+    public function _initialize(?Tables $table = null): void
     {
         /**
          * Dispatches an event before the WPDb module initializes.
@@ -396,7 +396,7 @@ class WPDb extends Db
      *
      * @throws ModuleConfigException|ModuleException If there's an issue during the cleanup phase.
      */
-    public function importSqlDumpFile(string $dumpFile = null): void
+    public function importSqlDumpFile(?string $dumpFile = null): void
     {
         if ($dumpFile !== null) {
             if (!is_file($dumpFile) || !is_readable($dumpFile)) {
@@ -611,8 +611,8 @@ class WPDb extends Db
     public function seePostWithTermInDatabase(
         int $post_id,
         int $term_taxonomy_id,
-        int $term_order = null,
-        string $taxonomy = null
+        ?int $term_order = null,
+        ?string $taxonomy = null
     ): void {
         if ($taxonomy !== null) {
             $match = $this->grabTermTaxonomyIdFromDatabase([
@@ -3574,7 +3574,7 @@ class WPDb extends Db
      * @param string|null $themeName The theme name, e.g. `Acme`, defaults to the "title" version of
      *                                     `$stylesheet`.
      */
-    public function useTheme(string $stylesheet, string $template = null, string $themeName = null): void
+    public function useTheme(string $stylesheet, ?string $template = null, ?string $themeName = null): void
     {
         $template = $template ?: $stylesheet;
         $themeName = $themeName ?: ucwords($stylesheet, ' _');
@@ -3654,7 +3654,7 @@ class WPDb extends Db
     public function haveMenuItemInDatabase(
         string $menuSlug,
         string $title,
-        int $menuOrder = null,
+        ?int $menuOrder = null,
         array $meta = []
     ): int {
         if (empty($this->stylesheet)) {
@@ -3751,7 +3751,7 @@ class WPDb extends Db
         string $file,
         $date = 'now',
         array $overrides = [],
-        array $imageSizes = null
+        ?array $imageSizes = null
     ): int {
         if (!class_exists(ImageResize::class)) {
             $message = 'The "haveAttachmentInDatabase" method requires the "gumlet/php-image-resize:^1.6" package.' .
@@ -3902,7 +3902,7 @@ class WPDb extends Db
      *
      * @return string The current site URL
      */
-    public function grabSiteUrl(string $path = null): string
+    public function grabSiteUrl(?string $path = null): string
     {
         /** @var array{url: string} $config Validated module config. */
         $config = $this->config;
@@ -4528,8 +4528,8 @@ class WPDb extends Db
     public function dontSeePostWithTermInDatabase(
         int $post_id,
         int $term_taxonomy_id,
-        int $term_order = null,
-        string $taxonomy = null
+        ?int $term_order = null,
+        ?string $taxonomy = null
     ): void {
         if ($taxonomy !== null) {
             $match = $this->grabTermTaxonomyIdFromDatabase([

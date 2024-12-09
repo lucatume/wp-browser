@@ -42,8 +42,8 @@ class FiltersGroup
      */
     public function __construct(
         array $filters = [],
-        callable $removeWith = null,
-        callable $addWith = null
+        ?callable $removeWith = null,
+        ?callable $addWith = null
     ) {
         /**
          * An array detailing each filter callback, priority and arguments.

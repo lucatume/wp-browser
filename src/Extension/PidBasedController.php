@@ -79,7 +79,7 @@ trait PidBasedController
             return false;
         }
 
-        if (PHP_OS_FAMILY === 'Windows') {
+        if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
             $output = [];
             exec("tasklist /FI \"PID eq $pid\" 2>NUL", $output);
 

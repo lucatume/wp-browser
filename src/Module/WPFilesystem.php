@@ -501,7 +501,7 @@ class WPFilesystem extends Filesystem
      *
      * @param string|null $dir               The path to the directory to delete, relative to the uploads folder.
      */
-    public function cleanUploadsDir(string $dir = null, $date = null): void
+    public function cleanUploadsDir(?string $dir = null, $date = null): void
     {
         $dir = null === $dir ? $this->config['uploads'] : $this->getUploadsPath(
             $dir,

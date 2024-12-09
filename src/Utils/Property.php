@@ -60,7 +60,7 @@ class Property
         $object,
         string $class,
         array $props,
-        array &$propsToSet = null
+        ?array &$propsToSet = null
     ) {
         if (!class_exists($class)) {
             throw new InvalidArgumentException(

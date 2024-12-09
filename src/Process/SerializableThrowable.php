@@ -28,7 +28,7 @@ class SerializableThrowable
      */
     private $line;
     /**
-     * @var int
+     * @var int|string
      */
     private $code;
     /**
@@ -60,13 +60,13 @@ class SerializableThrowable
      *     colorize: bool,
      *     throwable: Throwable,
      *     message: string,
-     *     code: int,
+     *     code: int|string,
      *     file: string,
      *     line: int,
      *     trace: array<int,array<string,mixed>>
      * }
      */
-    public function __serialize(): array // phpcs:ignore
+    public function __serialize(): array
     {
         return [
             'colorize' => $this->colorize,
@@ -92,7 +92,7 @@ class SerializableThrowable
      *
      * @throws ReflectionException
      */
-    public function __unserialize(array $data): void // phpcs:ignore
+    public function __unserialize(array $data): void
     {
         $this->throwable = $data['throwable'];
         $this->colorize = $data['colorize'];
@@ -133,7 +133,7 @@ class SerializableThrowable
         $updatedTrace = [];
         $streamIsatty = function ($stream) {
             if (\function_exists('stream_isatty')) {
-                return stream_isatty($stream); // phpcs:ignore
+                return stream_isatty($stream);
             }
             if (!\is_resource($stream)) {
                 trigger_error('stream_isatty() expects parameter 1 to be resource, ' . \gettype($stream) . ' given', \E_USER_WARNING);

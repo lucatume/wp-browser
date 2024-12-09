@@ -6,7 +6,7 @@ use Codeception\Codecept;
 
 class Codeception
 {
-    public static function dataDir(string $rootDir = null): string
+    public static function dataDir(?string $rootDir = null): string
     {
         $relDataPath = version_compare(Codecept::VERSION, '5.0.0', '>=')
             ? implode(DIRECTORY_SEPARATOR, ['tests', 'Support', 'Data'])
@@ -16,7 +16,7 @@ class Codeception
             : $relDataPath;
     }
 
-    public static function supportDir(string $rootDir = null): string
+    public static function supportDir(?string $rootDir = null): string
     {
         $relSupportPath = version_compare(Codecept::VERSION, '5.0.0', '>=')
             ? implode(DIRECTORY_SEPARATOR, ['tests', 'Support'])

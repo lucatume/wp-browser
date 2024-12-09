@@ -192,7 +192,7 @@ class Installation
     public function configure(
         DatabaseInterface $db,
         int $multisite = InstallationStateInterface::SINGLE_SITE,
-        ConfigurationData $configurationData = null
+        ?ConfigurationData $configurationData = null
     ): self {
         $this->installationState = $this->installationState->configure($db, $multisite, $configurationData);
 
@@ -362,7 +362,7 @@ class Installation
      *
      * @return array<string, mixed>
      */
-    public function report(array $checkKeys = null): array
+    public function report(?array $checkKeys = null): array
     {
         $map = [
             'rootDir' => function () : string {

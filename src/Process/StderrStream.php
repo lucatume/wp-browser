@@ -28,7 +28,7 @@ class StderrStream
      */
     private $currentDatetime;
 
-    public function __construct(string $streamContents, int $options = 0, DateTimeInterface $currentDateTime = null)
+    public function __construct(string $streamContents, int $options = 0, ?DateTimeInterface $currentDateTime = null)
     {
         $this->currentDatetime = $currentDateTime ?: new DateTime();
         $this->parse($streamContents, $options);

@@ -149,7 +149,7 @@ class WPQueries extends Module
      *
      * @param wpdb|null $wpdb
      */
-    public function _getFilteredQueriesIterator(wpdb $wpdb = null): SetupTearDownQueriesFilter
+    public function _getFilteredQueriesIterator(?wpdb $wpdb = null): SetupTearDownQueriesFilter
     {
         if (null === $wpdb) {
             $wpdb = $this->_getWpdb();
@@ -1029,7 +1029,7 @@ class WPQueries extends Module
      *
      * @return int The current count of performed queries.
      */
-    public function countQueries(wpdb $wpdb = null): int
+    public function countQueries(?wpdb $wpdb = null): int
     {
         return count($this->getQueries($wpdb));
     }
@@ -1050,7 +1050,7 @@ class WPQueries extends Module
      *
      * @return array{0: string, 1: float, 2: string, 3: float, 4?: array<int|string,mixed>}[] An array of queries.
      */
-    public function getQueries(wpdb $wpdb = null): array
+    public function getQueries(?wpdb $wpdb = null): array
     {
         /** @var array{0: string, 1: float, 2: string, 3: float, 4?: array<int|string,mixed>}[] $logicQueries */
         $logicQueries = iterator_to_array($this->_getFilteredQueriesIterator($wpdb), false);

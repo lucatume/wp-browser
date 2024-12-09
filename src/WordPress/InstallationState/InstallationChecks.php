@@ -23,7 +23,7 @@ trait InstallationChecks
      * @throws WorkerException
      * @throws ProcessException
      */
-    protected function isInstalled(bool $multisite, DatabaseInterface $db = null): bool
+    protected function isInstalled(bool $multisite, ?DatabaseInterface $db = null): bool
     {
         if ($db === null && property_exists($this, 'db') && $this->db instanceof DatabaseInterface) {
             $db = $this->db;

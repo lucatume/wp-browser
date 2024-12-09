@@ -98,7 +98,7 @@ class Db
      *
      * @throws PDOException If the database connection attempt fails.
      */
-    public static function db(string $dsn, string $user, string $pass, string $dbName = null): Closure
+    public static function db(string $dsn, string $user, string $pass, ?string $dbName = null): Closure
     {
         if ($dbName !== null) {
             // If a dbname is specified, then let's use that and not the one (maybe) specified in the dsn string.
@@ -254,7 +254,7 @@ class Db
      * @return array{dsn: string, user: string, password: string} The database credentials map: dsn string, user and
      *                    password.
      */
-    public static function dbCredentials(array $dsn, string $dbuser, string $dbpass, string $dbname = null): array
+    public static function dbCredentials(array $dsn, string $dbuser, string $dbpass, ?string $dbname = null): array
     {
         $dbname = $dsn['dbname'] ?? $dbname;
         $dbuser = empty($dbuser) ? 'root' : $dbuser;

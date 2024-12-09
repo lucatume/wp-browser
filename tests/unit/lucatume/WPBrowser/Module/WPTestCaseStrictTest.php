@@ -180,7 +180,7 @@ PHP;
     public function should_not_be_strict_about_wpdb_connection_id_in_sq_lite_database(): void
     {
         $wpRootDir = FS::tmpDir('wploader_');
-        $db = new SQLiteDatabase($wpRootDir, 'db.sqlite', 'wp_');
+        $db = new SQLiteDatabase($wpRootDir, 'db.sqlite', 'wptests_');
         Installation::scaffold($wpRootDir);
         $db->create();
         $testcaseFile = $wpRootDir . '/BreakingTest.php';

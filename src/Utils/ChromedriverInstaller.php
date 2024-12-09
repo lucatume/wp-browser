@@ -49,10 +49,10 @@ class ChromedriverInstaller
     private $useEnvZipFile = true;
 
     public function __construct(
-        string $version = null,
-        string $platform = null,
-        string $binary = null,
-        OutputInterface $output = null
+        ?string $version = null,
+        ?string $platform = null,
+        ?string $binary = null,
+        ?OutputInterface $output = null
     ) {
         $this->output = $output ?? new NullOutput();
 
@@ -277,7 +277,7 @@ class ChromedriverInstaller
     /**
      * @throws JsonException
      */
-    public function install(string $dir = null): string
+    public function install(?string $dir = null): string
     {
         if ($dir === null) {
             global $_composer_bin_dir;

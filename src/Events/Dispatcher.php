@@ -17,7 +17,7 @@ class Dispatcher
      */
     private static $eventDispatcher;
 
-    public static function setEventDispatcher(EventDispatcherInterface $eventDispatcher = null): void
+    public static function setEventDispatcher(?EventDispatcherInterface $eventDispatcher = null): void
     {
         $previousEventDispatcher = self::$eventDispatcher;
 

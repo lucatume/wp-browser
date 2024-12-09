@@ -19,7 +19,7 @@ trait LoopIsolation
      * @throws ProcessException
      * @return mixed
      */
-    protected function assertInIsolation(Closure $runAssertions, string $cwd = null, array $requireFiles = [])
+    protected function assertInIsolation(Closure $runAssertions, ?string $cwd = null, ?array $requireFiles = [])
     {
         $options = ['cwd' => $cwd, 'rethrow' => false];
         $callerFile = (new ReflectionObject($this))->getFileName();

@@ -23,7 +23,7 @@ class WpConfigFileGenerator
     /**
      * @throws InstallationException
      */
-    public function __construct(string $wpRootDir, string $relativePathRoot = null)
+    public function __construct(string $wpRootDir, ?string $relativePathRoot = null)
     {
         if (!is_dir($wpRootDir)) {
             throw new InstallationException(

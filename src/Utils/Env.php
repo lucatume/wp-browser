@@ -131,7 +131,7 @@ class Env
     /**
      * @return string|false|null
      */
-    public static function get(string $key, string $default = null)
+    public static function get(string $key, ?string $default = null)
     {
         return $_ENV[$key] ?? $_SERVER[$key] ?? (getenv($key) ?: $default);
     }

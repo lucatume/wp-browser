@@ -85,7 +85,7 @@ class MysqlServer implements ManagedProcessInterface
     /**
      * @throws RuntimeException
      */
-    public function __construct(string $directory = null, int $port = self::PORT_DEFAULT, string $database = 'wordpress', string $user = 'wordpress', string $password = 'wordpress', ?string $binary = null, ?string $shareDir = null)
+    public function __construct(?string $directory = null, int $port = self::PORT_DEFAULT, string $database = 'wordpress', string $user = 'wordpress', string $password = 'wordpress', ?string $binary = null, ?string $shareDir = null)
     {
         $this->port = $port;
         $this->database = $database;
@@ -584,7 +584,7 @@ class MysqlServer implements ManagedProcessInterface
         return $this->usingCustomBinary;
     }
 
-    public function setOutput(OutputInterface $output = null): void
+    public function setOutput(?OutputInterface $output = null): void
     {
         $this->output = $output;
     }
