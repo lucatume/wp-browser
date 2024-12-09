@@ -18,7 +18,7 @@ class SerializableThrowable
     private array $trace;
     private string $file;
     private int $line;
-    private int $code;
+    private int|string $code;
     private string $message;
     private bool $colorize = true;
 
@@ -42,7 +42,7 @@ class SerializableThrowable
      *     colorize: bool,
      *     throwable: Throwable,
      *     message: string,
-     *     code: int,
+     *     code: int|string,
      *     file: string,
      *     line: int,
      *     trace: array<int,array<string,mixed>>
