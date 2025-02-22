@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Avoid duplicated definition issue in `GenerateWPUnit` command.
+- Update MySQL server class download URLs
+
 ## [3.7.11] 2024-12-09;
 
 ### Fixed
