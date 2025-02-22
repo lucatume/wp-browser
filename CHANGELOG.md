@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.4.2] 2025-02-22;
+
 ### Fixed
 
 - Avoid duplicated definition issue in `GenerateWPUnit` command.
@@ -2333,4 +2335,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.3.10]: https://github.com/lucatume/wp-browser/compare/4.3.9...4.3.10
 [4.4.0]: https://github.com/lucatume/wp-browser/compare/4.3.10...4.4.0
 [4.4.1]: https://github.com/lucatume/wp-browser/compare/4.4.0...4.4.1
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.4.1...HEAD
+[4.4.2]: https://github.com/lucatume/wp-browser/compare/4.4.1...4.4.2
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.4.2...HEAD
