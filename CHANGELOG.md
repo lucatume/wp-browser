@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Avoid duplicated definition issue in `GenerateWPUnit` command.
+
 ## [4.4.1] 2024-12-09;
 
 ### Fixed
