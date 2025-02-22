@@ -446,17 +446,18 @@ class MysqlServer implements ManagedProcessInterface
 
         if ($operatingSystem === MachineInformation::OS_DARWIN) {
             return $architecture === 'arm64' ?
-                'https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.2-macos14-arm64.tar.gz'
-                : 'https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.2-macos14-x86_64.tar.gz';
+                'https://downloads.mysql.com/archives/get/p/23/file/mysql-8.4.3-macos14-arm64.tar.gz'
+                : 'https://downloads.mysql.com/archives/get/p/23/file/mysql-8.4.3-macos14-x86_64.tar.gz';
         }
 
         if ($operatingSystem === MachineInformation::OS_LINUX) {
             return $architecture === 'arm64' ?
-                'https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.2-linux-glibc2.17-aarch64-minimal.tar.xz'
-                : 'https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.2-linux-glibc2.17-x86_64-minimal.tar.xz';
+                'https://downloads.mysql.com/archives/get/p/23/file/mysql-8.4.3-linux-glibc2.17-aarch64-minimal.tar'
+                : 'https://downloads.mysql.com/archives/get/p/23/file/mysql-8.4.3-linux-glibc2.17-x86_64-minimal.tar';
+
         }
 
-        return 'https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.2-winx64.zip';
+        return 'https://downloads.mysql.com/archives/get/p/23/file/mysql-8.4.3-winx64.zip';
     }
 
     public function getArchivePath(bool $normalize = false): string
