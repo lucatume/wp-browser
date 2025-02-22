@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Avoid duplicated definition issue in `GenerateWPUnit` command.
+- Update MySQL server class download URLs
 
 ## [4.4.1] 2024-12-09;
 
