@@ -452,8 +452,8 @@ class MysqlServer implements ManagedProcessInterface
 
         if ($operatingSystem === MachineInformation::OS_LINUX) {
             return $architecture === 'arm64' ?
-                'https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.3-linux-glibc2.17-aarch64-minimal.tar'
-                : 'https://dev.mysql.com/get/Downloads/MySQL-8.4/file/mysql-8.4.3-linux-glibc2.17-x86_64-minimal.tar';
+                'https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.3-linux-glibc2.17-aarch64-minimal.tar.xz'
+                : 'https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.3-linux-glibc2.17-x86_64-minimal.tar.xz';
         }
 
         return 'https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.3-winx64.zip';
