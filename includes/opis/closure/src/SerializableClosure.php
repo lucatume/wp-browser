@@ -522,7 +522,11 @@ class SerializableClosure implements Serializable
                     break;
                 }
                 foreach ($reflection->getProperties() as $property) {
-                    if ($property->isStatic() || !$property->getDeclaringClass()->isUserDefined() || $property->isReadOnly()) {
+                    if (
+                        $property->isStatic() 
+                        || !$property->getDeclaringClass()->isUserDefined() 
+                        || (method_exists($property, 'isReadOnly') && $property->isReadOnly())
+                    ) {
                         continue;
                     }
                     $property->setAccessible(true);
