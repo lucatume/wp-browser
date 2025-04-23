@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## Changed
+
+- Support `symfony/process` and `symfony/filesystem` version `>=7.0`.
+- Set PHPUnit supported version to `<=12.0.0`.
+
 ## [4.4.2] 2025-02-22;
 
 ### Fixed
