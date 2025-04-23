@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.5.0] 2025-04-23;
+
 ## Changed
 
 - Support `symfony/process` and `symfony/filesystem` version `>=7.0`.
@@ -2342,4 +2344,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.4.0]: https://github.com/lucatume/wp-browser/compare/4.3.10...4.4.0
 [4.4.1]: https://github.com/lucatume/wp-browser/compare/4.4.0...4.4.1
 [4.4.2]: https://github.com/lucatume/wp-browser/compare/4.4.1...4.4.2
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.4.2...HEAD
+[4.5.0]: https://github.com/lucatume/wp-browser/compare/4.4.2...4.5.0
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.5.0...HEAD
