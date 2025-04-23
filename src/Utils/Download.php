@@ -41,6 +41,13 @@ class Download
         curl_setopt($curlHandle, CURLOPT_TIMEOUT, 120);
         curl_setopt($curlHandle, CURLOPT_FILE, $file);
 
+        // Set the user agent header.
+        curl_setopt(
+            $curlHandle,
+            CURLOPT_USERAGENT,
+            'Mozilla/5.0 (compatible; Embedded MySql; +https://github.com/lucatume/wp-browser'
+        );
+
         if (!$verifyHost) {
             /** @noinspection CurlSslServerSpoofingInspection */
             curl_setopt($curlHandle, CURLOPT_SSL_VERIFYHOST, 0);
