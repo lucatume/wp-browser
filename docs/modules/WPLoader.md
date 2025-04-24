@@ -312,8 +312,8 @@ When used in this mode, the module supports the following configuration paramete
 
 !!! note
 
-    The order of the modules matters.  
-    In your suite configuratin file place the `WPDb` module **before** the `WPLoader` one.
+    **The order of the modules matters.**  
+    In your suite configuratin file place the `WPDb` module **before** the `WPLoader` one to make sure the `WPDb` module will correctly set up the database fixture before the `WPLoader` modules attempts to load WordPress from it.
 
 !!! warning
 
