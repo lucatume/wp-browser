@@ -118,7 +118,7 @@ class Symlinker extends Extension
      */
     private function symlinkPlugin(string $plugin, string $pluginsDir): void
     {
-        $link = rtrim($pluginsDir,"\\/") .DIRECTORY_SEPARATOR. ltrim(basename($plugin), "\\/");
+        $link = rtrim($pluginsDir, "\\/") .DIRECTORY_SEPARATOR. ltrim(basename($plugin), "\\/");
 
         if (is_link($link)) {
             $target = readlink($link);
