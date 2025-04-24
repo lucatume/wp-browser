@@ -4,9 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Correctly serialize and unserialize options in the SQLite database implementation.
+
 ## [4.5.0] 2025-04-23;
 
-## Changed
+### Changed
 
 - Support `symfony/process` and `symfony/filesystem` version `>=7.0`.
 - Set PHPUnit supported version to `<=12.0.0`.
