@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Correctly serialize and unserialize options in the SQLite database implementation.
+- Fix `Symlinker` extension issue where the target link path would be built incorrectly.
 
 ## [4.5.0] 2025-04-23;
 
