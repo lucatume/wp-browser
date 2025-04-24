@@ -310,6 +310,11 @@ When used in this mode, the module supports the following configuration paramete
 * `configFile` - a configuration file, or a set of configuration files, to load before the tests to further customize
   and control the WordPress testing environment. This file(s) will be loaded before the WordPress installation is loaded.
 
+!!! note
+
+    The order of the modules matters.  
+    In your suite configuratin file place the `WPDb` module **before** the `WPLoader` one.
+
 !!! warning
 
     The module will define the `DB_NAME`, `DB_USER`, `DB_PASSWORD` and `DB_HOST` constants in the context of loading WordPress.
@@ -347,7 +352,7 @@ modules:
               - "--proxy-server='direct://'"
               - "--proxy-bypass-list=*"
               - "--no-sandbox"
-    - lucatume\WPBrowser\Module\WPDb:
+    - lucatume\WPBrowser\Module\WPDb: # WPDb module before the WPLoader one: position matters!
         dbUrl: 'mysql://root:password@localhost:3306/wordpress'
         url: 'http://localhost:8080'
         tablePrefix: 'wp_'
