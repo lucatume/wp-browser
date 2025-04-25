@@ -361,7 +361,7 @@ class WPLoader extends Module
             );
         }
 
-        foreach (['WP_CONTENT_DIR', 'WP_PLUGIN_DIR', 'WPMU_PLUGIN_DIR'] as $pathConst) {
+        foreach (['WP_CONTENT_DIR', 'WP_PLUGIN_DIR', 'WPMU_PLUGIN_DIR', 'pluginsFolder'] as $pathConst) {
             if (isset($this->config[$pathConst])
                 && !is_dir($this->config[$pathConst])
                 && is_dir(codecept_root_dir($this->config[$pathConst]))) {
