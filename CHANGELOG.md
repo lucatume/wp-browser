@@ -9,6 +9,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - The `WPLoader` module will now attempt resolving the `WP_CONTENT_DIR`, `WP_PLUGIN_DIR`, `WPMU_PLUGIN_DIR` and `pluginsFolder` configuration parameters from the Codeception root directory if not possible to resolve them from the current working directory. (thanks @BrianHenryIE)
 
+## [4.5.1] 2025-04-24;
+
+### Fixed
+
+- Correctly serialize and unserialize options in the SQLite database implementation.
+- Fix `Symlinker` extension issue where the target link path would be built incorrectly.
+
+## [4.5.0] 2025-04-23;
+
+### Changed
+
+- Support `symfony/process` and `symfony/filesystem` version `>=7.0`.
+- Set PHPUnit supported version to `<=12.0.0`.
+
 ## [4.4.2] 2025-02-22;
 
 ### Fixed
@@ -3169,5 +3183,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.4.1]: https://github.com/lucatume/wp-browser/compare/4.4.0...4.4.1
 
 [4.4.2]: https://github.com/lucatume/wp-browser/compare/4.4.1...4.4.2
+[4.5.0]: https://github.com/lucatume/wp-browser/compare/4.4.2...4.5.0
 
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.4.2...HEAD
