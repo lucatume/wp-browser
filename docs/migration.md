@@ -81,7 +81,7 @@ back-compatibility purposes.
     use lucatume\WPBrowser\TestCase\WPTestCase;
    
     class MyTestUsingDeprecatedCode extends WPTestCase {
-        public function test_deprecatd_function() {
+        public function test_deprecated_function() {
             // add_filter( 'deprecated_function_trigger_error', '__return_false' );
             $this->setExpectedDeprecated( 'my_deprecated_function' );
             my_deprecated_function();

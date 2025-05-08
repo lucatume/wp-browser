@@ -28,12 +28,12 @@ class IsolationSupport extends Extension
     public const ISOLATED_PROCESS_PATCH_CONTEXT = 'Isolation-Support-Process';
 
     /**
-     * @var array<string,string>
+     * @var array<string,array{0: string, 1: int}>
      */
     public static array $events = [
-        Events::SUITE_INIT => 'onSuiteInit',
-        Events::TEST_START => 'onTestStart',
-        Events::TEST_FAIL => 'onTestFail',
+        Events::SUITE_INIT => ['onSuiteInit', 0],
+        Events::TEST_START => ['onTestStart', 0],
+        Events::TEST_FAIL => ['onTestFail', 0],
     ];
 
     private string $processCode = <<< PHP
