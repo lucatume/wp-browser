@@ -12,10 +12,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 abstract class ServiceExtension extends Extension
 {
     /**
-     * @var array<string,string>
+     * @var array<string,array{0: string, 1: int}>
      */
     public static array $events = [
-        Events::MODULE_INIT => 'onModuleInit',
+        Events::MODULE_INIT => ['onModuleInit', 0],
     ];
 
     /**

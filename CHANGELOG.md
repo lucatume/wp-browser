@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Extensions event subscription to avoid type issues with newer PHP versions.
+
 ## [4.5.2] 2025-04-25;
 
 ### Added

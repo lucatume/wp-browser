@@ -63,7 +63,7 @@ class SerializableThrowableTest extends Unit
         $serializableThrowable->colorize(false);
         $serialized = serialize($serializableThrowable);
         $unserialized = unserialize($serialized)->getThrowable(SerializableThrowable::RELATIVE_PAHTNAMES);
-        return StackTraceFilter::getFilteredStackTrace($unserialized);
+        return trim(StackTraceFilter::getFilteredStackTrace($unserialized));
     }
 
     /**

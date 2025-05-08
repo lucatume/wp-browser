@@ -12,11 +12,11 @@ use lucatume\WPBrowser\WordPress\Installation;
 class Symlinker extends Extension
 {
     /**
-     * @var array<string,string>
+     * @var array<string,array{0: string, 1: int}>
      */
     protected static $events = [
-        Events::MODULE_INIT => 'onModuleInit',
-        Events::SUITE_AFTER => 'afterSuite',
+        Events::MODULE_INIT => ['onModuleInit', 0],
+        Events::SUITE_AFTER => ['afterSuite', 0],
     ];
 
     private string $wpRootFolder = '';
