@@ -47,6 +47,7 @@ This module should be with [Cest][2] and [Cept][3] test cases.
 * `packages-dir` - the directory to use to store the packages downloaded by the `wp package` command. Equivalent to
   setting the `WP_CLI_PACKAGES_DIR` environment variable.
 * `bin` - the path to a custom WP-CLI binary.
+* `allow-root` - a boolean value to indicate if the `wp` command should be run with the `--allow-root` flag. Equivalent to the `--allow-root` option of the `wp` command. This is useful when running wp-cli commands as the root user.
 
 The following is an example of the module configuration to run WPCLI commands on the `/var/wordpress` directory:
 

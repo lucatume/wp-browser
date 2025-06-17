@@ -848,6 +848,36 @@ class WPCLITest extends Unit
     }
 
     /**
+     * It should allow configuring wp-cli to run with allow-root
+     *
+     * @test
+     */
+    public function should_allow_configuring_wp_cli_to_run_with_allow_root(): void
+    {
+        $wpcli = $this->module([
+            'path' => self::$installation->getWpRootDir(),
+            'allow-root' => true
+        ]);
+
+        $wpcli->cli(['core', 'version']);
+
+        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
+        $wpCliPhar = CliProcess::getWpCliPharPathname();
+
+        $expected = implode(
+            ' ',
+            array_map('escapeshellarg', [
+                PHP_BINARY,
+                $wpCliPhar,
+                '--allow-root',
+                'core',
+                'version'
+            ])
+        );
+        $this->assertEquals($expected, $commandLine);
+    }
+
+    /**
      * It should inherit env from current session when env not specified
      *
      * @test
