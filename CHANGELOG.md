@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.5.4] 2025-06-17;
+
 ### Fixed
 
 - Restored support for the `allow-root` configuration parameter in the `WPCLI` module.
@@ -3204,4 +3206,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 
 [4.5.2]: https://github.com/lucatume/wp-browser/compare/4.5.1...4.5.2
 [4.5.3]: https://github.com/lucatume/wp-browser/compare/4.5.2...4.5.3
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.5.3...HEAD
+[4.5.4]: https://github.com/lucatume/wp-browser/compare/4.5.3...4.5.4
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.5.4...HEAD
