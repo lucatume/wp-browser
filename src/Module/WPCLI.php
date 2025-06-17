@@ -42,6 +42,7 @@ class WPCLI extends Module
         'no-color' => true,
         'debug' => true,
         'quiet' => true,
+        'allow-root' => true,
     ];
     /**
      * @var array<string>
@@ -77,7 +78,8 @@ class WPCLI extends Module
      *    config-path?: string,
      *    custom-shell?: string,
      *    packages-dir?: string,
-     *    bin?: string
+     *    bin?: string,
+     *    allow-root?: bool
      * }
      */
     protected array $config = [
@@ -132,7 +134,8 @@ class WPCLI extends Module
          *    config-path?: string,
          *    custom-shell?: string,
          *    packages-dir?: string,
-         *    bin?: string
+         *    bin?: string,
+         *    allow-root?: bool
          * } $config
          */
         $config = $this->config;
@@ -501,7 +504,7 @@ class WPCLI extends Module
             }
         }
 
-        foreach (['skip-plugins', 'skip-themes', 'skip-packages', 'debug', 'quiet', 'color', 'no-color'] as $boolKey) {
+        foreach (['skip-plugins', 'skip-themes', 'skip-packages', 'debug', 'quiet', 'color', 'no-color', 'allow-root'] as $boolKey) {
             if (empty($this->config[$boolKey])) {
                 unset($this->config[$boolKey]);
             } else {

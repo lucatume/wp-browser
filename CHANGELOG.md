@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Restored support for the `allow-root` configuration parameter in the `WPCLI` module.
+
 ## [4.5.3] 2025-05-08;
 
 ### Fixed
