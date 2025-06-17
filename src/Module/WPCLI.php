@@ -504,7 +504,17 @@ class WPCLI extends Module
             }
         }
 
-        foreach (['skip-plugins', 'skip-themes', 'skip-packages', 'debug', 'quiet', 'color', 'no-color', 'allow-root'] as $boolKey) {
+        foreach ([
+                'skip-plugins',
+                'skip-themes',
+                'skip-packages',
+                'debug',
+                'quiet',
+                'color',
+                'no-color',
+                'allow-root'
+            ] as $boolKey
+        ) {
             if (empty($this->config[$boolKey])) {
                 unset($this->config[$boolKey]);
             } else {
