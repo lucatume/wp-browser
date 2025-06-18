@@ -185,12 +185,18 @@ class SqliteDatabaseTest extends \Codeception\Test\Unit
         $file = 'db.sqlite';
         $db = new SQLiteDatabase($dir, $file);
         $db->create();
-        $this->assertEquals(0,
-            $db->query('CREATE TABLE wp_options (option_id INTEGER PRIMARY KEY, option_name TEXT NOT NULL, option_value TEXT NOT NULL, autoload TEXT NOT NULL)'));
-        $this->assertEquals(1,
-            $db->query('INSERT INTO wp_options (option_name, option_value, autoload) VALUES ("siteurl", "http://localhost", "yes")'));
-        $this->assertEquals(1,
-            $db->query('INSERT INTO wp_options (option_name, option_value, autoload) VALUES ("home", "http://localhost", "yes")'));
+        $this->assertEquals(
+            0,
+            $db->query('CREATE TABLE wp_options (option_id INTEGER PRIMARY KEY, option_name TEXT NOT NULL, option_value TEXT NOT NULL, autoload TEXT NOT NULL)')
+        );
+        $this->assertEquals(
+            1,
+            $db->query('INSERT INTO wp_options (option_name, option_value, autoload) VALUES ("siteurl", "http://localhost", "yes")')
+        );
+        $this->assertEquals(
+            1,
+            $db->query('INSERT INTO wp_options (option_name, option_value, autoload) VALUES ("home", "http://localhost", "yes")')
+        );
         $this->assertEquals(0, $db->query('SELECT * FROM wp_options'));
         $this->assertEquals('http://localhost', $db->getoption('siteurl'));
         $this->assertEquals('http://localhost', $db->getoption('home'));
@@ -341,5 +347,37 @@ class SqliteDatabaseTest extends \Codeception\Test\Unit
 
         $dumpFile = tempnam(sys_get_temp_dir(), 'sqlite_');
         $db->dump($dumpFile);
+    }
+
+    public static function optionsDataProvider(): array
+    {
+        return [
+            'string option' => ['http://example.com', 'http://example.com'],
+            'int option' => [23, '23'],
+            'boolean true option' => [true, '1'],
+            'boolean false option' => [false, ''],
+            'array option' => [[1, 2, 3], [1, 2, 3]],
+            'object option' => [(object) ['a' => 'b'], (object) ['a' => 'b']],
+            'null option' => [null, null],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider optionsDataProvider
+     * @param mixed $optionValue
+     * @param mixed $expectedOptionValue
+     */
+    public function should_read_and_write_options_correctly($optionValue, $expectedOptionValue): void
+    {
+        $dump = codecept_data_dir('dump.sqlite');
+        $dir = FS::tmpDir('sqlite_');
+        $file = 'db.sqlite';
+        $db = new SQLiteDatabase($dir, $file);
+        $db->import($dump);
+
+        $db->updateOption('test', $optionValue);
+
+        $this->assertEquals($expectedOptionValue, $db->getOption('test'));
     }
 }

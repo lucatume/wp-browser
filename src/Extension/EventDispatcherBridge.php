@@ -12,12 +12,12 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface as SymfonyEventDi
 class EventDispatcherBridge extends Extension
 {
     /**
-     * @var array<string,string>
+     * @var array<string,array{0: string, 1: int}>
      */
     public static $events = [
-        Events::MODULE_INIT => 'onModuleInit',
-        Events::SUITE_INIT => 'onSuiteInit',
-        Events::SUITE_BEFORE => 'onSuiteBefore',
+        Events::MODULE_INIT => ['onModuleInit', 0 ],
+        Events::SUITE_INIT => ['onSuiteInit', 0],
+        Events::SUITE_BEFORE => ['onSuiteBefore', 0],
     ];
     /**
      * @var bool

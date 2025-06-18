@@ -74,32 +74,32 @@ class MysqlServerTest extends Unit
             'windows x86_64' => [
                 MachineInformation::OS_WINDOWS,
                 MachineInformation::ARCH_X86_64,
-                FS::cacheDir() . '/mysql-server/mysql-8.4.2-winx64',
-                FS::cacheDir() . '/mysql-server/mysql-8.4.2-winx64/bin/mysqld.exe',
+                FS::cacheDir() . '/mysql-server/mysql-8.4.3-winx64',
+                FS::cacheDir() . '/mysql-server/mysql-8.4.3-winx64/bin/mysqld.exe',
             ],
             'linux x86_64' => [
                 MachineInformation::OS_LINUX,
                 MachineInformation::ARCH_X86_64,
-                FS::cacheDir() . '/mysql-server/mysql-8.4.2-linux-glibc2.17-x86_64-minimal',
-                FS::cacheDir() . '/mysql-server/mysql-8.4.2-linux-glibc2.17-x86_64-minimal/bin/mysqld',
+                FS::cacheDir() . '/mysql-server/mysql-8.4.3-linux-glibc2.17-x86_64-minimal',
+                FS::cacheDir() . '/mysql-server/mysql-8.4.3-linux-glibc2.17-x86_64-minimal/bin/mysqld',
             ],
             'linux arm64' => [
                 MachineInformation::OS_LINUX,
                 MachineInformation::ARCH_ARM64,
-                FS::cacheDir() . '/mysql-server/mysql-8.4.2-linux-glibc2.17-aarch64-minimal',
-                FS::cacheDir() . '/mysql-server/mysql-8.4.2-linux-glibc2.17-aarch64-minimal/bin/mysqld',
+                FS::cacheDir() . '/mysql-server/mysql-8.4.3-linux-glibc2.17-aarch64-minimal',
+                FS::cacheDir() . '/mysql-server/mysql-8.4.3-linux-glibc2.17-aarch64-minimal/bin/mysqld',
             ],
             'darwin x86_64' => [
                 MachineInformation::OS_DARWIN,
                 MachineInformation::ARCH_X86_64,
-                FS::cacheDir() . '/mysql-server/mysql-8.4.2-macos14-x86_64',
-                FS::cacheDir() . '/mysql-server/mysql-8.4.2-macos14-x86_64/bin/mysqld',
+                FS::cacheDir() . '/mysql-server/mysql-8.4.3-macos14-x86_64',
+                FS::cacheDir() . '/mysql-server/mysql-8.4.3-macos14-x86_64/bin/mysqld',
             ],
             'darwin arm64' => [
                 MachineInformation::OS_DARWIN,
                 MachineInformation::ARCH_ARM64,
-                FS::cacheDir() . '/mysql-server/mysql-8.4.2-macos14-arm64',
-                FS::cacheDir() . '/mysql-server/mysql-8.4.2-macos14-arm64/bin/mysqld',
+                FS::cacheDir() . '/mysql-server/mysql-8.4.3-macos14-arm64',
+                FS::cacheDir() . '/mysql-server/mysql-8.4.3-macos14-arm64/bin/mysqld',
             ]
         ];
     }
