@@ -55,6 +55,7 @@ class SerializableThrowable
         $this->line = $throwable->getLine();
     }
 
+    // @phpcs:disable
     /**
      * @return array{
      *     colorize: bool,
@@ -102,6 +103,7 @@ class SerializableThrowable
         $this->line = $data['line'];
         $this->trace = $data['trace'];
     }
+    // @phpcs:enable
 
     /**
      * @throws ReflectionException
@@ -133,6 +135,7 @@ class SerializableThrowable
         $updatedTrace = [];
         $streamIsatty = function ($stream) {
             if (\function_exists('stream_isatty')) {
+                // @phpcs:ignore PHPCompatibility.FunctionUse.NewFunctions.stream_isattyFound
                 return stream_isatty($stream);
             }
             if (!\is_resource($stream)) {
