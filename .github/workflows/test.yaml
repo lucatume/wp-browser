@@ -51,7 +51,7 @@ jobs:
           - wploader_multisite
           - wploader_wpdb_interaction
           - wploadersuite
-    name: v3.5 unit php@${{ matrix.php_version }}
+    name: v3.5 ${{ matrix.suite }} php@${{ matrix.php_version }}
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
