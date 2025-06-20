@@ -532,7 +532,8 @@ class MysqlServer implements ManagedProcessInterface
     {
         $memoryLimit = ini_set('memory_limit', '1G');
         try {
-            $extracted = (new PharData($archivePath))->extractTo($directory, null, true);
+            $flags = \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS;
+            $extracted = (new PharData($archivePath, $flags, null, 0))->extractTo($directory, null, true);
         } catch (\Exception $e) {
             throw new RuntimeException(
                 "Could not extract MySQL Server archive from $archivePath to "
