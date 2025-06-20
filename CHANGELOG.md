@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.7.13] 2025-06-20;
+
 ### Added
 
 - The `WPLoader` module will now attempt resolving the `WP_CONTENT_DIR`, `WP_PLUGIN_DIR`, `WPMU_PLUGIN_DIR` and
@@ -2096,4 +2098,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.7.10]: https://github.com/lucatume/wp-browser/compare/3.7.9...3.7.10
 [3.7.11]: https://github.com/lucatume/wp-browser/compare/3.7.10...3.7.11
 [3.7.12]: https://github.com/lucatume/wp-browser/compare/3.7.11...3.7.12
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.12...HEAD
+[3.7.13]: https://github.com/lucatume/wp-browser/compare/3.7.12...3.7.13
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.13...HEAD
