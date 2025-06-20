@@ -42,7 +42,11 @@ class WPCLICustomBinaryTest extends Unit
         if (is_dir($this->wpCliCacheDir)) {
             rename($this->wpCliCacheDir, $this->wpCliCacheDirBackup);
         }
-        $this->assertDirectoryDoesNotExist($this->wpCliCacheDir);
+        if (method_exists($this, 'assertDirectoryDoesNotExist')) {
+            $this->assertDirectoryDoesNotExist($this->wpCliCacheDir);
+        } else {
+            $this->assertDirectoryNotExists($this->wpCliCacheDir);
+        }
     }
 
     public function tearDown(): void
@@ -74,7 +78,11 @@ class WPCLICustomBinaryTest extends Unit
             'Hello from wp-cli custom binary',
             $module->grabLastShellOutput()
         );
-        $this->assertDirectoryDoesNotExist($this->wpCliCacheDir);
+        if (method_exists($this, 'assertDirectoryDoesNotExist')) {
+            $this->assertDirectoryDoesNotExist($this->wpCliCacheDir);
+        } else {
+            $this->assertDirectoryNotExists($this->wpCliCacheDir);
+        }
     }
 
     public function test_configuration_supports_tilde_for_home_in_custom_binary(): void
@@ -96,7 +104,11 @@ class WPCLICustomBinaryTest extends Unit
             'Hello from wp-cli custom binary',
             $module->grabLastShellOutput()
         );
-        $this->assertDirectoryDoesNotExist($this->wpCliCacheDir);
+        if (method_exists($this, 'assertDirectoryDoesNotExist')) {
+            $this->assertDirectoryDoesNotExist($this->wpCliCacheDir);
+        } else {
+            $this->assertDirectoryNotExists($this->wpCliCacheDir);
+        }
     }
 
     public function test_throws_if_custom_binary_does_not_exist(): void
