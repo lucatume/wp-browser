@@ -486,17 +486,17 @@ class MysqlServer implements ManagedProcessInterface
 
         if ($operatingSystem === MachineInformation::OS_DARWIN) {
             return $architecture === 'arm64' ?
-                'https://downloads.mysql.com/archives/get/p/23/file/mysql-8.4.3-macos14-arm64.tar.gz'
-                : 'https://downloads.mysql.com/archives/get/p/23/file/mysql-8.4.3-macos14-x86_64.tar.gz';
+                'https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.3-macos14-arm64.tar.gz'
+                : 'https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.3-macos14-x86_64.tar.gz';
         }
 
         if ($operatingSystem === MachineInformation::OS_LINUX) {
             return $architecture === 'arm64' ?
-                'https://downloads.mysql.com/archives/get/p/23/file/mysql-8.4.3-linux-glibc2.17-aarch64-minimal.tar'
-                : 'https://downloads.mysql.com/archives/get/p/23/file/mysql-8.4.3-linux-glibc2.17-x86_64-minimal.tar';
+                'https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.3-linux-glibc2.17-aarch64-minimal.tar.xz'
+                : 'https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.3-linux-glibc2.17-x86_64-minimal.tar.xz';
         }
 
-        return 'https://downloads.mysql.com/archives/get/p/23/file/mysql-8.4.3-winx64.zip';
+        return 'https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.3-winx64.zip';
     }
 
     public function getArchivePath(bool $normalize = false): string
@@ -532,7 +532,8 @@ class MysqlServer implements ManagedProcessInterface
     {
         $memoryLimit = ini_set('memory_limit', '1G');
         try {
-            $extracted = (new PharData($archivePath))->extractTo($directory, null, true);
+            $flags = \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS;
+            $extracted = (new PharData($archivePath, $flags, null, 0))->extractTo($directory, null, true);
         } catch (\Exception $e) {
             throw new RuntimeException(
                 "Could not extract MySQL Server archive from $archivePath to "

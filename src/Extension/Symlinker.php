@@ -12,11 +12,11 @@ use lucatume\WPBrowser\WordPress\Installation;
 class Symlinker extends Extension
 {
     /**
-     * @var array<string,string>
+     * @var array<string,array{0: string, 1: int}>
      */
     protected static $events = [
-        Events::MODULE_INIT => 'onModuleInit',
-        Events::SUITE_AFTER => 'afterSuite',
+        Events::MODULE_INIT => ['onModuleInit', 0],
+        Events::SUITE_AFTER => ['afterSuite', 0],
     ];
 
     /**
@@ -130,7 +130,7 @@ class Symlinker extends Extension
      */
     private function symlinkPlugin(string $plugin, string $pluginsDir): void
     {
-        $link = $pluginsDir . basename($plugin);
+        $link = rtrim($pluginsDir, "\\/") .DIRECTORY_SEPARATOR. ltrim(basename($plugin), "\\/");
 
         if (is_link($link)) {
             $target = readlink($link);
@@ -163,7 +163,7 @@ class Symlinker extends Extension
     private function symlinkTheme(string $theme, string $themesDir): void
     {
         $target = $theme;
-        $link = $themesDir . basename($theme);
+        $link = rtrim($themesDir, "\\/") . DIRECTORY_SEPARATOR .  ltrim(basename($theme), "\\/");
 
         if (is_link($link)) {
             $target = readlink($link);

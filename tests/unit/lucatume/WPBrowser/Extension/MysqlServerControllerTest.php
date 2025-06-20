@@ -23,7 +23,7 @@ class MysqlServerControllerTest extends \Codeception\Test\Unit
     {
         $this->setFunctionReturn('file_put_contents', function (string $file): void {
             throw new AssertionFAiledError('Unexpected file_put_contents call for ' . $file);
-        });
+        },true);
 
         $this->setClassMock(Process::class, $this->makeEmptyClass(Process::class, [
             '__construct' => function (array $command) {

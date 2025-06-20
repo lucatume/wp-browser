@@ -2,6 +2,7 @@
 
 namespace lucatume\WPBrowser\WordPress\Database;
 
+use lucatume\WPBrowser\Utils\Serializer;
 use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\WPConfigFile;
 use PDO;
@@ -198,7 +199,7 @@ class SQLiteDatabase implements DatabaseInterface
             );
         }
 
-        $stmt->execute([':name' => $name, ':value' => $value, ':autoload' => 'yes']);
+        $stmt->execute([':name' => $name, ':value' => Serializer::maybeSerialize($value), ':autoload' => 'yes']);
         return $stmt->rowCount();
     }
 
@@ -224,7 +225,7 @@ class SQLiteDatabase implements DatabaseInterface
         if ($value === false) {
             return $default;
         }
-        return $value;
+        return Serializer::maybeUnserialize($value);
     }
 
     public function getDbDir(): string
