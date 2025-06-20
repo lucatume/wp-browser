@@ -4,6 +4,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- The `WPLoader` module will now attempt resolving the `WP_CONTENT_DIR`, `WP_PLUGIN_DIR`, `WPMU_PLUGIN_DIR` and
+  `pluginsFolder` configuration parameters from the Codeception root directory if not possible to resolve them from the
+  current working directory. (thanks @BrianHenryIE)
+ 
+### Fixed
+
+- Restored support for the `allow-root` configuration parameter in the `WPCLI` module.
+- Extensions event subscription to avoid type issues with newer PHP versions.
+- Correctly serialize and unserialize options in the SQLite database implementation.
+- Fix `Symlinker` extension issue where the target link path would be built incorrectly.
+
 ## [3.7.12] 2025-02-22;
 
 ### Fixed
