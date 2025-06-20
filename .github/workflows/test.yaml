@@ -39,7 +39,7 @@ jobs:
           '7.4'
         ]
         suite:
-          - acceptance
+          # - acceptance # Disabled due to newer WordPress versions requirements.
           - climodule
           - functional
           - muloader
