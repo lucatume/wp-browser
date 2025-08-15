@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Better `WPLoader` module output in exceptions (thanks @BrianHenryIE).
+
 ## [4.5.4] 2025-06-17;
 
 ### Fixed
