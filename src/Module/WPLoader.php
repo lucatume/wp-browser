@@ -1096,7 +1096,7 @@ class WPLoader extends Module
 
                 // The inclusion of the test bootstrap file, or a WordPress file included by it, called `exit` or `die`.
                 // Jump in on the flow to provide a meaningful message to the user.
-                throw new ModuleException(__CLASS__, 'WordPress bootstrap failed.' . PHP_EOL . $buffer);
+                throw new ModuleException(__CLASS__, 'WordPress bootstrap failed.' . PHP_EOL . ($buffer ?: $this->bootstrapOutput) );
             }
 
             $buffer = trim($buffer);
