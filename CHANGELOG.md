@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Updated `activatePlugin` and `deactivatePlugin` methods in `WPBrowser` and `WPWebDriver` modules to use WordPress 6.5+ compatible selectors
+
+## [4.5.5] 2025-08-15;
+
 ### Changed
 
 - Better `WPLoader` module output in exceptions (thanks @BrianHenryIE).
