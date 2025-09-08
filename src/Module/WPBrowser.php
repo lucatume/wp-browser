@@ -85,10 +85,8 @@ class WPBrowser extends PhpBrowser
     public function activatePlugin(string|array $pluginSlug): void
     {
         foreach ((array)$pluginSlug as $plugin) {
-            $this->checkOption('//*[@data-slug="' . $plugin . '"]/th/input');
+            $this->click('a#activate-' . $plugin);
         }
-        $this->selectOption('action', 'activate-selected');
-        $this->click("#doaction");
     }
 
     /**
@@ -113,9 +111,7 @@ class WPBrowser extends PhpBrowser
     public function deactivatePlugin(string|array $pluginSlug): void
     {
         foreach ((array) $pluginSlug as $plugin) {
-            $this->checkOption('//*[@data-slug="' . $plugin . '"]/th/input');
+            $this->click('a#deactivate-' . $plugin);
         }
-        $this->selectOption('action', 'deactivate-selected');
-        $this->click('#doaction');
     }
 }
