@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.7.14] 2025-09-09;
+
 ### Fixed
 
 - Updated `activatePlugin` and `deactivatePlugin` methods in `WPBrowser` and `WPWebDriver` modules to use WordPress 6.5+ compatible selectors
@@ -2107,4 +2109,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.7.11]: https://github.com/lucatume/wp-browser/compare/3.7.10...3.7.11
 [3.7.12]: https://github.com/lucatume/wp-browser/compare/3.7.11...3.7.12
 [3.7.13]: https://github.com/lucatume/wp-browser/compare/3.7.12...3.7.13
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.13...HEAD
+[3.7.14]: https://github.com/lucatume/wp-browser/compare/3.7.13...3.7.14
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.14...HEAD
