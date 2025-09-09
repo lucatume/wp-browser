@@ -5,11 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.5.7] 2025-09-09;
+
+### Fixed
+
+- Updated `activatePlugin` and `deactivatePlugin` methods in `WPBrowser` and `WPWebDriver` modules to reload the plugins page after activation.
+
 ## [4.5.6] 2025-09-08;
 
 ### Fixed
 
-- Updated `activatePlugin` and `deactivatePlugin` methods in `WPBrowser` and `WPWebDriver` modules to use WordPress 6.5+ compatible selectors
+- Updated `activatePlugin` and `deactivatePlugin` methods in `WPBrowser` and `WPWebDriver` modules to use WordPress 6.5+ compatible selectors.
 
 ## [4.5.5] 2025-08-15;
 
@@ -3220,4 +3226,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.5.3]: https://github.com/lucatume/wp-browser/compare/4.5.2...4.5.3
 [4.5.4]: https://github.com/lucatume/wp-browser/compare/4.5.3...4.5.4
 [4.5.6]: https://github.com/lucatume/wp-browser/compare/4.5.4...4.5.6
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.5.6...HEAD
+[4.5.7]: https://github.com/lucatume/wp-browser/compare/4.5.6...4.5.7
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.5.7...HEAD
