@@ -225,7 +225,7 @@ class WPWebDriver extends WebDriver
             $this->click($selector);
         }
 
-        // Reload the page after to ensure we're geting the updated version of the plugins page.
+        // Reload the page after the deactivations to ensure we're getting the updated version of the plugins page.
         $this->reloadPage();
     }
 
@@ -260,7 +260,7 @@ class WPWebDriver extends WebDriver
             $this->click($selector);
         }
 
-        // Reload the page after to ensure we're geting the updated version of the plugins page.
+        // Reload the page after the activations to ensure we're getting the updated version of the plugins page.
         $this->reloadPage();
     }
 }
