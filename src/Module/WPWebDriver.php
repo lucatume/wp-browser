@@ -220,13 +220,10 @@ class WPWebDriver extends WebDriver
     public function deactivatePlugin($pluginSlug): void
     {
         foreach ((array)$pluginSlug as $plugin) {
-            $option = '//*[@data-slug="' . $plugin . '"]/th/input';
-            $this->scrollTo($option, 0, -40);
-            $this->checkOption($option);
+            $selector = 'a#deactivate-' . $plugin;
+            $this->scrollTo($selector, 0, -40);
+            $this->click($selector);
         }
-        $this->scrollTo('select[name="action"]', 0, -40);
-        $this->selectOption('action', 'deactivate-selected');
-        $this->click("#doaction");
     }
 
     /**
@@ -255,12 +252,9 @@ class WPWebDriver extends WebDriver
     {
         $plugins = (array)$pluginSlug;
         foreach ($plugins as $plugin) {
-            $option = '//*[@data-slug="' . $plugin . '"]/th/input';
-            $this->scrollTo($option, 0, -40);
-            $this->checkOption($option);
+            $selector = 'a#activate-' . $plugin;
+            $this->scrollTo($selector, 0, -40);
+            $this->click($selector);
         }
-        $this->scrollTo('select[name="action"]', 0, -40);
-        $this->selectOption('action', 'activate-selected');
-        $this->click("#doaction");
     }
 }
