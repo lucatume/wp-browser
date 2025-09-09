@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Updated `activatePlugin` and `deactivatePlugin` methods in `WPBrowser` and `WPWebDriver` modules to reload the plugins page after activation.
+
 ## [3.7.14] 2025-09-09;
 
 ### Fixed
