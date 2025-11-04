@@ -3480,7 +3480,7 @@ trait WebDriverTesterActions
     /**
      * [!] Method is generated. Documentation taken from corresponding module.
      *
-     * Go to a page in the admininstration area of the site.
+     * Go to a page in the administration area of the site.
      *
      * This method will **not** handle authentication to the administration area.
      *

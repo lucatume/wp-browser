@@ -165,7 +165,7 @@ $I->amOnAdminAjaxPage(['action' => 'my-action', 'data' => ['id' => 23], 'nonce' 
 
 <hr>
 
-<p>Go to a page in the admininstration area of the site.</p>
+<p>Go to a page in the administration area of the site.</p>
 ```php
 $I->loginAs('user', 'password');
   // Go to the plugins management screen.

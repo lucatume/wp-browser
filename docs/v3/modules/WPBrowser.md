@@ -89,7 +89,7 @@ Since this module extends the `PHPBrowser` module provided by Codeception, pleas
 
 
 * `amOnAdminPage($page)` : `void`  
-  Go to a page in the admininstration area of the site.
+  Go to a page in the administration area of the site.
 
   This method will **not** handle authentication to the administration area.
 

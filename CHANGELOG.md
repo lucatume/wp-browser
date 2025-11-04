@@ -412,7 +412,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Set `path` correctly in `WPWebDriver` module setup
 - Set dump file paths correctly on Windows machines
 - Use correct Chrome and Chromedriver binary paths on Windows machines
-- Work around command line length limit on Windows machines to ensure process-based operaitons work correctly
+- Work around command line length limit on Windows machines to ensure process-based operations work correctly
 
 ## [4.0.4] 2023-09-29;
 

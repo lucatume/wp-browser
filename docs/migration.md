@@ -3,7 +3,7 @@ Depending on your project PHP compatibility, you have three options to choose fr
 * Your project supports PHP `7.1` to `7.4`: [migrate to wp-browser version `3.5`](#migrate-from-version-3-to-35)
 * Your project supports PHP `8.0` or above: [migrate to wp-browser version `4.0`](#migrate-from-version-3-to-4)
 * You cannot, or do not want, to migrate from version `3` of wp-browser to a new
-  version: [see how you can lock your reuirements to avoid the upgrade](#staying-on-version-3-lower-than-35)
+  version: [see how you can lock your requirements to avoid the upgrade](#staying-on-version-3-lower-than-35)
 
 ## Version 3.5 and 4.0
 

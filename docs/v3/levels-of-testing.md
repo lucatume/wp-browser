@@ -140,7 +140,7 @@ class SubmissionHandlingTest extends \Codeception\TestCase\WPTestCase {
         
         $response = $handler->handle( $request );
         
-        $this->assertIntsanceOf( WP_REST_Response::class, $response );
+        $this->assertInstanceOf( WP_REST_Response::class, $response );
         $this->assertEquals( 200, $response->get_status() );
         $this->assertInstanceOf( Acme\Signup\Submission_Good::class, $handler->last_submission() );
         $this->assertEquals( 'luca', $handler->last_submission()->name() );
@@ -154,7 +154,7 @@ class SubmissionHandlingTest extends \Codeception\TestCase\WPTestCase {
         
         $response = $handler->handle( $request );
         
-        $this->assertIntsanceOf( WP_REST_Response::class, $response );
+        $this->assertInstanceOf( WP_REST_Response::class, $response );
         $this->assertEquals( 400, $response->get_status() );
         $this->assertInstanceOf( Acme\Signup\Submission_Bad::class, $handler->last_submission() );
         $this->assertEquals( 'luca', $handler->last_submission()->name() );

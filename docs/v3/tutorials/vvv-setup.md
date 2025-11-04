@@ -44,7 +44,7 @@ If the sanity check above is complete it's time to move to the following part sp
 
 ## In and out, host and guest
 
-The Vagrant box provided by VVV goes beyond a simple MySQL, PHP and Ngnix server stack and provides a complete WordPress development environment; tools like [Composer](https://getcomposer.org/), [grunt-cli][4992-0003], and [wp-cli][4992-0006] are ready to use.  
+The Vagrant box provided by VVV goes beyond a simple MySQL, PHP and Nginx server stack and provides a complete WordPress development environment; tools like [Composer](https://getcomposer.org/), [grunt-cli][4992-0003], and [wp-cli][4992-0006] are ready to use.  
 
 This allows the entire development, when it comes to the CLI tools, to happen **in the virtual machine and not outside of it**.  
 
