@@ -89,7 +89,9 @@ foreach ([
              'WP_PLUGIN_DIR' => $wpLoaderConfig['WP_PLUGIN_DIR'] ?? null,
              'WPMU_PLUGIN_DIR' => $wpLoaderConfig['WPMU_PLUGIN_DIR'] ?? null,
          ] as $const => $value) {
-    if ($value && !defined($const)) {
+    // DB_PASSWORD can be an empty string for passwordless database users (e.g., root on local development).
+    $shouldDefine = ($const === 'DB_PASSWORD' && array_key_exists('dbPassword', $wpLoaderConfig)) || $value;
+    if ($shouldDefine && !defined($const)) {
         define($const, $value);
     }
 }

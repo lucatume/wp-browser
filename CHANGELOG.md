@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Fixed `DB_PASSWORD` constant not being defined when `dbPassword` configuration parameter is set to an empty string in `WPLoader` module, fixes #786.
+
 ## [4.5.7] 2025-09-09;
 
 ### Fixed
@@ -408,7 +412,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Set `path` correctly in `WPWebDriver` module setup
 - Set dump file paths correctly on Windows machines
 - Use correct Chrome and Chromedriver binary paths on Windows machines
-- Work around command line length limit on Windows machines to ensure process-based operaitons work correctly
+- Work around command line length limit on Windows machines to ensure process-based operations work correctly
 
 ## [4.0.4] 2023-09-29;
 
