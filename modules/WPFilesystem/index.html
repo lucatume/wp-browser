@@ -1,0 +1,4894 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the wp-browser WordPress testing framework.">
+      
+      
+        <meta name="author" content="Luca Tumedei">
+      
+      
+        <link rel="canonical" href="https://wpbrowser.wptestkit.dev/modules/WPFilesystem/">
+      
+      
+        <link rel="prev" href="../WPDb/">
+      
+      
+        <link rel="next" href="../WPLoader/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23+insiders-4.53.17">
+    
+    
+      
+        <title>WPFilesystem - wp-browser docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7d528353.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        
+        <link rel="stylesheet" href="../../assets/external/fonts.googleapis.com/css.49ea35f2.css">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#wpfilesystem-module" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="wp-browser docs" class="md-header__button md-logo" aria-label="wp-browser docs" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            wp-browser docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              WPFilesystem
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/lucatume/wp-browser/" title="Go to repository" class="md-source" data-md-component="source" target="_blank" rel="noopener">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../.." class="md-tabs__link">
+          
+  
+  
+  Setup
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../WPBrowser/" class="md-tabs__link">
+          
+  
+  
+  Modules
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../extensions/BuiltInServerController/" class="md-tabs__link">
+          
+  
+  
+  Extensions
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../commands#run-and-codeceptionrun" class="md-tabs__link">
+          
+  
+  
+  Commands
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../traits/UopzFunctions/" class="md-tabs__link">
+          
+  
+  
+  Helpers
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://github.com/lucatume/wp-browser/blob/master/CHANGELOG.md" class="md-tabs__link" target="_blank" rel="noopener">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../v3/" class="md-tabs__link">
+          
+  
+  
+  v3
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="wp-browser docs" class="md-nav__button md-logo" aria-label="wp-browser docs" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    wp-browser docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/lucatume/wp-browser/" title="Go to repository" class="md-source" data-md-component="source" target="_blank" rel="noopener">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Setup
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating to newer versions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../default-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Default configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../custom-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modules
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WPBrowser/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WPBrowser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WPCLI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WPCLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WPDb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WPDb
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WPFilesystem
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WPFilesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#wpfilesystem-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WPFilesystem module
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Methods
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aminmupluginpath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        amInMuPluginPath
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aminpath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        amInPath
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aminpluginpath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        amInPluginPath
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aminthemepath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        amInThemePath
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aminuploadspath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        amInUploadsPath
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assertdirectoryexists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        assertDirectoryExists
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleandir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cleanDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleanmuplugindir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cleanMuPluginDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleanplugindir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cleanPluginDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleanthemedir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cleanThemeDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleanuploadsdir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cleanUploadsDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copydir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        copyDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copydirtomuplugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        copyDirToMuPlugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copydirtoplugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        copyDirToPlugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copydirtotheme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        copyDirToTheme
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copydirtouploads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        copyDirToUploads
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletedir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        deleteDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletefile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        deleteFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletemupluginfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        deleteMuPluginFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletepluginfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        deletePluginFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletethemefile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        deleteThemeFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletethisfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        deleteThisFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deleteuploadeddir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        deleteUploadedDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deleteuploadedfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        deleteUploadedFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseefilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseeinmupluginfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeInMuPluginFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseeinpluginfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeInPluginFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseeinthemefile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeInThemeFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseeinthisfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeInThisFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseeinuploadedfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeInUploadedFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseemupluginfilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeMuPluginFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseepluginfilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeePluginFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseethemefilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeThemeFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseeuploadedfilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeUploadedFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getbloguploadspath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        getBlogUploadsPath
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getuploadspath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        getUploadsPath
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getwprootfolder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        getWpRootFolder
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#havemuplugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        haveMuPlugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#haveplugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        havePlugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#havetheme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        haveTheme
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#makeuploadsdir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        makeUploadsDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        openFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openuploadedfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        openUploadedFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seefilecontentsequal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeFileContentsEqual
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seefilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seeinmupluginfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeInMuPluginFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seeinpluginfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeInPluginFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seeinthemefile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeInThemeFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seeinthisfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeInThisFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seeinuploadedfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeInUploadedFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seemupluginfilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeMuPluginFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seenumbernewlines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeNumberNewLines
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seepluginfilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seePluginFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seethemefilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeThemeFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seethisfilematches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeThisFileMatches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seeuploadedfilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeUploadedFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#writetofile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        writeToFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#writetomupluginfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        writeToMuPluginFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#writetopluginfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        writeToPluginFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#writetothemefile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        writeToThemeFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#writetouploadedfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        writeToUploadedFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WPLoader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WPLoader
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WPQueries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WPQueries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WPWebDriver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WPWebDriver
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AirplaneMode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Airplane Mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extensions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Extensions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extensions/BuiltInServerController/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PHP Built-in Server Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extensions/ChromeDriverController/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ChromeDriver Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extensions/DockerComposeController/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker Compose Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extensions/MySqlServerController/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySqlServer Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extensions/IsolationSupport/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Isolation Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extensions/EventDispatcherBridge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Event Dispatcher Bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commands
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Commands
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands#run-and-codeceptionrun" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    run and codeception:run
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands#devstart" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dev:start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands#devstop" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dev:stop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands#devrestart" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dev:restart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands#wpdbimport" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wp:db:import
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands#wpdbexport" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    wp:db:export
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands#chromedriverupdate" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    chromedriver:update
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands#generatewpunit" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    generate:wpunit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands#generatewpajax" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    generate:wpajax
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands#generatewpcanonical" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    generate:wpcanonical
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands#generatewprestapi" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    generate:wprestapi
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands#generatewprestcontroller" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    generate:wprestcontroller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands#generatewprestposttypecontroller" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    generate:wprestposttypecontroller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands#generatewpxml" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    generate:wpxml
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands#generatewpxmlrpc" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    generate:wpxmlrpc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands#monkeycachepath" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    monkey:cache:path
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commands#monkeycacheclear" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    monkey:cache:clear
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Helpers
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Helpers
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../traits/UopzFunctions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UopzFunctions trait
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DispatcherAPI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dispatcher API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/lucatume/wp-browser/blob/master/CHANGELOG.md" class="md-nav__link" target="_blank" rel="noopener">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v3
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    v3
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frequently asked questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/codeception-phpunit-and-wpbrowser/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codeception, PHPUnit and wp-browser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/codeception-4-support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Using wp-browser with Codeception 4.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_5" id="__nav_8_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Migration guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/migration/from-version-2-to-version-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Version 2 to version 3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/levels-of-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Levels of testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/requirements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/setting-up-minimum-wordpress-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setting up a minimum WordPress installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_7" id="__nav_8_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/tutorials/automatically-change-db-in-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automatically change database during acceptance and functional tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/tutorials/vvv-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setting up wp-browser on VVV to test a plugin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/tutorials/mamp-mac-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setting up wp-browser on MAMP for Mac to test a plugin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/tutorials/wamp-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setting up wp-browser on WAMP for Windows to test a plugin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/tutorials/local-flywheel-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setting up wp-browser on Local by Flywheel to test a plugin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_8" id="__nav_8_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modules
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/modules/WPBrowser/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WPBrowser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/modules/WPCLI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WPCLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/modules/WPDb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WPDb
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/modules/WPFilesystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WPFilesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/modules/WPLoader/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WPLoader
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/modules/WPQueries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WPQueries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/modules/WPWebDriver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WPWebDriver
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_9" id="__nav_8_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Usage
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Usage
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/advanced/run-in-separate-process/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running tests in separate processes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/events-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Events API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extensions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../v3/commands/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#wpfilesystem-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WPFilesystem module
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Methods
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aminmupluginpath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        amInMuPluginPath
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aminpath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        amInPath
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aminpluginpath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        amInPluginPath
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aminthemepath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        amInThemePath
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aminuploadspath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        amInUploadsPath
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assertdirectoryexists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        assertDirectoryExists
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleandir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cleanDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleanmuplugindir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cleanMuPluginDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleanplugindir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cleanPluginDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleanthemedir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cleanThemeDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleanuploadsdir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cleanUploadsDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copydir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        copyDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copydirtomuplugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        copyDirToMuPlugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copydirtoplugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        copyDirToPlugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copydirtotheme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        copyDirToTheme
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copydirtouploads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        copyDirToUploads
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletedir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        deleteDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletefile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        deleteFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletemupluginfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        deleteMuPluginFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletepluginfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        deletePluginFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletethemefile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        deleteThemeFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletethisfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        deleteThisFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deleteuploadeddir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        deleteUploadedDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deleteuploadedfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        deleteUploadedFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseefilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseeinmupluginfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeInMuPluginFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseeinpluginfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeInPluginFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseeinthemefile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeInThemeFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseeinthisfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeInThisFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseeinuploadedfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeInUploadedFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseemupluginfilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeMuPluginFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseepluginfilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeePluginFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseethemefilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeThemeFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dontseeuploadedfilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dontSeeUploadedFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getbloguploadspath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        getBlogUploadsPath
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getuploadspath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        getUploadsPath
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getwprootfolder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        getWpRootFolder
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#havemuplugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        haveMuPlugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#haveplugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        havePlugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#havetheme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        haveTheme
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#makeuploadsdir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        makeUploadsDir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        openFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openuploadedfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        openUploadedFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seefilecontentsequal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeFileContentsEqual
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seefilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seeinmupluginfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeInMuPluginFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seeinpluginfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeInPluginFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seeinthemefile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeInThemeFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seeinthisfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeInThisFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seeinuploadedfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeInUploadedFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seemupluginfilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeMuPluginFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seenumbernewlines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeNumberNewLines
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seepluginfilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seePluginFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seethemefilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeThemeFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seethisfilematches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeThisFileMatches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seeuploadedfilefound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        seeUploadedFileFound
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#writetofile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        writeToFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#writetomupluginfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        writeToMuPluginFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#writetopluginfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        writeToPluginFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#writetothemefile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        writeToThemeFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#writetouploadedfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        writeToUploadedFile
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>WPFilesystem</h1>
+
+<h2 id="wpfilesystem-module">WPFilesystem module</h2>
+<p>Interact and make assertions on the WordPress file structure.</p>
+<p>This module is used together with <a href="../WPDb/">the WPDb module</a> to manage the state of the WordPress installation in the
+context of end-to-end tests.</p>
+<p>This module extends <a href="https://codeception.com/docs/modules/Filesystem" target="_blank" rel="noopener">the Filesystem module from Codeception</a>, you can reference to the Codeception documentation to
+find out more about the module configuration and usage.</p>
+<p>This module should be with <a href="https://codeception.com/docs/AcceptanceTests" target="_blank" rel="noopener">Cest</a> and <a href="https://codeception.com/docs/AdvancedUsage#Cest-Classes" target="_blank" rel="noopener">Cept</a> test cases.</p>
+<h2 id="configuration">Configuration</h2>
+<p><code>wpRootFolder</code> - <strong>required</strong>; the path to the WordPress installation root folder. This can be a relative path to the
+codeception root directory, or an absolute path to the WordPress installation directory. The WordPress installation
+directory is the directory that contains the <code>wp-load.php</code> file.
+<code>themes</code> - the path, relative to the path specified in the <code>wpRootFolder</code> parameter, to the themes directory. By
+default,
+it's <code>/wp-content/themes</code>.
+<code>plugins</code> - the path, relative to the path specified in the <code>wpRootFolder</code> parameter, to the plugins directory. By
+default, it's <code>/wp-content/plugins</code>.
+<code>mu-plugins</code> - the path, relative to the path specified in the <code>wpRootFolder</code> parameter, to the must-use plugins. By
+default, it's <code>/wp-content/mu-plugins</code>. directory.
+<code>uploads</code> - the path, relative to the path specified in the <code>wpRootFolder</code> parameter, to the uploads directory. By
+default, it's <code>/wp-content/uploads</code>.</p>
+<p>The following is an example of the module configuration to run tests on the <code>/var/wordpress</code> site:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">modules</span><span class="p">:</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">lucatume\WPBrowser\Module\WPFilesystem</span><span class="p">:</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">      </span><span class="nt">wpRootFolder</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/wordpress</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">      </span><span class="nt">themes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wp-content/themes</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">      </span><span class="nt">plugins</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wp-content/plugins</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">      </span><span class="nt">mu-plugins</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wp-content/mu-plugins</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">      </span><span class="nt">uploads</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wp-content/uploads</span>
+</span></code></pre></div>
+<p>The following configuration uses <a href="https://codeception.com/docs/AdvancedUsage#Cest-Classes" target="_blank" rel="noopener">dynamic configuration parameters</a> to set the module configuration:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">modules</span><span class="p">:</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">lucatume\WPBrowser\Module\WPFilesystem</span><span class="p">:</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">      </span><span class="nt">wpRootFolder</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;%WP_ROOT_FOLDER%&#39;</span>
+</span></code></pre></div>
+<h2 id="methods">Methods</h2>
+<p>The module provides the following methods:</p>
+<!-- methods -->
+
+<h4 id="aminmupluginpath">amInMuPluginPath</h4>
+<p>Signature: <code>amInMuPluginPath(string $path)</code> : <code>void</code>  </p>
+<p>Sets the current working folder to a folder in a mu-plugin.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="x">$I-&gt;amInMuPluginPath(&#39;mu-plugin&#39;);</span>
+</span></code></pre></div>
+<h4 id="aminpath">amInPath</h4>
+<p>Signature: <code>amInPath(string $path)</code> : <code>void</code>  </p>
+<p>Enters a directory In local filesystem.
+Project root directory is used by default</p>
+<h4 id="aminpluginpath">amInPluginPath</h4>
+<p>Signature: <code>amInPluginPath(string $path)</code> : <code>void</code>  </p>
+<p>Sets the current working folder to a folder in a plugin.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="x">$I-&gt;amInPluginPath(&#39;my-plugin&#39;);</span>
+</span></code></pre></div>
+<h4 id="aminthemepath">amInThemePath</h4>
+<p>Signature: <code>amInThemePath(string $path)</code> : <code>void</code>  </p>
+<p>Sets the current working folder to a folder in a theme.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="x">$I-&gt;amInThemePath(&#39;my-theme&#39;);</span>
+</span></code></pre></div>
+<h4 id="aminuploadspath">amInUploadsPath</h4>
+<p>Signature: <code>amInUploadsPath([?string $path])</code> : <code>void</code>  </p>
+<p>Enters, changing directory, to the uploads folder in the local filesystem.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">amInUploadsPath</span><span class="p">(</span><span class="s1">&#39;/logs&#39;</span><span class="p">);</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">seeFileFound</span><span class="p">(</span><span class="s1">&#39;shop.log&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<h4 id="assertdirectoryexists">assertDirectoryExists</h4>
+<p>Signature: <code>assertDirectoryExists(string $directory, [string $message])</code> : <code>void</code></p>
+<h4 id="cleandir">cleanDir</h4>
+<p>Signature: <code>cleanDir(string $dirname)</code> : <code>void</code>  </p>
+<p>Erases directory contents</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">cleanDir</span><span class="p">(</span><span class="s1">&#39;logs&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<h4 id="cleanmuplugindir">cleanMuPluginDir</h4>
+<p>Signature: <code>cleanMuPluginDir(string $dir)</code> : <code>void</code>  </p>
+<p>Cleans, emptying it, a folder in a mu-plugin folder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="x">$I-&gt;cleanMuPluginDir(&#39;mu-plugin1/foo&#39;);</span>
+</span></code></pre></div>
+<h4 id="cleanplugindir">cleanPluginDir</h4>
+<p>Signature: <code>cleanPluginDir(string $dir)</code> : <code>void</code>  </p>
+<p>Cleans, emptying it, a folder in a plugin folder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="x">$I-&gt;cleanPluginDir(&#39;my-plugin/foo&#39;);</span>
+</span></code></pre></div>
+<h4 id="cleanthemedir">cleanThemeDir</h4>
+<p>Signature: <code>cleanThemeDir(string $dir)</code> : <code>void</code>  </p>
+<p>Clears, emptying it, a folder in a theme folder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="x">$I-&gt;cleanThemeDir(&#39;my-theme/foo&#39;);</span>
+</span></code></pre></div>
+<h4 id="cleanuploadsdir">cleanUploadsDir</h4>
+<p>Signature: <code>cleanUploadsDir([?string $dir], [DateTime|string|int|null $date])</code> : <code>void</code>  </p>
+<p>Clears a folder in the uploads folder.</p>
+<p>The date argument can be a string compatible with <code>strtotime</code> or a Unix
+timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="x">$I-&gt;cleanUploadsDir(&#39;some/folder&#39;);</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="x">$I-&gt;cleanUploadsDir(&#39;some/folder&#39;, &#39;today&#39;);</span>
+</span></code></pre></div>
+<h4 id="copydir">copyDir</h4>
+<p>Signature: <code>copyDir(string $src, string $dst)</code> : <code>void</code>  </p>
+<p>Copies directory with all contents</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">copyDir</span><span class="p">(</span><span class="s1">&#39;vendor&#39;</span><span class="p">,</span><span class="s1">&#39;old_vendor&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<h4 id="copydirtomuplugin">copyDirToMuPlugin</h4>
+<p>Signature: <code>copyDirToMuPlugin(string $src, string $pluginDst)</code> : <code>void</code>  </p>
+<p>Copies a folder to a folder in a mu-plugin.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="x">$I-&gt;copyDirToMuPlugin(codecept_data_dir(&#39;foo&#39;), &#39;mu-plugin/foo&#39;);</span>
+</span></code></pre></div>
+<h4 id="copydirtoplugin">copyDirToPlugin</h4>
+<p>Signature: <code>copyDirToPlugin(string $src, string $pluginDst)</code> : <code>void</code>  </p>
+<p>Copies a folder to a folder in a plugin.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="x">// Copy the &#39;foo&#39; folder to the &#39;foo&#39; folder in the plugin.</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="x">$I-&gt;copyDirToPlugin(codecept_data_dir(&#39;foo&#39;), &#39;my-plugin/foo&#39;);</span>
+</span></code></pre></div>
+<h4 id="copydirtotheme">copyDirToTheme</h4>
+<p>Signature: <code>copyDirToTheme(string $src, string $themeDst)</code> : <code>void</code>  </p>
+<p>Copies a folder in a theme folder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="x">$I-&gt;copyDirToTheme(codecept_data_dir(&#39;foo&#39;), &#39;my-theme&#39;);</span>
+</span></code></pre></div>
+<h4 id="copydirtouploads">copyDirToUploads</h4>
+<p>Signature: <code>copyDirToUploads(string $src, string $dst, [DateTime|string|int|null $date])</code> : <code>void</code>  </p>
+<p>Copies a folder to the uploads folder.</p>
+<p>The date argument can be a string compatible with <code>strtotime</code> or a Unix
+timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="x">$I-&gt;copyDirToUploads(codecept_data_dir(&#39;foo&#39;), &#39;uploadsFoo&#39;);</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="x">$I-&gt;copyDirToUploads(codecept_data_dir(&#39;foo&#39;), &#39;uploadsFoo&#39;, &#39;today&#39;);</span>
+</span></code></pre></div>
+<h4 id="deletedir">deleteDir</h4>
+<p>Signature: <code>deleteDir(string $dirname)</code> : <code>void</code>  </p>
+<p>Deletes directory with all subdirectories</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">deleteDir</span><span class="p">(</span><span class="s1">&#39;vendor&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<h4 id="deletefile">deleteFile</h4>
+<p>Signature: <code>deleteFile(string $filename)</code> : <code>void</code>  </p>
+<p>Deletes a file</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">deleteFile</span><span class="p">(</span><span class="s1">&#39;composer.lock&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<h4 id="deletemupluginfile">deleteMuPluginFile</h4>
+<p>Signature: <code>deleteMuPluginFile(string $file)</code> : <code>void</code>  </p>
+<p>Deletes a file in a mu-plugin folder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="x">$I-&gt;deleteMuPluginFile(&#39;mu-plugin1/some-file.txt&#39;);</span>
+</span></code></pre></div>
+<h4 id="deletepluginfile">deletePluginFile</h4>
+<p>Signature: <code>deletePluginFile(string $file)</code> : <code>void</code>  </p>
+<p>Deletes a file in a plugin folder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="x">$I-&gt;deletePluginFile(&#39;my-plugin/some-file.txt&#39;);</span>
+</span></code></pre></div>
+<h4 id="deletethemefile">deleteThemeFile</h4>
+<p>Signature: <code>deleteThemeFile(string $file)</code> : <code>void</code>  </p>
+<p>Deletes a file in a theme folder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="x">$I-&gt;deleteThemeFile(&#39;my-theme/some-file.txt&#39;);</span>
+</span></code></pre></div>
+<h4 id="deletethisfile">deleteThisFile</h4>
+<p>Signature: <code>deleteThisFile()</code> : <code>void</code>  </p>
+<p>Deletes a file</p>
+<h4 id="deleteuploadeddir">deleteUploadedDir</h4>
+<p>Signature: <code>deleteUploadedDir(string $dir, [DateTime|string|int|null $date])</code> : <code>void</code>  </p>
+<p>Deletes a dir in the uploads folder.</p>
+<p>The date argument can be a string compatible with <code>strtotime</code> or a Unix
+timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="x">$I-&gt;deleteUploadedDir(&#39;folder&#39;);</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="x">$I-&gt;deleteUploadedDir(&#39;folder&#39;, &#39;today&#39;);</span>
+</span></code></pre></div>
+<h4 id="deleteuploadedfile">deleteUploadedFile</h4>
+<p>Signature: <code>deleteUploadedFile(string $file, [string|int|null $date])</code> : <code>void</code>  </p>
+<p>Deletes a file in the uploads folder.</p>
+<p>The date argument can be a string compatible with <code>strtotime</code> or a Unix
+timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="x">$I-&gt;deleteUploadedFile(&#39;some-file.txt&#39;);</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="x">$I-&gt;deleteUploadedFile(&#39;some-file.txt&#39;, &#39;today&#39;);</span>
+</span></code></pre></div>
+<h4 id="dontseefilefound">dontSeeFileFound</h4>
+<p>Signature: <code>dontSeeFileFound(string $filename, [string $path])</code> : <code>void</code>  </p>
+<p>Checks if file does not exist in path</p>
+<h4 id="dontseeinmupluginfile">dontSeeInMuPluginFile</h4>
+<p>Signature: <code>dontSeeInMuPluginFile(string $file, string $contents)</code> : <code>void</code>  </p>
+<p>Checks that a file in a mu-plugin folder does not contain a string.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="x">$I-&gt;dontSeeInMuPluginFile(&#39;mu-plugin1/some-file.txt&#39;, &#39;foo&#39;);</span>
+</span></code></pre></div>
+<h4 id="dontseeinpluginfile">dontSeeInPluginFile</h4>
+<p>Signature: <code>dontSeeInPluginFile(string $file, string $contents)</code> : <code>void</code>  </p>
+<p>Checks that a file in a plugin folder does not contain a string.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="x">$I-&gt;dontSeeInPluginFile(&#39;my-plugin/some-file.txt&#39;, &#39;foo&#39;);</span>
+</span></code></pre></div>
+<h4 id="dontseeinthemefile">dontSeeInThemeFile</h4>
+<p>Signature: <code>dontSeeInThemeFile(string $file, string $contents)</code> : <code>void</code>  </p>
+<p>Checks that a file in a theme folder does not contain a string.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="x">$I-&gt;dontSeeInThemeFile(&#39;my-theme/some-file.txt&#39;, &#39;foo&#39;);</span>
+</span></code></pre></div>
+<h4 id="dontseeinthisfile">dontSeeInThisFile</h4>
+<p>Signature: <code>dontSeeInThisFile(string $text)</code> : <code>void</code>  </p>
+<p>Checks If opened file doesn't contain <code>text</code> in it</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">openFile</span><span class="p">(</span><span class="s1">&#39;composer.json&#39;</span><span class="p">);</span>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">dontSeeInThisFile</span><span class="p">(</span><span class="s1">&#39;codeception/codeception&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<h4 id="dontseeinuploadedfile">dontSeeInUploadedFile</h4>
+<p>Signature: <code>dontSeeInUploadedFile(string $file, string $contents, [string|int|null $date])</code> : <code>void</code>  </p>
+<p>Checks that a file in the uploads folder does contain a string.</p>
+<p>The date argument can be a string compatible with <code>strtotime</code> or a Unix
+timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">dontSeeInUploadedFile</span><span class="p">(</span><span class="s1">&#39;some-file.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">);</span>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">dontSeeInUploadedFile</span><span class="p">(</span><span class="s1">&#39;some-file.txt&#39;</span><span class="p">,</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;today&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<h4 id="dontseemupluginfilefound">dontSeeMuPluginFileFound</h4>
+<p>Signature: <code>dontSeeMuPluginFileFound(string $file)</code> : <code>void</code>  </p>
+<p>Checks that a file is not found in a mu-plugin folder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="x">$I-&gt;dontSeeMuPluginFileFound(&#39;mu-plugin1/some-file.txt&#39;);</span>
+</span></code></pre></div>
+<h4 id="dontseepluginfilefound">dontSeePluginFileFound</h4>
+<p>Signature: <code>dontSeePluginFileFound(string $file)</code> : <code>void</code>  </p>
+<p>Checks that a file is not found in a plugin folder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="x">$I-&gt;dontSeePluginFileFound(&#39;my-plugin/some-file.txt&#39;);</span>
+</span></code></pre></div>
+<h4 id="dontseethemefilefound">dontSeeThemeFileFound</h4>
+<p>Signature: <code>dontSeeThemeFileFound(string $file)</code> : <code>void</code>  </p>
+<p>Checks that a file is not found in a theme folder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="x">$I-&gt;dontSeeThemeFileFound(&#39;my-theme/some-file.txt&#39;);</span>
+</span></code></pre></div>
+<h4 id="dontseeuploadedfilefound">dontSeeUploadedFileFound</h4>
+<p>Signature: <code>dontSeeUploadedFileFound(string $file, [string|int|null $date])</code> : <code>void</code>  </p>
+<p>Checks thata a file does not exist in the uploads folder.</p>
+<p>The date argument can be a string compatible with <code>strtotime</code> or a Unix
+timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="x">$I-&gt;dontSeeUploadedFileFound(&#39;some-file.txt&#39;);</span>
+</span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a><span class="x">$I-&gt;dontSeeUploadedFileFound(&#39;some-file.txt&#39;,&#39;today&#39;);</span>
+</span></code></pre></div>
+<h4 id="getbloguploadspath">getBlogUploadsPath</h4>
+<p>Signature: <code>getBlogUploadsPath(int $blogId, [string $file], [DateTimeImmutable|DateTime|string|null $date])</code> : <code>string</code>  </p>
+<p>Returns the absolute path to a blog uploads folder or file.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="nv">$blogId</span> <span class="o">=</span> <span class="nv">$I</span><span class="o">-&gt;</span><span class="na">haveBlogInDatabase</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">);</span>
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a><span class="nv">$testTodayUploads</span> <span class="o">=</span> <span class="nv">$I</span><span class="o">-&gt;</span><span class="na">getBlogUploadsPath</span><span class="p">(</span><span class="nv">$blogId</span><span class="p">);</span>
+</span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a><span class="nv">$testLastMonthLogs</span> <span class="o">=</span> <span class="nv">$I</span><span class="o">-&gt;</span><span class="na">getBlogUploadsPath</span><span class="p">(</span><span class="nv">$blogId</span><span class="p">,</span> <span class="s1">&#39;/logs&#39;</span><span class="p">,</span> <span class="s1">&#39;-1 month&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<h4 id="getuploadspath">getUploadsPath</h4>
+<p>Signature: <code>getUploadsPath([string $file], [mixed $date])</code> : <code>string</code>  </p>
+<p>Returns the path to the specified uploads file of folder.</p>
+<p>Not providing a value for <code>$file</code> and <code>$date</code> will return the uploads folder path.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a><span class="nv">$todaysPath</span> <span class="o">=</span> <span class="nv">$I</span><span class="o">-&gt;</span><span class="na">getUploadsPath</span><span class="p">();</span>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a><span class="nv">$lastWeek</span> <span class="o">=</span> <span class="nv">$I</span><span class="o">-&gt;</span><span class="na">getUploadsPath</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;-1 week&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<h4 id="getwprootfolder">getWpRootFolder</h4>
+<p>Signature: <code>getWpRootFolder()</code> : <code>string</code>  </p>
+<p>Returns the absolute path to WordPress root folder without trailing slash.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="nv">$rootFolder</span> <span class="o">=</span> <span class="nv">$I</span><span class="o">-&gt;</span><span class="na">getWpRootFolder</span><span class="p">();</span>
+</span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">assertFileExists</span><span class="p">(</span><span class="nv">$rootFolder</span> <span class="o">.</span> <span class="s1">&#39;wp-load.php&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<h4 id="havemuplugin">haveMuPlugin</h4>
+<p>Signature: <code>haveMuPlugin(string $filename, string $code)</code> : <code>void</code>  </p>
+<p>Creates a mu-plugin file, including plugin header, in the mu-plugins folder.</p>
+<p>The code can not contain the opening '&lt;?php' tag.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="x">$code = &#39;echo &quot;Hello world!&quot;&#39;;</span>
+</span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a><span class="x">$I-&gt;haveMuPlugin(&#39;foo-mu-plugin.php&#39;, $code);</span>
+</span><span id="__span-35-3"><a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a><span class="x">// Load the code from a file.</span>
+</span><span id="__span-35-4"><a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a><span class="x">$code = file_get_contents(codecept_data_dir(&#39;code/mu-plugin.php&#39;));</span>
+</span><span id="__span-35-5"><a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a><span class="x">$I-&gt;haveMuPlugin(&#39;foo-mu-plugin.php&#39;, $code);</span>
+</span></code></pre></div>
+<h4 id="haveplugin">havePlugin</h4>
+<p>Signature: <code>havePlugin(string $path, string $code)</code> : <code>void</code>  </p>
+<p>Creates a plugin file, including plugin header, in the plugins folder.</p>
+<p>The plugin is just created and not activated; the code can not contain the opening '&lt;?php' tag.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="x">$code = &#39;echo &quot;Hello world!&quot;&#39;;</span>
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a><span class="x">$I-&gt;havePlugin(&#39;foo/plugin.php&#39;, $code);</span>
+</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a><span class="x">// Load the code from a file.</span>
+</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a><span class="x">$code = file_get_contents(codecept_data_dir(&#39;code/plugin.php&#39;));</span>
+</span><span id="__span-36-5"><a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a><span class="x">$I-&gt;havePlugin(&#39;foo/plugin.php&#39;, $code);</span>
+</span></code></pre></div>
+<h4 id="havetheme">haveTheme</h4>
+<p>Signature: <code>haveTheme(string $folder, string $indexFileCode, [string $functionsFileCode])</code> : <code>void</code>  </p>
+<p>Creates a theme file structure, including theme style file and index, in the themes folder.</p>
+<p>The theme is just created and not activated; the code can not contain the opening '&lt;?php' tag.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="x">$code = &#39;sayHi();&#39;;</span>
+</span><span id="__span-37-2"><a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a><span class="x">$functionsCode  = &#39;function sayHi(){echo &quot;Hello world&quot;;};&#39;;</span>
+</span><span id="__span-37-3"><a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a><span class="x">$I-&gt;haveTheme(&#39;foo&#39;, $indexCode, $functionsCode);</span>
+</span><span id="__span-37-4"><a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a><span class="x">// Load the code from a file.</span>
+</span><span id="__span-37-5"><a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a><span class="x">$indexCode = file_get_contents(codecept_data_dir(&#39;code/index.php&#39;));</span>
+</span><span id="__span-37-6"><a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a><span class="x">$functionsCode = file_get_contents(codecept_data_dir(&#39;code/functions.php&#39;));</span>
+</span><span id="__span-37-7"><a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a><span class="x">$I-&gt;haveTheme(&#39;foo&#39;, $indexCode, $functionsCode);</span>
+</span></code></pre></div>
+<h4 id="makeuploadsdir">makeUploadsDir</h4>
+<p>Signature: <code>makeUploadsDir(string $path)</code> : <code>string</code>  </p>
+<p>Creates an empty folder in the WordPress installation uploads folder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a><span class="nv">$logsDir</span> <span class="o">=</span> <span class="nv">$I</span><span class="o">-&gt;</span><span class="na">makeUploadsDir</span><span class="p">(</span><span class="s1">&#39;logs/acme&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<h4 id="openfile">openFile</h4>
+<p>Signature: <code>openFile(string $filename)</code> : <code>void</code>  </p>
+<p>Opens a file and stores it's content.</p>
+<p>Usage:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-39-2"><a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">openFile</span><span class="p">(</span><span class="s1">&#39;composer.json&#39;</span><span class="p">);</span>
+</span><span id="__span-39-3"><a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">seeInThisFile</span><span class="p">(</span><span class="s1">&#39;codeception/codeception&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<h4 id="openuploadedfile">openUploadedFile</h4>
+<p>Signature: <code>openUploadedFile(string $filename, [DateTime|string|int|null $date])</code> : <code>void</code>  </p>
+<p>Opens a file in the the uploads folder.</p>
+<p>The date argument can be a string compatible with <code>strtotime</code> or a Unix
+timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="x">$I-&gt;openUploadedFile(&#39;some-file.txt&#39;);</span>
+</span><span id="__span-40-2"><a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a><span class="x">$I-&gt;openUploadedFile(&#39;some-file.txt&#39;, &#39;time&#39;);</span>
+</span></code></pre></div>
+<h4 id="seefilecontentsequal">seeFileContentsEqual</h4>
+<p>Signature: <code>seeFileContentsEqual(string $text)</code> : <code>void</code>  </p>
+<p>Checks the strict matching of file contents.
+Unlike <code>seeInThisFile</code> will fail if file has something more than expected lines.
+Better to use with HEREDOC strings.
+Matching is done after removing "\r" chars from file content.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-41-2"><a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">openFile</span><span class="p">(</span><span class="s1">&#39;process.pid&#39;</span><span class="p">);</span>
+</span><span id="__span-41-3"><a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">seeFileContentsEqual</span><span class="p">(</span><span class="s1">&#39;3192&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<h4 id="seefilefound">seeFileFound</h4>
+<p>Signature: <code>seeFileFound(string $filename, [string $path])</code> : <code>void</code>  </p>
+<p>Checks if file exists in path.
+Opens a file when it's exists</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-42-2"><a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">seeFileFound</span><span class="p">(</span><span class="s1">&#39;UserModel.php&#39;</span><span class="p">,</span><span class="s1">&#39;app/models&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<h4 id="seeinmupluginfile">seeInMuPluginFile</h4>
+<p>Signature: <code>seeInMuPluginFile(string $file, string $contents)</code> : <code>void</code>  </p>
+<p>Checks that a file in a mu-plugin folder contains a string.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="x">$I-&gt;seeInMuPluginFile(&#39;mu-plugin1/some-file.txt&#39;, &#39;foo&#39;);</span>
+</span></code></pre></div>
+<h4 id="seeinpluginfile">seeInPluginFile</h4>
+<p>Signature: <code>seeInPluginFile(string $file, string $contents)</code> : <code>void</code>  </p>
+<p>Checks that a file in a plugin folder contains a string.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a><span class="x">$I-&gt;seeInPluginFile(&#39;my-plugin/some-file.txt&#39;, &#39;foo&#39;);</span>
+</span></code></pre></div>
+<h4 id="seeinthemefile">seeInThemeFile</h4>
+<p>Signature: <code>seeInThemeFile(string $file, string $contents)</code> : <code>void</code>  </p>
+<p>Checks that a file in a theme folder contains a string.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-45-2"><a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">seeInThemeFile</span><span class="p">(</span><span class="s1">&#39;my-theme/some-file.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">);</span>
+</span><span id="__span-45-3"><a id="__codelineno-45-3" name="__codelineno-45-3" href="#__codelineno-45-3"></a><span class="cp">?&gt;</span>
+</span></code></pre></div>
+<h4 id="seeinthisfile">seeInThisFile</h4>
+<p>Signature: <code>seeInThisFile(string $text)</code> : <code>void</code>  </p>
+<p>Checks If opened file has <code>text</code> in it.</p>
+<p>Usage:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-46-2"><a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">openFile</span><span class="p">(</span><span class="s1">&#39;composer.json&#39;</span><span class="p">);</span>
+</span><span id="__span-46-3"><a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">seeInThisFile</span><span class="p">(</span><span class="s1">&#39;codeception/codeception&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<h4 id="seeinuploadedfile">seeInUploadedFile</h4>
+<p>Signature: <code>seeInUploadedFile(string $file, string $contents, [string|int|null $date])</code> : <code>void</code>  </p>
+<p>Checks that a file in the uploads folder contains a string.</p>
+<p>The date argument can be a string compatible with <code>strtotime</code> or a Unix
+timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-47-1"><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-47-2"><a id="__codelineno-47-2" name="__codelineno-47-2" href="#__codelineno-47-2"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">seeInUploadedFile</span><span class="p">(</span><span class="s1">&#39;some-file.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">);</span>
+</span><span id="__span-47-3"><a id="__codelineno-47-3" name="__codelineno-47-3" href="#__codelineno-47-3"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">seeInUploadedFile</span><span class="p">(</span><span class="s1">&#39;some-file.txt&#39;</span><span class="p">,</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;today&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<h4 id="seemupluginfilefound">seeMuPluginFileFound</h4>
+<p>Signature: <code>seeMuPluginFileFound(string $file)</code> : <code>void</code>  </p>
+<p>Checks that a file is found in a mu-plugin folder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-48-1"><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a><span class="x">$I-&gt;seeMuPluginFileFound(&#39;mu-plugin1/some-file.txt&#39;);</span>
+</span></code></pre></div>
+<h4 id="seenumbernewlines">seeNumberNewLines</h4>
+<p>Signature: <code>seeNumberNewLines(int $number)</code> : <code>void</code>  </p>
+<p>Checks If opened file has the <code>number</code> of new lines.</p>
+<p>Usage:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-49-1"><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-49-2"><a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">openFile</span><span class="p">(</span><span class="s1">&#39;composer.json&#39;</span><span class="p">);</span>
+</span><span id="__span-49-3"><a id="__codelineno-49-3" name="__codelineno-49-3" href="#__codelineno-49-3"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">seeNumberNewLines</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+</span></code></pre></div>
+<h4 id="seepluginfilefound">seePluginFileFound</h4>
+<p>Signature: <code>seePluginFileFound(string $file)</code> : <code>void</code>  </p>
+<p>Checks that a file is found in a plugin folder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="x">$I-&gt;seePluginFileFound(&#39;my-plugin/some-file.txt&#39;);</span>
+</span></code></pre></div>
+<h4 id="seethemefilefound">seeThemeFileFound</h4>
+<p>Signature: <code>seeThemeFileFound(string $file)</code> : <code>void</code>  </p>
+<p>Checks that a file is found in a theme folder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a><span class="x">$I-&gt;seeThemeFileFound(&#39;my-theme/some-file.txt&#39;);</span>
+</span></code></pre></div>
+<h4 id="seethisfilematches">seeThisFileMatches</h4>
+<p>Signature: <code>seeThisFileMatches(string $regex)</code> : <code>void</code>  </p>
+<p>Checks that contents of currently opened file matches $regex</p>
+<h4 id="seeuploadedfilefound">seeUploadedFileFound</h4>
+<p>Signature: <code>seeUploadedFileFound(string $filename, [string|int|null $date])</code> : <code>void</code>  </p>
+<p>Checks if file exists in the uploads folder.</p>
+<p>The date argument can be a string compatible with <code>strtotime</code> or a Unix
+timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="cp">&lt;?php</span>
+</span><span id="__span-52-2"><a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">seeUploadedFileFound</span><span class="p">(</span><span class="s1">&#39;some-file.txt&#39;</span><span class="p">);</span>
+</span><span id="__span-52-3"><a id="__codelineno-52-3" name="__codelineno-52-3" href="#__codelineno-52-3"></a><span class="nv">$I</span><span class="o">-&gt;</span><span class="na">seeUploadedFileFound</span><span class="p">(</span><span class="s1">&#39;some-file.txt&#39;</span><span class="p">,</span><span class="s1">&#39;today&#39;</span><span class="p">);</span>
+</span><span id="__span-52-4"><a id="__codelineno-52-4" name="__codelineno-52-4" href="#__codelineno-52-4"></a><span class="cp">?&gt;</span>
+</span></code></pre></div>
+<h4 id="writetofile">writeToFile</h4>
+<p>Signature: <code>writeToFile(string $filename, string $contents)</code> : <code>void</code>  </p>
+<p>Saves contents to file</p>
+<h4 id="writetomupluginfile">writeToMuPluginFile</h4>
+<p>Signature: <code>writeToMuPluginFile(string $file, string $data)</code> : <code>void</code>  </p>
+<p>Writes a file in a mu-plugin folder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-53-1"><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="x">$I-&gt;writeToMuPluginFile(&#39;mu-plugin1/some-file.txt&#39;, &#39;foo&#39;);</span>
+</span></code></pre></div>
+<h4 id="writetopluginfile">writeToPluginFile</h4>
+<p>Signature: <code>writeToPluginFile(string $file, string $data)</code> : <code>void</code>  </p>
+<p>Writes a file in a plugin folder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-54-1"><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a><span class="x">$I-&gt;writeToPluginFile(&#39;my-plugin/some-file.txt&#39;, &#39;foo&#39;);</span>
+</span></code></pre></div>
+<h4 id="writetothemefile">writeToThemeFile</h4>
+<p>Signature: <code>writeToThemeFile(string $file, string $data)</code> : <code>void</code>  </p>
+<p>Writes a string to a file in a theme folder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-55-1"><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a><span class="x">$I-&gt;writeToThemeFile(&#39;my-theme/some-file.txt&#39;, &#39;foo&#39;);</span>
+</span></code></pre></div>
+<h4 id="writetouploadedfile">writeToUploadedFile</h4>
+<p>Signature: <code>writeToUploadedFile(string $filename, string $data, [DateTime|string|int|null $date])</code> : <code>string</code>  </p>
+<p>Writes a string to a file in the the uploads folder.</p>
+<p>The date argument can be a string compatible with <code>strtotime</code> or a Unix
+timestamp that will be used to build the <code>Y/m</code> uploads subfolder path.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-56-1"><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a><span class="x">$I-&gt;writeToUploadedFile(&#39;some-file.txt&#39;, &#39;foo bar&#39;);</span>
+</span><span id="__span-56-2"><a id="__codelineno-56-2" name="__codelineno-56-2" href="#__codelineno-56-2"></a><span class="x">$I-&gt;writeToUploadedFile(&#39;some-file.txt&#39;, &#39;foo bar&#39;, &#39;today&#39;);</span>
+</span></code></pre></div>
+<!-- /methods -->
+
+<p>Read more <a href="https://codeception.com/docs/modules/Filesystem" target="_blank" rel="noopener">in Codeception documentation.</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs Insiders
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="mailto:luca@theaveragedev.com" target="_blank" rel="noopener" title="" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.0.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M536.4-26.3c9.8-3.5 20.6-1 28 6.3s9.8 18.2 6.3 28l-178 496.9c-5 13.9-18.1 23.1-32.8 23.1-14.2 0-27-8.6-32.3-21.7l-64.2-158c-4.5-11-2.5-23.6 5.2-32.6l94.5-112.4c5.1-6.1 4.7-15-.9-20.6s-14.6-6-20.6-.9l-112.4 94.3c-9.1 7.6-21.6 9.6-32.6 5.2L38.1 216.8c-13.1-5.3-21.7-18.1-21.7-32.3 0-14.7 9.2-27.8 23.1-32.8z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/lucatume" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "navigation.instant", "navigation.instant.prefetch", "navigation.tracking", "navigation.top", "navigation.sections", "navigation.tabs", "toc.follow", "content.code.select", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.26099bd0.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.9d1edc04.min.js"></script>
+      
+    
+  </body>
+</html>
