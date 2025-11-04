@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.5.8] 2025-11-04;
+
 ### Fixed
 
 - Fixed `DB_PASSWORD` constant not being defined when `dbPassword` configuration parameter is set to an empty string in `WPLoader` module, fixes #786.
@@ -3231,4 +3233,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.5.4]: https://github.com/lucatume/wp-browser/compare/4.5.3...4.5.4
 [4.5.6]: https://github.com/lucatume/wp-browser/compare/4.5.4...4.5.6
 [4.5.7]: https://github.com/lucatume/wp-browser/compare/4.5.6...4.5.7
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.5.7...HEAD
+[4.5.8]: https://github.com/lucatume/wp-browser/compare/4.5.7...4.5.8
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.5.8...HEAD
