@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Fixed `DB_PASSWORD` constant not being defined when `dbPassword` configuration parameter is set to an empty string in `WPLoader` module, fixes #786.
+
 ## [4.5.7] 2025-09-09;
 
 ### Fixed
