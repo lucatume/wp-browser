@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Anticipate plugins activation and loading in the `WPLoader` module to ensure pluggable functions overridden in plugins will correctly apply.
+
 ## [4.5.8] 2025-11-04;
 
 ### Fixed
