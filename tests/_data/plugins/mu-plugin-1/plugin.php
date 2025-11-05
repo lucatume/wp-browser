@@ -21,3 +21,12 @@ class MUPlugin1
     }
 }
 register_activation_hook(__FILE__, [MUPlugin1::class, 'activate']);
+
+// Override the get_avatar pluggable function to verify the pluggable override works.
+if (!function_exists('get_avatar')) {
+    function get_avatar($id_or_email, $size = 96, $default_value = '', $alt = '', $args = null)
+    {
+        return "<img class='avatar' height=23 width=89 src='https://example.com/avatar.jpg'>";
+    }
+}
+
