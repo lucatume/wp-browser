@@ -2,6 +2,7 @@
 
 namespace lucatume\WPBrowser\TestCase;
 
+
 abstract class WPRestControllerTestCase extends WPTestCase {
 
 	protected $server;

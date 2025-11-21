@@ -2,6 +2,7 @@
 
 namespace lucatume\WPBrowser\TestCase;
 
+
 abstract class WPXMLTestCase extends WPTestCase {
 	/**
 	 * Load XML from a string.
