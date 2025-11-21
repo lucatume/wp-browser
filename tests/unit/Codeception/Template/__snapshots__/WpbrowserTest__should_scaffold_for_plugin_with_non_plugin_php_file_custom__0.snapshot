@@ -4,9 +4,9 @@
 <<< /main.php <<<
 
 >>> /tests/EndToEnd.suite.yml >>>
-# Integration suite configuration
+# EndToEnd suite configuration
 #
-# Run integration and "WordPress unit" tests.
+# Run end-to-end tests.
 
 actor: EndToEndTester
 bootstrap: _bootstrap.php

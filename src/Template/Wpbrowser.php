@@ -233,9 +233,9 @@ ENV;
         // @phpstan-ignore-next-line
         $dumpFilePath = Codecept::VERSION >= 5 ? 'tests/Support/Data/dump.sql' : 'tests/_data/dump.sql';
         $suiteConfig = <<<EOF
-# Integration suite configuration
+# EndToEnd suite configuration
 #
-# Run integration and "WordPress unit" tests.
+# Run end-to-end tests.
 
 actor: EndToEnd{$this->actorSuffix}
 bootstrap: _bootstrap.php
