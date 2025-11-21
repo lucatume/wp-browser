@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.5.10] 2025-11-21;
+
+### Fixed
+
+- Wording in the default EndToEnd suite configuration files to reflect the nature of the suite.
+
 ## [4.5.9] 2025-11-05;
 
 ### Fixed
@@ -3241,4 +3247,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.5.7]: https://github.com/lucatume/wp-browser/compare/4.5.6...4.5.7
 [4.5.8]: https://github.com/lucatume/wp-browser/compare/4.5.7...4.5.8
 [4.5.9]: https://github.com/lucatume/wp-browser/compare/4.5.8...4.5.9
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.5.9...HEAD
+[4.5.10]: https://github.com/lucatume/wp-browser/compare/4.5.9...4.5.10
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.5.10...HEAD
