@@ -20,11 +20,11 @@ if ( class_exists( 'PHPUnit\Runner\Version' ) && version_compare( PHPUnit\Runner
 
 	foreach ( $aliases as $original => $alias ) {
 		if ( class_exists( $original ) ) {
-			if (!class_exists($alias)) {
-       if (!class_exists($alias)) {
-           class_alias( $original, $alias );
-       }
-   }
+			if ( ! class_exists( $alias ) ) {
+				if ( ! class_exists( $alias ) ) {
+					class_alias( $original, $alias );
+				}
+			}
 		}
 	}
 

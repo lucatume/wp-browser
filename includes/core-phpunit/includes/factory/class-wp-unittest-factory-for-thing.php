@@ -15,13 +15,13 @@ abstract class WP_UnitTest_Factory_For_Thing {
 	 *
 	 * @param object $factory                       Global factory that can be used to create other objects
 	 *                                              on the system.
-	 * @param array $default_generation_definitions Defines what default values should the properties
-	 *                                              of the object have. The default values can be generators --
-	 *                                              an object with the next() method.
-	 *                                              There are some default generators:
-	 *                                               - {@link WP_UnitTest_Generator_Sequence}
-	 *                                               - {@link WP_UnitTest_Generator_Locale_Name}
-	 *                                               - {@link WP_UnitTest_Factory_Callback_After_Create}
+	 * @param array  $default_generation_definitions Defines what default values should the properties
+	 *                                               of the object have. The default values can be generators --
+	 *                                               an object with the next() method.
+	 *                                               There are some default generators:
+	 *                                                - {@link WP_UnitTest_Generator_Sequence}
+	 *                                                - {@link WP_UnitTest_Generator_Locale_Name}
+	 *                                                - {@link WP_UnitTest_Factory_Callback_After_Create}
 	 */
 	public function __construct( $factory, $default_generation_definitions = array() ) {
 		$this->factory                        = $factory;
@@ -149,11 +149,11 @@ abstract class WP_UnitTest_Factory_For_Thing {
 	 *
 	 * @since UT (3.7.0)
 	 *
-	 * @param array       $args                   Optional. The arguments to combine with defaults.
-	 *                                            Default empty array.
-	 * @param array|null  $generation_definitions Optional. The defaults. Default null.
-	 * @param array|null  $callbacks              Optional. Array with callbacks to apply on the fields.
-	 *                                            Default null.
+	 * @param array      $args                   Optional. The arguments to combine with defaults.
+	 *                                           Default empty array.
+	 * @param array|null $generation_definitions Optional. The defaults. Default null.
+	 * @param array|null $callbacks              Optional. Array with callbacks to apply on the fields.
+	 *                                           Default null.
 	 *
 	 * @return array|WP_Error Combined array on success. WP_Error when default value is incorrect.
 	 */

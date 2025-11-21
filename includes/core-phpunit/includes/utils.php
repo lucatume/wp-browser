@@ -365,7 +365,7 @@ function xml_to_array( $in ) {
  *     $tree = xml_to_array( $rss );
  *     $items = xml_find( $tree, 'rss', 'channel', 'item' );
  *
- * @param array     $tree     An array tree structure of XML, typically from xml_to_array().
+ * @param array  $tree     An array tree structure of XML, typically from xml_to_array().
  * @param string ...$elements Names of XML nodes to create a "path" to find within the XML.
  * @return array Array of matching XML node information.
  */
@@ -378,10 +378,10 @@ function xml_find( $tree, ...$elements ) {
 	}
 
 	for ( $i = 0; $i < count( $tree ); $i++ ) {
-		#       echo "checking '{$tree[$i][name]}' == '{$elements[0]}'\n";
-		#       var_dump( $tree[$i]['name'], $elements[0] );
+		// echo "checking '{$tree[$i][name]}' == '{$elements[0]}'\n";
+		// var_dump( $tree[$i]['name'], $elements[0] );
 		if ( $tree[ $i ]['name'] === $elements[0] ) {
-			#           echo "n == {$n}\n";
+			// echo "n == {$n}\n";
 			if ( 1 === $n ) {
 				$out[] = $tree[ $i ];
 			} else {

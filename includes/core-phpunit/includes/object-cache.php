@@ -1482,19 +1482,15 @@ class WP_Object_Cache {
 			} else {
 				$value = $this->m->get( $derived_key, $cache_cb, $cas_token );
 			}
-		} else {
-			if ( isset( $this->cache[ $derived_key ] ) ) {
+		} elseif ( isset( $this->cache[ $derived_key ] ) ) {
 				$found = true;
 				return is_object( $this->cache[ $derived_key ] ) ? clone $this->cache[ $derived_key ] : $this->cache[ $derived_key ];
-			} elseif ( in_array( $group, $this->no_mc_groups, true ) ) {
-				return false;
-			} else {
-				if ( $by_key ) {
-					$value = $this->m->getByKey( $server_key, $derived_key );
-				} else {
-					$value = $this->m->get( $derived_key );
-				}
-			}
+		} elseif ( in_array( $group, $this->no_mc_groups, true ) ) {
+			return false;
+		} elseif ( $by_key ) {
+				$value = $this->m->getByKey( $server_key, $derived_key );
+		} else {
+			$value = $this->m->get( $derived_key );
 		}
 
 		if ( Memcached::RES_SUCCESS === $this->getResultCode() ) {

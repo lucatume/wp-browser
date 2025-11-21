@@ -60,11 +60,11 @@ class WP_Test_Stream {
 			throw new Exception( 'Cannot use an empty bucket name' );
 		}
 
-		if ( ! isset( WP_Test_Stream::$data[ $this->bucket ] ) ) {
-			WP_Test_Stream::$data[ $this->bucket ] = array();
+		if ( ! isset( self::$data[ $this->bucket ] ) ) {
+			self::$data[ $this->bucket ] = array();
 		}
 
-		$this->data_ref =& WP_Test_Stream::$data[ $this->bucket ][ $this->file ];
+		$this->data_ref =& self::$data[ $this->bucket ][ $this->file ];
 
 		$this->position = 0;
 	}
@@ -108,7 +108,7 @@ class WP_Test_Stream {
 		$left  = substr( $this->data_ref, 0, $this->position );
 		$right = substr( $this->data_ref, $this->position + strlen( $data ) );
 
-		WP_Test_Stream::$data[ $this->bucket ][ $this->file ] = $left . $data . $right;
+		self::$data[ $this->bucket ][ $this->file ] = $left . $data . $right;
 
 		$this->position += strlen( $data );
 		return strlen( $data );
@@ -210,8 +210,8 @@ class WP_Test_Stream {
 		$plainfile = rtrim( $this->file, '/' );
 
 		// Check if a file or directory with the same name already exists.
-		if ( isset( WP_Test_Stream::$data[ $this->bucket ][ $plainfile ] )
-			|| isset( WP_Test_Stream::$data[ $this->bucket ][ $plainfile . '/' ] )
+		if ( isset( self::$data[ $this->bucket ][ $plainfile ] )
+			|| isset( self::$data[ $this->bucket ][ $plainfile . '/' ] )
 		) {
 			return false;
 		}
@@ -258,7 +258,7 @@ class WP_Test_Stream {
 		if ( substr( $this->file, -1 ) === '/' || isset( $dir_ref ) ) {
 			return $this->make_stat(
 				array(
-					'mode' => WP_Test_Stream::DIRECTORY_MODE,
+					'mode' => self::DIRECTORY_MODE,
 				)
 			);
 		}
@@ -270,7 +270,7 @@ class WP_Test_Stream {
 		return $this->make_stat(
 			array(
 				'size' => strlen( $this->data_ref ),
-				'mode' => WP_Test_Stream::FILE_MODE,
+				'mode' => self::FILE_MODE,
 			)
 		);
 	}
@@ -294,7 +294,7 @@ class WP_Test_Stream {
 		if ( ! isset( $this->data_ref ) ) {
 			return false;
 		}
-		unset( WP_Test_Stream::$data[ $this->bucket ][ $this->file ] );
+		unset( self::$data[ $this->bucket ][ $this->file ] );
 		return true;
 	}
 
@@ -304,6 +304,6 @@ class WP_Test_Stream {
 	 * @return A reference to the data entry for the directory.
 	 */
 	private function &get_directory_ref() {
-		return WP_Test_Stream::$data[ $this->bucket ][ rtrim( $this->file, '/' ) . '/' ];
+		return self::$data[ $this->bucket ][ rtrim( $this->file, '/' ) . '/' ];
 	}
 }

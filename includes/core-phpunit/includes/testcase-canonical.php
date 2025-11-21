@@ -2,7 +2,6 @@
 
 namespace lucatume\WPBrowser\TestCase;
 
-
 abstract class WPCanonicalTestCase extends WPTestCase {
 	public static $old_current_user;
 	public static $author_id;

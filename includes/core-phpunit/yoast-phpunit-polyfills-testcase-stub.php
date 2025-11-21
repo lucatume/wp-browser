@@ -10,29 +10,23 @@
 
 namespace Yoast\PHPUnitPolyfills\TestCases;
 
-class TestCase extends \PHPUnit\Framework\TestCase
-{
-    public static function set_up_before_class()
-    {
-    }
+class TestCase extends \PHPUnit\Framework\TestCase {
 
-    protected function set_up()
-    {
-    }
+	public static function set_up_before_class() {
+	}
 
-    protected function assert_pre_conditions()
-    {
-    }
+	protected function set_up() {
+	}
 
-    protected function assert_post_conditions()
-    {
-    }
+	protected function assert_pre_conditions() {
+	}
 
-    protected function tear_down()
-    {
-    }
+	protected function assert_post_conditions() {
+	}
 
-    public static function tear_down_after_class()
-    {
-    }
+	protected function tear_down() {
+	}
+
+	public static function tear_down_after_class() {
+	}
 }

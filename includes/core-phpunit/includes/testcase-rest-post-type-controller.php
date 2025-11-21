@@ -2,7 +2,6 @@
 
 namespace lucatume\WPBrowser\TestCase;
 
-
 abstract class WPRestPostTypeControllerTestCase extends WPRestControllerTestCase {
 
 	protected function check_post_data( $post, $data, $context, $links ) {

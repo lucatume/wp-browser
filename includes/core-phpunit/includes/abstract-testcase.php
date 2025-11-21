@@ -33,7 +33,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	 * @var WP_UnitTest_Factory
 	 */
 	protected $factory;
- private static ?string $calledClass = null;
+	private static ?string $calledClass = null;
 
 	/**
 	 * Fetches the factory object for generating WordPress fixtures.
@@ -69,11 +69,11 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 
 		$wpdb->suppress_errors = false;
 		$wpdb->show_errors     = true;
-		if (WPTestCase::isStrictAboutWpdbConnectionId() && $wpdb->get_var('SELECT CONNECTION_ID()') !== WPTestCase::getWpdbConnectionId()) {
-      self::fail('The database connection went away. A `setUpBeforeClassMethod` likely closed the connection.');
-  } else {
-      $wpdb->check_connection(false);
-  }
+		if ( WPTestCase::isStrictAboutWpdbConnectionId() && $wpdb->get_var( 'SELECT CONNECTION_ID()' ) !== WPTestCase::getWpdbConnectionId() ) {
+			self::fail( 'The database connection went away. A `setUpBeforeClassMethod` likely closed the connection.' );
+		} else {
+			$wpdb->check_connection( false );
+		}
 		ini_set( 'display_errors', 1 );
 
 		$class = self::$calledClass ?? get_called_class();
@@ -567,19 +567,23 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	 * @since 3.7.0
 	 */
 	public function expectDeprecated() {
-		if (method_exists($this, 'getAnnotations')) {
-      $annotations = $this->getAnnotations();
-  } elseif (version_compare(tests_get_phpunit_version(), '10.0.0', '<')) {
-      $annotations = \PHPUnit\Util\Test::parseTestMethodAnnotations(static::class, $this->getName(false));
-  } else {
-      if (method_exists(static::class, $this->name())) {
-          $reflectionMethod = new \ReflectionMethod(static::class, $this->name());
-          $docBlock = \PHPUnit\Metadata\Annotation\Parser\DocBlock::ofMethod($reflectionMethod);
-          $annotations = ['method' => $docBlock->symbolAnnotations(), 'class' => []];
-      } else {
-          $annotations = ['method' => null, 'class' => []];
-      }
-  }
+		if ( method_exists( $this, 'getAnnotations' ) ) {
+			$annotations = $this->getAnnotations();
+		} elseif ( version_compare( tests_get_phpunit_version(), '10.0.0', '<' ) ) {
+			$annotations = \PHPUnit\Util\Test::parseTestMethodAnnotations( static::class, $this->getName( false ) );
+		} elseif ( method_exists( static::class, $this->name() ) ) {
+				$reflectionMethod = new \ReflectionMethod( static::class, $this->name() );
+				$docBlock         = \PHPUnit\Metadata\Annotation\Parser\DocBlock::ofMethod( $reflectionMethod );
+				$annotations      = array(
+					'method' => $docBlock->symbolAnnotations(),
+					'class'  => array(),
+				);
+		} else {
+			$annotations = array(
+				'method' => null,
+				'class'  => array(),
+			);
+		}
 
 		foreach ( array( 'class', 'method' ) as $depth ) {
 			if ( ! empty( $annotations[ $depth ]['expectedDeprecated'] ) ) {
@@ -1481,7 +1485,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	public function unlink( $file ) {
 		$exists = is_file( $file );
 		if ( $exists && ! in_array( $file, self::$ignore_files, true ) ) {
-			//error_log( $file );
+			// error_log( $file );
 			unlink( $file );
 		} elseif ( ! $exists ) {
 			$this->fail( "Trying to delete a file that doesn't exist: $file" );
@@ -1874,8 +1878,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 
 		return $result;
 	}
- public function setCalledClass(string $class): void
- {
-     self::$calledClass = $class;
- }
+	public function setCalledClass( string $class ): void {
+		self::$calledClass = $class;
+	}
 }

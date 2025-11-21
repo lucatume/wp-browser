@@ -35,7 +35,6 @@
  *         class="has-custom-classname is-style-default wp-block-separator"
  *         style="margin-top:50px;margin-bottom:50px;"
  *
- *
  * @see https://github.com/WordPress/wordpress-develop/blob/trunk/tests/phpunit/data/html5lib-tests/tree-construction/README.md
  *
  * @since 6.9.0

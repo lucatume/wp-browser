@@ -2,7 +2,6 @@
 
 namespace lucatume\WPBrowser\TestCase;
 
-
 abstract class WPRestApiTestCase extends WPTestCase {
 
 	/**
