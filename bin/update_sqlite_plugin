@@ -5,11 +5,58 @@ set -eu
 script_dir=$(dirname "$0")
 root_dir=$(cd "$script_dir/.." && pwd)
 plugin_file_src="https://downloads.wordpress.org/plugin/sqlite-database-integration.zip";
+
 # Download the zip file and unzip it in the includes/sqlite-database-integration directory
 curl -L "$plugin_file_src" -o "$root_dir/includes/sqlite-database-integration.zip"
 unzip -o "$root_dir/includes/sqlite-database-integration.zip" -d "$root_dir/includes/"
 # Remove the zip file
 rm "$root_dir/includes/sqlite-database-integration.zip"
-git apply "${root_dir}"/config/patches/sqlite-database-integration/db.copy.patch
-git apply "${root_dir}"/config/patches/sqlite-database-integration/load.php.patch
 
+echo "Applying transformations to SQLite plugin files..."
+
+# Transform db.copy file
+db_copy="${root_dir}/includes/sqlite-database-integration/db.copy"
+
+# 1. Replace DATABASE_TYPE constant to use getenv()
+sed -i.bak "s/define( 'DATABASE_TYPE', 'sqlite' )/define( 'DATABASE_TYPE', getenv( 'DATABASE_TYPE' ) ?: 'sqlite' )/g" "$db_copy"
+
+# 2. Replace DB_ENGINE constant to use getenv()
+sed -i.bak "s/define( 'DB_ENGINE', 'sqlite' )/define( 'DB_ENGINE', getenv( 'DB_ENGINE' ) ?: 'sqlite' )/g" "$db_copy"
+
+# 3. Add new constant blocks after the DB_ENGINE if block
+# Find the line with the DB_ENGINE closing brace and insert new blocks after it
+sed -i.bak '/^if ( ! defined( .DB_ENGINE. ) ) {$/,/^}$/ {
+    /^}$/ a\
+// Define SQLite main file constant to avoid having the plugin loaded automatically.\
+if ( ! defined( '"'"'SQLITE_MAIN_FILE'"'"' ) ) {\
+	define( '"'"'SQLITE_MAIN_FILE'"'"', '"'"'{SQLITE_MAIN_FILE}'"'"' );\
+}\
+// Define DB_DIR and DB_FILE from env, if not already defined.\
+if( ! defined( '"'"'DB_DIR'"'"' ) && getenv( '"'"'DB_DIR'"'"' ) ) {\
+    define( '"'"'DB_DIR'"'"', realpath( getenv( '"'"'DB_DIR'"'"' ) ) );\
+}\
+if( ! defined( '"'"'DB_FILE'"'"' ) && getenv( '"'"'DB_FILE'"'"' ) ) {\
+    define( '"'"'DB_FILE'"'"', getenv( '"'"'DB_FILE'"'"' ) );\
+}
+}' "$db_copy"
+
+rm -f "${db_copy}.bak"
+
+# Transform load.php file
+load_php="${root_dir}/includes/sqlite-database-integration/load.php"
+
+# Wrap the SQLITE_MAIN_FILE constant definition in an if (!defined()) check
+sed -i.bak "/^define( 'SQLITE_MAIN_FILE', __FILE__ );$/ {
+    s/.*/if (!defined('SQLITE_MAIN_FILE')) {/
+    a\\
+    define('SQLITE_MAIN_FILE', __FILE__);\\
+}
+}" "$load_php"
+
+rm -f "${load_php}.bak"
+
+echo "Transformations complete!"
+
+# Run phpcbf to fix code style
+echo "Running phpcbf on sqlite-database-integration files..." &&
+vendor/bin/phpcbf --standard=WordPress "${root_dir}/includes/sqlite-database-integration" || true
