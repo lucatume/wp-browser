@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use lucatume\Rector\DowngradePhpOsFamily;
 use lucatume\Rector\RemoveTypeHinting;
+use lucatume\Rector\SerializableThrowableCompatibilityRector;
 use Rector\Config\RectorConfig;
 use Rector\DowngradePhp72\Rector\ClassMethod\DowngradeParameterTypeWideningRector;
 use Rector\Renaming\Rector\MethodCall\RenameMethodRector;
@@ -45,6 +47,12 @@ return static function (RectorConfig $rectorConfig): void {
 
     $rectorConfig->sets([DowngradeLevelSetList::DOWN_TO_PHP_71]);
     $rectorConfig->skip([DowngradeParameterTypeWideningRector::class]);
+
+    // Downgrade PHP_OS_FAMILY (PHP 7.2+) to PHP_OS for PHP 7.1 compatibility
+    $rectorConfig->rule(DowngradePhpOsFamily::class);
+
+    // Make SerializableThrowable compatible with PHP <7.3 and downgrade str_contains()
+    $rectorConfig->rule(SerializableThrowableCompatibilityRector::class);
 
     $rectorConfig->ruleWithConfiguration(RemoveTypeHinting::class, [
         'lucatume\WPBrowser\Module\WPDb' => [

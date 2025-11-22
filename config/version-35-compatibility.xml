@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<ruleset name="PHP71Compatibility"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:nonamespaceschemalocation="../../../phpcs.xsd">
+    <description>PHP 7.1 Compatibility Check</description>
+
+    <!-- Include PHPCompatibility standard -->
+    <rule ref="PHPCompatibility">
+        <!-- Some test files will contain use of the mysql_ function. -->
+        <exclude name="PHPCompatibility.Extensions.RemovedExtensions.mysql_DeprecatedRemoved"/>
+
+        <!-- Sqlite integration plugin supports the sqlite extension. -->
+        <exclude name="PHPCompatibility.Extensions.RemovedExtensions.sqliteRemoved"/>
+
+        <!-- The stream_isatty function use is guarded by a function_exists check. -->
+        <exclude name="PHPCompatibility.FunctionUse.NewFunctions.stream_isattyFound"/>
+    </rule>
+
+    <!-- Set the target PHP version to 7.1 -->
+    <config name="testVersion" value="7.1"/>
+</ruleset>

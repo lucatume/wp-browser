@@ -29,7 +29,35 @@ cp config/composer-35.json composer.json
 rm -rf config
 cd -
 
+# Run PHP 7.1 compatibility checks using Docker
+echo "Running PHP 7.1 compatibility checks..."
+
+# Run Docker container with PHP 7.1 for compatibility checks
+docker run --rm \
+    -v "$(pwd)/.build/35:/app" \
+    -w /app \
+    php:7.1-cli \
+    bash -c '
+        set -e
+        echo "==> Running PHP syntax check on all PHP files..."
+        find . -name "*.php" -not -path "./vendor/*" -print0 | xargs -0 -n1 php -l > /dev/null
+        echo "✓ All PHP 7.1 compatibility checks passed!"
+    ' || {
+        echo "✗ PHP 7.1 compatibility check failed!"
+        exit 1
+    }
+
+vendor/bin/phpcs --standard=config/version-35-compatibility.xml \
+  --runtime-set ignore_warnings_on_exit 1 \
+  -s \
+  ./.build/35/src/**/*.php ./.build/35/includes/**/*.php
+
+# Clean up temporary config
+rm -f ./.build/35/phpcs-compat.xml
+
 rsync -av ./.build/35/includes/ "$destination_dir/includes"
 rsync -av ./.build/35/src/ "$destination_dir/src"
 rsync -av ./.build/35/tests/ "$destination_dir/tests"
-vendor/bin/phpcbf --standard=config/phpcs.xml "$destination_dir/src"
+vendor/bin/phpcbf --standard=config/phpcs.xml "$destination_dir/src" || true
+
+rm -rf .build
