@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.7.16] 2025-11-22;
+
 ### Fixed
 
 - Wording in the default EndToEnd suite configuration files to reflect the nature of the suite.
@@ -2123,4 +2125,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.7.13]: https://github.com/lucatume/wp-browser/compare/3.7.12...3.7.13
 [3.7.14]: https://github.com/lucatume/wp-browser/compare/3.7.13...3.7.14
 [3.7.15]: https://github.com/lucatume/wp-browser/compare/3.7.14...3.7.15
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.15...HEAD
+[3.7.16]: https://github.com/lucatume/wp-browser/compare/3.7.15...3.7.16
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.16...HEAD
