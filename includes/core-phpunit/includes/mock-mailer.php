@@ -9,7 +9,15 @@
 
 require_once ABSPATH . 'wp-includes/PHPMailer/PHPMailer.php';
 require_once ABSPATH . 'wp-includes/PHPMailer/Exception.php';
-require_once ABSPATH . 'wp-includes/class-wp-phpmailer.php';
+if ( is_file( ABSPATH . 'wp-includes/class-wp-phpmailer.php' ) ) {
+	// The two require_once above are already loading the correct files.
+	include_once ABSPATH . 'wp-includes/class-wp-phpmailer.php';
+} else {
+	// Deprecated in version 5.5.0.
+	// Removed in version 6.8.0 in favor of the class-wp-phpmailer.php file.
+	include_once ABSPATH . 'wp-includes/class-phpmailer.php';
+	class_alias( 'PHPMailer\PHPMailer\PHPMailer', 'WP_PHPMailer' );
+}
 
 /**
  * Test class extending WP_PHPMailer.

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use lucatume\Rector\HandleInstallPhpCompat;
+use lucatume\Rector\HandleMockMailerPhpCompat;
 use lucatume\Rector\ModifyAbstractTestCase;
 use lucatume\Rector\PrefixGlobalClassNames;
 use lucatume\Rector\RenameTestCaseClasses;
@@ -32,6 +33,10 @@ return static function (RectorConfig $rectorConfig): void {
         // Bootstrap and other utility files
         $corePHPUnitDir . '/class-basic-object.php',
         $corePHPUnitDir . '/class-basic-subclass.php',
+        // Skip WrapClassAliasWithExistenceCheck for mock-mailer.php as HandleMockMailerPhpCompat handles it
+        WrapClassAliasWithExistenceCheck::class => [
+            $corePHPUnitDir . '/mock-mailer.php',
+        ],
     ]);
 
     // 1. Rename test case classes and update parent class
@@ -75,7 +80,10 @@ return static function (RectorConfig $rectorConfig): void {
     // 4. Handle WordPress 6.1 file rename in install.php
     $rectorConfig->rule(HandleInstallPhpCompat::class);
 
-    // 5. Prefix global class names in namespaced files
+    // 5. Handle WordPress 6.8 file rename in mock-mailer.php
+    $rectorConfig->rule(HandleMockMailerPhpCompat::class);
+
+    // 6. Prefix global class names in namespaced files
     // Note: This rule is applied in a second Rector pass after namespaces are added
     $rectorConfig->rule(PrefixGlobalClassNames::class);
 };
