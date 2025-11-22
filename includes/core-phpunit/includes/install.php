@@ -4,7 +4,7 @@
  *
  * @todo Reuse the init/load code in init.php
  */
-error_reporting( E_ALL & ~E_DEPRECATED & ~E_STRICT );
+error_reporting( E_ALL & ~E_DEPRECATED );
 
 $config_file_path = $argv[1];
 $multisite        = in_array( 'run_ms_tests', $argv, true );
@@ -40,17 +40,14 @@ tests_add_filter( 'wp_die_handler', '_wp_die_handler_filter_exit' );
 require_once ABSPATH . 'wp-settings.php';
 
 require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
 /**
  * File was renamed in WordPress 6.1.
  *
  * @see https://core.trac.wordpress.org/ticket/56268
  * @see https://github.com/WordPress/WordPress/commit/8484c7babb6b6ee951f83babea656a294157665d
  */
-require_once file_exists( ABSPATH . 'wp-includes/class-wpdb.php' )
-    ? ABSPATH . 'wp-includes/class-wpdb.php'
-    : ABSPATH . 'wp-includes/wp-db.php';
- 
+require_once file_exists( ABSPATH . 'wp-includes/class-wpdb.php' ) ? ABSPATH . 'wp-includes/class-wpdb.php' : ABSPATH . 'wp-includes/wp-db.php';
+
 // Override the PHPMailer.
 global $phpmailer;
 require_once __DIR__ . '/mock-mailer.php';

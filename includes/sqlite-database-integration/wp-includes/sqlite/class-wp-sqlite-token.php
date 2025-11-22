@@ -218,7 +218,7 @@ class WP_SQLite_Token {
 		return (
 			( null === $type || $this->type === $type )
 			&& ( null === $flags || ( $this->flags & $flags ) )
-			&& ( null === $values || in_array( strtoupper( $this->value ), $values, true ) )
+			&& ( null === $values || in_array( strtoupper( $this->value ?? '' ), $values, true ) )
 		);
 	}
 
@@ -241,7 +241,7 @@ class WP_SQLite_Token {
 	private function extract() {
 		switch ( $this->type ) {
 			case self::TYPE_KEYWORD:
-				$this->keyword = strtoupper( $this->token );
+				$this->keyword = strtoupper( $this->token ?? '' );
 				if ( ! ( $this->flags & self::FLAG_KEYWORD_RESERVED ) ) {
 					/*
 					 * Unreserved keywords should stay the way they are
@@ -256,7 +256,7 @@ class WP_SQLite_Token {
 				return ' ';
 
 			case self::TYPE_BOOL:
-				return strtoupper( $this->token ) === 'TRUE';
+				return strtoupper( $this->token ?? '' ) === 'TRUE';
 
 			case self::TYPE_NUMBER:
 				$ret = str_replace( '--', '', $this->token ); // e.g. ---42 === -42.

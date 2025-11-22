@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 
-set -eux
+set -eu
 
 script_dir=$(dirname "$0")
 root_dir=$(cd "$script_dir/.." && pwd)
@@ -16,15 +16,28 @@ rm -rf "${root_dir}"/includes/core-phpunit/includes &&
   cd .. &&
   mv  wordpress-develop/tests/phpunit/includes ./includes &&
   rm -rf wordpress-develop &&
-  git apply "${root_dir}"/config/patches/core-phpunit/includes/install.php.patch &&
-  git apply "${root_dir}"/config/patches/core-phpunit/includes/abstract-testcase.php.patch &&
-  git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-ajax.php.patch &&
-  git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-canonical.php.patch &&
-  git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-rest-api.php.patch &&
-  git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-rest-controller.php.patch &&
-  git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-rest-post-type-controller.php.patch &&
-  git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-xml.php.patch &&
-  git apply "${root_dir}"/config/patches/core-phpunit/includes/testcase-xmlrpc.php.patch &&
-  git apply "${root_dir}"/config/patches/core-phpunit/includes/phpunit6/compat.php.patch &&
-  php "${root_dir}/bin/namespace_global_class_names.php"
+  cd "${root_dir}" &&
+  # Run Rector to apply transformations (class renaming, method modifications, etc.)
+  vendor/bin/rector process --config="${root_dir}/config/rector-core-phpunit.php" &&
+  echo "Adding namespaces to test case files..." && 
+  for file in testcase-ajax.php testcase-canonical.php testcase-rest-api.php testcase-rest-controller.php testcase-rest-post-type-controller.php testcase-xml.php testcase-xmlrpc.php; do
+    sed -i.bak '1a\
+\
+namespace lucatume\\WPBrowser\\TestCase;\
+\
+' "${root_dir}/includes/core-phpunit/includes/${file}"
+    rm -f "${root_dir}/includes/core-phpunit/includes/${file}.bak"
+  done &&
+  # Add use statement for WPTestCase to abstract-testcase.php
+  sed -i.bak '2a\
+use lucatume\\WPBrowser\\TestCase\\WPTestCase;\
+\
+' "${root_dir}/includes/core-phpunit/includes/abstract-testcase.php" &&
+  rm -f "${root_dir}/includes/core-phpunit/includes/abstract-testcase.php.bak" &&
+  # Run Rector again to prefix global class names (needs namespaces to be in place first)
+  echo "Prefixing global class names..." &&
+  vendor/bin/rector process --config="${root_dir}/config/rector-core-phpunit.php" &&
+  # Run phpcbf to fix code style
+  echo "Running phpcbf on core-phpunit files..." &&
+  vendor/bin/phpcbf --standard=WordPress "${root_dir}/includes/core-phpunit" || true
 

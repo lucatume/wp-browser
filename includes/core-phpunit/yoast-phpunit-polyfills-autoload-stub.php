@@ -9,12 +9,12 @@
 
 namespace Yoast\PHPUnitPolyfills;
 
-if (class_exists(Autoload::class)) {
-    return;
+if ( class_exists( Autoload::class ) ) {
+	return;
 }
 
-class Autoload
-{
-    // The specific required version will change in Core files, set it to a high number to be fine.
-    public const VERSION = '10.0.0';
+class Autoload {
+
+	// The specific required version will change in Core files, set it to a high number to be fine.
+	public const VERSION = '10.0.0';
 }
