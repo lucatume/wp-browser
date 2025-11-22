@@ -2,6 +2,7 @@
 
 use lucatume\WPBrowser\TestCase\WPTestCase;
 
+require_once __DIR__ . '/build-visual-html-tree.php';
 require_once __DIR__ . '/factory.php';
 require_once __DIR__ . '/trac.php';
 
@@ -15,17 +16,11 @@ require_once __DIR__ . '/trac.php';
  * All WordPress unit tests should inherit from this class.
  */
 abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
-
 	protected static $forced_tickets   = array();
 	protected $expected_deprecated     = array();
 	protected $caught_deprecated       = array();
 	protected $expected_doing_it_wrong = array();
 	protected $caught_doing_it_wrong   = array();
-
-    /**
-     * @var string|null
-     */
-    private static $calledClass;
 
 	protected static $hooks_saved = array();
 	protected static $ignore_files;
@@ -38,6 +33,10 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	 * @var WP_UnitTest_Factory
 	 */
 	protected $factory;
+	/**
+  * @var string|null
+  */
+ private static $calledClass;
 
 	/**
 	 * Fetches the factory object for generating WordPress fixtures.
@@ -60,7 +59,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	 * @return string The class name.
 	 */
 	public static function get_called_class() {
-		return self::$called_class ?? get_called_class();
+		return self::$calledClass ?? get_called_class();
 	}
 
 	/**
@@ -73,12 +72,12 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 
 		$wpdb->suppress_errors = false;
 		$wpdb->show_errors     = true;
-        if ( WPTestCase::isStrictAboutWpdbConnectionId() && $wpdb->get_var( 'SELECT CONNECTION_ID()' ) !== WPTestCase::getWpdbConnectionId() ) {
-            self::fail( 'The database connection went away. A `setUpBeforeClassMethod` likely closed the connection.' );
-        } else {
-            $wpdb->check_connection(false);
-        }
-        ini_set( 'display_errors', 1 );
+		if ( WPTestCase::isStrictAboutWpdbConnectionId() && $wpdb->get_var( 'SELECT CONNECTION_ID()' ) !== WPTestCase::getWpdbConnectionId() ) {
+			self::fail( 'The database connection went away. A `setUpBeforeClassMethod` likely closed the connection.' );
+		} else {
+			$wpdb->check_connection( false );
+		}
+		ini_set( 'display_errors', 1 );
 
 		$class = self::$calledClass ?? get_called_class();
 
@@ -93,7 +92,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	 * Runs the routine after all tests have been run.
 	 */
 	public static function tear_down_after_class() {
-        $class = self::$calledClass ?? get_called_class();
+		$class = self::$calledClass ?? get_called_class();
 
 		if ( method_exists( $class, 'wpTearDownAfterClass' ) ) {
 			call_user_func( array( $class, 'wpTearDownAfterClass' ) );
@@ -147,6 +146,21 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 		$this->start_transaction();
 		$this->expectDeprecated();
 		add_filter( 'wp_die_handler', array( $this, 'get_wp_die_handler' ) );
+		add_filter( 'wp_hash_password_options', array( $this, 'wp_hash_password_options' ), 1, 2 );
+	}
+
+	/**
+	 * Sets the bcrypt cost option for password hashing during tests.
+	 *
+	 * @param array      $options   The options for password hashing.
+	 * @param string|int $algorithm The algorithm to use for hashing. This is a string in PHP 7.4+ and an integer in PHP 7.3 and earlier.
+	 */
+	public function wp_hash_password_options( array $options, $algorithm ): array {
+		if ( PASSWORD_BCRYPT === $algorithm ) {
+			$options['cost'] = 5;
+		}
+
+		return $options;
 	}
 
 	/**
@@ -214,6 +228,8 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 		wp_set_current_user( 0 );
 
 		$this->reset_lazyload_queue();
+
+		WP_Style_Engine_CSS_Rules_Store::remove_all_stores();
 	}
 
 	/**
@@ -554,31 +570,23 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	 * @since 3.7.0
 	 */
 	public function expectDeprecated() {
-        if ( method_exists( $this, 'getAnnotations' ) ) {
-            // PHPUnit < 9.5.0.
-            $annotations = $this->getAnnotations();
-        } else if( version_compare(tests_get_phpunit_version(),'10.0.0','<')) {
-            // PHPUnit >= 9.5.0 < 10.0.0.
-            $annotations = \PHPUnit\Util\Test::parseTestMethodAnnotations(
-                static::class,
-                $this->getName( false )
-            );
-        } else {
-            // PHPUnit >= 10.0.0.
-            if (method_exists(static::class, $this->name())) {
-                $reflectionMethod = new \ReflectionMethod(static::class, $this->name());
-                $docBlock = \PHPUnit\Metadata\Annotation\Parser\DocBlock::ofMethod($reflectionMethod);
-                $annotations = [
-                    'method' => $docBlock->symbolAnnotations(),
-                    'class' => [],
-                ];
-            } else {
-                $annotations = [
-                    'method' => null,
-                    'class' => [],
-                ];
-            }
-        }
+		if ( method_exists( $this, 'getAnnotations' ) ) {
+			$annotations = $this->getAnnotations();
+		} elseif ( version_compare( tests_get_phpunit_version(), '10.0.0', '<' ) ) {
+			$annotations = \PHPUnit\Util\Test::parseTestMethodAnnotations( static::class, $this->getName( false ) );
+		} elseif ( method_exists( static::class, $this->name() ) ) {
+				$reflectionMethod = new \ReflectionMethod( static::class, $this->name() );
+				$docBlock         = \PHPUnit\Metadata\Annotation\Parser\DocBlock::ofMethod( $reflectionMethod );
+				$annotations      = array(
+					'method' => $docBlock->symbolAnnotations(),
+					'class'  => array(),
+				);
+		} else {
+			$annotations = array(
+				'method' => null,
+				'class'  => array(),
+			);
+		}
 
 		foreach ( array( 'class', 'method' ) as $depth ) {
 			if ( ! empty( $annotations[ $depth ]['expectedDeprecated'] ) ) {
@@ -1097,6 +1105,40 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	}
 
 	/**
+	 * Assert that two text strings representing file paths are the same, while ignoring
+	 * OS-specific differences in the directory separators.
+	 *
+	 * This allows for tests to be compatible for running on both *nix based as well as Windows OS.
+	 *
+	 * @since 6.7.0
+	 *
+	 * @param string $path_a File or directory path.
+	 * @param string $path_b File or directory path.
+	 */
+	public function assertSamePathIgnoringDirectorySeparators( $path_a, $path_b ) {
+		$path_a = $this->normalizeDirectorySeparatorsInPath( $path_a );
+		$path_b = $this->normalizeDirectorySeparatorsInPath( $path_b );
+
+		$this->assertSame( $path_a, $path_b );
+	}
+
+	/**
+	 * Normalize directory separators in a file path to be a forward slash.
+	 *
+	 * @since 6.7.0
+	 *
+	 * @param string $path File or directory path.
+	 * @return string The normalized file or directory path.
+	 */
+	public function normalizeDirectorySeparatorsInPath( $path ) {
+		if ( ! is_string( $path ) || strtolower(substr(PHP_OS, 0, 3)) !== 'win' ) {
+			return $path;
+		}
+
+		return strtr( $path, '\\', '/' );
+	}
+
+	/**
 	 * Checks each of the WP_Query is_* functions/properties against expected boolean value.
 	 *
 	 * Any properties that are listed by name as parameters will be expected to be true; all others are
@@ -1170,6 +1212,44 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 		if ( ! $passed ) {
 			$this->fail( $message );
 		}
+	}
+
+	/**
+	 * Check HTML markup (including blocks) for semantic equivalence.
+	 *
+	 * Given two markup strings, assert that they translate to the same semantic HTML tree,
+	 * normalizing tag names, attribute names, and attribute order. Furthermore, attributes
+	 * and class names are sorted and deduplicated, and whitespace in style attributes
+	 * is normalized. Finally, block delimiter comments are recognized and normalized,
+	 * applying the same principles.
+	 *
+	 * @since 6.9.0
+	 *
+	 * @param string      $expected         The expected HTML.
+	 * @param string      $actual           The actual HTML.
+	 * @param string|null $fragment_context Optional. The fragment context, for example "<td>" expected HTML
+	 *                                      must occur within "<table><tr>" fragment context. Default "<body>".
+	 *                                      Only "<body>" or `null` are supported at this time.
+	 *                                      Set to `null` to parse a full HTML document.
+	 * @param string|null $message          Optional. The assertion error message.
+	 */
+	public function assertEqualHTML( string $expected, string $actual, ?string $fragment_context = '<body>', $message = 'HTML markup was not equivalent.' ): void {
+		try {
+			$tree_expected = build_visual_html_tree( $expected, $fragment_context );
+			$tree_actual   = build_visual_html_tree( $actual, $fragment_context );
+		} catch ( Exception $e ) {
+			// For PHP 8.4+, we can retry, using the built-in DOM\HTMLDocument parser.
+			if ( class_exists( 'DOM\HtmlDocument' ) ) {
+				$dom_expected  = DOM\HtmlDocument::createFromString( $expected, LIBXML_NOERROR );
+				$tree_expected = build_visual_html_tree( $dom_expected->saveHtml(), $fragment_context );
+				$dom_actual    = DOM\HtmlDocument::createFromString( $actual, LIBXML_NOERROR );
+				$tree_actual   = build_visual_html_tree( $dom_actual->saveHtml(), $fragment_context );
+			} else {
+				throw $e;
+			}
+		}
+
+		$this->assertSame( $tree_expected, $tree_actual, $message );
 	}
 
 	/**
@@ -1408,7 +1488,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	public function unlink( $file ) {
 		$exists = is_file( $file );
 		if ( $exists && ! in_array( $file, self::$ignore_files, true ) ) {
-			//error_log( $file );
+			// error_log( $file );
 			unlink( $file );
 		} elseif ( ! $exists ) {
 			$this->fail( "Trying to delete a file that doesn't exist: $file" );
@@ -1454,7 +1534,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	 * @since 4.0.0
 	 *
 	 * @param string $dir Path to the directory to scan.
-	 * @return array List of file paths.
+	 * @return string[] List of file paths.
 	 */
 	public function files_in_dir( $dir ) {
 		$files = array();
@@ -1475,7 +1555,7 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @return array List of file paths.
+	 * @return string[] List of file paths.
 	 */
 	public function scan_user_uploads() {
 		static $files = array();
@@ -1687,8 +1767,121 @@ abstract class WP_UnitTestCase_Base extends PHPUnit_Adapter_TestCase {
 		touch( $file );
 	}
 
-	public function setCalledClass(string $class): void
-	{
+	/**
+	 * Wrapper for `wp_safe_remote_request()` that retries on error and skips the test on timeout.
+	 *
+	 * @param string $url  URL to retrieve.
+	 * @param array  $args Optional. Request arguments. Default empty array.
+	 * @return array|WP_Error The response or WP_Error on failure.
+	 */
+	protected function wp_safe_remote_request( $url, $args = array() ) {
+		return self::retry_on_error( 'wp_safe_remote_request', $url, $args );
+	}
+
+	/**
+	 * Wrapper for `wp_safe_remote_get()` that retries on error and skips the test on timeout.
+	 *
+	 * @param string $url  URL to retrieve.
+	 * @param array  $args Optional. Request arguments. Default empty array.
+	 * @return array|WP_Error The response or WP_Error on failure.
+	 */
+	protected function wp_safe_remote_get( $url, $args = array() ) {
+		return self::retry_on_error( 'wp_safe_remote_get', $url, $args );
+	}
+
+	/**
+	 * Wrapper for `wp_safe_remote_post()` that retries on error and skips the test on timeout.
+	 *
+	 * @param string $url  URL to retrieve.
+	 * @param array  $args Optional. Request arguments. Default empty array.
+	 * @return array|WP_Error The response or WP_Error on failure.
+	 */
+	protected function wp_safe_remote_post( $url, $args = array() ) {
+		return self::retry_on_error( 'wp_safe_remote_post', $url, $args );
+	}
+
+	/**
+	 * Wrapper for `wp_safe_remote_head()` that retries on error and skips the test on timeout.
+	 *
+	 * @param string $url  URL to retrieve.
+	 * @param array  $args Optional. Request arguments. Default empty array.
+	 * @return array|WP_Error The response or WP_Error on failure.
+	 */
+	protected function wp_safe_remote_head( $url, $args = array() ) {
+		return self::retry_on_error( 'wp_safe_remote_head', $url, $args );
+	}
+
+	/**
+	 * Wrapper for `wp_remote_request()` that retries on error and skips the test on timeout.
+	 *
+	 * @param string $url  URL to retrieve.
+	 * @param array  $args Optional. Request arguments. Default empty array.
+	 * @return array|WP_Error The response or WP_Error on failure.
+	 */
+	protected function wp_remote_request( $url, $args = array() ) {
+		return self::retry_on_error( 'wp_remote_request', $url, $args );
+	}
+
+	/**
+	 * Wrapper for `wp_remote_get()` that retries on error and skips the test on timeout.
+	 *
+	 * @param string $url  URL to retrieve.
+	 * @param array  $args Optional. Request arguments. Default empty array.
+	 * @return array|WP_Error The response or WP_Error on failure.
+	 */
+	protected function wp_remote_get( $url, $args = array() ) {
+		return self::retry_on_error( 'wp_remote_get', $url, $args );
+	}
+
+	/**
+	 * Wrapper for `wp_remote_post()` that retries on error and skips the test on timeout.
+	 *
+	 * @param string $url  URL to retrieve.
+	 * @param array  $args Optional. Request arguments. Default empty array.
+	 * @return array|WP_Error The response or WP_Error on failure.
+	 */
+	protected function wp_remote_post( $url, $args = array() ) {
+		return self::retry_on_error( 'wp_remote_post', $url, $args );
+	}
+
+	/**
+	 * Wrapper for `wp_remote_head()` that retries on error and skips the test on timeout.
+	 *
+	 * @param string $url  URL to retrieve.
+	 * @param array  $args Optional. Request arguments. Default empty array.
+	 * @return array|WP_Error The response or WP_Error on failure.
+	 */
+	protected function wp_remote_head( $url, $args = array() ) {
+		return self::retry_on_error( 'wp_remote_head', $url, $args );
+	}
+
+	/**
+	 * Retries an HTTP API request up to three times and skips the test on timeout.
+	 *
+	 * @param callable $callback The HTTP API request function to call.
+	 * @param string   $url      URL to retrieve.
+	 * @param array    $args     Request arguments.
+	 * @return array|WP_Error The response or WP_Error on failure.
+	 */
+	private function retry_on_error( callable $callback, $url, $args ) {
+		$attempts = 0;
+
+		while ( $attempts < 3 ) {
+			$result = call_user_func( $callback, $url, $args );
+
+			if ( ! is_wp_error( $result ) ) {
+				return $result;
+			}
+
+			++$attempts;
+			sleep( 5 );
+		}
+
+		$this->skipTestOnTimeout( $result );
+
+		return $result;
+	}
+	public function setCalledClass( string $class ): void {
 		self::$calledClass = $class;
 	}
 }

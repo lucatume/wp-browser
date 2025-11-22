@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Wording in the default EndToEnd suite configuration files to reflect the nature of the suite.
+- Anticipate plugins activation and loading in the `WPLoader` module to ensure pluggable functions overridden in plugins will correctly apply.
+- Fixed `DB_PASSWORD` constant not being defined when `dbPassword` configuration parameter is set to an empty string in `WPLoader` module, fixes #786.
+
 ## [3.7.15] 2025-09-09;
 
 ### Fixed

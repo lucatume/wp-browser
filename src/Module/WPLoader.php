@@ -1275,7 +1275,10 @@ class WPLoader extends Module
      */
     private function includeAllPlugins(array $plugins, bool $isMultisite): void
     {
-        PreloadFilters::addFilter('plugins_loaded', function () use ($plugins, $isMultisite) {
+        $filter = function ($optionValue) use (&$filter, $plugins, $isMultisite) {
+            // Immediately remove this function from the filter to avoid infinite loops.
+            remove_filter('pre_option_active_plugins', $filter, PHP_INT_MIN);
+
             $activePlugins = $isMultisite ? get_site_option('active_sitewide_plugins') : get_option('active_plugins');
 
             if (!is_array($activePlugins)) {
@@ -1309,14 +1312,19 @@ class WPLoader extends Module
                 }
             }
 
-
             // Update the active plugins to include all plugins, external or not.
             if ($isMultisite) {
                 update_site_option('active_sitewide_plugins', $activePlugins);
             } else {
                 update_option('active_plugins', array_values(array_unique($activePlugins)));
             }
-        }, -100000);
+
+            // Return the value unchanged.
+            return array_values(array_unique($activePlugins));
+        };
+
+        // Use the filter as an action to install (in a different process) and then activate the plugins.
+        PreloadFilters::addFilter('pre_option_active_plugins', $filter, PHP_INT_MIN);
     }
 
     /**

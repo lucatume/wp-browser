@@ -3,7 +3,7 @@
 /**
  * Legacy plural form function.
  *
- * @param int $nplurals
+ * @param int    $nplurals
  * @param string $expression
  */
 function tests_make_plural_form_function( $nplurals, $expression ) {

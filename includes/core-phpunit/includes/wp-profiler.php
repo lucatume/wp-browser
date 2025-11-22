@@ -79,7 +79,7 @@ class WPProfiler {
 			$this->profile[ $name ]['actions']             = array_add( $this->profile[ $name ]['actions'], $item['actions'] );
 			$this->profile[ $name ]['filters']             = array_add( $this->profile[ $name ]['filters'], $item['filters'] );
 			$this->profile[ $name ]['queries']             = array_add( $this->profile[ $name ]['queries'], $item['queries'] );
-			#$this->_query_summary($item['queries'], $this->profile[$name]['queries']);
+			// $this->_query_summary($item['queries'], $this->profile[$name]['queries']);
 
 		} else {
 			$queries = array();
@@ -93,7 +93,7 @@ class WPProfiler {
 				'cache_dirty_objects'         => $cache_dirty_delta,
 				'actions'                     => $item['actions'],
 				'filters'                     => $item['filters'],
-				#               'queries' => $item['queries'],
+				// 'queries' => $item['queries'],
 									'queries' => $queries,
 			);
 		}

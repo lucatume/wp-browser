@@ -103,7 +103,7 @@ abstract class FileRequest
     {
         if (count($this->presetGlobalVars) > 0) {
             foreach ($this->presetGlobalVars as $key => $value) {
-                global $$key; // @phpcs:ignore PHPCompatibility.Variables.ForbiddenGlobalVariableVariable.NonBareVariableFound
+                global $$key;
                 $$key = $value;
             }
         }
@@ -207,7 +207,6 @@ abstract class FileRequest
         return $returnValues;
     }
 
-    // @phpcs:disable
     /**
      * @return array{
      *     afterLoadClosures: array<Closure>,
@@ -279,7 +278,6 @@ abstract class FileRequest
             throw new FileRequestException('No target file specified.');
         }
     }
-    // @phpcs:enable
 
     public function setServerVar(string $key, string $value): FileRequest
     {

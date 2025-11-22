@@ -24,41 +24,33 @@ class MachineInformation
 
     public function __construct(?string $operatingSystem = null, ?string $architecture = null)
     {
-        if ($operatingSystem === null) {
-            switch (strtolower(substr(php_uname('s'), 0, 3))) {
-                case 'dar':
-                    $this->operatingSystem = self::OS_DARWIN;
-                    break;
-                case 'lin':
-                    $this->operatingSystem = self::OS_LINUX;
-                    break;
-                case 'win':
-                    $this->operatingSystem = self::OS_WINDOWS;
-                    break;
-                default:
-                    $this->operatingSystem = self::OS_UNKNOWN;
-                    break;
-            }
-        } else {
-            $this->operatingSystem = $operatingSystem;
+        switch (strtolower(substr(php_uname('s'), 0, 3))) {
+            case 'dar':
+                $this->operatingSystem = self::OS_DARWIN;
+                break;
+            case 'lin':
+                $this->operatingSystem = self::OS_LINUX;
+                break;
+            case 'win':
+                $this->operatingSystem = self::OS_WINDOWS;
+                break;
+            default:
+                $this->operatingSystem = self::OS_UNKNOWN;
+                break;
         }
 
-        if ($architecture === null) {
-            switch (strtolower(php_uname('m'))) {
-                case 'x86_64':
-                case 'amd64':
-                    $this->architecture = self::ARCH_X86_64;
-                    break;
-                case 'arm64':
-                case 'aarch64':
-                    $this->architecture = self::ARCH_ARM64;
-                    break;
-                default:
-                    $this->architecture = self::ARCH_UNKNOWN;
-                    break;
-            }
-        } else {
-            $this->architecture = $architecture;
+        switch (strtolower(php_uname('m'))) {
+            case 'x86_64':
+            case 'amd64':
+                $this->architecture = self::ARCH_X86_64;
+                break;
+            case 'arm64':
+            case 'aarch64':
+                $this->architecture = self::ARCH_ARM64;
+                break;
+            default:
+                $this->architecture = self::ARCH_UNKNOWN;
+                break;
         }
     }
 

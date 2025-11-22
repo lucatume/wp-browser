@@ -30,7 +30,7 @@ class WPTestCaseStrictTest extends Unit
         return new WPLoader($this->mockModuleContainer, ($moduleConfig ?? $this->config));
     }
 
-    public function nonBooleanVAluesProvider(): array
+    public function nonBooleanVValuesProvider(): array
     {
         return [
             'int' => [1],
@@ -43,7 +43,7 @@ class WPTestCaseStrictTest extends Unit
     }
 
     /**
-     * @dataProvider nonBooleanVAluesProvider
+     * @dataProvider nonBooleanVValuesProvider
      */
     public function test_will_throw_if_beStrictAboutWpdbConnectionId_is_not_boolean($value): void
     {

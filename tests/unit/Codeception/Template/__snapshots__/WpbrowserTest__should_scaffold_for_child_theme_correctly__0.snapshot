@@ -12,9 +12,9 @@ add_action('after_setup_theme', 'theme_23_some_function');
 <<< /index.php <<<
 
 >>> /tests/EndToEnd.suite.yml >>>
-# Integration suite configuration
+# EndToEnd suite configuration
 #
-# Run integration and "WordPress unit" tests.
+# Run end-to-end tests.
 
 actor: EndToEndTester
 bootstrap: _bootstrap.php
