@@ -849,8 +849,10 @@ class WPLoader extends Module
         /**
          * Coming from the validation.
          *
+         * Empty strings filtered in {@see self::validateConfig()}.
+         *
          * @var array{
-         *     bootstrapActions: array<callable|string>,
+         *     bootstrapActions: array<callable|non-empty-string>,
          * } $config
          */
         $config = $this->config;
