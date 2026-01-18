@@ -184,7 +184,9 @@ class WPTestCase extends Unit
         $phpunitVersion = (int)PHPUnitVersion::series();
 
         $backupGlobalsReflectionProperty = new ReflectionProperty($this, 'backupGlobals');
-        $backupGlobalsReflectionProperty->setAccessible(true);
+        if (!version_compare(PHP_VERSION, '8.5', '>=')) {
+            $backupGlobalsReflectionProperty->setAccessible(true);
+        }
         $isDefinedInThis = $backupGlobalsReflectionProperty->getDeclaringClass()->getName() !== WPTestCase::class;
         if (!$isDefinedInThis && isset($_wpTestsBackupGlobals) && is_bool($_wpTestsBackupGlobals)) {
             $this->backupGlobals = $_wpTestsBackupGlobals;
@@ -197,7 +199,9 @@ class WPTestCase extends Unit
             $backupGlobalsExcludeListReflectionProperty = new ReflectionProperty($this, 'backupGlobalsExcludeList');
         }
 
-        $backupGlobalsExcludeListReflectionProperty->setAccessible(true);
+        if (!version_compare(PHP_VERSION, '8.5', '>=')) {
+            $backupGlobalsExcludeListReflectionProperty->setAccessible(true);
+        }
         $isDefinedInThis = $backupGlobalsExcludeListReflectionProperty->getDeclaringClass()
                 ->getName() !== WPTestCase::class;
         if (!$isDefinedInThis
@@ -219,7 +223,10 @@ class WPTestCase extends Unit
                $_wpTestsBackupStaticAttributesExcludeList;
 
         $backupStaticAttributesReflectionProperty = new ReflectionProperty($this, $backupStaticAttributesPropertyName);
-        $backupStaticAttributesReflectionProperty->setAccessible(true);
+        if (!version_compare(PHP_VERSION, '8.5', '>=')) {
+            $backupStaticAttributesReflectionProperty->setAccessible(true);
+            $backupStaticAttributesReflectionProperty->setAccessible(true);
+        }
         $isDefinedInThis = $backupStaticAttributesReflectionProperty->getDeclaringClass()
                 ->getName() !== WPTestCase::class;
         if (!$isDefinedInThis && isset($_wpTestsBackupStaticAttributes) && is_bool($_wpTestsBackupStaticAttributes)) {
@@ -381,7 +388,9 @@ class WPTestCase extends Unit
         };
         $coreTestCase = self::getCoreTestCase();
         $reflectionMethod = new ReflectionMethod($coreTestCase, $name);
-        $reflectionMethod->setAccessible(true);
+        if (!version_compare(PHP_VERSION, '8.5', '>=')) {
+            $reflectionMethod->setAccessible(true);
+        }
         return $reflectionMethod->invokeArgs(null, $arguments);
     }
 
@@ -393,7 +402,9 @@ class WPTestCase extends Unit
     {
         $coreTestCase = self::getCoreTestCase($name);
         $reflectionMethod = new ReflectionMethod($coreTestCase, $name);
-        $reflectionMethod->setAccessible(true);
+        if (!version_compare(PHP_VERSION, '8.5', '>=')) {
+            $reflectionMethod->setAccessible(true);
+        }
         return $reflectionMethod->invokeArgs($coreTestCase, $arguments);
     }
 
@@ -434,7 +445,9 @@ class WPTestCase extends Unit
 
         $coreTestCase = self::getCoreTestCase('__get');
         $reflectionProperty = new ReflectionProperty($coreTestCase, $name);
-        $reflectionProperty->setAccessible(true);
+        if (!version_compare(PHP_VERSION, '8.5', '>=')) {
+            $reflectionProperty->setAccessible(true);
+        }
         $value = $reflectionProperty->getValue($coreTestCase);
 
         return $value;
@@ -453,7 +466,9 @@ class WPTestCase extends Unit
 
         $coreTestCase = self::getCoreTestCase('__set');
         $reflectionProperty = new ReflectionProperty($coreTestCase, $name);
-        $reflectionProperty->setAccessible(true);
+        if (!version_compare(PHP_VERSION, '8.5', '>=')) {
+            $reflectionProperty->setAccessible(true);
+        }
         $reflectionProperty->setValue($coreTestCase, $value);
     }
 
@@ -468,7 +483,9 @@ class WPTestCase extends Unit
 
         $coreTestCase = self::getCoreTestCase('__isset');
         $reflectionProperty = new ReflectionProperty($coreTestCase, $name);
-        $reflectionProperty->setAccessible(true);
+        if (!version_compare(PHP_VERSION, '8.5', '>=')) {
+            $reflectionProperty->setAccessible(true);
+        }
         return $reflectionProperty->isInitialized($coreTestCase);
     }
 

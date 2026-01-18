@@ -53,7 +53,7 @@ class Process extends SymfonyProcess
         }
 
         $startTimeReflectionProperty = new ReflectionProperty(SymfonyProcess::class, 'starttime');
-        if(!version_compare(PHP_VERSION, '8.5', '>=')){
+        if (! version_compare(PHP_VERSION, '8.5', '>=')) {
             $startTimeReflectionProperty->setAccessible(true);
         }
 
@@ -67,7 +67,7 @@ class Process extends SymfonyProcess
     {
         if ($this->createNewConsole) {
             $processPipesProperty = new ReflectionProperty(SymfonyProcess::class, 'processPipes');
-            if(!version_compare(PHP_VERSION, '8.5', '>=')){
+            if (!version_compare(PHP_VERSION, '8.5', '>=')) {
                 $processPipesProperty->setAccessible(true);
             }
             /** @var PipesInterface $processPipes */
@@ -85,7 +85,7 @@ class Process extends SymfonyProcess
         $this->createNewConsole = true;
 
         $optionsReflectionProperty = new ReflectionProperty(SymfonyProcess::class, 'options');
-        if(!version_compare(PHP_VERSION, '8.5', '>=')){
+        if (!version_compare(PHP_VERSION, '8.5', '>=')) {
             $optionsReflectionProperty->setAccessible(true);
         }
         $options = $optionsReflectionProperty->getValue($this);
@@ -104,7 +104,7 @@ class Process extends SymfonyProcess
             $command = array_shift($arguments);
             $process = new self([], ...$arguments); // @phpstan-ignore-line
             $processCommandLineProperty = new ReflectionProperty(SymfonyProcess::class, 'commandline');
-            if(!version_compare(PHP_VERSION, '8.5', '>=')){
+            if (!version_compare(PHP_VERSION, '8.5', '>=')) {
                 $processCommandLineProperty->setAccessible(true);
             }
             $processCommandLineProperty->setValue($process, $command);
