@@ -14,7 +14,7 @@ class WP_SQLite_Configurator {
 	/**
 	 * The SQLite driver instance.
 	 *
-	 * @var WP_SQLite_Driver
+	 * @var WP_PDO_MySQL_On_SQLite
 	 */
 	private $driver;
 
@@ -35,11 +35,11 @@ class WP_SQLite_Configurator {
 	/**
 	 * Constructor.
 	 *
-	 * @param WP_SQLite_Driver                     $driver         The SQLite driver instance.
+	 * @param WP_PDO_MySQL_On_SQLite               $driver         The SQLite driver instance.
 	 * @param WP_SQLite_Information_Schema_Builder $schema_builder The information schema builder instance.
 	 */
 	public function __construct(
-		WP_SQLite_Driver $driver,
+		WP_PDO_MySQL_On_SQLite $driver,
 		WP_SQLite_Information_Schema_Builder $schema_builder
 	) {
 		$this->driver               = $driver;
@@ -100,7 +100,7 @@ class WP_SQLite_Configurator {
 			sprintf(
 				'CREATE TABLE IF NOT EXISTS %s (name TEXT PRIMARY KEY, value TEXT)',
 				$this->driver->get_connection()->quote_identifier(
-					WP_SQLite_Driver::GLOBAL_VARIABLES_TABLE_NAME
+					WP_PDO_MySQL_On_SQLite::GLOBAL_VARIABLES_TABLE_NAME
 				)
 			)
 		);
@@ -231,7 +231,7 @@ class WP_SQLite_Configurator {
 					SET
 					  TABLE_SCHEMA = ?,
 					  CONSTRAINT_SCHEMA = ?,
-					  REFERENCED_TABLE_SCHEMA = IIF(REFERENCED_TABLE_SCHEMA IS NULL, NULL, ?)
+					  REFERENCED_TABLE_SCHEMA = CASE WHEN REFERENCED_TABLE_SCHEMA IS NULL THEN NULL ELSE ? END
 					WHERE TABLE_SCHEMA != 'information_schema'",
 					$this->driver->get_connection()->quote_identifier( $key_column_usage_table )
 				),
@@ -260,11 +260,11 @@ class WP_SQLite_Configurator {
 			sprintf(
 				'INSERT INTO %s (name, value) VALUES (?, ?) ON CONFLICT(name) DO UPDATE SET value = ?',
 				$this->driver->get_connection()->quote_identifier(
-					WP_SQLite_Driver::GLOBAL_VARIABLES_TABLE_NAME
+					WP_PDO_MySQL_On_SQLite::GLOBAL_VARIABLES_TABLE_NAME
 				)
 			),
 			array(
-				WP_SQLite_Driver::DRIVER_VERSION_VARIABLE_NAME,
+				WP_PDO_MySQL_On_SQLite::DRIVER_VERSION_VARIABLE_NAME,
 				SQLITE_DRIVER_VERSION,
 				SQLITE_DRIVER_VERSION,
 			)

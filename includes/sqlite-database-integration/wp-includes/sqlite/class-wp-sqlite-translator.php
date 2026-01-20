@@ -369,8 +369,9 @@ class WP_SQLite_Translator {
 						PDO::ATTR_TIMEOUT           => 5,
 					);
 
-					$dsn = 'sqlite:' . FQDB;
-					$pdo = new PDO( $dsn, null, null, $options ); // phpcs:ignore WordPress.DB.RestrictedClasses
+					$dsn       = 'sqlite:' . FQDB;
+					$pdo_class = PHP_VERSION_ID >= 80400 ? PDO\SQLite::class : PDO::class;
+					$pdo       = new $pdo_class( $dsn, null, null, $options );
 				} catch ( PDOException $ex ) {
 					$status = $ex->getCode();
 					if ( self::SQLITE_BUSY === $status || self::SQLITE_LOCKED === $status ) {

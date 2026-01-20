@@ -2614,7 +2614,7 @@ class WP_MySQL_Lexer {
 			// If it can't, bail out early to avoid unnecessary UTF-8 decoding.
 			// Identifiers are usually ASCII-only, so we can optimize for that.
 			$byte_1 = ord(
-				$this->sql[ $this->bytes_already_read ] ?? ''
+				$this->sql[ $this->bytes_already_read ] ?? "\0"
 			);
 			if ( $byte_1 < 0xC2 || $byte_1 > 0xEF ) {
 				break;
@@ -2622,7 +2622,7 @@ class WP_MySQL_Lexer {
 
 			// Look for a valid 2-byte UTF-8 symbol. Covers range U+0080 - U+07FF.
 			$byte_2 = ord(
-				$this->sql[ $this->bytes_already_read + 1 ] ?? ''
+				$this->sql[ $this->bytes_already_read + 1 ] ?? "\0"
 			);
 			if (
 				$byte_1 <= 0xDF
@@ -2634,7 +2634,7 @@ class WP_MySQL_Lexer {
 
 			// Look for a valid 3-byte UTF-8 symbol in range U+0800 - U+FFFF.
 			$byte_3 = ord(
-				$this->sql[ $this->bytes_already_read + 2 ] ?? ''
+				$this->sql[ $this->bytes_already_read + 2 ] ?? "\0"
 			);
 			if (
 				$byte_1 <= 0xEF

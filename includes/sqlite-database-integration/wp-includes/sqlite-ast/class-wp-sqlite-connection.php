@@ -76,7 +76,8 @@ class WP_SQLite_Connection {
 			if ( ! isset( $options['path'] ) || ! is_string( $options['path'] ) ) {
 				throw new InvalidArgumentException( 'Option "path" is required when "connection" is not provided.' );
 			}
-			$this->pdo = new PDO( 'sqlite:' . $options['path'] );
+			$pdo_class = PHP_VERSION_ID >= 80400 ? PDO\SQLite::class : PDO::class;
+			$this->pdo = new $pdo_class( 'sqlite:' . $options['path'] );
 		}
 
 		// Throw exceptions on error.
@@ -115,6 +116,20 @@ class WP_SQLite_Connection {
 		$stmt = $this->pdo->prepare( $sql );
 		$stmt->execute( $params );
 		return $stmt;
+	}
+
+	/**
+	 * Prepare a SQLite query for execution.
+	 *
+	 * @param  string $sql  The query to prepare.
+	 * @return PDOStatement The prepared statement.
+	 * @throws PDOException When the query preparation fails.
+	 */
+	public function prepare( string $sql ): PDOStatement {
+		if ( $this->query_logger ) {
+			( $this->query_logger )( $sql, array() );
+		}
+		return $this->pdo->prepare( $sql );
 	}
 
 	/**

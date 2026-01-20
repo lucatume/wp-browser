@@ -55,6 +55,15 @@ sed -i.bak "/^define( 'SQLITE_MAIN_FILE', __FILE__ );$/ {
 
 rm -f "${load_php}.bak"
 
+# Transform class-wp-sqlite-db.php file to handle PHP 8.1+ setAccessible deprecation
+class_wp_sqlite_db="${root_dir}/includes/sqlite-database-integration/wp-includes/sqlite/class-wp-sqlite-db.php"
+
+# Make setAccessible calls conditional on PHP_VERSION_ID < 80100 (no-op since PHP 8.1, deprecated in PHP 8.5)
+sed -i.bak 's/\$property->setAccessible( true );/PHP_VERSION_ID < 80100 \&\& \$property->setAccessible( true );/g' "$class_wp_sqlite_db"
+sed -i.bak 's/\$property->setAccessible( false );/PHP_VERSION_ID < 80100 \&\& \$property->setAccessible( false );/g' "$class_wp_sqlite_db"
+
+rm -f "${class_wp_sqlite_db}.bak"
+
 echo "Transformations complete!"
 
 # Run phpcbf to fix code style

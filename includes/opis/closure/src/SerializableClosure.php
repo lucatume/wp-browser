@@ -373,7 +373,7 @@ class SerializableClosure implements Serializable
                     if ($property->isStatic() || !$property->getDeclaringClass()->isUserDefined()) {
                         continue;
                     }
-                    $property->setAccessible(true);
+                    PHP_VERSION_ID < 80100 && $property->setAccessible(true);
                     if (PHP_VERSION >= 7.4 && !$property->isInitialized($instance)) {
                         continue;
                     }
@@ -438,7 +438,7 @@ class SerializableClosure implements Serializable
                     if ($property->isStatic() || !$property->getDeclaringClass()->isUserDefined()) {
                         continue;
                     }
-                    $property->setAccessible(true);
+                    PHP_VERSION_ID < 80100 && $property->setAccessible(true);
                     if (PHP_VERSION >= 7.4 && !$property->isInitialized($data)) {
                         continue;
                     }
@@ -529,7 +529,7 @@ class SerializableClosure implements Serializable
                     ) {
                         continue;
                     }
-                    $property->setAccessible(true);
+                    PHP_VERSION_ID < 80100 && $property->setAccessible(true);
                     if (PHP_VERSION >= 7.4 && !$property->isInitialized($data)) {
                         continue;
                     }
@@ -625,7 +625,7 @@ class SerializableClosure implements Serializable
                     if ($property->isStatic() || !$property->getDeclaringClass()->isUserDefined()) {
                         continue;
                     }
-                    $property->setAccessible(true);
+                    PHP_VERSION_ID < 80100 && $property->setAccessible(true);
                     if (PHP_VERSION >= 7.4 && !$property->isInitialized($instance)) {
                         continue;
                     }

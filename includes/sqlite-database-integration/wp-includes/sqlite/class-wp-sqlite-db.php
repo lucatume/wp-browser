@@ -315,20 +315,7 @@ class WP_SQLite_DB extends wpdb {
 				return false;
 			}
 
-			require_once __DIR__ . '/../../wp-includes/parser/class-wp-parser-grammar.php';
-			require_once __DIR__ . '/../../wp-includes/parser/class-wp-parser.php';
-			require_once __DIR__ . '/../../wp-includes/parser/class-wp-parser-node.php';
-			require_once __DIR__ . '/../../wp-includes/parser/class-wp-parser-token.php';
-			require_once __DIR__ . '/../../wp-includes/mysql/class-wp-mysql-token.php';
-			require_once __DIR__ . '/../../wp-includes/mysql/class-wp-mysql-lexer.php';
-			require_once __DIR__ . '/../../wp-includes/mysql/class-wp-mysql-parser.php';
-			require_once __DIR__ . '/../../wp-includes/sqlite-ast/class-wp-sqlite-connection.php';
-			require_once __DIR__ . '/../../wp-includes/sqlite-ast/class-wp-sqlite-configurator.php';
-			require_once __DIR__ . '/../../wp-includes/sqlite-ast/class-wp-sqlite-driver.php';
-			require_once __DIR__ . '/../../wp-includes/sqlite-ast/class-wp-sqlite-driver-exception.php';
-			require_once __DIR__ . '/../../wp-includes/sqlite-ast/class-wp-sqlite-information-schema-builder.php';
-			require_once __DIR__ . '/../../wp-includes/sqlite-ast/class-wp-sqlite-information-schema-exception.php';
-			require_once __DIR__ . '/../../wp-includes/sqlite-ast/class-wp-sqlite-information-schema-reconstructor.php';
+			require_once __DIR__ . '/../../wp-pdo-mysql-on-sqlite.php';
 			$this->ensure_database_directory( FQDB );
 
 			try {
@@ -386,9 +373,9 @@ class WP_SQLite_DB extends wpdb {
 		$wpdb_allow_unsafe_unquoted_parameters = $this->__get( 'allow_unsafe_unquoted_parameters' );
 		if ( $wpdb_allow_unsafe_unquoted_parameters !== $this->allow_unsafe_unquoted_parameters ) {
 			$property = new ReflectionProperty( 'wpdb', 'allow_unsafe_unquoted_parameters' );
-			$property->setAccessible( true );
+			PHP_VERSION_ID < 80100 && $property->setAccessible( true );
 			$property->setValue( $this, $this->allow_unsafe_unquoted_parameters );
-			$property->setAccessible( false );
+			PHP_VERSION_ID < 80100 && $property->setAccessible( false );
 		}
 
 		return parent::prepare( $query, ...$args );

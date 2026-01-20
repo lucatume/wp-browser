@@ -25,7 +25,8 @@ function sqlite_make_db_sqlite() {
 	$table_schemas = wp_get_db_schema();
 	$queries       = explode( ';', $table_schemas );
 	try {
-		$pdo = new PDO( 'sqlite:' . FQDB, null, null, array( PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ) ); // phpcs:ignore WordPress.DB.RestrictedClasses
+		$pdo_class = PHP_VERSION_ID >= 80400 ? PDO\SQLite::class : PDO::class; // phpcs:ignore WordPress.DB.RestrictedClasses.mysql__PDO
+		$pdo       = new $pdo_class( 'sqlite:' . FQDB, null, null, array( PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ) ); // phpcs:ignore WordPress.DB.RestrictedClasses
 	} catch ( PDOException $err ) {
 		$err_data = $err->errorInfo; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$message  = 'Database connection error!<br />';
@@ -84,7 +85,8 @@ function sqlite_make_db_sqlite() {
 			$port       = $host_parts[1];
 		}
 		$dsn       = 'mysql:host=' . $host . '; port=' . $port . '; dbname=' . DB_NAME;
-		$pdo_mysql = new PDO( $dsn, DB_USER, DB_PASSWORD, array( PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ) ); // phpcs:ignore WordPress.DB.RestrictedClasses.mysql__PDO
+		$pdo_class = PHP_VERSION_ID >= 80400 ? PDO\MySQL::class : PDO::class; // phpcs:ignore WordPress.DB.RestrictedClasses.mysql__PDO
+		$pdo_mysql = new $pdo_class( $dsn, DB_USER, DB_PASSWORD, array( PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ) ); // phpcs:ignore WordPress.DB.RestrictedClasses.mysql__PDO
 		$pdo_mysql->query( 'SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";' );
 		$pdo_mysql->query( 'SET time_zone = "+00:00";' );
 		foreach ( $queries as $query ) {
