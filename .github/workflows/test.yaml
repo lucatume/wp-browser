@@ -9,6 +9,8 @@ on: # yamllint disable-line rule:truthy
       - 'includes/**'
       - 'tests/**'
       - 'composer.json'
+      - 'codeception.dist.yml'
+      - 'bin/**'
       - '.github/workflows/test.yaml'
   push:
     paths:
@@ -16,6 +18,8 @@ on: # yamllint disable-line rule:truthy
       - 'includes/**'
       - 'tests/**'
       - 'composer.json'
+      - 'codeception.dist.yml'
+      - 'bin/**'
       - '.github/workflows/test.yaml'
     branches:
       - "master"
