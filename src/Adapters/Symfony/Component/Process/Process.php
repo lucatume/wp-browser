@@ -53,7 +53,7 @@ class Process extends SymfonyProcess
         }
 
         $startTimeReflectionProperty = new ReflectionProperty(SymfonyProcess::class, 'starttime');
-        $startTimeReflectionProperty->setAccessible(true);
+        PHP_VERSION_ID < 80100 && $startTimeReflectionProperty->setAccessible(true);
         /** @var float $startTime */
         $startTime = $startTimeReflectionProperty->getValue($this);
 
@@ -64,7 +64,7 @@ class Process extends SymfonyProcess
     {
         if ($this->createNewConsole) {
             $processPipesProperty = new ReflectionProperty(SymfonyProcess::class, 'processPipes');
-            $processPipesProperty->setAccessible(true);
+            PHP_VERSION_ID < 80100 && $processPipesProperty->setAccessible(true);
             /** @var PipesInterface $processPipes */
             $processPipes = $processPipesProperty->getValue($this);
             $processPipes->close();
@@ -80,7 +80,7 @@ class Process extends SymfonyProcess
         $this->createNewConsole = true;
 
         $optionsReflectionProperty = new ReflectionProperty(SymfonyProcess::class, 'options');
-        $optionsReflectionProperty->setAccessible(true);
+        PHP_VERSION_ID < 80100 && $optionsReflectionProperty->setAccessible(true);
         $options = $optionsReflectionProperty->getValue($this);
         $options = is_array($options) ? $options : [];
         $options['create_new_console'] = true;
@@ -97,7 +97,7 @@ class Process extends SymfonyProcess
             $command = array_shift($arguments);
             $process = new self([], ...$arguments); // @phpstan-ignore-line
             $processCommandLineProperty = new ReflectionProperty(SymfonyProcess::class, 'commandline');
-            $processCommandLineProperty->setAccessible(true);
+            PHP_VERSION_ID < 80100 && $processCommandLineProperty->setAccessible(true);
             $processCommandLineProperty->setValue($process, $command);
 
             return $process;

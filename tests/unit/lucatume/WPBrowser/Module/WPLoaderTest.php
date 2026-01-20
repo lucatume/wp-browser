@@ -1935,7 +1935,7 @@ PHP
             if ((int)PHPUnitVersion::series() >= 10) {
                 $reflector = new \ReflectionClass(ConfigurationRegistry::class);
                 $instanceProp = $reflector->getProperty('instance');
-                $instanceProp->setAccessible(true);
+                PHP_VERSION_ID < 80100 && $instanceProp->setAccessible(true);
                 $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
             }
 
@@ -1999,7 +1999,7 @@ PHP
             if ((int)PHPUnitVersion::series() >= 10) {
                 $reflector = new \ReflectionClass(ConfigurationRegistry::class);
                 $instanceProp = $reflector->getProperty('instance');
-                $instanceProp->setAccessible(true);
+                PHP_VERSION_ID < 80100 && $instanceProp->setAccessible(true);
                 $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
             }
 
@@ -2033,7 +2033,7 @@ PHP
             if ((int)PHPUnitVersion::series() >= 10) {
                 $reflector = new \ReflectionClass(ConfigurationRegistry::class);
                 $instanceProp = $reflector->getProperty('instance');
-                $instanceProp->setAccessible(true);
+                PHP_VERSION_ID < 80100 && $instanceProp->setAccessible(true);
                 $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
             }
             $wpLoader->_initialize();
@@ -2065,7 +2065,7 @@ PHP
             if ((int)PHPUnitVersion::series() >= 10) {
                 $reflector = new \ReflectionClass(ConfigurationRegistry::class);
                 $instanceProp = $reflector->getProperty('instance');
-                $instanceProp->setAccessible(true);
+                PHP_VERSION_ID < 80100 && $instanceProp->setAccessible(true);
                 $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
             }
             $wpLoader->_initialize();
@@ -2099,7 +2099,7 @@ PHP
             if ((int)PHPUnitVersion::series() >= 10) {
                 $reflector = new \ReflectionClass(ConfigurationRegistry::class);
                 $instanceProp = $reflector->getProperty('instance');
-                $instanceProp->setAccessible(true);
+                PHP_VERSION_ID < 80100 && $instanceProp->setAccessible(true);
                 $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
             }
             $wpLoader->_initialize();
@@ -2132,7 +2132,7 @@ PHP
             if ((int)PHPUnitVersion::series() >= 10) {
                 $reflector = new \ReflectionClass(ConfigurationRegistry::class);
                 $instanceProp = $reflector->getProperty('instance');
-                $instanceProp->setAccessible(true);
+                PHP_VERSION_ID < 80100 && $instanceProp->setAccessible(true);
                 $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
             }
             $wpLoader->_initialize();
@@ -2173,7 +2173,7 @@ PHP
             if ((int)PHPUnitVersion::series() >= 10) {
                 $reflector = new \ReflectionClass(ConfigurationRegistry::class);
                 $instanceProp = $reflector->getProperty('instance');
-                $instanceProp->setAccessible(true);
+                PHP_VERSION_ID < 80100 && $instanceProp->setAccessible(true);
                 $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
             }
             $wpLoader->_initialize();
@@ -2249,7 +2249,7 @@ PHP
             if ((int)PHPUnitVersion::series() >= 10) {
                 $reflector = new \ReflectionClass(ConfigurationRegistry::class);
                 $instanceProp = $reflector->getProperty('instance');
-                $instanceProp->setAccessible(true);
+                PHP_VERSION_ID < 80100 && $instanceProp->setAccessible(true);
                 $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
             }
             $wpLoader->_initialize();
@@ -2284,7 +2284,7 @@ PHP
             if ((int)PHPUnitVersion::series() >= 10) {
                 $reflector = new \ReflectionClass(ConfigurationRegistry::class);
                 $instanceProp = $reflector->getProperty('instance');
-                $instanceProp->setAccessible(true);
+                PHP_VERSION_ID < 80100 && $instanceProp->setAccessible(true);
                 $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
             }
             $wpLoader->_initialize();
@@ -2320,7 +2320,7 @@ PHP
             if ((int)PHPUnitVersion::series() >= 10) {
                 $reflector = new \ReflectionClass(ConfigurationRegistry::class);
                 $instanceProp = $reflector->getProperty('instance');
-                $instanceProp->setAccessible(true);
+                PHP_VERSION_ID < 80100 && $instanceProp->setAccessible(true);
                 $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
             }
             $wpLoader->_initialize();
@@ -2361,7 +2361,7 @@ PHP
                 if ((int)PHPUnitVersion::series() >= 10) {
                     $reflector = new \ReflectionClass(ConfigurationRegistry::class);
                     $instanceProp = $reflector->getProperty('instance');
-                    $instanceProp->setAccessible(true);
+                    PHP_VERSION_ID < 80100 && $instanceProp->setAccessible(true);
                     $instanceProp->setValue(unserialize($serializedPhpunitConfiguration));
                 }
                 $wpLoader->_initialize();
