@@ -9,6 +9,8 @@ on: # yamllint disable-line rule:truthy
       - 'includes/**'
       - 'tests/**'
       - 'composer.json'
+      - 'config/phpstan.neon.dist'
+      - 'config/phpcs.xml'
       - '.github/workflows/static-analysis.yml'
   push:
     paths:
@@ -16,6 +18,8 @@ on: # yamllint disable-line rule:truthy
       - 'includes/**'
       - 'tests/**'
       - 'composer.json'
+      - 'config/phpstan.neon.dist'
+      - 'config/phpcs.xml'
       - '.github/workflows/static-analysis.yml'
     branches:
       - "master"
