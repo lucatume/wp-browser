@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.7.17] 2026-02-18;
+
 ### Fixed
 
 - Snapshot resolved config in `WPFilesystem::_initialize()` to preserve absolute paths across tests when `_resetConfig()` or `_reconfigure()` is called.
@@ -2136,4 +2138,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.7.14]: https://github.com/lucatume/wp-browser/compare/3.7.13...3.7.14
 [3.7.15]: https://github.com/lucatume/wp-browser/compare/3.7.14...3.7.15
 [3.7.16]: https://github.com/lucatume/wp-browser/compare/3.7.15...3.7.16
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.16...HEAD
+[3.7.17]: https://github.com/lucatume/wp-browser/compare/3.7.16...3.7.17
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.17...HEAD
