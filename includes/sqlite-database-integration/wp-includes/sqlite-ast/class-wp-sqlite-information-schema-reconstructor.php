@@ -623,6 +623,72 @@ class WP_SQLite_Information_Schema_Reconstructor {
 			return null;
 		}
 
+		/**
+		 * Check whether the stored type value is a valid MySQL column type.
+		 *
+		 * Some older versions of the legacy SQLite driver might have stored
+		 * invalid MySQL column types in some scenarios:
+		 *
+		 *   1. Before https://github.com/WordPress/sqlite-database-integration/pull/126,
+		 *      the legacy SQLite driver incorrectly stored MySQL column types
+		 *      for columns with multiple type arguments.
+		 *
+		 *      E.g., a column definition like "col_name decimal(26, 8)" would
+		 *      be stored with invalid type "decimal(26,".
+		 *
+		 *   2. Before https://github.com/WordPress/sqlite-database-integration/commit/b5a9fbaed4d0d843f792aaa959e3d00f193ff1ee
+		 *      (see also https://github.com/Automattic/sqlite-database-integration/pull/2),
+		 *      the legacy SQLite driver incorrectly recognized indexes on columns
+		 *      with type keywords as additional table column definitions.
+		 *
+		 *      E.g., an index definition like "KEY timestamp (timestamp)" would
+		 *      be stored as column "KEY" with invalid type "timestamp(timestamp)".
+		 *
+		 * To address these issues, we need to check whether the stored type looks
+		 * like a valid MySQL column type definition.
+		 */
+		$open_par_index  = strpos( $mysql_type, '(' );
+		$close_par_index = strpos( $mysql_type, ')' );
+		if ( false !== $open_par_index ) {
+			$end   = false !== $close_par_index ? $close_par_index : strlen( $mysql_type );
+			$parts = explode( '(', substr( $mysql_type, 0, $end ) );
+			$type  = strtolower( trim( $parts[0] ) );
+			$args  = array();
+			foreach ( explode( ',', $parts[1] ) as $arg ) {
+				$args[] = strtolower( trim( $arg ) );
+			}
+
+			// WooCommerce uses decimal(26,8), decimal(19,4), and decimal(3,2)
+			// column types, so we can can fix the invalid column definitions.
+			$looks_like_wc_table = str_contains( $table_name, 'wc_' ) || str_contains( $table_name, 'woocommerce_' );
+			$is_invalid_decimal  = 'decimal' === $type && count( $args ) === 2 && '' === $args[1];
+			if ( $looks_like_wc_table && $is_invalid_decimal ) {
+				if ( '26' === $args[0] ) {
+					// Fix "decimal(26,".
+					return 'decimal(26,8)';
+				} elseif ( '19' === $args[0] ) {
+					// Fix "decimal(19,".
+					return 'decimal(19,4)';
+				} elseif ( '3' === $args[0] ) {
+					// Fix "decimal(3,".
+					return 'decimal(3,2)';
+				}
+			}
+
+			// Only numeric arguments are allowed for MySQL column types.
+			// This handles the incorrectly stored index definition case.
+			foreach ( $args as $arg ) {
+				if ( ! is_numeric( $arg ) ) {
+					return null;
+				}
+			}
+
+			// If there is no closing parenthesis, the type is invalid.
+			if ( false === $close_par_index ) {
+				return null;
+			}
+		}
+
 		// Normalize index type for backward compatibility. Some older versions
 		// of the SQLite driver stored index types with a " KEY" suffix, e.g.,
 		// "PRIMARY KEY" or "UNIQUE KEY". More recent versions omit the suffix.

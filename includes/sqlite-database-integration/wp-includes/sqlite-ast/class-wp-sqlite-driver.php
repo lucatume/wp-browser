@@ -10,6 +10,7 @@
  * (e.g., WP CLI SQLite Command), ensure the new PDO-based classes are loaded.
  */
 require_once __DIR__ . '/class-wp-pdo-mysql-on-sqlite.php';
+require_once __DIR__ . '/class-wp-pdo-proxy-statement.php';
 
 /**
  * Deprecated: A proxy of the WP_PDO_MySQL_On_SQLite class preserving legacy API.
@@ -42,6 +43,13 @@ class WP_SQLite_Driver {
 	private $mysql_on_sqlite_driver;
 
 	/**
+	 * Results of the last emulated query.
+	 *
+	 * @var mixed
+	 */
+	private $last_result;
+
+	/**
 	 * Constructor.
 	 *
 	 * Set up an SQLite connection and the MySQL-on-SQLite driver.
@@ -56,9 +64,19 @@ class WP_SQLite_Driver {
 		string $database,
 		int $mysql_version = 80038
 	) {
-		$this->mysql_on_sqlite_driver = new WP_PDO_MySQL_On_SQLite( $connection, $database, $mysql_version );
+		$this->mysql_on_sqlite_driver = new WP_PDO_MySQL_On_SQLite(
+			sprintf( 'mysql-on-sqlite:dbname=%s', $database ),
+			null,
+			null,
+			array(
+				'mysql_version' => $mysql_version,
+				'pdo'           => $connection->get_pdo(),
+			)
+		);
 		$this->main_db_name           = $database;
 		$this->client_info            = $this->mysql_on_sqlite_driver->client_info;
+
+		$connection->get_pdo()->setAttribute( PDO::ATTR_STRINGIFY_FETCHES, true );
 	}
 
 	/**
@@ -139,7 +157,16 @@ class WP_SQLite_Driver {
 	 * @throws WP_SQLite_Driver_Exception When the query execution fails.
 	 */
 	public function query( string $query, $fetch_mode = PDO::FETCH_OBJ, ...$fetch_mode_args ) {
-		return $this->mysql_on_sqlite_driver->query( $query, $fetch_mode, ...$fetch_mode_args );
+		$stmt = $this->mysql_on_sqlite_driver->query( $query, $fetch_mode, ...$fetch_mode_args );
+
+		if ( $stmt->columnCount() > 0 ) {
+			$this->last_result = $stmt->fetchAll( $fetch_mode );
+		} elseif ( $stmt->rowCount() > 0 ) {
+			$this->last_result = $stmt->rowCount();
+		} else {
+			$this->last_result = null;
+		}
+		return $this->last_result;
 	}
 
 	/**
@@ -158,7 +185,7 @@ class WP_SQLite_Driver {
 	 * @return mixed
 	 */
 	public function get_query_results() {
-		return $this->mysql_on_sqlite_driver->get_query_results();
+		return $this->last_result;
 	}
 
 	/**
@@ -167,7 +194,7 @@ class WP_SQLite_Driver {
 	 * @return mixed
 	 */
 	public function get_last_return_value() {
-		return $this->mysql_on_sqlite_driver->get_last_return_value();
+		return $this->last_result;
 	}
 
 	/**
