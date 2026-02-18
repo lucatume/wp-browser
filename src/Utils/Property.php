@@ -31,7 +31,7 @@ class Property
             $reflectionClass = new ReflectionClass($class);
             if ($reflectionClass->hasProperty($property)) {
                 $reflectionProperty = $reflectionClass->getProperty($property);
-                $reflectionProperty->setAccessible(true);
+                PHP_VERSION_ID < 80100 && $reflectionProperty->setAccessible(true);
 
                 return $reflectionProperty->getValue($reflectionObject);
             }
@@ -92,7 +92,7 @@ class Property
 
         foreach ($reflectedEntity->getProperties() as $property) {
             if (isset($props[$property->name])) {
-                $property->setAccessible(true);
+                PHP_VERSION_ID < 80100 && $property->setAccessible(true);
                 $property->setValue($object, $props[$property->name]);
                 if (is_array($propsToSet)) {
                     unset($propsToSet[array_search($property->name, $propsToSet, true)]);

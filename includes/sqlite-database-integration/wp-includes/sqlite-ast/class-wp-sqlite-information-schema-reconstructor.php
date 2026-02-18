@@ -19,7 +19,7 @@ class WP_SQLite_Information_Schema_Reconstructor {
 	/**
 	 * The SQLite driver instance.
 	 *
-	 * @var WP_SQLite_Driver
+	 * @var WP_PDO_MySQL_On_SQLite
 	 */
 	private $driver;
 
@@ -40,11 +40,11 @@ class WP_SQLite_Information_Schema_Reconstructor {
 	/**
 	 * Constructor.
 	 *
-	 * @param WP_SQLite_Driver                     $driver         The SQLite driver instance.
+	 * @param WP_PDO_MySQL_On_SQLite               $driver         The SQLite driver instance.
 	 * @param WP_SQLite_Information_Schema_Builder $schema_builder The information schema builder instance.
 	 */
 	public function __construct(
-		WP_SQLite_Driver $driver,
+		$driver,
 		WP_SQLite_Information_Schema_Builder $schema_builder
 	) {
 		$this->driver         = $driver;
@@ -127,7 +127,7 @@ class WP_SQLite_Information_Schema_Reconstructor {
 		return $this->driver->execute_sqlite_query(
 			"
 				SELECT name
-				FROM sqlite_schema
+				FROM sqlite_master
 				WHERE type = 'table'
 				AND name != ?
 				AND name NOT LIKE ? ESCAPE '\'
@@ -137,7 +137,7 @@ class WP_SQLite_Information_Schema_Reconstructor {
 			array(
 				'_mysql_data_types_cache',
 				'sqlite\_%',
-				str_replace( '_', '\_', WP_SQLite_Driver::RESERVED_PREFIX ) . '%',
+				str_replace( '_', '\_', WP_PDO_MySQL_On_SQLite::RESERVED_PREFIX ) . '%',
 			)
 		)->fetchAll( PDO::FETCH_COLUMN );
 	}
@@ -367,7 +367,7 @@ class WP_SQLite_Information_Schema_Reconstructor {
 		$is_auto_increment = false;
 		if ( '0' !== $column_info['pk'] ) {
 			$is_auto_increment = $this->driver->execute_sqlite_query(
-				'SELECT 1 FROM sqlite_schema WHERE tbl_name = ? AND sql LIKE ?',
+				'SELECT 1 FROM sqlite_master WHERE tbl_name = ? AND sql LIKE ?',
 				array( $table_name, '%AUTOINCREMENT%' )
 			)->fetchColumn();
 
@@ -692,9 +692,9 @@ class WP_SQLite_Information_Schema_Reconstructor {
 	/**
 	 * Format a MySQL UTF-8 string literal for output in a CREATE TABLE statement.
 	 *
-	 * See WP_SQLite_Driver::quote_mysql_utf8_string_literal().
+	 * See WP_PDO_MySQL_On_SQLite::quote_mysql_utf8_string_literal().
 	 *
-	 * TODO: This is a copy of WP_SQLite_Driver::quote_mysql_utf8_string_literal().
+	 * TODO: This is a copy of WP_PDO_MySQL_On_SQLite::quote_mysql_utf8_string_literal().
 	 *       We may consider extracing it to reusable MySQL helpers.
 	 *
 	 * @param  string $utf8_literal The UTF-8 string literal to escape.

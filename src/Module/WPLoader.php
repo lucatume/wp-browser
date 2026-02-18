@@ -886,6 +886,10 @@ class WPLoader extends Module
          */
         $config = $this->config;
         foreach ($config['bootstrapActions'] as $action) {
+            if (empty($action)) {
+                continue;
+            }
+
             if (!is_callable($action)) {
                 do_action($action);
             } else {

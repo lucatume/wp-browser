@@ -378,10 +378,10 @@ class WP_SQLite_Information_Schema_Builder {
 	public function temporary_table_exists( string $table_name ): bool {
 		/*
 		 * We could search in the "{$this->temporary_table_prefix}tables" table,
-		 * but it may not exist yet, so using "sqlite_temp_schema" is simpler.
+		 * but it may not exist yet, so using "sqlite_temp_master" is simpler.
 		 */
 		$stmt = $this->connection->query(
-			"SELECT 1 FROM sqlite_temp_schema WHERE type = 'table' AND name = ?",
+			"SELECT 1 FROM sqlite_temp_master WHERE type = 'table' AND name = ?",
 			array( $table_name )
 		);
 		return $stmt->fetchColumn() === '1';
@@ -392,13 +392,16 @@ class WP_SQLite_Information_Schema_Builder {
 	 * database. Tables that are missing will be created.
 	 */
 	public function ensure_information_schema_tables(): void {
+		$sqlite_version         = $this->connection->get_pdo()->getAttribute( PDO::ATTR_SERVER_VERSION ); // phpcs:ignore WordPress.DB.RestrictedClasses.mysql__PDO
+		$supports_strict_tables = version_compare( $sqlite_version, '3.37.0', '>=' );
 		foreach ( self::INFORMATION_SCHEMA_TABLE_DEFINITIONS as $table_name => $table_body ) {
 			$this->connection->query(
 				sprintf(
-					'CREATE TABLE IF NOT EXISTS %s%s (%s) STRICT',
+					'CREATE TABLE IF NOT EXISTS %s%s (%s)%s',
 					$this->table_prefix,
 					$table_name,
-					$table_body
+					$table_body,
+					$supports_strict_tables ? ' STRICT' : ''
 				)
 			);
 		}
@@ -457,6 +460,8 @@ class WP_SQLite_Information_Schema_Builder {
 	 * the SQLite database. Tables that are missing will be created.
 	 */
 	public function ensure_temporary_information_schema_tables(): void {
+		$sqlite_version         = $this->connection->get_pdo()->getAttribute( PDO::ATTR_SERVER_VERSION ); // phpcs:ignore WordPress.DB.RestrictedClasses.mysql__PDO
+		$supports_strict_tables = version_compare( $sqlite_version, '3.37.0', '>=' );
 		foreach ( self::INFORMATION_SCHEMA_TABLE_DEFINITIONS as $table_name => $table_body ) {
 			// Skip the "schemata" table; MySQL doesn't support temporary databases.
 			if ( 'schemata' === $table_name ) {
@@ -465,10 +470,11 @@ class WP_SQLite_Information_Schema_Builder {
 
 			$this->connection->query(
 				sprintf(
-					'CREATE TEMPORARY TABLE IF NOT EXISTS %s%s (%s) STRICT',
+					'CREATE TEMPORARY TABLE IF NOT EXISTS %s%s (%s)%s',
 					$this->temporary_table_prefix,
 					$table_name,
-					$table_body
+					$table_body,
+					$supports_strict_tables ? ' STRICT' : ''
 				)
 			);
 		}
@@ -1052,18 +1058,17 @@ class WP_SQLite_Information_Schema_Builder {
 		 */
 		$this->connection->query(
 			sprintf(
-				'UPDATE %s AS statistics
-				SET seq_in_index = renumbered.seq_in_index
-				FROM (
+				'WITH renumbered AS (
 					SELECT
 						rowid,
 						row_number() OVER (PARTITION BY index_name ORDER BY seq_in_index) AS seq_in_index
 					FROM %s
 					WHERE table_schema = ?
 					AND table_name = ?
-				) AS renumbered
-				WHERE statistics.rowid = renumbered.rowid
-				AND statistics.seq_in_index != renumbered.seq_in_index',
+				)
+				UPDATE %s AS statistics
+				SET seq_in_index = (SELECT seq_in_index FROM renumbered WHERE rowid = statistics.rowid)
+				WHERE statistics.rowid IN (SELECT rowid FROM renumbered)',
 				$this->connection->quote_identifier( $statistics_table ),
 				$this->connection->quote_identifier( $statistics_table )
 			),

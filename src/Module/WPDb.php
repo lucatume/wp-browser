@@ -4936,8 +4936,8 @@ class WPDb extends Db
         try {
             $disconnectMethodReflection = new ReflectionMethod($this, 'disconnect');
             $connectMethodReflection = new ReflectionMethod($this, 'connect');
-            $disconnectMethodReflection->setAccessible(true);
-            $connectMethodReflection->setAccessible(true);
+            PHP_VERSION_ID < 80100 && $disconnectMethodReflection->setAccessible(true);
+            PHP_VERSION_ID < 80100 && $connectMethodReflection->setAccessible(true);
             $this->debugSection('WPDb', 'Reconnecting to database ' . $this->currentDatabase);
             $disconnectMethodReflection->invoke($this, $this->currentDatabase);
             $connectMethodReflection->invoke($this, $this->currentDatabase, $currentDatabaseConfig);
