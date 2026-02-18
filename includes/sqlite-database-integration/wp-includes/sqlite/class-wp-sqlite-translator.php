@@ -1150,7 +1150,28 @@ class WP_SQLite_Translator {
 				WP_SQLite_Token::FLAG_KEYWORD_FUNCTION,
 				array( 'DEFAULT' )
 			) ) {
-				$result->default = $this->rewriter->consume()->token;
+				// Consume the next token (could be a value, opening paren, etc.)
+				$default_token   = $this->rewriter->consume();
+				$result->default = $default_token->token;
+
+				// Check if the default value is wrapped in parentheses (for function calls like (now()))
+				if ( $default_token->matches( WP_SQLite_Token::TYPE_OPERATOR, null, array( '(' ) ) ) {
+					// Track parenthesis depth to consume the complete expression
+					$paren_depth   = 1;
+					$default_value = '(';
+
+					while ( $paren_depth > 0 && ( $next_token = $this->rewriter->consume() ) ) {
+						$default_value .= $next_token->token;
+
+						if ( $next_token->matches( WP_SQLite_Token::TYPE_OPERATOR, null, array( '(' ) ) ) {
+							++$paren_depth;
+						} elseif ( $next_token->matches( WP_SQLite_Token::TYPE_OPERATOR, null, array( ')' ) ) ) {
+							--$paren_depth;
+						}
+					}
+
+					$result->default = $default_value;
+				}
 				continue;
 			}
 

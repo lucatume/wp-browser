@@ -91,9 +91,6 @@ class WP_SQLite_Connection {
 		}
 		$this->pdo->setAttribute( PDO::ATTR_TIMEOUT, $timeout );
 
-		// Return all values (except null) as strings.
-		$this->pdo->setAttribute( PDO::ATTR_STRINGIFY_FETCHES, true );
-
 		// Configure SQLite journal mode.
 		$journal_mode = $options['journal_mode'] ?? null;
 		if ( $journal_mode && in_array( $journal_mode, self::SQLITE_JOURNAL_MODES, true ) ) {

@@ -4,7 +4,7 @@ Contributors:      wordpressdotorg, aristath, janjakes, zieladam, berislav.grgic
 Requires at least: 6.4
 Tested up to:      6.9
 Requires PHP:      7.2
-Stable tag:        2.2.16
+Stable tag:        2.2.17
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 Tags:              performance, database
@@ -36,3 +36,12 @@ Feedback is encouraged and much appreciated, especially since this plugin is a f
 = How can I contribute to the plugin? =
 
 Contributions are always welcome! Learn more about how to get involved in the [Core Performance Team Handbook](https://make.wordpress.org/performance/handbook/get-involved/).
+
+= Does this plugin change how WordPress queries are executed? =
+
+The plugin replaces the default MySQL-based database layer with an
+SQLite-backed implementation. Core WordPress code continues to use
+the wpdb API, while queries are internally adapted to be compatible
+with SQLite syntax and behavior.
+
+

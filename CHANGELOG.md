@@ -11,8 +11,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Guard `setAccessible()` Reflection method calls with a `PHP_VERSION_ID` check to skip the no-op call on PHP >= 8.1. (thanks @BrianHenryIE)
-- Update the WordPress Core PHPUnit suite
-- Update the SQLite database integration plugin from version `2.2.14` to version `2.2.16`
+- Update Core PHPUnit test suite to latest version.
+- Update the SQLite database integration plugin from version `2.2.14` to version `2.2.17`
 
 ## [3.7.16] 2025-11-22;
 

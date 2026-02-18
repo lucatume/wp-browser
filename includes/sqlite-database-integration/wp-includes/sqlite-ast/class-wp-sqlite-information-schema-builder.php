@@ -1912,10 +1912,7 @@ class WP_SQLite_Information_Schema_Builder {
 		}
 
 		$expr         = $check_constraint->get_first_child_node( 'exprWithParentheses' );
-		$check_clause = '';
-		foreach ( $expr->get_descendant_tokens() as $i => $token ) {
-			$check_clause .= ( $i > 0 ? ' ' : '' ) . $token->get_bytes();
-		}
+		$check_clause = $this->serialize_mysql_expression( $expr );
 
 		return array(
 			'constraint_schema' => self::SAVED_DATABASE_NAME,
@@ -2093,7 +2090,13 @@ class WP_SQLite_Information_Schema_Builder {
 			return $this->get_value( $signed_literal );
 		}
 
-		throw new Exception( 'DEFAULT values with expressions are not yet supported.' );
+		// DEFAULT (expression) - MySQL 8.0.13+ supports exprWithParentheses
+		$expr_with_parens = $default_attr->get_first_child_node( 'exprWithParentheses' );
+		if ( $expr_with_parens ) {
+			return $this->serialize_mysql_expression( $expr_with_parens );
+		}
+
+		throw new Exception( 'DEFAULT value of this type is not supported.' );
 	}
 
 	/**
@@ -3014,6 +3017,57 @@ class WP_SQLite_Information_Schema_Builder {
 			$full_value .= $value;
 		}
 		return $full_value;
+	}
+
+	/**
+	 * Serialize a MySQL expression for storing in the information schema.
+	 *
+	 * This is used for storing DEFAULT and CHECK expressions in the database.
+	 *
+	 * The current implementation is using a naive approach based on directly
+	 * joining the original expression token bytes. This is safe, beacuase the
+	 * original tokens must comprise a valid expression. While functionally
+	 * equivalent, it is not strictly identical to what MySQL stores, because
+	 * MySQL normalizes and prints the expression in a specific format.
+	 *
+	 * TODO: Consider implementing a MySQL expression node -> string formatter
+	 *       that would produce results that are identical to MySQL formatting.
+	 *       This gets tricky from MySQL 8, where a double-escaping regression
+	 *       was introduced, storing strings like "_utf8mb4\'abc\'" instead of
+	 *       "_utf8mb4'abc'", but displaying them correctly in SHOW statements.
+	 *
+	 *       @see https://bugs.mysql.com/bug.php?id=100607
+	 *
+	 * @param  WP_Parser_Node $node The AST node that needs to be serialized.
+	 * @return string               The serialized value of the node.
+	 */
+	private function serialize_mysql_expression( WP_Parser_Node $node ): string {
+		// The wrapping parentheses are generally not stored, although in MySQL,
+		// this varies by expression type as per the expression formatter logic.
+		if ( 'exprWithParentheses' === $node->rule_name ) {
+			return $this->serialize_mysql_expression( $node->get_first_child_node( 'expr' ) );
+		}
+
+		$value         = '';
+		$last_token_id = null;
+		foreach ( $node->get_descendant_tokens() as $i => $token ) {
+			// Do not insert whitespace around parentheses. This is primarily to
+			// avoid inserting whitespace before '(', which may break function
+			// calls, depending on the value of the "IGNORE_SPACE" SQL mode.
+			if (
+				0 === $i
+				|| WP_MySQL_Lexer::OPEN_PAR_SYMBOL === $token->id
+				|| WP_MySQL_Lexer::CLOSE_PAR_SYMBOL === $token->id
+				|| WP_MySQL_Lexer::OPEN_PAR_SYMBOL === $last_token_id
+				|| WP_MySQL_Lexer::CLOSE_PAR_SYMBOL === $last_token_id
+			) {
+				$value .= $token->get_bytes();
+			} else {
+				$value .= ' ' . $token->get_bytes();
+			}
+			$last_token_id = $token->id;
+		}
+		return $value;
 	}
 
 	/**
