@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Snapshot resolved config in `WPFilesystem::_initialize()` to preserve absolute paths across tests when `_resetConfig()` or `_reconfigure()` is called.
+
 ## [4.5.11] 2026-01-20;
 
 ### Changed
