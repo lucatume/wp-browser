@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Update Core PHPUnit test suite to latest version.
+- Update SQLite database integration plugin from version `2.2.16` to version `2.2.17`
 
 ## [4.5.12] 2026-02-18;
 

@@ -20,3 +20,4 @@ require_once __DIR__ . '/wp-includes/sqlite-ast/class-wp-sqlite-information-sche
 require_once __DIR__ . '/wp-includes/sqlite-ast/class-wp-sqlite-information-schema-exception.php';
 require_once __DIR__ . '/wp-includes/sqlite-ast/class-wp-sqlite-information-schema-reconstructor.php';
 require_once __DIR__ . '/wp-includes/sqlite-ast/class-wp-pdo-mysql-on-sqlite.php';
+require_once __DIR__ . '/wp-includes/sqlite-ast/class-wp-pdo-proxy-statement.php';
