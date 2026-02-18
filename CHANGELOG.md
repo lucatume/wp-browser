@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Update Core PHPUnit test suite to latest version.
+
 ## [4.5.12] 2026-02-18;
 
 ### Fixed
