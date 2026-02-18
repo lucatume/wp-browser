@@ -170,6 +170,8 @@ class WPFilesystem extends Filesystem
     {
         $this->ensureWpRootFolder();
         $this->ensureOptionalPaths();
+        // Snapshot the resolved config so _resetConfig() and _reconfigure() use resolved paths.
+        $this->backupConfig = $this->config;
     }
 
     /**
