@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- `StubClassFactory` issue where mocking of internal classes would  incorrectly detect optional constructor parameters.
+
 ## [4.5.13] 2026-02-18;
 
 ### Changed
