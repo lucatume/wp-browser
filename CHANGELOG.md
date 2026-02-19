@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.5.14] 2026-02-19;
+
 ### Fixed
 
 - `StubClassFactory` issue where mocking of internal classes would  incorrectly detect optional constructor parameters.
@@ -3276,4 +3278,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.5.11]: https://github.com/lucatume/wp-browser/compare/4.5.10...4.5.11
 [4.5.12]: https://github.com/lucatume/wp-browser/compare/4.5.11...4.5.12
 [4.5.13]: https://github.com/lucatume/wp-browser/compare/4.5.12...4.5.13
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.5.13...HEAD
+[4.5.14]: https://github.com/lucatume/wp-browser/compare/4.5.13...4.5.14
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.5.14...HEAD
