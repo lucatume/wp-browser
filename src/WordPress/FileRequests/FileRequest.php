@@ -103,7 +103,7 @@ abstract class FileRequest
     {
         if (count($this->presetGlobalVars) > 0) {
             foreach ($this->presetGlobalVars as $key => $value) {
-                global $$key;
+                global $$key; // phpcs:ignore PHPCompatibility.Variables.ForbiddenGlobalVariableVariable.NonBareVariableFound
                 $$key = $value;
             }
         }
@@ -223,7 +223,7 @@ abstract class FileRequest
      *     targetFile: string
      *     }
      */
-    public function __serialize(): array
+    public function __serialize(): array // phpcs:ignore PHPCompatibility.FunctionNameRestrictions.NewMagicMethods.__serializeFound
     {
         return [
             'afterLoadClosures' => $this->afterLoadClosures,
@@ -259,7 +259,7 @@ abstract class FileRequest
      *
      * @throws FileRequestException
      */
-    public function __unserialize(array $data): void
+    public function __unserialize(array $data): void // phpcs:ignore PHPCompatibility.FunctionNameRestrictions.NewMagicMethods.__unserializeFound
     {
         $this->afterLoadClosures = $data['afterLoadClosures'] ?? [];
         $this->constants = $data['constants'] ?? [];
