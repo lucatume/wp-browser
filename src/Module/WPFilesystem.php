@@ -377,7 +377,7 @@ class WPFilesystem extends Filesystem
     public function dontSeeUploadedFileFound(string $file, $date = null): void
     {
         if (method_exists(Assert::class, 'assertFileDoesNotExist')) {
-            Assert::assertFileNotExists($this->getUploadsPath($file, $date));
+            Assert::assertFileDoesNotExist($this->getUploadsPath($file, $date));
         } else {
             Assert::assertFileNotExists($this->getUploadsPath($file, $date));
         }
