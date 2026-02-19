@@ -143,7 +143,7 @@ class StubClassFactory
         $mockClassName = $classBasename . '_' . substr(md5(microtime()), 0, 8);
         $constructorStringDump = (new ReflectionMethod($class, '__construct'))->__toString();
         preg_match_all(
-            '/Parameter #\\d+ \\[ <(?:optional|required)> (?<parameter>.*) ]/u',
+            '/Parameter #\\d+ \\[ <(?<kind>optional|required)> (?<parameter>.*) ]/u',
             $constructorStringDump,
             $matches
         );
@@ -151,9 +151,15 @@ class StubClassFactory
         if (!empty($matches)) {
             $constructorParams = implode(
                 ', ',
-                array_map(static function (string $p): string {
-                    return str_replace('or NULL', '', $p);
-                }, $matches['parameter'])
+                array_map(static function (string $p, string $kind): string {
+                    $p = str_replace('or NULL', '', $p);
+                    // Internal PHP classes may not include default values for optional parameters
+                    // in their reflection dump. Add a default to avoid "too few arguments" errors.
+                    if ($kind === 'optional' && strpos($p, '=') === false) {
+                        $p .= ' = null';
+                    }
+                    return $p;
+                }, $matches['parameter'], $matches['kind'])
             );
         }
 
