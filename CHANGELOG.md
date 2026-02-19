@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Transpiled code issues causing fatal errors.
+
 ## [3.7.17] 2026-02-18;
 
 ### Fixed

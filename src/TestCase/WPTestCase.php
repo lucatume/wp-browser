@@ -107,7 +107,14 @@ class WPTestCase extends Unit
      *
      * @var string[]
      */
-    protected $backupGlobalsBlacklist = [
+    protected $backupGlobalsBlacklist = [];
+    /**
+     * A list of globals that should not be backed up: they are handled by the Core test case.
+     * PHPUnit >= 9.0.0.
+     *
+     * @var string[]
+     */
+    protected $backupGlobalsExcludeList = [
         'wpdb',
         'wp_query',
         'wp',
@@ -152,7 +159,14 @@ class WPTestCase extends Unit
      *
      * @var array<string,array<int,string>>
      */
-    protected $backupStaticAttributesBlacklist = [
+    protected $backupStaticAttributesBlacklist = [];
+    /**
+     * A list of static attributes that should not be backed up as they are wired to explode when doing so.
+     * PHPUnit >= 9.0.0, < 10.0.0.
+     *
+     * @var array<string,array<int,string>>
+     */
+    protected $backupStaticAttributesExcludeList = [
         // WordPress
         'WP_Block_Type_Registry' => ['instance'],
         'WP_Block_Bindings_Registry' => ['instance'],
@@ -186,7 +200,6 @@ class WPTestCase extends Unit
         $phpunitVersion = (int)PHPUnitVersion::series();
 
         $backupGlobalsReflectionProperty = new ReflectionProperty($this, 'backupGlobals');
-        $backupGlobalsReflectionProperty->setAccessible(true);
         PHP_VERSION_ID < 80100 && $backupGlobalsReflectionProperty->setAccessible(true);
         $isDefinedInThis = $backupGlobalsReflectionProperty->getDeclaringClass()->getName() !== WPTestCase::class;
         if (!$isDefinedInThis && isset($_wpTestsBackupGlobals) && is_bool($_wpTestsBackupGlobals)) {
@@ -196,10 +209,8 @@ class WPTestCase extends Unit
         if ($phpunitVersion < 9) {
             // Older versions of PHPUnit.
             $backupGlobalsExcludeListReflectionProperty = new ReflectionProperty($this, 'backupGlobalsBlacklist');
-            $backupGlobalsExcludeListReflectionProperty->setAccessible(true);
         } else {
             $backupGlobalsExcludeListReflectionProperty = new ReflectionProperty($this, 'backupGlobalsExcludeList');
-            $backupGlobalsExcludeListReflectionProperty->setAccessible(true);
         }
 
         PHP_VERSION_ID < 80100 && $backupGlobalsExcludeListReflectionProperty->setAccessible(true);
@@ -209,10 +220,17 @@ class WPTestCase extends Unit
             && isset($_wpTestsBackupGlobalsExcludeList)
             && is_array($_wpTestsBackupGlobalsExcludeList)
         ) {
-            $this->backupGlobalsBlacklist = array_merge(
-                $this->backupGlobalsBlacklist,
-                $_wpTestsBackupGlobalsExcludeList
-            );
+            if ($phpunitVersion < 9) {
+                $this->backupGlobalsBlacklist = array_merge(
+                    $this->backupGlobalsBlacklist,
+                    $_wpTestsBackupGlobalsExcludeList
+                );
+            } else {
+                $this->backupGlobalsExcludeList = array_merge(
+                    $this->backupGlobalsExcludeList,
+                    $_wpTestsBackupGlobalsExcludeList
+                );
+            }
         }
     }
     private function initBackupStaticPropertiesForPHPUnit(
@@ -223,15 +241,12 @@ class WPTestCase extends Unit
                $_wpTestsBackupStaticAttributesExcludeList;
 
         $backupStaticAttributesReflectionProperty = new ReflectionProperty($this, $backupStaticAttributesPropertyName);
-        $backupStaticAttributesReflectionProperty->setAccessible(true);
         PHP_VERSION_ID < 80100 && $backupStaticAttributesReflectionProperty->setAccessible(true);
         $isDefinedInThis = $backupStaticAttributesReflectionProperty->getDeclaringClass()
                 ->getName() !== WPTestCase::class;
         if (!$isDefinedInThis && isset($_wpTestsBackupStaticAttributes) && is_bool($_wpTestsBackupStaticAttributes)) {
             $this->backupStaticAttributes = $_wpTestsBackupStaticAttributes;
         }
-        $backupStaticAttributesExcludeListReflectionProperty->setAccessible(true);
-
         $backupStaticAttributesExcludeListReflectionProperty = new ReflectionProperty(
             $this,
             $backupStaticAttributesExcludeListPropertyName
@@ -243,10 +258,17 @@ class WPTestCase extends Unit
             && isset($_wpTestsBackupStaticAttributesExcludeList)
             && is_array($_wpTestsBackupStaticAttributesExcludeList)
         ) {
-            $this->backupStaticAttributesBlacklist = array_merge_recursive(
-                $this->backupStaticAttributesBlacklist,
-                $_wpTestsBackupStaticAttributesExcludeList
-            );
+            if ($backupStaticAttributesExcludeListPropertyName === 'backupStaticAttributesBlacklist') {
+                $this->backupStaticAttributesBlacklist = array_merge_recursive(
+                    $this->backupStaticAttributesBlacklist,
+                    $_wpTestsBackupStaticAttributesExcludeList
+                );
+            } else {
+                $this->backupStaticAttributesExcludeList = array_merge_recursive(
+                    $this->backupStaticAttributesExcludeList,
+                    $_wpTestsBackupStaticAttributesExcludeList
+                );
+            }
         }
     }
     private function initBackupStaticPropertiesForPHPUnitGte10(): void
@@ -262,7 +284,7 @@ class WPTestCase extends Unit
 
         $backupStaticPropertiesExcludeList = property_exists($this, 'backupStaticPropertiesExcludeList') ?
             $this->backupStaticPropertiesExcludeList :
-            array_merge($this->backupStaticAttributesBlacklist, $_wpTestsBackupStaticAttributesExcludeList);
+            array_merge($this->backupStaticAttributesExcludeList, $_wpTestsBackupStaticAttributesExcludeList);
         // @phpstan-ignore-next-line exists in PHPUnit >= 10.0.0
         $this->setBackupStaticPropertiesExcludeList($backupStaticPropertiesExcludeList);
     }
@@ -273,9 +295,17 @@ class WPTestCase extends Unit
      */
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
-        $this->initBackupGlobalsProperties();
-
         $phpunitVersion = (int)PHPUnitVersion::series();
+
+        if ($phpunitVersion < 9) {
+            // Swap values from the ExcludeList properties to the Blacklist properties for older PHPUnit versions.
+            $this->backupGlobalsBlacklist = $this->backupGlobalsExcludeList;
+            $this->backupGlobalsExcludeList = [];
+            $this->backupStaticAttributesBlacklist = $this->backupStaticAttributesExcludeList;
+            $this->backupStaticAttributesExcludeList = [];
+        }
+
+        $this->initBackupGlobalsProperties();
 
         if ($phpunitVersion < 9) {
             $this->initBackupStaticPropertiesForPHPUnit('backupStaticAttributes', 'backupStaticAttributesBlacklist');
@@ -433,7 +463,6 @@ class WPTestCase extends Unit
 
         $coreTestCase = self::getCoreTestCase('__get');
         $reflectionProperty = new ReflectionProperty($coreTestCase, $name);
-        $reflectionProperty->setAccessible(true);
         PHP_VERSION_ID < 80100 && $reflectionProperty->setAccessible(true);
         $value = $reflectionProperty->getValue($coreTestCase);
 
@@ -453,7 +482,6 @@ class WPTestCase extends Unit
 
         $coreTestCase = self::getCoreTestCase('__set');
         $reflectionProperty = new ReflectionProperty($coreTestCase, $name);
-        $reflectionProperty->setAccessible(true);
         PHP_VERSION_ID < 80100 && $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($coreTestCase, $value);
     }
@@ -468,7 +496,6 @@ class WPTestCase extends Unit
 
         $coreTestCase = self::getCoreTestCase('__isset');
         $reflectionProperty = new ReflectionProperty($coreTestCase, $name);
-        $reflectionProperty->setAccessible(true);
         PHP_VERSION_ID < 80100 && $reflectionProperty->setAccessible(true);
         return $reflectionProperty->isInitialized($coreTestCase);
     }
