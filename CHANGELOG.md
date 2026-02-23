@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.7.19] 2026-02-23;
+
 ### Fixed
 
 - Doc-block of `wp:db:import` command (thanks @sc0ttkclark).
@@ -2150,4 +2152,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.7.16]: https://github.com/lucatume/wp-browser/compare/3.7.15...3.7.16
 [3.7.17]: https://github.com/lucatume/wp-browser/compare/3.7.16...3.7.17
 [3.7.18]: https://github.com/lucatume/wp-browser/compare/3.7.17...3.7.18
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.18...HEAD
+[3.7.19]: https://github.com/lucatume/wp-browser/compare/3.7.18...3.7.19
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.7.19...HEAD
