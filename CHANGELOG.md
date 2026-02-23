@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Doc-block of `wp:db:import` command (thanks @sc0ttkclark).
+
 ## [4.5.14] 2026-02-19;
 
 ### Fixed
