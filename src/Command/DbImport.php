@@ -29,7 +29,7 @@ class DbImport extends Command implements CustomCommandInterface
 
     public function getDescription(): string
     {
-        return 'Exports the database used by a suite to a file.';
+        return 'Imports the database used by a suite from a file.';
     }
 
     protected function configure(): void
