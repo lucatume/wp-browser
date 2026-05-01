@@ -498,7 +498,7 @@ final class Packer
         }
 
         if (!class_exists($className)) {
-            throw new PackerException("Class not found: $className");
+            return $this->unpackIncompleteClass($className, $value);
         }
 
         $reflection = new ReflectionClass($className);
@@ -547,6 +547,57 @@ final class Packer
                     $instance->$key = $propValue;
                 }
             }
+        }
+
+        return $instance;
+    }
+
+    /**
+     * Mirror PHP's native serialize/unserialize behavior for missing classes:
+     * return a __PHP_Incomplete_Class instance with the original class name and
+     * properties preserved. This keeps closure unpacks alive in worker / fork
+     * processes that cannot see PHPUnit-generated Mock_<Class>_<hex> classes
+     * present only in the test process. The body using the closure is free to
+     * fail on access; the unpack itself does not.
+     *
+     * Built via unserialize() of a hand-crafted O:n:"X" payload — PHP itself
+     * materializes a __PHP_Incomplete_Class for any class name it cannot resolve,
+     * and that path is the only way to write to __PHP_Incomplete_Class_Name and
+     * to undeclared dynamic properties (a Closure cannot ::call() into the scope
+     * of an internal class, and direct $instance->prop = ... emits a warning
+     * about overloaded properties on __PHP_Incomplete_Class).
+     *
+     * @param array<int|string, mixed> $value
+     */
+    private function unpackIncompleteClass(string $className, array $value): object
+    {
+        // Build a synthetic serialize() payload for a missing class: PHP's unserialize
+        // materializes those into __PHP_Incomplete_Class with __PHP_Incomplete_Class_Name
+        // set automatically, and that path is the only one that lets us populate the
+        // proxy's metadata + arbitrary properties. A Closure cannot ->call() into
+        // the scope of an internal class, and a direct $instance->prop = … on
+        // __PHP_Incomplete_Class emits an "overloaded property" warning.
+        $props = [];
+        foreach ($value as $key => $propValue) {
+            if (!is_string($key) || $key === '@class' || $key === '@ref') {
+                continue;
+            }
+            $props[$key] = $this->isPackedValue($propValue) ? $this->unpackValue($propValue) : $propValue;
+        }
+
+        $payload = sprintf('O:%d:"%s":%d:{', strlen($className), $className, count($props));
+        foreach ($props as $key => $val) {
+            $payload .= sprintf('s:%d:"%s";', strlen($key), $key) . serialize($val);
+        }
+        $payload .= '}';
+
+        $instance = unserialize($payload);
+        if (!$instance instanceof \__PHP_Incomplete_Class) {
+            throw new PackerException("Failed to materialize incomplete class proxy for $className");
+        }
+
+        if (isset($value['@ref']) && is_string($value['@ref'])) {
+            $this->unpackReferences[$value['@ref']] = $instance;
         }
 
         return $instance;

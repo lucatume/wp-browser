@@ -562,14 +562,45 @@ class PackerTest extends Unit
         $packer->unpack('{"type": "reference", "value": "@ref_99"}');
     }
 
-    public function test_unpack_throws_on_class_not_found(): void
+    public function test_unpack_returns_incomplete_class_proxy_when_class_not_found(): void
     {
+        // Mirror PHP's native serialize/unserialize behavior: a missing class becomes
+        // a __PHP_Incomplete_Class proxy that preserves the class name and properties
+        // for inspection, instead of a hard PackerException. The motivating scenario
+        // is PHPUnit-generated Mock_<Class>_<hex> classes that exist in the test
+        // process but not in worker / fork processes — when those mocks are reachable
+        // through the closure use-context but unused by the body, the unpack must
+        // proceed instead of aborting the entire run.
         $packer = new Packer();
 
-        $this->expectException(PackerException::class);
-        $this->expectExceptionMessage('Class not found: NonExistent');
+        $unpacked = $packer->unpack(
+            '{"type":"object","value":{"@class":"NonExistent","@ref":"@ref_0",'
+            . '"name":{"type":"string","value":"alice"}}}'
+        );
 
-        $packer->unpack('{"type": "object", "value": {"@class": "NonExistent"}}');
+        $this->assertInstanceOf(\__PHP_Incomplete_Class::class, $unpacked);
+        $vars = (array) $unpacked;
+        $this->assertSame('NonExistent', $vars['__PHP_Incomplete_Class_Name']);
+        $this->assertSame('alice', $vars['name']);
+    }
+
+    public function test_unpack_resolves_internal_reference_to_incomplete_class_proxy(): void
+    {
+        // Cross-graph reference resolution still works when the target object is an
+        // incomplete-class proxy: a sibling property pointing at the same @ref must
+        // unpack as the SAME instance, not throw or short-circuit to null.
+        $packer = new Packer();
+
+        $unpacked = $packer->unpack(
+            '{"type":"array","value":{'
+            . '"a":{"type":"object","value":{"@class":"NonExistent","@ref":"@ref_0"}},'
+            . '"b":{"type":"reference","value":"@ref_0"}'
+            . '}}'
+        );
+
+        $this->assertIsArray($unpacked);
+        $this->assertInstanceOf(\__PHP_Incomplete_Class::class, $unpacked['a']);
+        $this->assertSame($unpacked['a'], $unpacked['b']);
     }
 
     public function test_packs_empty_array(): void
