@@ -9,6 +9,7 @@ use Exception;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Filesystem;
+use lucatume\WPBrowser\Utils\Filesystem as FsAlias;
 use lucatume\WPBrowser\Utils\Packer;
 use lucatume\WPBrowser\Utils\PackerException;
 use stdClass;
@@ -760,6 +761,156 @@ class PackerTest extends Unit
 
         $this->assertContains('closure', stream_get_wrappers());
     }
+
+    public function test_unpacks_closure_using_short_class_name_via_use_statement(): void
+    {
+        $packer = new Packer();
+        $closure = static function (): object {
+            return new Packer();
+        };
+
+        $unpacked = $packer->unpack($packer->pack($closure));
+
+        $this->assertInstanceOf(Packer::class, $unpacked());
+    }
+
+    public function test_unpacks_closure_using_aliased_use_statement(): void
+    {
+        $packer = new Packer();
+        $closure = static function (): object {
+            return new FsAlias();
+        };
+
+        $unpacked = $packer->unpack($packer->pack($closure));
+
+        $this->assertInstanceOf(Filesystem::class, $unpacked());
+    }
+
+    public function test_unpacks_closure_using_qualified_class_name_unchanged(): void
+    {
+        $packer = new Packer();
+        $closure = static function (): object {
+            return new \stdClass();
+        };
+
+        $unpacked = $packer->unpack($packer->pack($closure));
+
+        $this->assertInstanceOf(stdClass::class, $unpacked());
+    }
+
+    public function test_unpacks_closure_using_short_class_name_as_typehint(): void
+    {
+        $packer = new Packer();
+        $closure = static function (Packer $p): bool {
+            return $p instanceof Packer;
+        };
+
+        $unpacked = $packer->unpack($packer->pack($closure));
+
+        $this->assertTrue($unpacked(new Packer()));
+    }
+
+    public function test_unpacks_closure_using_short_class_name_as_return_type(): void
+    {
+        $packer = new Packer();
+        $closure = static function (): Packer {
+            return new Packer();
+        };
+
+        $unpacked = $packer->unpack($packer->pack($closure));
+
+        $this->assertInstanceOf(Packer::class, $unpacked());
+    }
+
+    public function test_unpacks_closure_using_short_class_name_in_catch(): void
+    {
+        $packer = new Packer();
+        $closure = static function (): string {
+            try {
+                throw new \RuntimeException('boom');
+            } catch (Exception $e) {
+                return $e->getMessage();
+            }
+        };
+
+        $unpacked = $packer->unpack($packer->pack($closure));
+
+        $this->assertSame('boom', $unpacked());
+    }
+
+    public function test_unpacks_closure_using_short_class_name_in_instanceof(): void
+    {
+        $packer = new Packer();
+        $closure = static function (object $value): bool {
+            return $value instanceof Packer;
+        };
+
+        $unpacked = $packer->unpack($packer->pack($closure));
+
+        $this->assertTrue($unpacked(new Packer()));
+        $this->assertFalse($unpacked(new stdClass()));
+    }
+
+    public function test_unpacks_closure_with___FILE___magic_constant(): void
+    {
+        $packer = new Packer();
+        $closure = static function (): string {
+            return __FILE__;
+        };
+
+        $unpacked = $packer->unpack($packer->pack($closure));
+
+        $this->assertSame(__FILE__, $unpacked());
+    }
+
+    public function test_unpacks_closure_with___DIR___magic_constant(): void
+    {
+        $packer = new Packer();
+        $closure = static function (): string {
+            return __DIR__;
+        };
+
+        $unpacked = $packer->unpack($packer->pack($closure));
+
+        $this->assertSame(__DIR__, $unpacked());
+    }
+
+    public function test_unpacks_closure_with___LINE___magic_constant(): void
+    {
+        $packer = new Packer();
+        $expectedLine = __LINE__ + 2;
+        $closure = static function (): int {
+            return __LINE__;
+        };
+
+        $unpacked = $packer->unpack($packer->pack($closure));
+
+        $this->assertSame($expectedLine, $unpacked());
+    }
+
+    public function test_unpacks_closure_with___NAMESPACE___magic_constant(): void
+    {
+        $packer = new Packer();
+        $closure = static function (): string {
+            return __NAMESPACE__;
+        };
+
+        $unpacked = $packer->unpack($packer->pack($closure));
+
+        $this->assertSame(__NAMESPACE__, $unpacked());
+    }
+
+    public function test_unpacks_closure_with_string_literal_containing___DIR___unchanged(): void
+    {
+        $packer = new Packer();
+        $closure = static function (): string {
+            return 'literal __DIR__ stays';
+        };
+
+        $unpacked = $packer->unpack($packer->pack($closure));
+
+        $this->assertSame('literal __DIR__ stays', $unpacked());
+    }
 }
 
 class TestCustomObject
@@ -778,3 +929,4 @@ class TestCustomObject
         return $this->privateValue;
     }
 }
+

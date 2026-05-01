@@ -738,11 +738,10 @@ final class Packer
         $startLine = $reflection->getStartLine();
         $endLine = $reflection->getEndLine();
 
+        $code = '';
         if ($filename && $startLine && $endLine) {
             $source = file($filename);
-            if ($source === false) {
-                $code = '';
-            } else {
+            if ($source !== false) {
                 $lines = array_slice($source, $startLine - 1, $endLine - $startLine + 1);
                 $code = implode('', $lines);
             }
@@ -775,8 +774,6 @@ final class Packer
                     $code = $result;
                 }
             }
-        } else {
-            $code = '';
         }
 
         $isStatic = self::isStaticClosure($closure);
@@ -800,6 +797,15 @@ final class Packer
 
         $closureCalledClass = $reflection->getClosureCalledClass();
         $closureScopeClass = $reflection->getClosureScopeClass();
+
+        if ($code !== '' && $filename !== false && $startLine !== false) {
+            $code = self::rewriteClosureBody(
+                $code,
+                $filename,
+                $startLine,
+                $closureScopeClass ? $closureScopeClass->getName() : null
+            );
+        }
 
         return [
             'code' => $code,
@@ -909,5 +915,441 @@ final class Packer
         } finally {
             restore_error_handler();
         }
+    }
+
+    /**
+     * @var array<string, array{0: string, 1: array<string, string>}>
+     */
+    private static array $sourceFileImportsCache = [];
+
+    private static ?int $tokenNameQualified = null;
+    private static ?int $tokenNameFullyQualified = null;
+    private static ?int $tokenNameRelative = null;
+
+    /**
+     * PHP 8.0+ guarantees T_NAME_QUALIFIED, T_NAME_FULLY_QUALIFIED and T_NAME_RELATIVE
+     * exist as ints. Resolve through constant() to keep static analysis happy: PHPCS
+     * ships a polyfill that defines those constants as strings if undefined, which
+     * never fires at runtime on supported PHP but confuses PHPStan.
+     */
+    private static function ensureNameTokenIds(): void
+    {
+        if (self::$tokenNameQualified !== null) {
+            return;
+        }
+        $resolve = static function (string $name): int {
+            $value = constant($name);
+            return is_int($value) ? $value : -1;
+        };
+        self::$tokenNameQualified = $resolve('T_NAME_QUALIFIED');
+        self::$tokenNameFullyQualified = $resolve('T_NAME_FULLY_QUALIFIED');
+        self::$tokenNameRelative = $resolve('T_NAME_RELATIVE');
+    }
+
+    /**
+     * Resolve short class names to FQCNs and substitute magic constants with literal values.
+     *
+     * The closure body is re-evaluated at unpack time inside a `closure://` stream URL with
+     * no namespace and no `use` imports, so an unqualified class identifier like
+     * `new InstallationException()` would fail with "Class not found", and `__DIR__` would
+     * resolve against the URL instead of the source file. Both transforms happen here at
+     * pack time, where reflection still gives us the source file path.
+     */
+    private static function rewriteClosureBody(
+        string $body,
+        string $filename,
+        int $startLine,
+        ?string $scopeClassName
+    ): string {
+        self::ensureNameTokenIds();
+        [$fileNamespace, $useMap] = self::parseSourceFileImports($filename);
+
+        $tokens = @token_get_all('<?php ' . $body);
+        if (!is_array($tokens) || count($tokens) === 0) {
+            return $body;
+        }
+
+        // Drop the leading T_OPEN_TAG injected by the '<?php ' prefix.
+        array_shift($tokens);
+
+        $output = '';
+        $count = count($tokens);
+
+        for ($i = 0; $i < $count; $i++) {
+            $tok = $tokens[$i];
+
+            if (is_string($tok)) {
+                $output .= $tok;
+                continue;
+            }
+
+            [$id, $text, $line] = $tok;
+
+            switch ($id) {
+                case T_FILE:
+                    $output .= var_export($filename, true);
+                    continue 2;
+                case T_DIR:
+                    $output .= var_export(dirname($filename), true);
+                    continue 2;
+                case T_LINE:
+                    $output .= (string) ($startLine + $line - 1);
+                    continue 2;
+                case T_NS_C:
+                    $output .= var_export($fileNamespace, true);
+                    continue 2;
+                case T_CLASS_C:
+                    $output .= var_export($scopeClassName ?? '', true);
+                    continue 2;
+                case T_FUNC_C:
+                    $output .= "'{closure}'";
+                    continue 2;
+                case T_METHOD_C:
+                    $output .= var_export(
+                        ($scopeClassName !== null ? $scopeClassName . '::' : '') . '{closure}',
+                        true
+                    );
+                    continue 2;
+                case T_TRAIT_C:
+                    $output .= "''";
+                    continue 2;
+            }
+
+            if ($id === T_STRING) {
+                $prev = self::prevSignificantToken($tokens, $i);
+                if (isset($useMap[$text])
+                    && !self::isClassNameSkipContext($prev)
+                    && !self::isLikelyFunctionCall($tokens, $i, $prev)
+                ) {
+                    $output .= '\\' . $useMap[$text];
+                    continue;
+                }
+                $output .= $text;
+                continue;
+            }
+
+            if ($id === self::$tokenNameQualified) {
+                $parts = explode('\\', $text);
+                $first = $parts[0];
+                if (isset($useMap[$first])) {
+                    $parts[0] = $useMap[$first];
+                    $output .= '\\' . implode('\\', $parts);
+                    continue;
+                }
+                $output .= $text;
+                continue;
+            }
+
+            if ($id === self::$tokenNameRelative) {
+                // "namespace\Foo\Bar" → "\<fileNamespace>\Foo\Bar"
+                $rest = substr($text, strlen('namespace\\'));
+                $output .= '\\' . ($fileNamespace !== '' ? $fileNamespace . '\\' : '') . $rest;
+                continue;
+            }
+
+            $output .= $text;
+        }
+
+        return $output;
+    }
+
+    /**
+     * @param array<int, array{0: int, 1: string, 2: int}|string> $tokens
+     */
+    private static function prevSignificantToken(array $tokens, int $index): ?int
+    {
+        for ($j = $index - 1; $j >= 0; $j--) {
+            $t = $tokens[$j];
+            if (is_string($t)) {
+                return null;
+            }
+            if ($t[0] === T_WHITESPACE || $t[0] === T_COMMENT || $t[0] === T_DOC_COMMENT) {
+                continue;
+            }
+            return $t[0];
+        }
+        return null;
+    }
+
+    private static function isClassNameSkipContext(?int $prevId): bool
+    {
+        if ($prevId === null) {
+            return false;
+        }
+        return in_array(
+            $prevId,
+            [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON,
+                T_FUNCTION, T_CONST, T_GOTO, T_AS,],
+            true
+        );
+    }
+
+    /**
+     * @param array<int, array{0: int, 1: string, 2: int}|string> $tokens
+     */
+    private static function isLikelyFunctionCall(array $tokens, int $index, ?int $prevId): bool
+    {
+        if ($prevId === T_NEW) {
+            return false;
+        }
+        $count = count($tokens);
+        for ($j = $index + 1; $j < $count; $j++) {
+            $t = $tokens[$j];
+            if (is_string($t)) {
+                return $t === '(';
+            }
+            if ($t[0] === T_WHITESPACE || $t[0] === T_COMMENT || $t[0] === T_DOC_COMMENT) {
+                continue;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    /**
+     * @return array{0: string, 1: array<string, string>}
+     */
+    private static function parseSourceFileImports(string $filename): array
+    {
+        if (isset(self::$sourceFileImportsCache[$filename])) {
+            return self::$sourceFileImportsCache[$filename];
+        }
+
+        self::ensureNameTokenIds();
+
+        $namespace = '';
+        $useMap = [];
+
+        $source = @file_get_contents($filename);
+        if ($source === false) {
+            return self::$sourceFileImportsCache[$filename] = [$namespace, $useMap];
+        }
+
+        $tokens = @token_get_all($source);
+        if (!is_array($tokens)) {
+            return self::$sourceFileImportsCache[$filename] = [$namespace, $useMap];
+        }
+
+        $count = count($tokens);
+        $depth = 0;
+
+        for ($i = 0; $i < $count; $i++) {
+            $tok = $tokens[$i];
+
+            if (is_string($tok)) {
+                if ($tok === '{') {
+                    $depth++;
+                } elseif ($tok === '}') {
+                    $depth--;
+                }
+                continue;
+            }
+
+            $id = $tok[0];
+
+            if ($id === T_CURLY_OPEN || $id === T_DOLLAR_OPEN_CURLY_BRACES) {
+                $depth++;
+                continue;
+            }
+
+            if ($depth !== 0) {
+                continue;
+            }
+
+            if ($id === T_NAMESPACE && $namespace === '') {
+                $j = $i + 1;
+                $ns = '';
+                while ($j < $count) {
+                    $t = $tokens[$j];
+                    if (is_array($t)) {
+                        $tid = $t[0];
+                        if ($tid === T_WHITESPACE) {
+                            $j++;
+                            continue;
+                        }
+                        if ($tid === T_STRING
+                            || $tid === T_NS_SEPARATOR
+                            || $tid === self::$tokenNameQualified
+                            || $tid === self::$tokenNameFullyQualified
+                        ) {
+                            $ns .= $t[1];
+                            $j++;
+                            continue;
+                        }
+                        break;
+                    }
+                    if ($t === ';' || $t === '{') {
+                        if ($t === '{') {
+                            $depth++;
+                        }
+                        break;
+                    }
+                    $j++;
+                }
+                $namespace = trim($ns, '\\');
+                $i = $j;
+                continue;
+            }
+
+            if ($id === T_USE) {
+                $j = $i + 1;
+                while ($j < $count && is_array($tokens[$j]) && $tokens[$j][0] === T_WHITESPACE) {
+                    $j++;
+                }
+                if ($j >= $count) {
+                    break;
+                }
+
+                $next = $tokens[$j];
+                if (is_array($next) && ($next[0] === T_FUNCTION || $next[0] === T_CONST)) {
+                    while ($i < $count && !(is_string($tokens[$i]) && $tokens[$i] === ';')) {
+                        $i++;
+                    }
+                    continue;
+                }
+
+                self::collectClassUseAliases($tokens, $j, $useMap);
+                while ($i < $count && !(is_string($tokens[$i]) && $tokens[$i] === ';')) {
+                    $i++;
+                }
+            }
+        }
+
+        return self::$sourceFileImportsCache[$filename] = [$namespace, $useMap];
+    }
+
+    /**
+     * @param array<int, array{0: int, 1: string, 2: int}|string> $tokens
+     * @param array<string, string>                              $useMap
+     */
+    private static function collectClassUseAliases(array $tokens, int $start, array &$useMap): void
+    {
+        $count = count($tokens);
+        $name = '';
+        $j = $start;
+
+        while ($j < $count) {
+            $t = $tokens[$j];
+
+            if (is_string($t)) {
+                if ($t === ';') {
+                    break;
+                }
+                if ($t === '{') {
+                    // Grouped use: prefix is $name, parse inner clauses.
+                    $prefix = trim($name, '\\') . '\\';
+                    $j = self::collectGroupedUseAliases($tokens, $j + 1, $prefix, $useMap);
+                    return;
+                }
+                $j++;
+                continue;
+            }
+
+            $tid = $t[0];
+            if ($tid === T_WHITESPACE || $tid === T_COMMENT || $tid === T_DOC_COMMENT) {
+                $j++;
+                continue;
+            }
+
+            if ($tid === T_AS) {
+                $j++;
+                while ($j < $count && is_array($tokens[$j]) && $tokens[$j][0] === T_WHITESPACE) {
+                    $j++;
+                }
+                if ($j < $count && is_array($tokens[$j]) && $tokens[$j][0] === T_STRING) {
+                    $alias = $tokens[$j][1];
+                    $useMap[$alias] = trim($name, '\\');
+                    return;
+                }
+                return;
+            }
+
+            if ($tid === T_STRING
+                || $tid === T_NS_SEPARATOR
+                || $tid === self::$tokenNameQualified
+                || $tid === self::$tokenNameFullyQualified
+            ) {
+                $name .= $t[1];
+                $j++;
+                continue;
+            }
+
+            $j++;
+        }
+
+        $name = trim($name, '\\');
+        if ($name !== '') {
+            $parts = explode('\\', $name);
+            $alias = end($parts);
+            $useMap[$alias] = $name;
+        }
+    }
+
+    /**
+     * @param array<int, array{0: int, 1: string, 2: int}|string> $tokens
+     * @param array<string, string>                              $useMap
+     */
+    private static function collectGroupedUseAliases(array $tokens, int $start, string $prefix, array &$useMap): int
+    {
+        $count = count($tokens);
+        $name = '';
+        $j = $start;
+
+        while ($j < $count) {
+            $t = $tokens[$j];
+
+            if (is_string($t)) {
+                if ($t === '}' || $t === ',') {
+                    if ($name !== '') {
+                        $fqcn = $prefix . trim($name, '\\');
+                        $parts = explode('\\', $fqcn);
+                        $alias = end($parts);
+                        $useMap[$alias] = $fqcn;
+                        $name = '';
+                    }
+                    if ($t === '}') {
+                        return $j;
+                    }
+                    $j++;
+                    continue;
+                }
+                $j++;
+                continue;
+            }
+
+            $tid = $t[0];
+            if ($tid === T_WHITESPACE || $tid === T_COMMENT || $tid === T_DOC_COMMENT) {
+                $j++;
+                continue;
+            }
+
+            if ($tid === T_AS) {
+                $j++;
+                while ($j < $count && is_array($tokens[$j]) && $tokens[$j][0] === T_WHITESPACE) {
+                    $j++;
+                }
+                if ($j < $count && is_array($tokens[$j]) && $tokens[$j][0] === T_STRING) {
+                    $alias = $tokens[$j][1];
+                    $useMap[$alias] = $prefix . trim($name, '\\');
+                    $name = '';
+                    $j++;
+                }
+                continue;
+            }
+
+            if ($tid === T_STRING
+                || $tid === T_NS_SEPARATOR
+                || $tid === self::$tokenNameQualified
+                || $tid === self::$tokenNameFullyQualified
+            ) {
+                $name .= $t[1];
+                $j++;
+                continue;
+            }
+
+            $j++;
+        }
+
+        return $j;
     }
 }
