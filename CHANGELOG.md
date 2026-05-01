@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Replace the bundled `lucatume\WPBrowser\Opis\Closure\*` library with `lucatume\WPBrowser\Utils\Packer` and `lucatume\WPBrowser\Utils\PackedClosure` for closure serialization in the IPC pipeline.
+
+### Removed
+
+- Drop the bundled `includes/opis/closure/` library and its `lucatume\WPBrowser\Opis\Closure\` PSR-4 autoload entry.
+
+### Breaking change
+
+- The `lucatume\WPBrowser\Opis\Closure\*` namespace is no longer autoloaded. None of its classes were part of the documented public API but the namespace was reachable via PSR-4; any consumer that imported or extended them must migrate to `lucatume\WPBrowser\Utils\PackedClosure`.
+- Consumers using `--classmap-authoritative` Composer installs must run `composer install` after upgrading to drop the stale classmap entries.
+
 ## [4.5.15] 2026-02-23;
 
 ### Fixed

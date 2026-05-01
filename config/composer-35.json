@@ -53,8 +53,7 @@
         "src/",
         "src/Deprecated"
       ],
-      "Hautelook\\Phpass\\": "includes/Hautelook/Phpass",
-      "lucatume\\WPBrowser\\Opis\\Closure\\" : "includes/opis/closure/src"
+      "Hautelook\\Phpass\\": "includes/Hautelook/Phpass"
     },
     "files": [
       "src/version-4-aliases.php",
