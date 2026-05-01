@@ -18,8 +18,8 @@ class ClosureStreamWrapperTest extends Unit
     protected function setUp(): void
     {
         parent::setUp();
-        if (!in_array('wpbrowser-closure', stream_get_wrappers(), true)) {
-            stream_wrapper_register('wpbrowser-closure', ClosureStreamWrapper::class);
+        if (!in_array('closure', stream_get_wrappers(), true)) {
+            stream_wrapper_register('closure', ClosureStreamWrapper::class);
             $this->wrapperRegistered = true;
         }
     }
@@ -27,7 +27,7 @@ class ClosureStreamWrapperTest extends Unit
     protected function tearDown(): void
     {
         if ($this->wrapperRegistered) {
-            stream_wrapper_unregister('wpbrowser-closure');
+            stream_wrapper_unregister('closure');
             $this->wrapperRegistered = false;
         }
         parent::tearDown();
@@ -38,7 +38,7 @@ class ClosureStreamWrapperTest extends Unit
         $code = 'return 42;';
         $payload = base64_encode($code);
 
-        $handle = fopen("wpbrowser-closure://{$payload}", 'r');
+        $handle = fopen("closure://{$payload}", 'r');
 
         $this->assertNotFalse($handle);
         fclose($handle);
@@ -49,7 +49,7 @@ class ClosureStreamWrapperTest extends Unit
         $code = 'return 42;';
         $payload = base64_encode($code);
 
-        $handle = fopen("wpbrowser-closure://{$payload}", 'r');
+        $handle = fopen("closure://{$payload}", 'r');
         $content = stream_get_contents($handle);
         fclose($handle);
 
@@ -60,7 +60,7 @@ class ClosureStreamWrapperTest extends Unit
     {
         $invalidPayload = '!!!not-valid-base64!!!';
 
-        $handle = @fopen("wpbrowser-closure://{$invalidPayload}", 'r');
+        $handle = @fopen("closure://{$invalidPayload}", 'r');
 
         $this->assertFalse($handle);
     }
@@ -70,7 +70,7 @@ class ClosureStreamWrapperTest extends Unit
         $code = 'return function() { return 42; };';
         $payload = base64_encode($code);
 
-        $closure = include "wpbrowser-closure://{$payload}";
+        $closure = include "closure://{$payload}";
 
         $this->assertIsCallable($closure);
         $this->assertSame(42, $closure());
@@ -81,7 +81,7 @@ class ClosureStreamWrapperTest extends Unit
         $code = 'return 1;';
         $payload = base64_encode($code);
 
-        $handle = fopen("wpbrowser-closure://{$payload}", 'r');
+        $handle = fopen("closure://{$payload}", 'r');
         $this->assertFalse(feof($handle));
 
         stream_get_contents($handle);
@@ -95,7 +95,7 @@ class ClosureStreamWrapperTest extends Unit
         $code = 'return 123;';
         $payload = base64_encode($code);
 
-        $handle = fopen("wpbrowser-closure://{$payload}", 'r');
+        $handle = fopen("closure://{$payload}", 'r');
         fread($handle, 10);
         fseek($handle, 0, SEEK_SET);
 
@@ -111,7 +111,7 @@ class ClosureStreamWrapperTest extends Unit
         $payload = base64_encode($code);
         $expectedContent = "<?php\n" . $code;
 
-        $handle = fopen("wpbrowser-closure://{$payload}", 'r');
+        $handle = fopen("closure://{$payload}", 'r');
         fread($handle, 3);
         $this->assertSame(3, ftell($handle));
 
@@ -131,7 +131,7 @@ class ClosureStreamWrapperTest extends Unit
         $expectedContent = "<?php\n" . $code;
         $contentLength = strlen($expectedContent);
 
-        $handle = fopen("wpbrowser-closure://{$payload}", 'r');
+        $handle = fopen("closure://{$payload}", 'r');
 
         fseek($handle, -5, SEEK_END);
         $this->assertSame($contentLength - 5, ftell($handle));
@@ -147,7 +147,7 @@ class ClosureStreamWrapperTest extends Unit
         $code = 'return 1;';
         $payload = base64_encode($code);
 
-        $handle = fopen("wpbrowser-closure://{$payload}", 'r');
+        $handle = fopen("closure://{$payload}", 'r');
         $this->assertSame(0, ftell($handle));
 
         fread($handle, 5);
@@ -161,7 +161,7 @@ class ClosureStreamWrapperTest extends Unit
         $code = 'return 1;';
         $payload = base64_encode($code);
 
-        $handle = fopen("wpbrowser-closure://{$payload}", 'r');
+        $handle = fopen("closure://{$payload}", 'r');
         $stat = fstat($handle);
         fclose($handle);
 
@@ -180,7 +180,7 @@ class ClosureStreamWrapperTest extends Unit
         try {
             $code = 'return function() { return "test"; };';
             $payload = base64_encode($code);
-            include "wpbrowser-closure://{$payload}";
+            include "closure://{$payload}";
 
             $files = glob($tmpDir . '/*');
             $this->assertEmpty($files);

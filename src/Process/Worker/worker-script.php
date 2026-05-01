@@ -21,7 +21,7 @@ try {
     }
 
     $request = Request::fromPayload($payload);
-    $_wpBrowserWorkerClosure = $request->getSerializableClosure();
+    $_wpBrowserWorkerClosure = $request->getPackedClosure();
     unset($payload, $request);
     $returnValue = $_wpBrowserWorkerClosure();
 } catch (Throwable $throwable) {

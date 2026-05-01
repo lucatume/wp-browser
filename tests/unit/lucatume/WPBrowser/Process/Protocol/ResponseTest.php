@@ -3,9 +3,9 @@
 namespace lucatume\WPBrowser\Process\Protocol;
 
 use Exception;
-use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
 use lucatume\WPBrowser\Process\SerializableThrowable;
 use lucatume\WPBrowser\Traits\UopzFunctions;
+use lucatume\WPBrowser\Utils\PackedClosure;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
@@ -59,7 +59,7 @@ class ResponseTest extends TestCase
 
     public function testFromStderrWithSeparatorAndValidPayload(): void
     {
-        $returnValue = new SerializableClosure(static function () {
+        $returnValue = new PackedClosure(static function () {
             return "success";
         });
         $telemetry = ["memoryPeakUsage" => 123456];
@@ -93,7 +93,7 @@ class ResponseTest extends TestCase
     public function testGetStderrLength(): void
     {
         $separator = Response::$stderrValueSeparator;
-        $payload = Parser::encode([new SerializableClosure(static function () {
+        $payload = Parser::encode([new PackedClosure(static function () {
             return "success";
         }), ['foo' => 'bar']]);
         $stderrBufferString = "Error message{$separator}{$payload}";
@@ -104,7 +104,7 @@ class ResponseTest extends TestCase
     }
 
     public function testFromStderrWithNoiseAfterPayload():void{
-        $returnValue = new SerializableClosure(static function () {
+        $returnValue = new PackedClosure(static function () {
             return "success";
         });
         $telemetry = ["memoryPeakUsage" => 123456];

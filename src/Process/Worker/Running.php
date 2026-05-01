@@ -5,11 +5,11 @@ namespace lucatume\WPBrowser\Process\Worker;
 use Closure;
 use Codeception\Exception\ConfigurationException;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
-use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
 use lucatume\WPBrowser\Process\MemoryUsage;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\Protocol\Request;
 use lucatume\WPBrowser\Process\Protocol\Response;
+use lucatume\WPBrowser\Utils\PackedClosure;
 
 class Running implements WorkerInterface
 {
@@ -53,9 +53,9 @@ class Running implements WorkerInterface
             $control['env'] = array_merge($control['env'] ?? [], getenv());
         }
 
-        $workerSerializableClosure = new SerializableClosure($workerClosure);
+        $workerPackedClosure = new PackedClosure($workerClosure);
 
-        $request = new Request($control, $workerSerializableClosure);
+        $request = new Request($control, $workerPackedClosure);
         $request->setUseFilePayloads($useFilePayloads);
 
 

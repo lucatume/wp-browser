@@ -57,13 +57,13 @@ class WPDieException extends Exception
         $wpDieCallPos = Arr::searchWithCallback(static function (array $item): bool {
             return $item['function'] === 'wp_die';
         }, $trace);
-        $serializableClosurePos = Arr::searchWithCallback(static function (array $item): bool {
+        $packedClosurePos = Arr::searchWithCallback(static function (array $item): bool {
             return isset($item['file']) && str_starts_with($item['file'], 'closure://');
         }, $trace);
 
         if (is_int($wpDieCallPos)) {
-            if (is_int($serializableClosurePos)) {
-                $trace = array_slice($trace, $wpDieCallPos, $serializableClosurePos - $wpDieCallPos);
+            if (is_int($packedClosurePos)) {
+                $trace = array_slice($trace, $wpDieCallPos, $packedClosurePos - $wpDieCallPos);
             } else {
                 $trace = array_slice($trace, $wpDieCallPos);
             }

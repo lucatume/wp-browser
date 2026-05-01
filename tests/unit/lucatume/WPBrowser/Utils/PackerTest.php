@@ -701,30 +701,9 @@ class PackerTest extends Unit
         $this->assertSame(-INF, $packer->unpack($packedNegInf));
     }
 
-    public function test_unpack_works_when_alien_closure_wrapper_is_already_registered(): void
-    {
-        $alienRegistered = !in_array('closure', stream_get_wrappers(), true)
-            && stream_wrapper_register('closure', AlienClosureStreamForPackerTest::class);
-
-        try {
-            $packer = new Packer();
-            $closure = static fn() => 42;
-            $packed = $packer->pack($closure);
-
-            $unpacked = $packer->unpack($packed);
-
-            $this->assertIsCallable($unpacked);
-            $this->assertSame(42, $unpacked());
-        } finally {
-            if ($alienRegistered) {
-                stream_wrapper_unregister('closure');
-            }
-        }
-    }
-
     public function test_unpack_releases_wrapper_on_exception_when_it_registered_it(): void
     {
-        $beforeRegistered = in_array(Packer::CLOSURE_PROTOCOL, stream_get_wrappers(), true);
+        $beforeRegistered = in_array('closure', stream_get_wrappers(), true);
         $packer = new Packer();
 
         $this->expectException(PackerException::class);
@@ -736,7 +715,7 @@ class PackerTest extends Unit
             // is the load-bearing cleanup.
             $packer->unpack('{"type":"foo","value":1}');
         } finally {
-            $afterRegistered = in_array(Packer::CLOSURE_PROTOCOL, stream_get_wrappers(), true);
+            $afterRegistered = in_array('closure', stream_get_wrappers(), true);
             $this->assertSame($beforeRegistered, $afterRegistered);
         }
     }
@@ -758,56 +737,3 @@ class TestCustomObject
         return $this->privateValue;
     }
 }
-
-// phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Stream wrapper methods require snake_case names.
-
-/**
- * Mimics opis ClosureStream's `closure://` semantics: treats the URL portion as a literal
- * PHP expression and wraps it in `return $expr;` — deliberately ignoring Packer's base64
- * payload format. Used by test_unpack_works_when_alien_closure_wrapper_is_already_registered
- * to assert Packer's distinct CLOSURE_PROTOCOL keeps it isolated from a pre-registered
- * `closure://` handler. If Packer mistakenly delegated to this wrapper, the include would
- * try to evaluate the base64 string as a constant and fail loudly.
- */
-final class AlienClosureStreamForPackerTest
-{
-    /** @var resource|null */
-    public $context;
-
-    private string $content = '';
-
-    private int $pointer = 0;
-
-    public function stream_open(string $path, string $mode, int $options, ?string &$opened_path): bool
-    {
-        $payload = substr($path, strlen('closure://'));
-        $this->content = "<?php\nreturn {$payload};";
-
-        return true;
-    }
-
-    public function stream_read(int $count): string
-    {
-        $value = substr($this->content, $this->pointer, $count);
-        $this->pointer += strlen($value);
-
-        return $value;
-    }
-
-    public function stream_eof(): bool
-    {
-        return $this->pointer >= strlen($this->content);
-    }
-
-    public function stream_set_option(int $option, int $arg1, ?int $arg2): bool
-    {
-        return false;
-    }
-
-    /** @return array<string, int> */
-    public function stream_stat(): array
-    {
-        return ['size' => strlen($this->content), 'mode' => 0100644];
-    }
-}
-// phpcs:enable

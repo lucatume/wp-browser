@@ -5,7 +5,7 @@ namespace lucatume\WPBrowser\Process\Protocol;
 use lucatume\WPBrowser\Process\SerializableThrowable;
 use lucatume\WPBrowser\Process\StderrStream;
 use lucatume\WPBrowser\Utils\Arr;
-use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
+use lucatume\WPBrowser\Utils\PackedClosure;
 use Throwable;
 
 class Response
@@ -83,13 +83,13 @@ class Response
     public function getPayload(): string
     {
         $returnValue = $this->returnValue;
-        $serializableClosure = new SerializableClosure(static function () use ($returnValue) {
+        $packedClosure = new PackedClosure(static function () use ($returnValue) {
             return $returnValue;
         });
         $telemetryData = array_merge($this->telemetry, [
             'memoryPeakUsage' => memory_get_peak_usage()
         ]);
-        return Parser::encode([$serializableClosure, $telemetryData]);
+        return Parser::encode([$packedClosure, $telemetryData]);
     }
 
     public function getExitValue(): int

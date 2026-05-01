@@ -8,10 +8,10 @@ use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Process\Loop;
 use lucatume\WPBrowser\Process\ProcessException;
 use lucatume\WPBrowser\Process\WorkerException;
+use lucatume\WPBrowser\Utils\Packer;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
 use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\InstallationException;
-use lucatume\WPBrowser\Opis\Closure\ReflectionClosure;
 use Throwable;
 
 trait InstalledTrait
@@ -96,9 +96,7 @@ trait InstalledTrait
      */
     public function executeClosureInWordPress(Closure $closure): mixed
     {
-        $reflectionClosure = new ReflectionClosure($closure);
-
-        if (!$reflectionClosure->isStatic()) {
+        if (!Packer::isStaticClosure($closure)) {
             throw new InvalidArgumentException(
                 'The closure passed to executeClosureInWordPress must be static.'
             );

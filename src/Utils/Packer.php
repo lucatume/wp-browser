@@ -15,11 +15,9 @@ use Throwable;
 final class Packer
 {
     private const JS_MAX_SAFE_INTEGER = 9007199254740991;
-    public const CLOSURE_PROTOCOL = 'wpbrowser-closure';
-    private const ARROW_FUNC_PATTERN = '/((static\s+)?fn\s*\([^)]*\)\s*(?::\s*\S+\s*)?=>[^;]+)/s';
-    private const FUNC_PATTERN = '/((static\s+)?function\s*\([^)]*\)\s*(?::\s*\S+\s*)?(?:use\s*\([^)]*\))?\s*\{.*})/s';
-    private const FUNC_START_PATTERN =
-        '/((static\s+)?function\s*\([^)]*\)\s*(?::\s*\S+\s*)?(?:use\s*\([^)]*\))?\s*\{)$/';
+    private const FUNC_PATTERN = '/((static\s+)?function\s*\([^)]*\)\s*(?:use\s*\([^)]*\))?\s*(?::\s*\S+\s*)?\{.*})/s';
+    private const FUNC_HEADER_PATTERN =
+        '/^(static\s+)?function\s*\([^)]*\)\s*(?:use\s*\([^)]*\))?\s*(?::\s*\S+\s*)?\{/';
 
     /**
      * @var array<string, string>
@@ -75,9 +73,9 @@ final class Packer
             throw new PackerException('Invalid packed format: missing or invalid type field');
         }
 
-        $wrapperRegistered = in_array(self::CLOSURE_PROTOCOL, stream_get_wrappers(), true);
+        $wrapperRegistered = in_array('closure', stream_get_wrappers(), true);
         if (!$wrapperRegistered) {
-            stream_wrapper_register(self::CLOSURE_PROTOCOL, ClosureStreamWrapper::class);
+            stream_wrapper_register('closure', ClosureStreamWrapper::class);
         }
 
         try {
@@ -85,7 +83,7 @@ final class Packer
             return $this->unpackValue($data);
         } finally {
             if (!$wrapperRegistered) {
-                stream_wrapper_unregister(self::CLOSURE_PROTOCOL);
+                stream_wrapper_unregister('closure');
             }
         }
     }
@@ -109,7 +107,16 @@ final class Packer
             $this->packReferences[$objHash] = '@ref_' . $this->packRefCounter++;
 
             if ($value instanceof Closure) {
-                if ($this->nullifyClosures) {
+                // Process-level cycle break: if THIS exact closure is already being packed
+                // anywhere up the call stack (e.g. via $closureThis containing a property
+                // that arrays back to this closure), nullify it here to terminate the
+                // recursion. The outermost pack of the closure still produces the full
+                // representation; only the nested re-entries get nullified.
+                if ($this->nullifyClosures || isset(self::$packingClosures[$objHash])) {
+                    // Drop the @ref we just allocated so a later encounter re-nullifies
+                    // instead of returning a reference the unpacker can't resolve (the
+                    // nullified marker carries no @ref entry on the unpack side).
+                    unset($this->packReferences[$objHash]);
                     return [
                         'type' => 'closure',
                         'value' => null,
@@ -117,7 +124,7 @@ final class Packer
                 }
                 return [
                     'type' => 'closure',
-                    'value' => $this->packClosure($value),
+                    'value' => $this->packClosure($value, $objHash),
                 ];
             }
 
@@ -525,6 +532,11 @@ final class Packer
                         break;
                     } catch (ReflectionException) {
                         // Property might be typed and not accept the value; fallback to dynamic property.
+                    } catch (\TypeError) {
+                        // Typed property rejected null/value — original was uninitialized.
+                        // Treat as set so we don't pollute via dynamic property fallback.
+                        $propertySet = true;
+                        break;
                     }
                 }
                 $currentClass = $currentClass->getParentClass();
@@ -561,6 +573,8 @@ final class Packer
             return false;
         }
 
+        // array_is_list() is implemented in C and is PHP 8.1+. Use it when available;
+        // fall back to an inline early-exit foreach on PHP 8.0.
         if (function_exists('array_is_list')) {
             return !array_is_list($arr);
         }
@@ -595,7 +609,79 @@ final class Packer
      * @throws PackerException
      * @throws ReflectionException
      */
-    private function packClosure(Closure $closure): array
+    /**
+     * Extract a single arrow-function expression starting somewhere inside `$code`.
+     *
+     * The naive regex `=>[^;]+` over-captures when an arrow function is inline inside an
+     * outer call like `->addClosure(fn() => ...)` — the `;` terminator belongs to the
+     * outer statement, so the match swallows the trailing `)`. Walk the expression
+     * tracking paren / bracket depth and stop at the first top-level `,`, `)`, `]`, or
+     * `;`. Returns null if no arrow function is found.
+     */
+    private function extractArrowFunction(string $code): ?string
+    {
+        if (!preg_match('/(static\s+)?fn\s*\([^)]*\)\s*(?::\s*\S+\s*)?=>/', $code, $headerMatch, PREG_OFFSET_CAPTURE)) {
+            return null;
+        }
+        $start = $headerMatch[0][1];
+        $headerEnd = $start + strlen($headerMatch[0][0]);
+        $len = strlen($code);
+        $depth = 0;
+        $i = $headerEnd;
+        while ($i < $len) {
+            $ch = $code[$i];
+            if ($ch === '(' || $ch === '[' || $ch === '{') {
+                $depth++;
+            } elseif ($ch === ')' || $ch === ']' || $ch === '}') {
+                if ($depth === 0) {
+                    break;
+                }
+                $depth--;
+            } elseif ($depth === 0 && ($ch === ',' || $ch === ';')) {
+                break;
+            }
+            $i++;
+        }
+        return rtrim(substr($code, $start, $i - $start));
+    }
+
+    /**
+     * @return array{
+     *     code: string,
+     *     static: bool,
+     *     useContext: string|null,
+     *     closureThis: string|null,
+     *     closureCalledClass: string|null,
+     *     closureScopedClass: string|null
+     * }
+     *
+     * @throws PackerException
+     * @throws ReflectionException
+     */
+    private function packClosure(Closure $closure, string $objHash): array
+    {
+        self::$packingClosures[$objHash] = true;
+        try {
+            return $this->doPackClosure($closure);
+        } finally {
+            unset(self::$packingClosures[$objHash]);
+        }
+    }
+
+    /**
+     * @return array{
+     *     code: string,
+     *     static: bool,
+     *     useContext: string|null,
+     *     closureThis: string|null,
+     *     closureCalledClass: string|null,
+     *     closureScopedClass: string|null
+     * }
+     *
+     * @throws PackerException
+     * @throws ReflectionException
+     */
+    private function doPackClosure(Closure $closure): array
     {
         $reflection = new ReflectionFunction($closure);
 
@@ -612,30 +698,21 @@ final class Packer
                 $code = implode('', $lines);
             }
 
-            if (preg_match(self::ARROW_FUNC_PATTERN, $code, $arrowMatches)) {
-                $code = $arrowMatches[1];
+            $arrowExtracted = $this->extractArrowFunction($code);
+            if ($arrowExtracted !== null) {
+                $code = $arrowExtracted;
             } elseif (preg_match(self::FUNC_PATTERN, $code, $matches)) {
                 $code = $matches[1];
 
-                $braceCount = 0;
-                $inClosure = false;
-                $result = '';
-                foreach (str_split($code) as $i => $char) {
-                    if (!$inClosure && $char === '{') {
-                        $precedingCode = substr($code, 0, $i + 1);
-                        if (preg_match(self::FUNC_START_PATTERN, $precedingCode)) {
-                            $inClosure = true;
-                            $braceCount = 1;
-                            preg_match(self::FUNC_START_PATTERN, $precedingCode, $functionStart);
-                            $result = $functionStart[1];
-
-                            continue;
-                        }
-                    }
-
-                    if ($inClosure) {
+                if (preg_match(self::FUNC_HEADER_PATTERN, $code, $headerMatch)) {
+                    $header = $headerMatch[0];
+                    $headerLen = strlen($header);
+                    $codeLen = strlen($code);
+                    $result = $header;
+                    $braceCount = 1;
+                    for ($i = $headerLen; $i < $codeLen; $i++) {
+                        $char = $code[$i];
                         $result .= $char;
-
                         if ($char === '{') {
                             $braceCount++;
                         } elseif ($char === '}') {
@@ -645,9 +722,9 @@ final class Packer
                             }
                         }
                     }
-                }
 
-                $code = $result ?: $code;
+                    $code = $result;
+                }
             }
         } else {
             $code = '';
@@ -711,8 +788,8 @@ final class Packer
         $code = '$packer = new \\' . $packerClass . '();' . PHP_EOL;
 
         if ($value['useContext'] !== null) {
-            $useContext = str_replace('\\', '\\\\', $value['useContext']);
-            $code .= "extract(\$packer->unpack('{$useContext}'));" . PHP_EOL;
+            $useContextLiteral = var_export($value['useContext'], true);
+            $code .= "extract(\$packer->unpack({$useContextLiteral}));" . PHP_EOL;
 
             if (str_contains($value['useContext'], '@closureReference')
                 && preg_match('/@closureReference\((?<closureName>\\w+)\)/', $value['useContext'], $matches) === 1
@@ -724,24 +801,41 @@ final class Packer
 
         $code .= "\$closure = {$closureCode};" . PHP_EOL;
 
-        if ($value['closureThis'] !== null) {
-            $closureThis = str_replace('\\', '\\\\', $value['closureThis']);
-            $code .= "\$closureThis = \$packer->unpack('{$closureThis}');" . PHP_EOL;
+        if ($value['static']) {
+            // Static closures cannot accept a $this binding; rebind to null and preserve scope only.
+            $code .= '$closureThis = null;' . PHP_EOL;
+        } elseif ($value['closureThis'] !== null) {
+            $closureThisLiteral = var_export($value['closureThis'], true);
+            $code .= "\$closureThis = \$packer->unpack({$closureThisLiteral});" . PHP_EOL;
         } else {
             $code .= '$closureThis = null;' . PHP_EOL;
         }
 
-        $code .= 'return \Closure::bind($closure, $closureThis, null);';
+        $scopeArg = $value['closureScopedClass'] !== null
+            ? var_export($value['closureScopedClass'], true)
+            : 'null';
+        $code .= "return \\Closure::bind(\$closure, \$closureThis, {$scopeArg});";
 
         $closurePayload = base64_encode($code);
 
-        $result = include self::CLOSURE_PROTOCOL . "://{$closurePayload}";
+        $result = include "closure://{$closurePayload}";
         if (!$result instanceof Closure) {
             throw new PackerException('Failed to unpack closure');
         }
 
         return $result;
     }
+
+    /**
+     * Process-level set of closure spl_object_hashes currently mid-pack. Spans nested
+     * Packer instances (each closure's bindings are packed by a fresh inner Packer with
+     * its own reference table) so that cyclic graphs — closure A whose $this contains
+     * closure B whose $this references back to A — terminate via nullification rather
+     * than infinite recursion.
+     *
+     * @var array<string, true>
+     */
+    private static array $packingClosures = [];
 
     private static ?stdClass $bindSentinel = null;
 
@@ -754,9 +848,17 @@ final class Packer
      * bug, hence the `@` suppression. ReflectionFunctionAbstract::isStatic() only exists
      * on PHP 8.1+, so this trick is the only branchless option that works on PHP 8.0.
      */
-    private static function isStaticClosure(Closure $closure): bool
+    public static function isStaticClosure(Closure $closure): bool
     {
         self::$bindSentinel ??= new stdClass();
-        return @Closure::bind($closure, self::$bindSentinel) === null;
+        // Closure::bind() emits an E_WARNING for static closures; the `@` suppression is
+        // bypassed by custom error handlers (Codeception/PHPUnit convert E_WARNING to
+        // ErrorException), so install a scoped no-op handler for the bind call.
+        set_error_handler(static fn() => true);
+        try {
+            return Closure::bind($closure, self::$bindSentinel) === null;
+        } finally {
+            restore_error_handler();
+        }
     }
 }

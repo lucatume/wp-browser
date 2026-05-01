@@ -6,7 +6,7 @@ use Codeception\Test\Unit;
 use Codeception\Util\StackTraceFilter;
 use Exception;
 use Generator;
-use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
+use lucatume\WPBrowser\Utils\PackedClosure;
 use RuntimeException;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use Throwable;
@@ -55,7 +55,7 @@ class SerializableThrowableTest extends Unit
 
             self::throwingMethod();
         };
-        $s = serialize(new SerializableClosure($throwing));
+        $s = serialize(new PackedClosure($throwing));
         try {
             unserialize($s)();
         } catch (RuntimeException $t) {
