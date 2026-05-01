@@ -73,19 +73,17 @@ final class Packer
             throw new PackerException('Invalid packed format: missing or invalid type field');
         }
 
-        $wrapperRegistered = in_array('closure', stream_get_wrappers(), true);
-        if (!$wrapperRegistered) {
+        // Register the wrapper for the lifetime of the process. PHPUnit Util\Filter,
+        // MonkeyPatch FileStreamWrapper::url_stat, and exception pretty-printers walk
+        // stack frames and call is_file() / file_exists() on every entry; if a frame's
+        // `file` is `closure://...` and the wrapper is not registered, those probes
+        // emit warnings that error handlers convert to fatal exceptions.
+        if (!in_array('closure', stream_get_wrappers(), true)) {
             stream_wrapper_register('closure', ClosureStreamWrapper::class);
         }
 
-        try {
-            /** @var array{type: string, value: mixed} $data */
-            return $this->unpackValue($data);
-        } finally {
-            if (!$wrapperRegistered) {
-                stream_wrapper_unregister('closure');
-            }
-        }
+        /** @var array{type: string, value: mixed} $data */
+        return $this->unpackValue($data);
     }
 
     /**

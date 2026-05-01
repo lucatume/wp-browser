@@ -701,23 +701,33 @@ class PackerTest extends Unit
         $this->assertSame(-INF, $packer->unpack($packedNegInf));
     }
 
-    public function test_unpack_releases_wrapper_on_exception_when_it_registered_it(): void
+    public function test_unpack_keeps_wrapper_registered_after_call(): void
     {
-        $beforeRegistered = in_array('closure', stream_get_wrappers(), true);
+        // The wrapper must stay registered after unpack(): downstream code (PHPUnit's
+        // Util\Filter::isFiltered, MonkeyPatch FileStreamWrapper::url_stat, exception
+        // pretty-printers) walks stack frames and calls is_file() / file_exists() on
+        // every entry. When a frame's `file` is `closure://...` and the wrapper has
+        // been unregistered, those filesystem probes emit
+        // `is_file(): Unable to find the wrapper "closure"` warnings that worker error
+        // handlers convert to fatal ErrorExceptions.
+        $packer = new Packer();
+        $packer->unpack('{"type":"null","value":null}');
+
+        $this->assertContains('closure', stream_get_wrappers());
+    }
+
+    public function test_unpack_keeps_wrapper_registered_after_exception(): void
+    {
         $packer = new Packer();
 
-        $this->expectException(PackerException::class);
-
         try {
-            // Payload survives the early type-field validation (line 74-76) and reaches
-            // unpackValue(), where the default arm of the type switch throws "Unknown type: foo".
-            // That throw happens inside the try at line 83, so the finally at lines 86-89
-            // is the load-bearing cleanup.
             $packer->unpack('{"type":"foo","value":1}');
-        } finally {
-            $afterRegistered = in_array('closure', stream_get_wrappers(), true);
-            $this->assertSame($beforeRegistered, $afterRegistered);
+            $this->fail('Expected PackerException for unknown type.');
+        } catch (PackerException) {
+            // Expected.
         }
+
+        $this->assertContains('closure', stream_get_wrappers());
     }
 }
 
