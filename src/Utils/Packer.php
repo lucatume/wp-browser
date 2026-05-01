@@ -737,43 +737,59 @@ final class Packer
         $filename = $reflection->getFileName();
         $startLine = $reflection->getStartLine();
         $endLine = $reflection->getEndLine();
+        if ($filename === false || $filename === '' || !is_file($filename) || !is_readable($filename)) {
+            throw new PackerException(
+                'Cannot pack closure: source file is unavailable or unreadable '
+                . '(closures created via eval/runtime code are not supported).'
+            );
+        }
+        if ($startLine === false || $endLine === false || $startLine < 1 || $endLine < $startLine) {
+            throw new PackerException(
+                'Cannot pack closure: invalid source line information from reflection.'
+            );
+        }
 
-        $code = '';
-        if ($filename && $startLine && $endLine) {
-            $source = file($filename);
-            if ($source !== false) {
-                $lines = array_slice($source, $startLine - 1, $endLine - $startLine + 1);
-                $code = implode('', $lines);
-            }
+        $source = file($filename);
+        if ($source === false) {
+            throw new PackerException("Cannot pack closure: failed to read source file {$filename}.");
+        }
 
-            $arrowExtracted = $this->extractArrowFunction($code);
-            if ($arrowExtracted !== null) {
-                $code = $arrowExtracted;
-            } elseif (preg_match(self::FUNC_PATTERN, $code, $matches)) {
-                $code = $matches[1];
+        $lines = array_slice($source, $startLine - 1, $endLine - $startLine + 1);
+        $code = implode('', $lines);
 
-                if (preg_match(self::FUNC_HEADER_PATTERN, $code, $headerMatch)) {
-                    $header = $headerMatch[0];
-                    $headerLen = strlen($header);
-                    $codeLen = strlen($code);
-                    $result = $header;
-                    $braceCount = 1;
-                    for ($i = $headerLen; $i < $codeLen; $i++) {
-                        $char = $code[$i];
-                        $result .= $char;
-                        if ($char === '{') {
-                            $braceCount++;
-                        } elseif ($char === '}') {
-                            $braceCount--;
-                            if ($braceCount === 0) {
-                                break;
-                            }
+        $arrowExtracted = $this->extractArrowFunction($code);
+        if ($arrowExtracted !== null) {
+            $code = $arrowExtracted;
+        } elseif (preg_match(self::FUNC_PATTERN, $code, $matches)) {
+            $code = $matches[1];
+
+            if (preg_match(self::FUNC_HEADER_PATTERN, $code, $headerMatch)) {
+                $header = $headerMatch[0];
+                $headerLen = strlen($header);
+                $codeLen = strlen($code);
+                $result = $header;
+                $braceCount = 1;
+                for ($i = $headerLen; $i < $codeLen; $i++) {
+                    $char = $code[$i];
+                    $result .= $char;
+                    if ($char === '{') {
+                        $braceCount++;
+                    } elseif ($char === '}') {
+                        $braceCount--;
+                        if ($braceCount === 0) {
+                            break;
                         }
                     }
-
-                    $code = $result;
                 }
+
+                $code = $result;
             }
+        }
+
+        if ($code === '') {
+            throw new PackerException(
+                "Cannot pack closure: failed to extract closure source from {$filename}:{$startLine}-{$endLine}."
+            );
         }
 
         $isStatic = self::isStaticClosure($closure);
@@ -798,14 +814,12 @@ final class Packer
         $closureCalledClass = $reflection->getClosureCalledClass();
         $closureScopeClass = $reflection->getClosureScopeClass();
 
-        if ($code !== '' && $filename !== false && $startLine !== false) {
-            $code = self::rewriteClosureBody(
-                $code,
-                $filename,
-                $startLine,
-                $closureScopeClass ? $closureScopeClass->getName() : null
-            );
-        }
+        $code = self::rewriteClosureBody(
+            $code,
+            $filename,
+            $startLine,
+            $closureScopeClass ? $closureScopeClass->getName() : null
+        );
 
         return [
             'code' => $code,

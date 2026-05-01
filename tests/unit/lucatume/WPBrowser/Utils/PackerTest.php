@@ -218,6 +218,18 @@ class PackerTest extends Unit
         $this->assertStringContainsString('return 42', $decoded['value']['code']);
     }
 
+    public function test_pack_throws_clear_exception_for_eval_closure(): void
+    {
+        $packer = new Packer();
+        $closure = eval('return static function (): int { return 42; };');
+
+        $this->assertInstanceOf(\Closure::class, $closure);
+        $this->expectException(PackerException::class);
+        $this->expectExceptionMessage('source file is unavailable or unreadable');
+
+        $packer->pack($closure);
+    }
+
     public function test_packs_closure_with_parameters(): void
     {
         $packer = new Packer();
