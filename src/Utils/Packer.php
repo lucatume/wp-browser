@@ -922,28 +922,51 @@ final class Packer
      */
     private static array $sourceFileImportsCache = [];
 
-    private static ?int $tokenNameQualified = null;
-    private static ?int $tokenNameFullyQualified = null;
-    private static ?int $tokenNameRelative = null;
+    private const SKIP_PREV_FOR_USE_ALIAS = [
+        T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON,
+        T_FUNCTION, T_CONST, T_GOTO, T_AS,
+    ];
 
     /**
-     * PHP 8.0+ guarantees T_NAME_QUALIFIED, T_NAME_FULLY_QUALIFIED and T_NAME_RELATIVE
-     * exist as ints. Resolve through constant() to keep static analysis happy: PHPCS
-     * ships a polyfill that defines those constants as strings if undefined, which
-     * never fires at runtime on supported PHP but confuses PHPStan.
+     * PHPCS ships a polyfill that defines T_NAME_* as strings if undefined; that branch
+     * never fires on PHP 8.0+ at runtime but PHPStan sees both definitions. Resolving
+     * through constant() makes the comparison int === int from PHPStan's perspective.
+     *
+     * @var array{qualified: int, fullyQualified: int, relative: int}|null
      */
-    private static function ensureNameTokenIds(): void
+    private static ?array $nameTokenIds = null;
+
+    /**
+     * @return array{qualified: int, fullyQualified: int, relative: int}
+     */
+    private static function nameTokenIds(): array
     {
-        if (self::$tokenNameQualified !== null) {
-            return;
+        if (self::$nameTokenIds !== null) {
+            return self::$nameTokenIds;
         }
         $resolve = static function (string $name): int {
             $value = constant($name);
             return is_int($value) ? $value : -1;
         };
-        self::$tokenNameQualified = $resolve('T_NAME_QUALIFIED');
-        self::$tokenNameFullyQualified = $resolve('T_NAME_FULLY_QUALIFIED');
-        self::$tokenNameRelative = $resolve('T_NAME_RELATIVE');
+        return self::$nameTokenIds = [
+            'qualified' => $resolve('T_NAME_QUALIFIED'),
+            'fullyQualified' => $resolve('T_NAME_FULLY_QUALIFIED'),
+            'relative' => $resolve('T_NAME_RELATIVE'),
+        ];
+    }
+
+    private static function isTrivia(int $id): bool
+    {
+        return $id === T_WHITESPACE || $id === T_COMMENT || $id === T_DOC_COMMENT;
+    }
+
+    private static function isNamePartToken(int $id): bool
+    {
+        $ids = self::nameTokenIds();
+        return $id === T_STRING
+            || $id === T_NS_SEPARATOR
+            || $id === $ids['qualified']
+            || $id === $ids['fullyQualified'];
     }
 
     /**
@@ -961,7 +984,6 @@ final class Packer
         int $startLine,
         ?string $scopeClassName
     ): string {
-        self::ensureNameTokenIds();
         [$fileNamespace, $useMap] = self::parseSourceFileImports($filename);
 
         $tokens = @token_get_all('<?php ' . $body);
@@ -969,7 +991,6 @@ final class Packer
             return $body;
         }
 
-        // Drop the leading T_OPEN_TAG injected by the '<?php ' prefix.
         array_shift($tokens);
 
         $output = '';
@@ -1015,11 +1036,13 @@ final class Packer
                     continue 2;
             }
 
+            $nameIds = self::nameTokenIds();
+
             if ($id === T_STRING) {
                 $prev = self::prevSignificantToken($tokens, $i);
                 if (isset($useMap[$text])
-                    && !self::isClassNameSkipContext($prev)
-                    && !self::isLikelyFunctionCall($tokens, $i, $prev)
+                    && !in_array($prev, self::SKIP_PREV_FOR_USE_ALIAS, true)
+                    && !($prev !== T_NEW && self::isCallParenAhead($tokens, $i))
                 ) {
                     $output .= '\\' . $useMap[$text];
                     continue;
@@ -1028,7 +1051,7 @@ final class Packer
                 continue;
             }
 
-            if ($id === self::$tokenNameQualified) {
+            if ($id === $nameIds['qualified']) {
                 $parts = explode('\\', $text);
                 $first = $parts[0];
                 if (isset($useMap[$first])) {
@@ -1040,8 +1063,7 @@ final class Packer
                 continue;
             }
 
-            if ($id === self::$tokenNameRelative) {
-                // "namespace\Foo\Bar" → "\<fileNamespace>\Foo\Bar"
+            if ($id === $nameIds['relative']) {
                 $rest = substr($text, strlen('namespace\\'));
                 $output .= '\\' . ($fileNamespace !== '' ? $fileNamespace . '\\' : '') . $rest;
                 continue;
@@ -1063,7 +1085,7 @@ final class Packer
             if (is_string($t)) {
                 return null;
             }
-            if ($t[0] === T_WHITESPACE || $t[0] === T_COMMENT || $t[0] === T_DOC_COMMENT) {
+            if (self::isTrivia($t[0])) {
                 continue;
             }
             return $t[0];
@@ -1071,34 +1093,18 @@ final class Packer
         return null;
     }
 
-    private static function isClassNameSkipContext(?int $prevId): bool
-    {
-        if ($prevId === null) {
-            return false;
-        }
-        return in_array(
-            $prevId,
-            [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON,
-                T_FUNCTION, T_CONST, T_GOTO, T_AS,],
-            true
-        );
-    }
-
     /**
      * @param array<int, array{0: int, 1: string, 2: int}|string> $tokens
      */
-    private static function isLikelyFunctionCall(array $tokens, int $index, ?int $prevId): bool
+    private static function isCallParenAhead(array $tokens, int $index): bool
     {
-        if ($prevId === T_NEW) {
-            return false;
-        }
         $count = count($tokens);
         for ($j = $index + 1; $j < $count; $j++) {
             $t = $tokens[$j];
             if (is_string($t)) {
                 return $t === '(';
             }
-            if ($t[0] === T_WHITESPACE || $t[0] === T_COMMENT || $t[0] === T_DOC_COMMENT) {
+            if (self::isTrivia($t[0])) {
                 continue;
             }
             return false;
@@ -1114,8 +1120,6 @@ final class Packer
         if (isset(self::$sourceFileImportsCache[$filename])) {
             return self::$sourceFileImportsCache[$filename];
         }
-
-        self::ensureNameTokenIds();
 
         $namespace = '';
         $useMap = [];
@@ -1156,6 +1160,10 @@ final class Packer
                 continue;
             }
 
+            if ($id === T_CLASS || $id === T_INTERFACE || $id === T_TRAIT || $id === T_FUNCTION) {
+                break;
+            }
+
             if ($id === T_NAMESPACE && $namespace === '') {
                 $j = $i + 1;
                 $ns = '';
@@ -1167,11 +1175,7 @@ final class Packer
                             $j++;
                             continue;
                         }
-                        if ($tid === T_STRING
-                            || $tid === T_NS_SEPARATOR
-                            || $tid === self::$tokenNameQualified
-                            || $tid === self::$tokenNameFullyQualified
-                        ) {
+                        if (self::isNamePartToken($tid)) {
                             $ns .= $t[1];
                             $j++;
                             continue;
@@ -1236,9 +1240,7 @@ final class Packer
                     break;
                 }
                 if ($t === '{') {
-                    // Grouped use: prefix is $name, parse inner clauses.
-                    $prefix = trim($name, '\\') . '\\';
-                    $j = self::collectGroupedUseAliases($tokens, $j + 1, $prefix, $useMap);
+                    self::collectGroupedUseAliases($tokens, $j + 1, trim($name, '\\') . '\\', $useMap);
                     return;
                 }
                 $j++;
@@ -1246,29 +1248,23 @@ final class Packer
             }
 
             $tid = $t[0];
-            if ($tid === T_WHITESPACE || $tid === T_COMMENT || $tid === T_DOC_COMMENT) {
+            if (self::isTrivia($tid)) {
                 $j++;
                 continue;
             }
 
             if ($tid === T_AS) {
-                $j++;
-                while ($j < $count && is_array($tokens[$j]) && $tokens[$j][0] === T_WHITESPACE) {
-                    $j++;
-                }
-                if ($j < $count && is_array($tokens[$j]) && $tokens[$j][0] === T_STRING) {
-                    $alias = $tokens[$j][1];
-                    $useMap[$alias] = trim($name, '\\');
-                    return;
+                $aliasIndex = self::nextSignificantIndex($tokens, $j + 1);
+                if ($aliasIndex !== null
+                    && is_array($tokens[$aliasIndex])
+                    && $tokens[$aliasIndex][0] === T_STRING
+                ) {
+                    $useMap[$tokens[$aliasIndex][1]] = trim($name, '\\');
                 }
                 return;
             }
 
-            if ($tid === T_STRING
-                || $tid === T_NS_SEPARATOR
-                || $tid === self::$tokenNameQualified
-                || $tid === self::$tokenNameFullyQualified
-            ) {
+            if (self::isNamePartToken($tid)) {
                 $name .= $t[1];
                 $j++;
                 continue;
@@ -1277,12 +1273,7 @@ final class Packer
             $j++;
         }
 
-        $name = trim($name, '\\');
-        if ($name !== '') {
-            $parts = explode('\\', $name);
-            $alias = end($parts);
-            $useMap[$alias] = $name;
-        }
+        self::registerSimpleUseAlias($name, '', $useMap);
     }
 
     /**
@@ -1300,13 +1291,8 @@ final class Packer
 
             if (is_string($t)) {
                 if ($t === '}' || $t === ',') {
-                    if ($name !== '') {
-                        $fqcn = $prefix . trim($name, '\\');
-                        $parts = explode('\\', $fqcn);
-                        $alias = end($parts);
-                        $useMap[$alias] = $fqcn;
-                        $name = '';
-                    }
+                    self::registerSimpleUseAlias($name, $prefix, $useMap);
+                    $name = '';
                     if ($t === '}') {
                         return $j;
                     }
@@ -1318,30 +1304,27 @@ final class Packer
             }
 
             $tid = $t[0];
-            if ($tid === T_WHITESPACE || $tid === T_COMMENT || $tid === T_DOC_COMMENT) {
+            if (self::isTrivia($tid)) {
                 $j++;
                 continue;
             }
 
             if ($tid === T_AS) {
-                $j++;
-                while ($j < $count && is_array($tokens[$j]) && $tokens[$j][0] === T_WHITESPACE) {
+                $aliasIndex = self::nextSignificantIndex($tokens, $j + 1);
+                if ($aliasIndex !== null
+                    && is_array($tokens[$aliasIndex])
+                    && $tokens[$aliasIndex][0] === T_STRING
+                ) {
+                    $useMap[$tokens[$aliasIndex][1]] = $prefix . trim($name, '\\');
+                    $j = $aliasIndex + 1;
+                } else {
                     $j++;
                 }
-                if ($j < $count && is_array($tokens[$j]) && $tokens[$j][0] === T_STRING) {
-                    $alias = $tokens[$j][1];
-                    $useMap[$alias] = $prefix . trim($name, '\\');
-                    $name = '';
-                    $j++;
-                }
+                $name = '';
                 continue;
             }
 
-            if ($tid === T_STRING
-                || $tid === T_NS_SEPARATOR
-                || $tid === self::$tokenNameQualified
-                || $tid === self::$tokenNameFullyQualified
-            ) {
+            if (self::isNamePartToken($tid)) {
                 $name .= $t[1];
                 $j++;
                 continue;
@@ -1351,5 +1334,35 @@ final class Packer
         }
 
         return $j;
+    }
+
+    /**
+     * @param array<string, string> $useMap
+     */
+    private static function registerSimpleUseAlias(string $name, string $prefix, array &$useMap): void
+    {
+        $name = trim($name, '\\');
+        if ($name === '') {
+            return;
+        }
+        $fqcn = $prefix . $name;
+        $parts = explode('\\', $fqcn);
+        $alias = end($parts);
+        $useMap[$alias] = $fqcn;
+    }
+
+    /**
+     * @param array<int, array{0: int, 1: string, 2: int}|string> $tokens
+     */
+    private static function nextSignificantIndex(array $tokens, int $start): ?int
+    {
+        $count = count($tokens);
+        for ($j = $start; $j < $count; $j++) {
+            $t = $tokens[$j];
+            if (is_string($t) || !self::isTrivia($t[0])) {
+                return $j;
+            }
+        }
+        return null;
     }
 }
