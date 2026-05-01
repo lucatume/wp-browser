@@ -290,6 +290,9 @@ final class Packer
 
             while ($currentClass !== false) {
                 foreach ($currentClass->getProperties() as $prop) {
+                    if ($prop->isStatic()) {
+                        continue;
+                    }
                     $propName = $prop->getName();
                     if (!isset($allProperties[$propName])) {
                         $prop->setAccessible(true);
@@ -335,6 +338,9 @@ final class Packer
         $reflection = new ReflectionClass($value);
 
         foreach ($reflection->getProperties() as $prop) {
+            if ($prop->isStatic()) {
+                continue;
+            }
             $prop->setAccessible(true);
             $propName = $prop->getName();
 
@@ -520,6 +526,10 @@ final class Packer
                 if ($currentClass->hasProperty($key)) {
                     try {
                         $prop = $currentClass->getProperty($key);
+                        if ($prop->isStatic()) {
+                            $propertySet = true;
+                            break;
+                        }
                         $prop->setAccessible(true);
                         if ($this->isPackedValue($propValue)) {
                             $prop->setValue($instance, $this->unpackValue($propValue));

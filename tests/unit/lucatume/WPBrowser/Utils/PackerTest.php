@@ -923,6 +923,64 @@ class PackerTest extends Unit
 
         $this->assertSame('literal __DIR__ stays', $unpacked());
     }
+
+    public function test_object_pack_skips_static_properties(): void
+    {
+        $heavy = new stdClass();
+        $heavy->big = str_repeat('x', 1024);
+        PackerStaticPropertyHost::$sharedRegistry = ['heavy' => $heavy];
+        PackerStaticPropertyHost::$globalCounter = 99;
+
+        try {
+            $host = new PackerStaticPropertyHost();
+            $packer = new Packer();
+
+            $packed = $packer->pack($host);
+
+            $decoded = json_decode($packed, true);
+            $this->assertSame('object', $decoded['type']);
+            $this->assertArrayNotHasKey('sharedRegistry', $decoded['value']);
+            $this->assertArrayNotHasKey('globalCounter', $decoded['value']);
+            $this->assertSame('host', $decoded['value']['instanceName']['value']);
+            $this->assertSame(7, $decoded['value']['instanceValue']['value']);
+        } finally {
+            PackerStaticPropertyHost::$sharedRegistry = [];
+            PackerStaticPropertyHost::$globalCounter = 0;
+        }
+    }
+
+    public function test_unpacking_object_does_not_overwrite_static_properties(): void
+    {
+        $live = new stdClass();
+        PackerStaticPropertyHost::$sharedRegistry = ['live' => $live];
+        PackerStaticPropertyHost::$globalCounter = 42;
+
+        try {
+            $packed = json_encode([
+                'type' => 'object',
+                'value' => [
+                    '@class' => PackerStaticPropertyHost::class,
+                    '@ref' => '@ref_0',
+                    'sharedRegistry' => ['type' => 'array', 'value' => []],
+                    'globalCounter' => ['type' => 'integer', 'value' => 0],
+                    'instanceName' => ['type' => 'string', 'value' => 'unpacked'],
+                    'instanceValue' => ['type' => 'integer', 'value' => 11],
+                ],
+            ]);
+
+            $packer = new Packer();
+            $unpacked = $packer->unpack($packed);
+
+            $this->assertInstanceOf(PackerStaticPropertyHost::class, $unpacked);
+            $this->assertSame('unpacked', $unpacked->instanceName);
+            $this->assertSame(11, $unpacked->instanceValue);
+            $this->assertSame(['live' => $live], PackerStaticPropertyHost::$sharedRegistry);
+            $this->assertSame(42, PackerStaticPropertyHost::$globalCounter);
+        } finally {
+            PackerStaticPropertyHost::$sharedRegistry = [];
+            PackerStaticPropertyHost::$globalCounter = 0;
+        }
+    }
 }
 
 class TestCustomObject
@@ -940,5 +998,16 @@ class TestCustomObject
     {
         return $this->privateValue;
     }
+}
+
+class PackerStaticPropertyHost
+{
+    /**
+     * @var array<string,object>
+     */
+    public static array $sharedRegistry = [];
+    public static int $globalCounter = 0;
+    public string $instanceName = 'host';
+    public int $instanceValue = 7;
 }
 
