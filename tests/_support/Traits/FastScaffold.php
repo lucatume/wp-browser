@@ -24,6 +24,15 @@ trait FastScaffold
 {
     protected function fastScaffold(string $wpRoot, string $version = 'latest'): Installation
     {
+        if ($version === 'latest') {
+            // Stopgap (#804): honor the WORDPRESS_VERSION pin used by CI so tests that scaffold
+            // `latest` avoid WordPress releases that break the installer (e.g. 7.0's multisite install).
+            $pinned = getenv('WORDPRESS_VERSION');
+            if (is_string($pinned) && $pinned !== '' && $pinned !== 'latest') {
+                $version = $pinned;
+            }
+        }
+
         if (!FS::cowCopy(Source::getForVersion($version), $wpRoot)) {
             throw new RuntimeException(sprintf('FastScaffold: could not clone WordPress source into "%s"', $wpRoot));
         }
