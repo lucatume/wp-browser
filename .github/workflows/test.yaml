@@ -31,6 +31,12 @@ concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
   cancel-in-progress: true
 
+env:
+  # Pin the WordPress version used to set up the test site. WordPress 7.0's admin
+  # bootstrap fatals (uksort on a null $menu) during wp-browser's install, so the
+  # suite is pinned to the last 6.8.x stable. Remove once the installer supports 7.0.
+  WORDPRESS_VERSION: '6.8.5'
+
 jobs:
   test_on_84:
     strategy:

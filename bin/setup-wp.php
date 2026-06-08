@@ -42,8 +42,9 @@ $installation = new Installation($wpRootDir);
 
 echo "Checking WordPress installation in $wpRootDir ...\n";
 if ($installation->getState() instanceof EmptyDir) {
-    echo "Scaffolding WordPress in $wpRootDir ...\n";
-    $installation = Installation::scaffold($wpRootDir);
+    $wpVersion = getenv('WORDPRESS_VERSION') ?: 'latest';
+    echo "Scaffolding WordPress ($wpVersion) in $wpRootDir ...\n";
+    $installation = Installation::scaffold($wpRootDir, $wpVersion);
 }
 
 echo "Creating database {$env['WORDPRESS_DB_NAME']} ...\n";
