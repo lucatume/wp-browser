@@ -375,6 +375,60 @@ class SqliteDatabaseTest extends \Codeception\Test\Unit
     }
 
     /**
+     * It should round-trip fuzzed values through export, import and export again
+     *
+     * @test
+     * @group fast
+     */
+    public function should_round_trip_fuzzed_values_through_export_import_export(): void
+    {
+        // Fixed seed so any failure reproduces identically. NUL bytes are excluded on purpose:
+        // the ext-sqlite3 reader truncates TEXT at NUL, which is a separate, known limitation.
+        mt_srand(0x5EED);
+        $dir = FS::tmpDir('sqlite_fuzz_');
+
+        for ($iteration = 0; $iteration < 100; $iteration++) {
+            $values = [];
+            for ($id = 1, $count = mt_rand(1, 15); $id <= $count; $id++) {
+                $values[$id] = $this->fuzzValue();
+            }
+
+            $srcDb = new SQLiteDatabase($dir, "src_$iteration.sqlite");
+            $srcDb->query('CREATE TABLE fuzz (id INTEGER PRIMARY KEY, val TEXT NOT NULL)');
+            foreach ($values as $id => $value) {
+                $srcDb->query('INSERT INTO fuzz (id, val) VALUES (:id, :val)', [':id' => $id, ':val' => $value]);
+            }
+
+            $dumpA = "$dir/dump_a_$iteration.sql";
+            $srcDb->dump($dumpA);
+
+            $dstDb = new SQLiteDatabase($dir, "dst_$iteration.sqlite");
+            $dstDb->import($dumpA);
+
+            $dumpB = "$dir/dump_b_$iteration.sql";
+            $dstDb->dump($dumpB);
+
+            // Export/import/export is stable: re-dumping the imported database yields the same SQL.
+            $this->assertSame(
+                file_get_contents($dumpA),
+                file_get_contents($dumpB),
+                "Dump is not idempotent across export/import/export at iteration $iteration."
+            );
+
+            // The data itself survived the round-trip byte-for-byte.
+            $readBack = (new \PDO($dstDb->getDsn()))
+                ->query('SELECT val FROM fuzz ORDER BY id')
+                ->fetchAll(\PDO::FETCH_COLUMN);
+
+            $this->assertSame(
+                array_values($values),
+                $readBack,
+                "Imported values do not match the originals at iteration $iteration."
+            );
+        }
+    }
+
+    /**
      * It should throw if database dump file cannot be written
      *
      * @test
@@ -426,5 +480,70 @@ class SqliteDatabaseTest extends \Codeception\Test\Unit
         $db->updateOption('test', $optionValue);
 
         $this->assertEquals($expectedOptionValue, $db->getOption('test'));
+    }
+
+    private function fuzzValue(): string
+    {
+        switch (mt_rand(0, 8)) {
+            case 0: // Printable ASCII.
+                return $this->randomBytes(mt_rand(0, 80), 0x20, 0x7e);
+            case 1: // Quote and backslash heavy.
+                $parts = ["'", '"', '\\', "''", "\\'", '`', '%', '_'];
+                $value = '';
+                for ($i = 0, $n = mt_rand(1, 30); $i < $n; $i++) {
+                    $value .= $parts[mt_rand(0, count($parts) - 1)] . $this->randomBytes(mt_rand(0, 4), 0x61, 0x7a);
+                }
+                return $value;
+            case 2: // More newlines than the SQLite expression-depth limit.
+                $value = '';
+                for ($i = 0, $n = mt_rand(1, 1500); $i < $n; $i++) {
+                    $value .= 'l' . mt_rand(0, 9) . "\n";
+                }
+                return $value;
+            case 3: // CR / LF / tab mix.
+                $whitespace = ["\n", "\r", "\r\n", "\t", ' '];
+                $value = '';
+                for ($i = 0, $n = mt_rand(1, 200); $i < $n; $i++) {
+                    $value .= $whitespace[mt_rand(0, count($whitespace) - 1)] . $this->randomBytes(mt_rand(0, 3), 0x61, 0x7a);
+                }
+                return $value;
+            case 4: // Control characters, no NUL.
+                return $this->randomBytes(mt_rand(0, 64), 0x01, 0x1f);
+            case 5: // Multibyte UTF-8.
+                $pool = ['é', 'ñ', 'ü', '中', '文', 'Ω', 'λ', '—', '„', '🎉', '😀', 'ζ'];
+                $value = '';
+                for ($i = 0, $n = mt_rand(0, 40); $i < $n; $i++) {
+                    $value .= $pool[mt_rand(0, count($pool) - 1)];
+                }
+                return $value;
+            case 6: // Arbitrary binary, no NUL; usually invalid UTF-8.
+                return $this->randomBytes(mt_rand(0, 96), 0x01, 0xff);
+            case 7: // SQL tokens and the encoder's own markers.
+                $pool = [
+                    "' || char(10) || '",
+                    "CAST(X'6162' AS TEXT)",
+                    "'); DROP TABLE fuzz; --",
+                    ";\nSELECT 1;",
+                    "PRAGMA foreign_keys = OFF;",
+                    'a:1:{s:3:"key";s:5:"value";}',
+                    'N;',
+                ];
+                $value = '';
+                for ($i = 0, $n = mt_rand(1, 6); $i < $n; $i++) {
+                    $value .= $pool[mt_rand(0, count($pool) - 1)];
+                }
+                return $value;
+            default: // Empty or whitespace.
+                return mt_rand(0, 1) === 0 ? '' : str_repeat(" \t", mt_rand(0, 12));
+        }
+    }
+
+    private function randomBytes(int $length, int $min, int $max): string
+    {
+        $bytes = '';
+        for ($i = 0; $i < $length; $i++) {
+            $bytes .= chr(mt_rand($min, $max));
+        }
+        return $bytes;
     }
 }
