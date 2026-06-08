@@ -33,9 +33,10 @@ concurrency:
 
 env:
   # Pin the WordPress version used to set up the test site. WordPress 7.0's admin
-  # bootstrap fatals (uksort on a null $menu) during wp-browser's install, so the
-  # suite is pinned to the last 6.8.x stable. See #804; remove once the installer supports 7.0.
-  WORDPRESS_VERSION: '6.8.5'
+  # bootstrap fatals (uksort on a null $menu) during wp-browser's install, and the
+  # current WooCommerce test plugin requires WP >= 6.9, so the suite is pinned to the
+  # latest 6.9.x. See #804; remove once the installer supports 7.0.
+  WORDPRESS_VERSION: '6.9.4'
 
 jobs:
   test_on_84:
