@@ -13,6 +13,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - Drop the bundled `includes/opis/closure/` library and its `lucatume\WPBrowser\Opis\Closure\` PSR-4 autoload entry.
 
+### Fixed
+
+- `wp:db:export` from a SQLite installation no longer produces a non-importable dump: values are hex-encoded instead of a `char(10)` concatenation chain that overflowed SQLite's expression-depth limit on values with many newlines (#802).
+
 ### Breaking change
 
 - The `lucatume\WPBrowser\Opis\Closure\*` namespace is no longer autoloaded. None of its classes were part of the documented public API but the namespace was reachable via PSR-4; any consumer that imported or extended them must migrate to `lucatume\WPBrowser\Utils\PackedClosure`.
