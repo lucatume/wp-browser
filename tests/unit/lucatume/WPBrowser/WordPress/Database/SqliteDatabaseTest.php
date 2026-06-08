@@ -348,6 +348,33 @@ class SqliteDatabaseTest extends \Codeception\Test\Unit
     }
 
     /**
+     * It should export values with more newlines than the SQLite expression depth limit
+     *
+     * @test
+     * @group fast
+     */
+    public function should_export_values_with_many_newlines_into_an_importable_dump(): void
+    {
+        $dump = codecept_data_dir('dump.sqlite');
+        $dir = FS::tmpDir('sqlite_');
+        $db = new SQLiteDatabase($dir, 'db.sqlite');
+        $db->import($dump);
+
+        // SQLite caps expression-tree depth at 1000; a value with more newlines than that
+        // would overflow a `'...' || char(10) || '...'` concatenation chain on import.
+        $manyLines = str_repeat("line\n", 2000);
+        $db->updateOption('big_multiline', $manyLines);
+
+        $dumpFile = tempnam(sys_get_temp_dir(), 'sqlite_');
+        $db->dump($dumpFile);
+
+        $checkDb = new SQLiteDatabase($dir, 'checkdb.sqlite');
+        $checkDb->import($dumpFile);
+
+        $this->assertEquals($manyLines, $checkDb->getOption('big_multiline'));
+    }
+
+    /**
      * It should throw if database dump file cannot be written
      *
      * @test

@@ -300,10 +300,11 @@ class SQLiteDatabase implements DatabaseInterface
             $sql .= implode(",", $fieldNames) . ") VALUES";
 
             do {
-                foreach ($row as $k => $v) {
-                    $row[$k] = "'" . str_replace("\n", "' || char(10) || '", SQLite3::escapeString($v)) . "'";
+                $values = [];
+                foreach ($row as $v) {
+                    $values[] = $this->quoteValue((string)$v);
                 }
-                $sql .= "\n(" . implode(",", $row) . "),";
+                $sql .= "\n(" . implode(",", $values) . "),";
             } while ($row = $rows->fetchArray(SQLITE3_ASSOC));
 
             $sql = rtrim($sql, ",") . ";\n\n";
@@ -314,6 +315,20 @@ class SQLiteDatabase implements DatabaseInterface
         if (file_put_contents($dumpFilePath, $sql) === false) {
             throw new DbException("Could not write dump file $dumpFilePath.", DbException::FAILED_DUMP);
         }
+    }
+
+    private function quoteValue(string $value): string
+    {
+        // Inlining a value with newlines used to require a `'...' || char(10) || '...'` chain, one
+        // `||` per newline; a value with more than ~1000 newlines overflows SQLite's expression
+        // depth limit and the resulting INSERT cannot be parsed on import. Hex-encoding control
+        // characters (and non-UTF-8 bytes) keeps each value on a single line as one shallow
+        // expression; the CAST keeps TEXT storage affinity so comparisons against text still work.
+        if (preg_match('/[\x00-\x08\x0A-\x1F\x7F]/', $value) === 1 || preg_match('//u', $value) === false) {
+            return "CAST(X'" . bin2hex($value) . "' AS TEXT)";
+        }
+
+        return "'" . SQLite3::escapeString($value) . "'";
     }
 
     public function setEnvVars(): void
