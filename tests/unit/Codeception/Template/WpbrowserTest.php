@@ -21,27 +21,9 @@ use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 class WpbrowserTest extends \Codeception\Test\Unit
 {
     use TmpFilesCleanup;
-    use SnapshotAssertions {
-        assertMatchesDirectorySnapshot as private baseAssertMatchesDirectorySnapshot;
-    }
+    use SnapshotAssertions;
     use PhaseTimer;
     use FastScaffold;
-
-    /**
-     * Overrides the trait assertion to normalize the YAML rendering of empty inline maps:
-     * symfony/yaml 6/7 dump an empty map as `{  }`, symfony/yaml 8 (PHP 8.4+) dumps it as `{}`.
-     * Normalizing both sides keeps the scaffold directory snapshots stable across versions.
-     */
-    public function assertMatchesDirectorySnapshot(string $current, ?callable $dataVisitor = null): void
-    {
-        $this->baseAssertMatchesDirectorySnapshot(
-            $current,
-            $dataVisitor ?? static function (string $data, string $expected): array {
-                $normalize = static fn(string $yaml): string => (string)preg_replace('/\{ +\}/', '{}', $yaml);
-                return [$normalize($data), $normalize($expected)];
-            }
-        );
-    }
 
     private function mockComposerBin(string $directory): void
     {
@@ -62,6 +44,15 @@ EOT;
 
     private function replaceRandomPorts(array $expected, array $actual, string $file): array
     {
+        // symfony/yaml 6/7 dump an empty inline map as `{  }`, symfony/yaml 8 (PHP 8.4+) as `{}`;
+        // normalize both so the scaffolded codeception.yml snapshots match across versions.
+        $normalizeEmptyMaps = static fn(array $lines): array => array_map(
+            static fn(string $line): string => (string)preg_replace('/\{ +\}/', '{}', $line),
+            $lines
+        );
+        $expected = $normalizeEmptyMaps($expected);
+        $actual = $normalizeEmptyMaps($actual);
+
         if (!str_ends_with($file, 'tests/.env')) {
             return [$expected, $actual];
         }
