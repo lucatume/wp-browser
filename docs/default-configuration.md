@@ -63,6 +63,77 @@ exporting the database dump using [the `wp:db:export` command](commands.md#wpdbe
 You can find out about the URL of the site served by the PHP built-in web server by
 running [the `dev:info` command](commands.md#devinfo).
 
+## Version control and continuous integration
+
+The `tests/_wordpress` directory is a full WordPress installation: do not commit it, add it to your
+`.gitignore`. Commit instead the files that describe the environment so it can be rebuilt anywhere:
+
+```
+# .gitignore
+/vendor/
+/tests/_wordpress/
+/tests/_output/
+```
+
+Commit `codeception.yml`, the `tests/*.suite.yml` files, `tests/.env` and the database
+fixture `tests/Support/Data/dump.sql` together with your plugin or theme code and tests.
+
+On a fresh clone, or on a CI runner, rebuild the `tests/_wordpress` installation with a single command:
+
+```bash
+vendor/bin/codecept dev:rebuild
+```
+
+The command downloads WordPress, configures it to use SQLite and installs it in `tests/_wordpress`,
+reproducing what `vendor/bin/codecept init wpbrowser` set up the first time. The database state used by
+the tests comes from the `dump.sql` fixture loaded by [the WPDb module](modules/WPDb.md#configuration), so
+`dev:rebuild` does not touch it.
+
+`init` records the WordPress version it installed in the `WORDPRESS_VERSION` entry of `tests/.env`, and
+`dev:rebuild` reuses it so the rebuilt installation matches the version your `dump.sql` was generated from.
+Commit `tests/.env` to keep the rebuild deterministic; override the version per run with
+`vendor/bin/codecept dev:rebuild --wp-version=6.8.1`.
+
+> If your project was set up before this command existed, add
+> `lucatume\WPBrowser\Command\DevRebuild` to the `extensions.commands` list in your `codeception.yml`.
+
+### Example GitHub Action
+
+This workflow runs the default self-contained configuration on GitHub Actions. The Ubuntu runners ship with
+Chrome already installed, so the only setup steps are installing Composer dependencies, rebuilding the
+WordPress installation and installing the matching Chromedriver:
+
+```yaml
+name: Tests
+on: [push, pull_request]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: sqlite3, pdo_sqlite
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Build the WordPress installation
+        run: vendor/bin/codecept dev:rebuild
+
+      - name: Install Chromedriver
+        run: vendor/bin/codecept chromedriver:update --binary "$(which google-chrome)"
+
+      - name: Run tests
+        run: vendor/bin/codecept run
+```
+
+The PHP built-in server and Chromedriver are started automatically when the end-to-end suite runs; you do
+not need a separate `dev:start` step.
+
 ## When not to use the default configuration
 
 The default configuration is the recommended one for most projects, but some projects might require you to use a custom

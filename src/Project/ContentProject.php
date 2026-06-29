@@ -6,6 +6,7 @@ use Closure;
 use Codeception\InitTemplate;
 use lucatume\WPBrowser\Command\ChromedriverUpdate;
 use lucatume\WPBrowser\Command\DevInfo;
+use lucatume\WPBrowser\Command\DevRebuild;
 use lucatume\WPBrowser\Command\DevRestart;
 use lucatume\WPBrowser\Command\DevStart;
 use lucatume\WPBrowser\Command\DevStop;
@@ -17,7 +18,6 @@ use lucatume\WPBrowser\Utils\ChromedriverInstaller;
 use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
-use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\Source;
 use Throwable;
@@ -58,27 +58,17 @@ abstract class ContentProject extends InitTemplate implements ProjectInterface
         $wpRootDir = $this->workDir . '/tests/_wordpress';
         $dataDir = $this->workDir . '/tests/_wordpress/data';
         $dataDirRelativePath = Codeception::dataDir();
-
-        if (!is_dir($dataDir) && !(mkdir($dataDir, 0777, true) && is_dir($dataDir))) {
-            throw new RuntimeException("Could not create WordPress data directory $dataDir.");
-        }
-
-        $db = new SQLiteDatabase('tests/_wordpress/data', 'db.sqlite');
+        $serverLocalhostPort = Random::openLocalhostPort();
 
         $this->sayInfo('Installing WordPress in tests/_wordpress ...');
-        Installation::scaffold($wpRootDir);
-        // Remove the directory used to store the WordPress installation.
-        FS::rrmdir(Source::getWordPressVersionsCacheDir());
-        $installation = new Installation($wpRootDir);
-        $installation->configure($db);
-        $serverLocalhostPort = Random::openLocalhostPort();
-        $installation->install(
+        $installation = Installation::scaffoldWithSqlite(
+            $wpRootDir,
+            $dataDir,
             "http://localhost:$serverLocalhostPort",
-            'admin',
-            'password',
-            'admin@exmaple.com',
             $this->getName() . ' Test'
         );
+        // Remove the directory used to download the WordPress installation.
+        FS::rrmdir(Source::getWordPressVersionsCacheDir());
 
         $this->symlinkProjectInContentDir($wpRootDir);
 
@@ -90,6 +80,10 @@ abstract class ContentProject extends InitTemplate implements ProjectInterface
             throw new RuntimeException('Could not create temporary file to store database dump.');
         }
 
+        $db = $installation->getDb();
+        if ($db === null) {
+            throw new RuntimeException('The WordPress installation has no database after install.');
+        }
         $db->dump($tmpDumpFile);
         FS::mkdirp($this->workDir . '/' . $dataDirRelativePath);
         if (!rename($tmpDumpFile, $this->workDir . '/' . $dataDirRelativePath . '/dump.sql')) {
@@ -114,6 +108,12 @@ abstract class ContentProject extends InitTemplate implements ProjectInterface
 BUILTIN_SERVER_PORT=$serverLocalhostPort
 
 EOT;
+
+        $wpVersion = $installation->getVersion()?->getWpVersion();
+        if ($wpVersion) {
+            $this->testEnvironment->extraEnvFileContents .= "# The WordPress version installed by `init`, "
+                . "reused by the `dev:rebuild` command.\nWORDPRESS_VERSION=$wpVersion\n\n";
+        }
 
         $symlinkerConfig = [ 'wpRootFolder' => '%WORDPRESS_ROOT_DIR%' ];
 
@@ -144,6 +144,7 @@ EOT;
         $this->testEnvironment->customCommands[] = DevStop::class;
         $this->testEnvironment->customCommands[] = DevInfo::class;
         $this->testEnvironment->customCommands[] = DevRestart::class;
+        $this->testEnvironment->customCommands[] = DevRebuild::class;
         $this->testEnvironment->customCommands[] = ChromedriverUpdate::class;
         $this->testEnvironment->wpRootDir = FS::relativePath($this->workDir, $wpRootDir);
         $this->testEnvironment->dbUrl = 'sqlite://' . implode(

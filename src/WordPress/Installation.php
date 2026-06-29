@@ -70,6 +70,38 @@ class Installation
     }
 
     /**
+     * Scaffolds, configures with SQLite and installs WordPress: the installation produced by the
+     * default configuration. The returned installation exposes the database via getDb().
+     *
+     * Pass a concrete $version (e.g. "6.8.1") to reproduce a specific WordPress version; "latest"
+     * downloads the most recent release.
+     *
+     * @throws Throwable
+     */
+    public static function scaffoldWithSqlite(
+        string $wpRootDir,
+        string $dataDir,
+        string $url,
+        string $title,
+        string $version = 'latest'
+    ): self {
+        if (!is_dir($dataDir) && !(mkdir($dataDir, 0777, true) && is_dir($dataDir))) {
+            throw new InstallationException(
+                "Could not create the database directory $dataDir.",
+                InstallationException::WRITE_ERROR
+            );
+        }
+
+        $db = new SQLiteDatabase($dataDir, 'db.sqlite');
+        self::scaffold($wpRootDir, $version);
+        $installation = new self($wpRootDir);
+        $installation->configure($db);
+        $installation->install($url, 'admin', 'password', 'admin@example.com', $title);
+
+        return $installation;
+    }
+
+    /**
      * @return array<string>
      */
     public static function getCleanScaffoldedInstallations(): array

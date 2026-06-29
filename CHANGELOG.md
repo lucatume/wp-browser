@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- `dev:rebuild` command to build the `tests/_wordpress` installation used by the default configuration, e.g. on a fresh clone or in CI where it is not committed. Documented the default self-contained setup on GitHub Actions, with an example workflow (#807).
+- `init wpbrowser` records the installed WordPress version in the `WORDPRESS_VERSION` entry of `tests/.env`; `dev:rebuild` reuses it (override with `--wp-version`) so a rebuilt installation matches the version the committed `dump.sql` was generated from (#807).
+
+### Fixed
+
+- `init wpbrowser` set up the default-configuration admin user with the email `admin@exmaple.com`; it now uses `admin@example.com` (#807).
+
 ## [4.6.1] 2026-06-16;
 
 ### Fixed
