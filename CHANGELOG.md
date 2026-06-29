@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - `init wpbrowser` set up the default-configuration admin user with the email `admin@exmaple.com`; it now uses `admin@example.com` (#807).
+- MySQL server binary download no longer fails with HTTP 403: `dev.mysql.com`'s CDN started blocking the custom user agent, so the downloader now sends a `curl/<version>` user agent that is allowed through (#808).
 
 ## [4.6.1] 2026-06-16;
 
