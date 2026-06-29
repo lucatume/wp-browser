@@ -267,8 +267,8 @@ TEST_TABLE_PREFIX=test_
 WORDPRESS_TABLE_PREFIX=wp_
 
 # The URL and domain of the WordPress site used in end-to-end tests.
-WORDPRESS_URL=http://localhost:27090
-WORDPRESS_DOMAIN=localhost:27090
+WORDPRESS_URL=http://localhost:31090
+WORDPRESS_DOMAIN=localhost:31090
 WORDPRESS_ADMIN_PATH=/wp-admin
 
 # The username and password of the administrator user of the WordPress site used in end-to-end tests.
@@ -277,10 +277,13 @@ WORDPRESS_ADMIN_PASSWORD=password
 
 # The host and port of the ChromeDriver server that will be used in end-to-end tests.
 CHROMEDRIVER_HOST=localhost
-CHROMEDRIVER_PORT=55678
+CHROMEDRIVER_PORT=16932
 
 # The port on which the PHP built-in server will serve the WordPress installation.
-BUILTIN_SERVER_PORT=27090
+BUILTIN_SERVER_PORT=31090
+# The WordPress version installed by `init`, reused by the `dev:rebuild` command.
+WORDPRESS_VERSION=7.0
+
 
 <<< /tests/.env <<<
 
@@ -336,6 +339,7 @@ extensions:
         - lucatume\WPBrowser\Command\DevStop
         - lucatume\WPBrowser\Command\DevInfo
         - lucatume\WPBrowser\Command\DevRestart
+        - lucatume\WPBrowser\Command\DevRebuild
         - lucatume\WPBrowser\Command\ChromedriverUpdate
 
 <<< /codeception.yml <<<
