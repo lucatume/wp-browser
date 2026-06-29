@@ -65,18 +65,19 @@ running [the `dev:info` command](commands.md#devinfo).
 
 ## Version control and continuous integration
 
-The `tests/_wordpress` directory is a full WordPress installation: do not commit it, add it to your
-`.gitignore`. Commit instead the files that describe the environment so it can be rebuilt anywhere:
+The `tests/_wordpress` directory is a full WordPress installation: do not commit it. `init wpbrowser`
+writes a `tests/_wordpress/.gitignore` that ignores its contents, so it is never committed and is restored
+with `dev:rebuild`. Ignore the rest of the rebuildable directories in your project `.gitignore` as usual
+(Codeception already ignores `tests/_output`):
 
 ```
 # .gitignore
 /vendor/
-/tests/_wordpress/
-/tests/_output/
 ```
 
-Commit `codeception.yml`, the `tests/*.suite.yml` files, `tests/.env` and the database
-fixture `tests/Support/Data/dump.sql` together with your plugin or theme code and tests.
+Commit the files that describe the environment: `codeception.yml`, the `tests/*.suite.yml` files,
+`tests/.env` and the database fixture `tests/Support/Data/dump.sql`, together with your plugin or theme
+code and tests.
 
 On a fresh clone, or on a CI runner, rebuild the `tests/_wordpress` installation with a single command:
 

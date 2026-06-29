@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - `dev:rebuild` command to build the `tests/_wordpress` installation used by the default configuration, e.g. on a fresh clone or in CI where it is not committed. Documented the default self-contained setup on GitHub Actions, with an example workflow (#807).
 - `init wpbrowser` records the installed WordPress version in the `WORDPRESS_VERSION` entry of `tests/.env`; `dev:rebuild` reuses it (override with `--wp-version`) so a rebuilt installation matches the version the committed `dump.sql` was generated from (#807).
+- `init wpbrowser` (plugin and theme projects) writes a `tests/_wordpress/.gitignore` so the rebuildable WordPress installation is not committed; restore it with `dev:rebuild` (#807).
 
 ### Fixed
 

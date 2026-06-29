@@ -152,6 +152,11 @@ EOT;
             ['%codecept_root_dir%', 'tests', '_wordpress', 'data', 'db.sqlite']
         );
         $this->testEnvironment->afterSuccess = $this->getAfterSuccessClosure($activated);
+
+        // Keep the rebuildable installation out of version control; it is restored with `dev:rebuild`.
+        if (!is_file($wpRootDir . '/.gitignore')) {
+            file_put_contents($wpRootDir . '/.gitignore', "*\n!.gitignore\n", LOCK_EX);
+        }
     }
 
     abstract public function getName(): string;
