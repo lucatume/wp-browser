@@ -147,6 +147,27 @@ Provides information about the local testing stack managed by
 the [DockerComposeController](extensions.md#dockercomposecontroller), [BuiltInServerController](extensions.md#builtinservercontroller)
 and [ChromeDriverController](extensions.md#chromedrivercontroller) extensions.
 
+### `dev:rebuild`
+
+Enable the command with:
+
+```yaml
+extensions:
+  commands:
+    - "lucatume\\WPBrowser\\Command\\DevRebuild"
+```
+
+Builds the `tests/_wordpress` WordPress installation used by the [default configuration](default-configuration.md):
+it downloads WordPress, configures it to use SQLite and installs it, reproducing what
+`vendor/bin/codecept init wpbrowser` set up the first time. Use it on a fresh clone of a project or on a CI
+runner where `tests/_wordpress` is not committed. It does nothing if the installation already exists; delete
+the directory to rebuild it. The command supports the default SQLite configuration only.
+
+By default it installs the version recorded in the `WORDPRESS_VERSION` entry of `tests/.env` (written by
+`init`), falling back to the latest release. Pass `--wp-version` to override it, e.g.
+`vendor/bin/codecept dev:rebuild --wp-version=6.8.1`. Pin the version to the one your committed `dump.sql`
+was generated from so the rebuilt site matches the database fixture.
+
 ### `wp:db:import`
 
 Enable the command with:

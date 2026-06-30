@@ -676,4 +676,34 @@ PHP;
 
         Installation::findInDir($dir);
     }
+
+    /**
+     * It should scaffold, configure with SQLite and install WordPress with the drop-in in place.
+     *
+     * This is the provisioning path used by the `dev:rebuild` command and `init`.
+     *
+     * @test
+     * @group slow
+     */
+    public function should_scaffold_configure_and_install_wordpress_on_sqlite(): void
+    {
+        $wpRoot = FS::tmpDir('installation_');
+        $dataDir = $wpRoot . '/data';
+        $version = Env::get('WORDPRESS_VERSION') ?: 'latest';
+
+        $installation = Installation::scaffoldWithSqlite(
+            $wpRoot,
+            $dataDir,
+            'http://localhost:2389',
+            'Test',
+            $version
+        );
+
+        $this->assertInstanceOf(Single::class, $installation->getState());
+        $this->assertInstanceOf(SQLiteDatabase::class, $installation->getDb());
+        // The SQLite drop-in and its mu-plugin must be on disk or the served site cannot use SQLite.
+        $this->assertFileExists($wpRoot . '/wp-content/db.php');
+        $this->assertDirectoryExists($wpRoot . '/wp-content/mu-plugins/sqlite-database-integration');
+        $this->assertFileExists($dataDir . '/db.sqlite');
+    }
 }
