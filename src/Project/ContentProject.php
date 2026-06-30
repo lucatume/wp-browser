@@ -157,6 +157,15 @@ EOT;
         if (!is_file($wpRootDir . '/.gitignore')) {
             file_put_contents($wpRootDir . '/.gitignore', "*\n!.gitignore\n", LOCK_EX);
         }
+
+        // Force the database fixture to be committed even when a global gitignore excludes `*.sql`.
+        $dataDir = $this->workDir . '/' . $dataDirRelativePath;
+        if (!is_file($dataDir . '/.gitignore')) {
+            file_put_contents($dataDir . '/.gitignore', "!dump.sql\n", LOCK_EX);
+        }
+        if (is_file($dataDir . '/.gitkeep')) {
+            unlink($dataDir . '/.gitkeep');
+        }
     }
 
     abstract public function getName(): string;

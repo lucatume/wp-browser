@@ -207,9 +207,10 @@ class EndToEndTester extends \Codeception\Actor
 
 <<< /tests/Support/EndToEndTester.php <<<
 
->>> /tests/Support/Data/.gitkeep >>>
+>>> /tests/Support/Data/.gitignore >>>
+!dump.sql
 
-<<< /tests/Support/Data/.gitkeep <<<
+<<< /tests/Support/Data/.gitignore <<<
 
 >>> /tests/EndToEnd/_bootstrap.php >>>
 <?php
