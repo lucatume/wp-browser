@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Removed
+
+- Drop the v3.5 downgrade Rector harness (`config/rector-35.php`, `config/composer-35.json`, the `RemoveTypeHinting`/`DowngradePhpOsFamily`/`SerializableThrowableCompatibilityRector` rules, the `bin/build-35-*` build scripts, and the dead `build_35` Makefile target) from `master`; it now lives entirely on the v3.5 branch (#810).
+
 ## [4.7.1] 2026-06-30;
 
 ### Changed
