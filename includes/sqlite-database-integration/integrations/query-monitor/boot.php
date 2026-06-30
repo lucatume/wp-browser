@@ -67,7 +67,11 @@ function register_sqlite_enhancements_for_query_monitor() {
 		return;
 	}
 
-	require_once __DIR__ . '/plugin.php';
+	if ( defined( 'QM_VERSION' ) && version_compare( QM_VERSION, '4.0.0', '>=' ) ) {
+		require_once __DIR__ . '/qm4.php';
+	} else {
+		require_once __DIR__ . '/qm3.php';
+	}
 
 	if ( ! defined( 'SQLITE_QUERY_MONITOR_LOADED' ) ) {
 		define( 'SQLITE_QUERY_MONITOR_LOADED', true );
