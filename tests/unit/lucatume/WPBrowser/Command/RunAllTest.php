@@ -15,6 +15,9 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
+/**
+ * @group fast
+ */
 class RunAllTest extends Unit
 {
     use SnapshotAssertions;

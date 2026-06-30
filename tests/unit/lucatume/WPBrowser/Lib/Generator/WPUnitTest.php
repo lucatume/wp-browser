@@ -6,6 +6,9 @@ use Codeception\Test\Unit;
 use lucatume\WPBrowser\TestCase\WPTestCase;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
+/**
+ * @group fast
+ */
 class WPUnitTest extends Unit
 {
 

@@ -11,6 +11,7 @@ use Codeception\Test\Unit;
  * configuration would result in an undefined DB_PASSWORD constant.
  *
  * @see https://github.com/lucatume/wp-browser/issues/786
+ * @group fast
  */
 class WpTestsConfigTest extends Unit
 {

@@ -37,6 +37,9 @@ class TestSerializableObject
     }
 }
 
+/**
+ * @group fast
+ */
 class SerializerTest extends Unit
 {
     public function maybeUnserializeDataProvider(): Generator

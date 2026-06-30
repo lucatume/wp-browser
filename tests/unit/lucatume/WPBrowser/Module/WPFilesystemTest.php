@@ -13,6 +13,9 @@ use lucatume\WPBrowser\Utils\Strings;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\AssertionFailedError;
 
+/**
+ * @group fast
+ */
 class WPFilesystemTest extends Unit
 {
     use TmpFilesCleanup;

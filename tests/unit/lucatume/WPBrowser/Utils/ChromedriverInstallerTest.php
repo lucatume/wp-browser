@@ -8,6 +8,9 @@ use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Traits\UopzFunctions;
 
+/**
+ * @group fast
+ */
 class ChromedriverInstallerTest extends \Codeception\Test\Unit
 {
     use UopzFunctions;
@@ -336,6 +339,7 @@ class ChromedriverInstallerTest extends \Codeception\Test\Unit
      * It should correctly install chromedriver
      *
      * @test
+     * @group requires-chromedriver
      */
     public function should_correctly_install_chromedriver(): void
     {

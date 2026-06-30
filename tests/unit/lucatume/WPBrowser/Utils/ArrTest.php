@@ -7,6 +7,9 @@ use Codeception\Test\Unit;
 use lucatume\WPBrowser\Utils\Arr;
 use stdClass;
 
+/**
+ * @group fast
+ */
 class ArrTest extends Unit
 {
     public function searchWithCallbackDataProvider(): array

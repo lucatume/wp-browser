@@ -4,17 +4,20 @@
 namespace lucatume\WPBrowser\WordPress;
 
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Tests\Traits\FastScaffold;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 
 class VersionTest extends Unit
 {
     use TmpFilesCleanup;
+    use FastScaffold;
 
     /**
      * It should throw when built on non-existing root directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_when_built_on_non_existing_root_directory(): void
     {
@@ -28,6 +31,7 @@ class VersionTest extends Unit
      * It should throw if the version file is missing
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_the_version_file_is_missing(): void
     {
@@ -43,6 +47,7 @@ class VersionTest extends Unit
      * It should throw if version file does not contain any information
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_version_file_does_not_contain_any_information(): void
     {
@@ -62,6 +67,7 @@ class VersionTest extends Unit
      * It should throw if version file does not contain all expected information
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_version_file_does_not_contain_all_expected_information(): void
     {
@@ -88,11 +94,12 @@ PHP;
      * It should return the version information from files
      *
      * @test
+     * @group slow
      */
     public function should_return_the_version_information_from_files(): void
     {
         $wpRootDir = FS::tmpDir('version_');
-        Installation::scaffold($wpRootDir, '5.5.1');
+        $this->fastScaffold($wpRootDir, '5.5.1');
 
         $version = new Version($wpRootDir);
 

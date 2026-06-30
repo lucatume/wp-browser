@@ -7,6 +7,8 @@ use Codeception\Exception\ModuleException;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Tests\Traits\FastScaffold;
+use lucatume\WPBrowser\Tests\Traits\PhaseTimer;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
@@ -19,12 +21,14 @@ use stdClass;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 /**
- * @group slow
+ * @group requires-mysql-server
  */
 class WPCLITest extends Unit
 {
     use SnapshotAssertions;
     use TmpFilesCleanup;
+    use PhaseTimer;
+    use FastScaffold;
 
     protected $backupGlobals = false;
     /**
@@ -53,7 +57,7 @@ class WPCLITest extends Unit
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
-        self::$installation = Installation::scaffold($wpRootDir, '6.1.1')
+        self::$installation = $this->fastScaffold($wpRootDir, '6.1.1')
             ->configure($db)
             ->install(
                 'http://wp.local',
@@ -95,6 +99,7 @@ class WPCLITest extends Unit
      * It should throw if path does not exist
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_path_does_not_exist(): void
     {
@@ -116,6 +121,7 @@ class WPCLITest extends Unit
      *
      * @test
      * @dataProvider notPositiveIntegerTimeoutValues
+     * @group fast
      */
     public function should_throw_if_timeout_value_is_not_positive_integer($timeoutValue): void
     {
@@ -142,6 +148,7 @@ class WPCLITest extends Unit
      *
      * @test
      * @dataProvider stringConfigKeysProvider
+     * @group fast
      */
     public function should_throw_if_expected_string_keys_are_not_string_keys(string $configKey): void
     {
@@ -157,6 +164,7 @@ class WPCLITest extends Unit
      * It should allow running wp-cli array commands
      *
      * @test
+     * @group slow
      */
     public function should_allow_running_wp_cli_array_commands(): void
     {
@@ -175,6 +183,7 @@ class WPCLITest extends Unit
      * It should throw if trying to grab last shell output before running command
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_grab_last_shell_output_before_running_command(): void
     {
@@ -191,6 +200,7 @@ class WPCLITest extends Unit
      * It should throw if trying to grab last shell error output before running command
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_grab_last_shell_error_output_before_running_command(): void
     {
@@ -207,6 +217,7 @@ class WPCLITest extends Unit
      * It should throw if trying to seeResultCodeIs before any command ran
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_see_result_code_is_before_any_command_ran(): void
     {
@@ -223,6 +234,7 @@ class WPCLITest extends Unit
      * It should throw if trying to seeResultCodeIsNot before any command ran
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_see_result_code_is_not_before_any_command_ran(): void
     {
@@ -239,6 +251,7 @@ class WPCLITest extends Unit
      * It should throw if throw configuration parameter is true and command fails
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_throw_configuration_parameter_is_true_and_command_fails(): void
     {
@@ -322,6 +335,7 @@ class WPCLITest extends Unit
      * It should throw if trying to grab last wp-cli process before any ran
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_grab_last_wp_cli_process_before_any_ran(): void
     {
@@ -549,6 +563,7 @@ class WPCLITest extends Unit
      * It should throw if exec configuration parameter is not an array
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_exec_configuration_parameter_is_not_an_array(): void
     {
@@ -564,6 +579,7 @@ class WPCLITest extends Unit
      * It should throw if require configuration parameter is not an array
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_require_configuration_parameter_is_not_an_array(): void
     {
@@ -579,6 +595,7 @@ class WPCLITest extends Unit
      * It should throw if exec configuration parameter is not an array of strings
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_exec_configuration_parameter_is_not_an_array_of_strings(): void
     {
@@ -594,6 +611,7 @@ class WPCLITest extends Unit
      * It should throw if require configuration parameter is not an array of strings
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_require_configuration_parameter_is_not_an_array_of_strings(): void
     {
@@ -744,6 +762,7 @@ class WPCLITest extends Unit
      * It should throw if context configuration parameter is not a string
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_context_configuration_parameter_is_not_a_string(): void
     {
@@ -1103,6 +1122,7 @@ class WPCLITest extends Unit
      * It should allow changing the path used by WPCLI
      *
      * @test
+     * @group slow
      */
     public function should_allow_changing_the_path_used_by_wpcli(): void
     {
@@ -1112,15 +1132,25 @@ class WPCLITest extends Unit
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
-        $firstInstallation = Installation::scaffold(FS::tmpDir('wpcli_'), '6.1.1')
-            ->configure($db)
-            ->install(
+
+        $firstRoot = $this->phase('FS::tmpDir #1', function () {
+            return FS::tmpDir('wpcli_');
+        });
+        $firstScaffolded = $this->phase('Installation::scaffold #1', function () use ($firstRoot) {
+            return $this->fastScaffold($firstRoot, '6.1.1');
+        });
+        $firstConfigured = $this->phase('configure #1', function () use ($firstScaffolded, $db) {
+            return $firstScaffolded->configure($db);
+        });
+        $firstInstallation = $this->phase('install #1', function () use ($firstConfigured) {
+            return $firstConfigured->install(
                 'http://wp.local',
                 'admin',
                 'secret',
                 'admin@admin',
                 'WPCLI Module Test Site'
             );
+        });
 
         $this->cleanupAfter[] = $firstInstallation->getWpRootDir();
 
@@ -1139,15 +1169,24 @@ WP_CLI::add_command('ping-one', function(){
 PHP;
         file_put_contents($firstInstallation->getMuPluginsDir() . '/command-one.php', $commandOneCode, LOCK_EX);
 
-        $secondInstallation = Installation::scaffold(FS::tmpDir('wpcli_'), '6.1.1')
-            ->configure($db)
-            ->install(
+        $secondRoot = $this->phase('FS::tmpDir #2', function () {
+            return FS::tmpDir('wpcli_');
+        });
+        $secondScaffolded = $this->phase('Installation::scaffold #2', function () use ($secondRoot) {
+            return $this->fastScaffold($secondRoot, '6.1.1');
+        });
+        $secondConfigured = $this->phase('configure #2', function () use ($secondScaffolded, $db) {
+            return $secondScaffolded->configure($db);
+        });
+        $secondInstallation = $this->phase('install #2', function () use ($secondConfigured) {
+            return $secondConfigured->install(
                 'http://wp.local',
                 'admin',
                 'secret',
                 'admin@admin',
                 'WPCLI Module Test Site'
             );
+        });
 
         $this->cleanupAfter[] = $secondInstallation->getWpRootDir();
 
@@ -1170,12 +1209,16 @@ PHP;
             'path' => $firstInstallation->getWpRootDir(),
         ]);
 
-        $wpcli->cli(['ping-one']);
+        $this->phase('wpcli->cli ping-one', function () use ($wpcli) {
+            return $wpcli->cli(['ping-one']);
+        });
         $wpcli->seeInShellOutput('pong-one');
 
         $wpcli->changeWpcliPath($secondInstallation->getWpRootDir());
 
-        $wpcli->cli(['ping-two']);
+        $this->phase('wpcli->cli ping-two', function () use ($wpcli) {
+            return $wpcli->cli(['ping-two']);
+        });
         $wpcli->seeInShellOutput('pong-two');
     }
 }

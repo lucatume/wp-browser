@@ -4,7 +4,7 @@ Contributors:      wordpressdotorg, aristath, janjakes, zieladam, berislav.grgic
 Requires at least: 6.4
 Tested up to:      6.9
 Requires PHP:      7.2
-Stable tag:        2.2.17
+Stable tag:        2.2.23
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 Tags:              performance, database
@@ -44,4 +44,21 @@ SQLite-backed implementation. Core WordPress code continues to use
 the wpdb API, while queries are internally adapted to be compatible
 with SQLite syntax and behavior.
 
+== Changelog ==
 
+= 2.2.23 =
+
+* Add Query Monitor 4.0 support ([#357](https://github.com/WordPress/sqlite-database-integration/pull/357))
+* Translate MySQL CONVERT() expressions to SQLite ([#356](https://github.com/WordPress/sqlite-database-integration/pull/356))
+
+= 2.2.22 =
+
+* Support INSERT without INTO keyword ([#354](https://github.com/WordPress/sqlite-database-integration/pull/354))
+* Add tests for MySQL row-level locking clauses ([#342](https://github.com/WordPress/sqlite-database-integration/pull/342))
+* Improve automated deploy setup.
+
+= 2.2.21 =
+
+* Monorepo setup + release automation ([#334](https://github.com/WordPress/sqlite-database-integration/pull/334))
+* Rework release workflow ([#350](https://github.com/WordPress/sqlite-database-integration/pull/350))
+* Fix incorrect PHP polyfill implementations ([#338](https://github.com/WordPress/sqlite-database-integration/pull/338))

@@ -6,6 +6,7 @@ namespace lucatume\WPBrowser\Project;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Tests\Traits\CliCommandTestingTools;
+use lucatume\WPBrowser\Tests\Traits\FastScaffold;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
@@ -19,7 +20,6 @@ use Symfony\Component\Console\Output\NullOutput;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 /**
- * @group slow
  */
 class PluginProjectTest extends Unit
 {
@@ -27,11 +27,13 @@ class PluginProjectTest extends Unit
     use UopzFunctions;
     use CliCommandTestingTools;
     use SnapshotAssertions;
+    use FastScaffold;
 
     /**
      * It should throw if built on non existing directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_built_on_non_existing_directory(): void
     {
@@ -48,6 +50,7 @@ class PluginProjectTest extends Unit
      * It should throw if directory found but not a plugin
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_directory_found_but_not_a_plugin(): void
     {
@@ -65,6 +68,7 @@ class PluginProjectTest extends Unit
      * It should build on plugin directory correctly
      *
      * @test
+     * @group fast
      */
     public function should_build_on_plugin_directory_correctly(): void
     {
@@ -84,6 +88,8 @@ class PluginProjectTest extends Unit
      * It should provide information about the failure to activate due to error
      *
      * @test
+     * @group slow
+     * @group requires-mysql-server
      */
     public function should_provide_information_about_the_failure_to_activate_due_to_error(): void
     {
@@ -95,7 +101,7 @@ class PluginProjectTest extends Unit
             Env::get('WORDPRESS_DB_PASSWORD'),
             Env::get('WORDPRESS_DB_HOST')
         );
-        Installation::scaffold($wpRootDir)
+        $this->fastScaffold($wpRootDir)
             ->configure($db)
             ->install(
                 'http://localhost:1234',

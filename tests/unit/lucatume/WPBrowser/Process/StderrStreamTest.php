@@ -17,6 +17,9 @@ use lucatume\WPBrowser\WordPress\InstallationException;
 use ParseError;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
+/**
+ * @group fast
+ */
 class StderrStreamTest extends Unit
 {
     use SnapshotAssertions;
@@ -106,8 +109,8 @@ Stack trace:
             \PHPUnit\Framework\Assert::assertEquals(\$rootDir . '/test/wordpress/', \$wpLoader1->getWpRootFolder());
         }(3): lucatume\WPBrowser\Module\WPLoader->_initialize()
 #4 [internal function]: lucatume\WPBrowser\Module\WPLoaderTest::{closure}()
-#5 /vendor/opis/closure/src/SerializableClosure.php(109): call_user_func_array(Object(Closure), Array)
-#6 /src/Process/Worker/worker-script.php(15): lucatume\WPBrowser\Opis\Closure\SerializableClosure->__invoke()
+#5 /src/Utils/PackedClosure.php(29): call_user_func_array(Object(Closure), Array)
+#6 /src/Process/Worker/worker-script.php(15): lucatume\WPBrowser\Utils\PackedClosure->__invoke()
 #7 {main}
   thrown in /includes/core-phpunit/includes/bootstrap.php on line 261
 EOT;

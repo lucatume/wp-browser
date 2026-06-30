@@ -6,6 +6,7 @@ use Codeception\Test\Unit;
 use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Project\ThemeProject;
 use lucatume\WPBrowser\Tests\Traits\CliCommandTestingTools;
+use lucatume\WPBrowser\Tests\Traits\FastScaffold;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
@@ -19,7 +20,6 @@ use Symfony\Component\Console\Output\NullOutput;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 /**
- * @group slow
  */
 class ThemeProjectTest extends Unit
 {
@@ -27,11 +27,13 @@ class ThemeProjectTest extends Unit
     use UopzFunctions;
     use CliCommandTestingTools;
     use SnapshotAssertions;
+    use FastScaffold;
 
     /**
      * It should throw if directory does not exist
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_directory_does_not_exist(): void
     {
@@ -45,6 +47,7 @@ class ThemeProjectTest extends Unit
      * It should throw if style.css does not exist
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_style_css_does_not_exist(): void
     {
@@ -60,6 +63,7 @@ class ThemeProjectTest extends Unit
      * It should throw if style.css does not define Theme Name
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_style_css_does_not_define_theme_name(): void
     {
@@ -81,6 +85,7 @@ CSS
      * It should build correctly on theme directory
      *
      * @test
+     * @group fast
      */
     public function should_build_correctly_on_theme_directory(): void
     {
@@ -103,6 +108,7 @@ CSS
      * It should build correctly on child theme directory
      *
      * @test
+     * @group fast
      */
     public function should_build_correctly_on_child_theme_directory(): void
     {
@@ -126,6 +132,8 @@ CSS
      * It should provide information about the failure to activate due to error
      *
      * @test
+     * @group slow
+     * @group requires-mysql-server
      */
     public function should_provide_information_about_the_failure_to_activate_due_to_error(): void
     {
@@ -137,7 +145,7 @@ CSS
             Env::get('WORDPRESS_DB_PASSWORD'),
             Env::get('WORDPRESS_DB_HOST')
         );
-        Installation::scaffold($wpRootDir)
+        $this->fastScaffold($wpRootDir)
             ->configure($db)
             ->install(
                 'http://localhost:1234',

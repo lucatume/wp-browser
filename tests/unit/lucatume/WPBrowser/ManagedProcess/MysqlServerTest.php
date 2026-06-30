@@ -19,6 +19,9 @@ use PharData;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\AssertionFailedError;
 
+/**
+ * @group fast
+ */
 class MysqlServerTest extends Unit
 {
     use UopzFunctions;

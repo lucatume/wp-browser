@@ -13,7 +13,6 @@ use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
 use lucatume\WPBrowser\WordPress\InstallationException;
 
 /**
- * @group slow
  */
 class EmptyDirTest extends Unit
 {
@@ -24,6 +23,7 @@ class EmptyDirTest extends Unit
      * It should throw when building on non existing root directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_when_building_on_non_existing_root_directory(): void
     {
@@ -37,6 +37,7 @@ class EmptyDirTest extends Unit
      * It should throw when built on non-empty root directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_when_built_on_non_empty_root_directory(): void
     {
@@ -54,6 +55,7 @@ class EmptyDirTest extends Unit
      * It should allow getting root directory path
      *
      * @test
+     * @group fast
      */
     public function should_allow_getting_root_directory_path(): void
     {
@@ -68,6 +70,7 @@ class EmptyDirTest extends Unit
      * It should throw if trying to assess multisite configuration
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_assess_multisite_configuration(): void
     {
@@ -84,6 +87,7 @@ class EmptyDirTest extends Unit
      * It should throw when trying to configure installation
      *
      * @test
+     * @group fast
      */
     public function should_throw_when_trying_to_configure_installation(): void
     {
@@ -106,6 +110,7 @@ class EmptyDirTest extends Unit
      * It should throw when trying to get salts
      *
      * @test
+     * @group fast
      */
     public function should_throw_when_trying_to_get_salts(): void
     {
@@ -163,6 +168,7 @@ class EmptyDirTest extends Unit
      * It should throw when trying to get table prefix
      *
      * @test
+     * @group fast
      */
     public function should_throw_when_trying_to_get_table_prefix(): void
     {
@@ -180,6 +186,7 @@ class EmptyDirTest extends Unit
      * It should throw if trying to install
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_install(): void
     {
@@ -197,6 +204,7 @@ class EmptyDirTest extends Unit
      * It should throw if trying to convert to multisite
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_convert_to_multisite(): void
     {
@@ -214,6 +222,7 @@ class EmptyDirTest extends Unit
      * It should allow scaffolding an installation
      *
      * @test
+     * @group slow
      */
     public function should_allow_scaffolding_an_installation(): void
     {
@@ -228,6 +237,7 @@ class EmptyDirTest extends Unit
      * It should throw if scaffolding fails due to file copy
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_scaffolding_fails_due_to_file_copy(): void
     {
@@ -247,6 +257,7 @@ class EmptyDirTest extends Unit
      * It should throw if trying to get the wp-config.php file path
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_get_the_wp_config_php_file_path(): void
     {
@@ -264,6 +275,7 @@ class EmptyDirTest extends Unit
      * It should not be configured
      *
      * @test
+     * @group fast
      */
     public function should_not_be_configured(): void
     {
@@ -278,6 +290,7 @@ class EmptyDirTest extends Unit
      * It should throw when trying to get the version
      *
      * @test
+     * @group fast
      */
     public function should_throw_when_trying_to_get_the_version(): void
     {
@@ -295,6 +308,7 @@ class EmptyDirTest extends Unit
      * It should throw if trying to get a constant
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_get_a_constant(): void
     {
@@ -312,6 +326,7 @@ class EmptyDirTest extends Unit
      * It should throw if trying to get the db
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_get_the_db(): void
     {
@@ -329,6 +344,7 @@ class EmptyDirTest extends Unit
      * It should throw when trying to get constants
      *
      * @test
+     * @group fast
      */
     public function should_throw_when_trying_to_get_constants(): void
     {
@@ -346,6 +362,7 @@ class EmptyDirTest extends Unit
      * It should throw if trying to get globals
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_get_globals(): void
     {
@@ -363,6 +380,7 @@ class EmptyDirTest extends Unit
      * It should throw if trying to get plugins directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_get_plugins_directory(): void
     {
@@ -380,6 +398,7 @@ class EmptyDirTest extends Unit
      * It should throw if trying to get mu-plugins directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_get_mu_plugins_directory(): void
     {
@@ -396,6 +415,7 @@ class EmptyDirTest extends Unit
      * It should throw if trying to get themes directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_get_themes_directory(): void
     {
@@ -413,6 +433,7 @@ class EmptyDirTest extends Unit
      * It should throw if trying to get content dir
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_get_content_dir(): void
     {
@@ -430,6 +451,7 @@ class EmptyDirTest extends Unit
      * It should throw if trying to update option
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_update_option(): void
     {
@@ -447,6 +469,7 @@ class EmptyDirTest extends Unit
      * It should throw if trying to execute Closure in WordPress
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_to_execute_closure_in_word_press(): void
     {
@@ -467,6 +490,7 @@ class EmptyDirTest extends Unit
      * It should throw when setting db
      *
      * @test
+     * @group fast
      */
     public function should_throw_when_setting_db(): void
     {

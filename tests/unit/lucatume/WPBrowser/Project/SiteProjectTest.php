@@ -4,6 +4,7 @@
 namespace lucatume\WPBrowser\Project;
 
 use lucatume\WPBrowser\Exceptions\RuntimeException;
+use lucatume\WPBrowser\Tests\Traits\FastScaffold;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\WordPress\Installation;
@@ -14,12 +15,14 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 class SiteProjectTest extends \Codeception\Test\Unit
 {
     use TmpFilesCleanup;
+    use FastScaffold;
 
 
     /**
      * It should throw if trying scaffold on site that is empty
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_trying_scaffold_on_site_that_is_empty(): void
     {
@@ -46,6 +49,7 @@ EOT;
      * It should throw if trying to scaffold on site that is not configured
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_trying_to_scaffold_on_site_that_is_not_configured(): void
     {
@@ -62,7 +66,7 @@ EOT;
                 'composer.json' => $composerFileCode
             ]
         ]);
-        Installation::scaffold($projectDir);
+        $this->fastScaffold($projectDir);
 
         $this->expectException(RuntimeException::class);
 

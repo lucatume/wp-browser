@@ -1,0 +1,33 @@
+[
+    {
+        "isException": true,
+        "exceptionClass": "Error",
+        "date": "17-Mar-2023",
+        "time": "10:21:16",
+        "timezone": "Europe\/Paris",
+        "type": "Fatal error",
+        "message": "Uncaught Error: Class \"lucatume\\WPBrowser\\Utils\\ErrorHandling\" not found",
+        "file": "\/src\/Process\/SerializableThrowable.php",
+        "line": 24,
+        "trace": [
+            {
+                "date": "17-Mar-2023",
+                "time": "10:21:16",
+                "timezone": "Europe\/Paris",
+                "call": "lucatume\\WPBrowser\\Process\\SerializableThrowable->__construct",
+                "args": "Object(Error)",
+                "file": "\/src\/Process\/Worker\/worker-script.php",
+                "line": 18
+            },
+            {
+                "date": "17-Mar-2023",
+                "time": "10:21:16",
+                "timezone": "Europe\/Paris",
+                "call": "n\/a",
+                "args": "n\/a",
+                "file": "\/src\/Process\/SerializableThrowable.php",
+                "line": 24
+            }
+        ]
+    }
+]

@@ -5,6 +5,9 @@ namespace lucatume\WPBrowser;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Utils\Env;
 
+/**
+ * @group fast
+ */
 class envTest extends Unit
 {
     /**

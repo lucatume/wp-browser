@@ -3,14 +3,14 @@
 namespace lucatume\WPBrowser\Process\Protocol;
 
 use Codeception\Exception\ConfigurationException;
-use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
+use lucatume\WPBrowser\Utils\PackedClosure;
 
 class Request
 {
     /**
-     * @var \lucatume\WPBrowser\Opis\Closure\SerializableClosure
+     * @var \lucatume\WPBrowser\Utils\PackedClosure
      */
-    private $serializableClosure;
+    private $packedClosure;
     /**
      * @var \lucatume\WPBrowser\Process\Protocol\Control
      */
@@ -33,9 +33,9 @@ class Request
      * } $controlArray
      * @throws ConfigurationException
      */
-    public function __construct(array $controlArray, SerializableClosure $serializableClosure)
+    public function __construct(array $controlArray, PackedClosure $packedClosure)
     {
-        $this->serializableClosure = $serializableClosure;
+        $this->packedClosure = $packedClosure;
         $this->control = new Control($controlArray);
     }
 
@@ -44,7 +44,7 @@ class Request
      */
     public function getPayload(): string
     {
-        $payload = Parser::encode([$this->control->toArray(), $this->serializableClosure]);
+        $payload = Parser::encode([$this->control->toArray(), $this->packedClosure]);
 
         if (DIRECTORY_SEPARATOR === '\\' || $this->useFilePayloads) {
             // On Windows the maximum length of the command line is 8191 characters.
@@ -77,18 +77,18 @@ class Request
         $control = new Control($controlArray);
         $control->apply();
 
-        [$serializableClosure] = Parser::decode($payload, 1, 1);
+        [$packedClosure] = Parser::decode($payload, 1, 1);
 
-        if (!$serializableClosure instanceof SerializableClosure) {
-            throw new ProtocolException('Decoded closure is not an instance of SerializableClosure.');
+        if (!$packedClosure instanceof PackedClosure) {
+            throw new ProtocolException('Decoded closure is not an instance of PackedClosure.');
         }
 
-        return new self($controlArray, $serializableClosure);
+        return new self($controlArray, $packedClosure);
     }
 
-    public function getSerializableClosure(): SerializableClosure
+    public function getPackedClosure(): PackedClosure
     {
-        return $this->serializableClosure;
+        return $this->packedClosure;
     }
 
     public function getControl(): Control

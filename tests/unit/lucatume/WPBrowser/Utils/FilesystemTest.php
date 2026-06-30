@@ -8,6 +8,9 @@ use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Filesystem;
 use RuntimeException;
 
+/**
+ * @group fast
+ */
 class FilesystemTest extends Unit
 {
     use TmpFilesCleanup;

@@ -172,6 +172,9 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         });
     }
 
+    /**
+     * @group fast
+     */
     public function testUsesDefaultContentLocationInScaffoldedInstallation(): void
     {
         [$wpRootFolder, $dbUrl] = $this->makeMockScaffoldedInstallation();
@@ -203,6 +206,9 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         });
     }
 
+    /**
+     * @group fast
+     */
     public function testUsesCustomContentLocationFromConfigConstantInScaffoldedInstallation(): void
     {
         [$wpRootFolder, $dbUrl] = $this->makeMockScaffoldedInstallation();
@@ -233,6 +239,9 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         });
     }
 
+    /**
+     * @group fast
+     */
     public function testUsesCustomPluginsLocationFromConfigParameterInScaffoldedInstallation(): void
     {
         [$wpRootFolder, $dbUrl] = $this->makeMockScaffoldedInstallation();
@@ -263,6 +272,9 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         });
     }
 
+    /**
+     * @group fast
+     */
     public function testUsesCustomPluginsLocationFromConfigConstantInScaffoldedInstallation(): void
     {
         [$wpRootFolder, $dbUrl] = $this->makeMockScaffoldedInstallation();
@@ -295,6 +307,9 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         });
     }
 
+    /**
+     * @group fast
+     */
     public function testUsesCustomMuPluginsLocationFromConfigConstantInScaffoldedInstallation(): void
     {
         [$wpRootFolder, $dbUrl] = $this->makeMockScaffoldedInstallation();

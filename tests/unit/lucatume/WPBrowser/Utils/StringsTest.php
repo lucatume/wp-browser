@@ -4,6 +4,9 @@ namespace lucatume\WPBrowser\Utils;
 
 use Codeception\Test\Unit;
 
+/**
+ * @group fast
+ */
 class StringsTest extends Unit
 {
     public function andListDataProvider(): array

@@ -30,6 +30,7 @@ class WPConfigFileTest extends Unit
      * It should throw if building on non existing root directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_building_on_non_existing_root_directory(): void
     {
@@ -43,6 +44,7 @@ class WPConfigFileTest extends Unit
      * It should throw if wp-config.php file not found in root directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_wp_config_php_file_not_found_in_root_directory()
     {
@@ -60,6 +62,7 @@ class WPConfigFileTest extends Unit
      * It should throw if wp-settings.php file not found in root directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_wp_settings_php_file_not_found_in_root_directory(): void
     {

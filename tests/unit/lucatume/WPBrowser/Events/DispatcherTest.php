@@ -9,6 +9,9 @@ use lucatume\WPBrowser\Traits\UopzFunctions;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
+/**
+ * @group fast
+ */
 class DispatcherTest extends Unit
 {
     use UopzFunctions;

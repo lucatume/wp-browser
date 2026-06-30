@@ -14,6 +14,9 @@ use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
+/**
+ * @group fast
+ */
 class DevInfoTest extends \Codeception\Test\Unit
 {
     use UopzFunctions;

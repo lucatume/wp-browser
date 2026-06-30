@@ -4,7 +4,9 @@
 namespace lucatume\WPBrowser\WordPress;
 
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Tests\Traits\FastScaffold;
 use lucatume\WPBrowser\Tests\Traits\MainInstallationAccess;
+use lucatume\WPBrowser\Tests\Traits\PhaseTimer;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
@@ -19,18 +21,20 @@ use lucatume\WPBrowser\WordPress\InstallationState\Single;
 use RuntimeException;
 
 /**
- * @group slow
  */
 class InstallationTest extends Unit
 {
     use UopzFunctions;
     use TmpFilesCleanup;
     use MainInstallationAccess;
+    use PhaseTimer;
+    use FastScaffold;
 
     /**
      * It should throw when building on non-existing root directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_when_building_on_non_existing_root_directory(): void
     {
@@ -44,6 +48,7 @@ class InstallationTest extends Unit
      * It should throw when building on non-writable root directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_when_building_on_non_writable_root_directory(): void
     {
@@ -65,6 +70,7 @@ class InstallationTest extends Unit
      * It should throw when building on non-readable root directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_when_building_on_non_readable_root_directory()
     {
@@ -86,6 +92,7 @@ class InstallationTest extends Unit
      * It should identify empty installation correctly
      *
      * @test
+     * @group fast
      */
     public function should_identify_empty_installation_correctly()
     {
@@ -105,7 +112,7 @@ class InstallationTest extends Unit
     {
         $wpRoot = FS::tmpDir('installation_');
 
-        Installation::scaffold($wpRoot, '4.9.8');
+        $this->fastScaffold($wpRoot, '4.9.8');
 
         $installation = new Installation($wpRoot);
 
@@ -131,7 +138,7 @@ class InstallationTest extends Unit
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $wpRoot = FS::tmpDir('installation_');
 
-        $installation = Installation::scaffold($wpRoot, '4.9.8', true, false);
+        $installation = $this->fastScaffold($wpRoot, '4.9.8', true, false);
 
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
@@ -162,7 +169,7 @@ class InstallationTest extends Unit
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $wpRoot = FS::tmpDir('installation_');
 
-        $installation = Installation::scaffold($wpRoot, '4.9.8', true, false);
+        $installation = $this->fastScaffold($wpRoot, '4.9.8', true, false);
 
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
@@ -180,6 +187,7 @@ class InstallationTest extends Unit
      * It should allow getting the wp-config.php file path
      *
      * @test
+     * @group slow
      */
     public function should_allow_getting_the_wp_config_php_file_path(): void
     {
@@ -189,7 +197,7 @@ class InstallationTest extends Unit
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $wpRoot = FS::tmpDir('installation_');
 
-        $installation = Installation::scaffold($wpRoot, '4.9.8', true, false)
+        $installation = $this->fastScaffold($wpRoot, '4.9.8', true, false)
             ->configure(new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost));
 
         $this->assertEquals($wpRoot . '/wp-config.php', $installation->getWpConfigFilePath());
@@ -199,6 +207,7 @@ class InstallationTest extends Unit
      * It should allow getting the wp-config.php file path when placed out of root
      *
      * @test
+     * @group slow
      */
     public function should_allow_getting_the_wp_config_php_file_path_when_placed_out_of_root(): void
     {
@@ -209,7 +218,7 @@ class InstallationTest extends Unit
         $dir = FS::tmpDir('installation_', ['public' => []]);
         $wpRoot = $dir . '/public';
 
-        $setupInstallation = Installation::scaffold($wpRoot, '4.9.8', true, false)
+        $setupInstallation = $this->fastScaffold($wpRoot, '4.9.8', true, false)
             ->configure(new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost));
         if (!rename($wpRoot . '/wp-config.php', $dir . '/wp-config.php')) {
             throw new RuntimeException('Could not move wp-config.php up.');
@@ -247,12 +256,13 @@ class InstallationTest extends Unit
      * It should allow running wp-cli command on scaffolded installation
      *
      * @test
+     * @group slow
      */
     public function should_allow_running_wp_cli_command_on_scaffolded_installation(): void
     {
         $wpRoot = FS::tmpDir('installation_');
 
-        Installation::scaffold($wpRoot, '4.9.8');
+        $this->fastScaffold($wpRoot, '4.9.8');
 
         $installation = new Installation($wpRoot);
 
@@ -263,6 +273,7 @@ class InstallationTest extends Unit
      * It should allow running wp-cli command on configured installation
      *
      * @test
+     * @group slow
      */
     public function should_allow_running_wp_cli_command_on_configured_installation(): void
     {
@@ -272,7 +283,7 @@ class InstallationTest extends Unit
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $wpRoot = FS::tmpDir('installation_');
 
-        $installation = Installation::scaffold($wpRoot, '4.9.8', true, false)
+        $installation = $this->fastScaffold($wpRoot, '4.9.8', true, false)
             ->configure(new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost));
 
         $this->assertEquals(
@@ -286,6 +297,8 @@ class InstallationTest extends Unit
      * It should allow running wp-cli command on single installation
      *
      * @test
+     * @group slow
+     * @group requires-mysql-server
      */
     public function should_allow_running_wp_cli_command_on_single_installation(): void
     {
@@ -295,7 +308,7 @@ class InstallationTest extends Unit
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $wpRoot = FS::tmpDir('installation_');
 
-        $installation = Installation::scaffold($wpRoot, '6.1')
+        $installation = $this->fastScaffold($wpRoot, '6.1')
             ->configure(new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost))
             ->install(
                 'https://wp.local',
@@ -313,6 +326,8 @@ class InstallationTest extends Unit
      * It should allow running wp-cli command on multisite installation
      *
      * @test
+     * @group slow
+     * @group requires-mysql-server
      */
     public function should_allow_running_wp_cli_command_on_multisite_installation(): void
     {
@@ -322,7 +337,7 @@ class InstallationTest extends Unit
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $wpRoot = FS::tmpDir('installation_');
 
-        $installation = Installation::scaffold($wpRoot, '6.1')
+        $installation = $this->fastScaffold($wpRoot, '6.1')
             ->configure(new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost),
                 InstallationStateInterface::MULTISITE_SUBFOLDER)
             ->install(
@@ -341,12 +356,13 @@ class InstallationTest extends Unit
      * It should support SQLite database during configuration
      *
      * @test
+     * @group slow
      */
     public function should_support_sq_lite_database_during_configuration(): void
     {
         $wpRoot = FS::tmpDir('installation_');
         $db = new SQLiteDatabase($wpRoot, 'db.sqlite');
-        $installation = Installation::scaffold($wpRoot, '6.1.1')
+        $installation = $this->fastScaffold($wpRoot, '6.1.1')
             ->configure($db);
 
         $this->assertFileExists($wpRoot . '/wp-content/db.php');
@@ -362,12 +378,13 @@ class InstallationTest extends Unit
      * It should support SQLite in single installation
      *
      * @test
+     * @group slow
      */
     public function should_support_sq_lite_in_single_installation(): void
     {
         $wpRoot = FS::tmpDir('installation_');
         $db = new SQLiteDatabase($wpRoot, 'db.sqlite');
-        $installation = Installation::scaffold($wpRoot, '6.1.1')
+        $installation = $this->fastScaffold($wpRoot, '6.1.1')
             ->configure($db)
             ->install(
                 'https://localhost:2389',
@@ -386,12 +403,13 @@ class InstallationTest extends Unit
      * It should support sqlite in multisite subdomain installation
      *
      * @test
+     * @group slow
      */
     public function should_support_sqlite_in_multisite_subdomain_installation(): void
     {
         $wpRoot = FS::tmpDir('installation_');
         $db = new SQLiteDatabase($wpRoot, 'db.sqlite');
-        $installation = Installation::scaffold($wpRoot, '6.1.1')
+        $installation = $this->fastScaffold($wpRoot, '6.1.1')
             ->configure($db, InstallationStateInterface::MULTISITE_SUBDOMAIN)
             ->install(
                 'https://wordpress.test',
@@ -410,12 +428,13 @@ class InstallationTest extends Unit
      * It should support sqlite in multisite subfolder installation
      *
      * @test
+     * @group slow
      */
     public function should_support_sqlite_in_multisite_subfolder_installation(): void
     {
         $wpRoot = FS::tmpDir('installation_');
         $db = new SQLiteDatabase($wpRoot, 'db.sqlite');
-        $installation = Installation::scaffold($wpRoot, '6.1.1')
+        $installation = $this->fastScaffold($wpRoot, '6.1.1')
             ->configure($db, InstallationStateInterface::MULTISITE_SUBFOLDER)
             ->install(
                 'https://wordpress.test',
@@ -434,12 +453,13 @@ class InstallationTest extends Unit
      * It should support wp-cli commands when using sqlite
      *
      * @test
+     * @group slow
      */
     public function should_support_wp_cli_commands_when_using_sqlite(): void
     {
         $wpRoot = FS::tmpDir('installation_');
         $db = new SQLiteDatabase($wpRoot, 'db.sqlite');
-        $installation = Installation::scaffold($wpRoot, '6.1.1')
+        $installation = $this->fastScaffold($wpRoot, '6.1.1')
             ->configure($db)
             ->install(
                 'https://localhost:2389',
@@ -456,23 +476,41 @@ class InstallationTest extends Unit
      * It should support complex plugin load in sqlite context
      *
      * @test
+     * @group slow
      */
     public function should_support_complex_plugin_load_in_sqlite_context(): void
     {
-        $wpRoot = FS::tmpDir('installation_');
-        $db = new SQLiteDatabase($wpRoot, 'db.sqlite');
-        $installation = Installation::scaffold($wpRoot)
-            ->configure($db)
-            ->install(
+        $wpRoot = $this->phase('FS::tmpDir', function () {
+            return FS::tmpDir('installation_');
+        });
+        $db = $this->phase('new SQLiteDatabase', function () use ($wpRoot) {
+            return new SQLiteDatabase($wpRoot, 'db.sqlite');
+        });
+        $scaffolded = $this->phase('Installation::scaffold', function () use ($wpRoot) {
+            return $this->fastScaffold($wpRoot);
+        });
+        $configured = $this->phase('configure (sqlite)', function () use ($scaffolded, $db) {
+            return $scaffolded->configure($db);
+        });
+        $installation = $this->phase('install (sqlite)', function () use ($configured) {
+            return $configured->install(
                 'https://localhost:2389',
                 'admin',
                 'password',
                 'admin@wp.local',
                 'Test'
             );
-        $this->copyOverContentFromTheMainInstallation($installation);
+        });
+        $this->phase('copyOverContentFromTheMainInstallation', function () use ($installation) {
+            return $this->copyOverContentFromTheMainInstallation($installation);
+        });
 
-        $wooCommerceActivationProcess = $installation->runWpCliCommandOrThrow(['plugin', 'activate', 'woocommerce']);
+        $wooCommerceActivationProcess = $this->phase(
+            'wp-cli plugin activate woocommerce',
+            function () use ($installation) {
+                return $installation->runWpCliCommandOrThrow(['plugin', 'activate', 'woocommerce']);
+            }
+        );
         $this->assertEquals(
             0,
             $wooCommerceActivationProcess->getExitCode()
@@ -484,6 +522,8 @@ class InstallationTest extends Unit
      * It should throw if changing db from MySQL to SQLite but db dropin not found
      *
      * @test
+     * @group slow
+     * @group requires-mysql-server
      */
     public function should_throw_if_changing_db_from_my_sql_to_sq_lite_but_db_dropin_not_found(): void
     {
@@ -494,7 +534,7 @@ class InstallationTest extends Unit
             Env::get('WORDPRESS_DB_PASSWORD'),
             Env::get('WORDPRESS_DB_HOST')
         );
-        $setupInstallation = Installation::scaffold($wpRoot)
+        $setupInstallation = $this->fastScaffold($wpRoot)
             ->configure($mysqlDb)
             ->install(
                 'https://site-project.local',
@@ -522,11 +562,12 @@ class InstallationTest extends Unit
      * It should throw if trying to place SQLite plugin but db dropin already there
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_trying_to_place_sq_lite_plugin_but_db_dropin_already_there(): void
     {
         $wpRoot = FS::tmpDir('installation_');
-        $installation = Installation::scaffold($wpRoot);
+        $installation = $this->fastScaffold($wpRoot);
         $contentDir = $installation->getContentDir();
         $otherDbDropinCode = <<< PHP
 <?php
@@ -549,11 +590,12 @@ PHP;
      * It should allow placing SQLite plugin multiple times
      *
      * @test
+     * @group slow
      */
     public function should_allow_placing_sq_lite_plugin_multiple_times(): void
     {
         $wpRoot = FS::tmpDir('installation_');
-        $installation = Installation::scaffold($wpRoot);
+        $installation = $this->fastScaffold($wpRoot);
         $contentDir = $installation->getContentDir();
 
         Installation::placeSqliteMuPlugin($contentDir . '/wp-content/mu-plugins', $contentDir);
@@ -566,47 +608,69 @@ PHP;
      * It should be possible to change an installation database from mysql to sqlite
      *
      * @test
+     * @group slow
+     * @group requires-mysql-server
      */
     public function should_be_possible_to_change_an_installation_database_from_mysql_to_sqlite(): void
     {
-        $wpRoot = FS::tmpDir('installation_');
-        $mysqlDb = new MysqlDatabase(
-            Random::dbName(),
-            Env::get('WORDPRESS_DB_USER'),
-            Env::get('WORDPRESS_DB_PASSWORD'),
-            Env::get('WORDPRESS_DB_HOST')
-        );
-        $setupInstallation = Installation::scaffold($wpRoot)
-            ->configure($mysqlDb)
-            ->install(
+        $wpRoot = $this->phase('FS::tmpDir', function () {
+            return FS::tmpDir('installation_');
+        });
+        $mysqlDb = $this->phase('new MysqlDatabase', function () {
+            return new MysqlDatabase(
+                Random::dbName(),
+                Env::get('WORDPRESS_DB_USER'),
+                Env::get('WORDPRESS_DB_PASSWORD'),
+                Env::get('WORDPRESS_DB_HOST')
+            );
+        });
+        $scaffolded = $this->phase('Installation::scaffold', function () use ($wpRoot) {
+            return $this->fastScaffold($wpRoot);
+        });
+        $configured = $this->phase('configure (mysql)', function () use ($scaffolded, $mysqlDb) {
+            return $scaffolded->configure($mysqlDb);
+        });
+        $setupInstallation = $this->phase('install (mysql)', function () use ($configured) {
+            return $configured->install(
                 'https://site-project.local',
                 'admin',
                 'password',
                 'admin@site-project.local',
                 'Site Project'
             );
+        });
 
         $this->assertInstanceOf(MysqlDatabase::class, $setupInstallation->getDb());
 
-        $installation = new Installation($wpRoot);
+        $installation = $this->phase('new Installation (detect)', function () use ($wpRoot) {
+            return new Installation($wpRoot);
+        });
 
         $this->assertInstanceOf(Single::class, $installation->getState());
 
-        $sqliteDb = new SQLiteDatabase($wpRoot, 'db.sqlite');
+        $sqliteDb = $this->phase('new SQLiteDatabase', function () use ($wpRoot) {
+            return new SQLiteDatabase($wpRoot, 'db.sqlite');
+        });
 
-        Installation::placeSqliteMuPlugin($installation->getMuPluginsDir(), $installation->getContentDir());
-        $installation->setDb($sqliteDb);
+        $this->phase('placeSqliteMuPlugin', function () use ($installation) {
+            return Installation::placeSqliteMuPlugin($installation->getMuPluginsDir(), $installation->getContentDir());
+        });
+        $this->phase('setDb (mysql->sqlite)', function () use ($installation, $sqliteDb) {
+            return $installation->setDb($sqliteDb);
+        });
 
         $this->assertInstanceOf(SQLiteDatabase::class, $installation->getDb());
         $this->assertInstanceOf(Configured::class, $installation->getState());
 
-        $installation->install(
-            'https://test.local',
-            'admin',
-            'password',
-            'admin@test.local',
-            'Sqlite Test'
-        );
+        $this->phase('install (sqlite re-install)', function () use ($installation) {
+            return $installation->install(
+                'https://test.local',
+                'admin',
+                'password',
+                'admin@test.local',
+                'Sqlite Test'
+            );
+        });
 
         $this->assertInstanceOf(Single::class, $installation->getState());
         $this->assertInstanceOf(SQLiteDatabase::class, $installation->getDb());
@@ -616,6 +680,7 @@ PHP;
      * It should allow building installation without checking db
      *
      * @test
+     * @group slow
      */
     public function should_allow_building_installation_without_checking_db(): void
     {
@@ -626,7 +691,7 @@ PHP;
             Env::get('WORDPRESS_DB_PASSWORD'),
             Env::get('WORDPRESS_DB_HOST')
         );
-        $setupInstallation = Installation::scaffold($wpRoot)
+        $setupInstallation = $this->fastScaffold($wpRoot)
             ->configure($mysqlDb);
 
         $installation = new Installation($wpRoot, false);
@@ -638,6 +703,7 @@ PHP;
      * It should throw if WordPress installation cannot be found in directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_word_press_installation_cannot_be_found_in_directory(): void
     {
@@ -647,5 +713,35 @@ PHP;
         $this->expectExceptionCode(InstallationException::WORDPRESS_NOT_FOUND);
 
         Installation::findInDir($dir);
+    }
+
+    /**
+     * It should scaffold, configure with SQLite and install WordPress with the drop-in in place.
+     *
+     * This is the provisioning path used by the `dev:rebuild` command and `init`.
+     *
+     * @test
+     * @group slow
+     */
+    public function should_scaffold_configure_and_install_wordpress_on_sqlite(): void
+    {
+        $wpRoot = FS::tmpDir('installation_');
+        $dataDir = $wpRoot . '/data';
+        $version = Env::get('WORDPRESS_VERSION') ?: 'latest';
+
+        $installation = Installation::scaffoldWithSqlite(
+            $wpRoot,
+            $dataDir,
+            'http://localhost:2389',
+            'Test',
+            $version
+        );
+
+        $this->assertInstanceOf(Single::class, $installation->getState());
+        $this->assertInstanceOf(SQLiteDatabase::class, $installation->getDb());
+        // The SQLite drop-in and its mu-plugin must be on disk or the served site cannot use SQLite.
+        $this->assertFileExists($wpRoot . '/wp-content/db.php');
+        $this->assertDirectoryExists($wpRoot . '/wp-content/mu-plugins/sqlite-database-integration');
+        $this->assertFileExists($dataDir . '/db.sqlite');
     }
 }

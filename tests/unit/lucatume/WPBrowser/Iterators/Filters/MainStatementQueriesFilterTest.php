@@ -6,6 +6,9 @@ use Codeception\Test\Unit;
 use lucatume\WPBrowser\Iterators\Filters\MainStatementQueriesFilter as Filter;
 use UnitTester;
 
+/**
+ * @group fast
+ */
 class MainStatementQueriesFilterTest extends Unit
 {
     protected $backupGlobals = false;

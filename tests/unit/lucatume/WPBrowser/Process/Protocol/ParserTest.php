@@ -7,6 +7,9 @@ use Generator;
 use lucatume\WPBrowser\Process\Protocol\Parser;
 use lucatume\WPBrowser\Process\Protocol\ProtocolException;
 
+/**
+ * @group fast
+ */
 class ParserTest extends Unit
 {
 

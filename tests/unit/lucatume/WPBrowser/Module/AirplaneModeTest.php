@@ -10,6 +10,9 @@ use Codeception\Test\Unit;
 use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Filesystem;
 
+/**
+ * @group fast
+ */
 class AirplaneModeTest extends Unit
 {
     use UopzFunctions;

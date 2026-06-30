@@ -4,6 +4,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.7.20] 2026-06-30;
+
+### Changed
+
+- Replace the bundled `lucatume\WPBrowser\Opis\Closure\*` library with `lucatume\WPBrowser\Utils\Packer` and `lucatume\WPBrowser\Utils\PackedClosure` for closure serialization in the IPC pipeline.
+- Refresh the bundled WordPress core PHPUnit test includes and the `sqlite-database-integration` plugin to their latest upstream versions (#809).
+
+### Added
+
+- `dev:rebuild` command to build the `tests/_wordpress` installation used by the default configuration, e.g. on a fresh clone or in CI where it is not committed (#807).
+- `init wpbrowser` records the installed WordPress version in the `WORDPRESS_VERSION` entry of `tests/.env`; `dev:rebuild` reuses it (override with `--wp-version`) so a rebuilt installation matches the version the committed `dump.sql` was generated from (#807).
+- `init wpbrowser` (plugin and theme projects) writes a `tests/_wordpress/.gitignore` so the rebuildable WordPress installation is not committed; restore it with `dev:rebuild` (#807).
+- `init wpbrowser` (plugin and theme projects) writes a `tests/Support/Data/.gitignore` with `!dump.sql` so the database fixture is committed even when a global gitignore excludes `*.sql` (#807).
+
+### Fixed
+
+- `wp:db:export` from a SQLite installation no longer truncates values containing NUL bytes (e.g. serialized objects with protected/private properties): rows are read with each column cast to `BLOB` and the full value is hex-encoded into the dump.
+- `wp:db:export` from a SQLite installation no longer produces a non-importable dump: values are hex-encoded instead of a `char(10)` concatenation chain that overflowed SQLite's expression-depth limit on values with many newlines (#802).
+- The installer no longer fatals when setting up WordPress 7.0: `FileRequest` binds the `$menu`, `$submenu` and `$compat` admin-menu globals to the global scope before loading the target file, so WordPress 7.0's admin bootstrap does not run `uksort()` on a null `$menu` (#804).
+- `init wpbrowser` set up the default-configuration admin user with the email `admin@exmaple.com`; it now uses `admin@example.com` (#807).
+- MySQL server binary download no longer fails with HTTP 403: the downloader now sends a `curl/<version>` user agent that `dev.mysql.com`'s CDN allows through (#808).
+
+### Removed
+
+- Drop the bundled `includes/opis/closure/` library and its `lucatume\WPBrowser\Opis\Closure\` PSR-4 autoload entry.
+
 ## [3.7.19] 2026-02-23;
 
 ### Fixed

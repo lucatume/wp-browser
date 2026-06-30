@@ -18,7 +18,7 @@ trait MainInstallationAccess
             'woocommerce',
         ];
         foreach ($plugins as $plugin) {
-            if (!FS::recurseCopy(
+            if (!FS::cowCopy(
                 $mainWPInstallationRootDir . '/wp-content/plugins/' . $plugin,
                 $installation->getPluginsDir($plugin)
             )) {
@@ -26,7 +26,7 @@ trait MainInstallationAccess
             }
         }
         // Copy over theme from the main installation.
-        if (!FS::recurseCopy(
+        if (!FS::cowCopy(
             $mainWPInstallationRootDir . '/wp-content/themes/twentytwenty',
             $installation->getThemesDir('twentytwenty')
         )) {

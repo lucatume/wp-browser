@@ -6,6 +6,9 @@ use Codeception\Exception\ModuleException;
 use Codeception\Test\Unit;
 use stdClass;
 
+/**
+ * @group fast
+ */
 class FiltersTest extends Unit
 {
     /**

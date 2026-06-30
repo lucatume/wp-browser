@@ -6,6 +6,9 @@ use Codeception\Test\Unit;
 use Codeception\Util\Debug;
 use PHPUnit\Framework\Assert;
 
+/**
+ * @group fast
+ */
 class DbDumpTest extends Unit
 {
     /**

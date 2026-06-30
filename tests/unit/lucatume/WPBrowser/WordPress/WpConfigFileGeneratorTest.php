@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser\WordPress;
 
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Tests\Traits\FastScaffold;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
@@ -12,18 +13,19 @@ use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 /**
- * @group slow
  */
 class WpConfigFileGeneratorTest extends Unit
 {
     use UopzFunctions;
     use SnapshotAssertions;
     use TmpFilesCleanup;
+    use FastScaffold;
 
     /**
      * It should throw if building on non existing root directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_building_on_non_existing_root_directory(): void
     {
@@ -37,6 +39,7 @@ class WpConfigFileGeneratorTest extends Unit
      * It should throw if wp-config-sample.php file not found in root directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_wp_config_sample_php_file_not_found_in_root_directory(): void
     {
@@ -54,6 +57,7 @@ class WpConfigFileGeneratorTest extends Unit
      * It should throw if wp-config-sample.php file cannot be read
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_wp_config_sample_php_file_cannot_be_read(): void
     {
@@ -75,11 +79,12 @@ class WpConfigFileGeneratorTest extends Unit
      * It should correctly produce a wp-config.php file contents provided db and configuration data
      *
      * @test
+     * @group slow
      */
     public function should_correctly_produce_a_wp_config_php_file_contents_provided_db_and_configuration_data(): void
     {
         $wpRootDir = FS::tmpDir('wp-config_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
         $dbName = 'test_123';
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
@@ -105,11 +110,12 @@ class WpConfigFileGeneratorTest extends Unit
      * It should correctly produce a wp-config.php file with custom constants
      *
      * @test
+     * @group slow
      */
     public function should_correctly_produce_a_wp_config_php_file_with_custom_constants(): void
     {
         $wpRootDir = FS::tmpDir('wp-config_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
         $dbName = 'test_123';
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
@@ -141,11 +147,12 @@ class WpConfigFileGeneratorTest extends Unit
      * It should throw if specified relativePathRoot does not exist
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_specified_relative_path_root_does_not_exist(): void
     {
         $wpRootDir = FS::tmpDir('wp-config_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
         $relativePathRoot = __DIR__ . '/not-existing';
 
         $this->expectException(InstallationException::class);
@@ -158,11 +165,12 @@ class WpConfigFileGeneratorTest extends Unit
      * It should correctly produce wp-config.php file with SQLite database
      *
      * @test
+     * @group slow
      */
     public function should_correctly_produce_wp_config_php_file_with_sq_lite_database(): void
     {
         $wpRootDir = FS::tmpDir('wp-config_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
         $db = new SQLiteDatabase($wpRootDir, 'db.sqlite');
 
         $generator = new WpConfigFileGenerator($wpRootDir);
@@ -185,11 +193,12 @@ class WpConfigFileGeneratorTest extends Unit
      * It should correctly produce wp-config.php file with SQLite database when db path specified
      *
      * @test
+     * @group slow
      */
     public function should_correctly_produce_wp_config_php_file_with_sq_lite_database_when_db_path_specified(): void
     {
         $wpRootDir = FS::tmpDir('wp-config_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
         if (!mkdir($wpRootDir . '/data/')) {
             throw new \RuntimeException('Could not create directory');
         }

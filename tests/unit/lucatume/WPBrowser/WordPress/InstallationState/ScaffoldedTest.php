@@ -4,6 +4,7 @@
 namespace lucatume\WPBrowser\WordPress\InstallationState;
 
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Tests\Traits\FastScaffold;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
@@ -17,18 +18,19 @@ use lucatume\WPBrowser\WordPress\InstallationException;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 /**
- * @group slow
  */
 class ScaffoldedTest extends Unit
 {
     use SnapshotAssertions;
     use TmpFilesCleanup;
     use UopzFunctions;
+    use FastScaffold;
 
     /**
      * It should throw when building on non existing root directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_when_building_on_non_existing_root_directory(): void
     {
@@ -42,6 +44,7 @@ class ScaffoldedTest extends Unit
      * It should throw when built on non root directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_when_built_on_empty_root_directory(): void
     {
@@ -56,6 +59,7 @@ class ScaffoldedTest extends Unit
      * It should throw when built on configured root directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_when_built_on_configured_root_directory(): void
     {
@@ -74,6 +78,7 @@ class ScaffoldedTest extends Unit
      * It should throw when built on root directory missing wp-load.php file
      *
      * @test
+     * @group fast
      */
     public function should_throw_when_built_on_root_directory_missing_wp_load_php_file(): void
     {
@@ -92,11 +97,12 @@ class ScaffoldedTest extends Unit
      * It should allow getting information from the installation
      *
      * @test
+     * @group slow
      */
     public function should_allow_getting_information_from_the_installation(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $state = new Scaffolded($wpRootDir);
 
@@ -110,11 +116,12 @@ class ScaffoldedTest extends Unit
      * It should throw if trying to assess multisite configuration
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_trying_to_assess_multisite_configuration(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $state = new Scaffolded($wpRootDir);
 
@@ -127,11 +134,12 @@ class ScaffoldedTest extends Unit
      * It should throw if wp-config-sample.php file is not found during configuration
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_wp_config_sample_php_file_is_not_found_during_configuration(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
         $dbName = Random::dbName();
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
@@ -151,11 +159,12 @@ class ScaffoldedTest extends Unit
      * It should allow configuring an installation
      *
      * @test
+     * @group slow
      */
     public function should_allow_configuring_an_installation(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
         $dbName = Random::dbName();
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
@@ -173,11 +182,12 @@ class ScaffoldedTest extends Unit
      * It should allow configuring a multisite subdomain installation
      *
      * @test
+     * @group slow
      */
     public function should_allow_configuring_a_multisite_subdomain_installation(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
         $dbName = Random::dbName();
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
@@ -196,11 +206,12 @@ class ScaffoldedTest extends Unit
      * It should allow configuring a multisite subfolder installation
      *
      * @test
+     * @group slow
      */
     public function should_allow_configuring_a_multisite_subfolder_installation(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
         $dbName = Random::dbName();
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
@@ -219,11 +230,12 @@ class ScaffoldedTest extends Unit
      * It should allow configuring an installation using custom configuration
      *
      * @test
+     * @group slow
      */
     public function should_allow_configuring_an_installation_using_custom_configuration(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
         $dbName = 'fixed';
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
@@ -266,11 +278,12 @@ PHP;
      * It should throw when trying to get salts
      *
      * @test
+     * @group slow
      */
     public function should_throw_when_trying_to_get_salts()
     {
         $wpRootDir = FS::tmpDir('empty-dir_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -324,11 +337,12 @@ PHP;
      * It should throw when trying to get table prefix
      *
      * @test
+     * @group slow
      */
     public function should_throw_when_trying_to_get_table_prefix(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -342,11 +356,12 @@ PHP;
      * It should throw if trying to install
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_trying_to_install()
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -360,11 +375,12 @@ PHP;
      * It should throw if trying to convert to multisite
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_trying_to_convert_to_multisite(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -378,11 +394,12 @@ PHP;
      * It should throw if trying to scaffold again
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_trying_to_scaffold_again(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -396,11 +413,12 @@ PHP;
      * It should throw if trying to get the wp-config.php file path
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_trying_to_get_the_wp_config_php_file_path(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -414,11 +432,12 @@ PHP;
      * It should not be configured
      *
      * @test
+     * @group slow
      */
     public function should_not_be_configured(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -429,11 +448,12 @@ PHP;
      * It should throw if trying to get a constant
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_trying_to_get_a_constant(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -447,11 +467,12 @@ PHP;
      * It should throw if trying to get the db
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_trying_to_get_the_db(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -465,11 +486,12 @@ PHP;
      * It should allow getting the installation constants
      *
      * @test
+     * @group slow
      */
     public function should_allow_getting_the_installation_constants(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -483,11 +505,12 @@ PHP;
      * It should allow getting the installation globals
      *
      * @test
+     * @group slow
      */
     public function should_allow_getting_the_installation_globals(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -501,11 +524,12 @@ PHP;
      * It should return plugins directory
      *
      * @test
+     * @group slow
      */
     public function should_return_plugins_directory(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -523,7 +547,7 @@ PHP;
     public function should_return_mu_plugins_directory(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '5.6.2');
+        $this->fastScaffold($wpRootDir, '5.6.2');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -538,11 +562,12 @@ PHP;
      * It should return themes directory
      *
      * @test
+     * @group slow
      */
     public function should_return_themes_directory(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -555,11 +580,12 @@ PHP;
      * It should allow getting the content dir path
      *
      * @test
+     * @group slow
      */
     public function should_allow_getting_the_content_dir_path(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -572,11 +598,12 @@ PHP;
      * It should throw if trying to update option
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_trying_to_update_option(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -590,11 +617,12 @@ PHP;
      * It should throw if trying to execute Closure in WordPress
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_trying_to_execute_closure_in_word_press(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -611,11 +639,12 @@ PHP;
      *
      * @test
      * @group sqlite
+     * @group slow
      */
     public function should_configure_correctly_with_sq_lite_database(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
         $db = new SQLiteDatabase($wpRootDir . '/wp-content', 'db.sqlite');
 
         $scaffolded = new Scaffolded($wpRootDir);
@@ -630,11 +659,12 @@ PHP;
      *
      * @test
      * @group sqlite
+     * @group slow
      */
     public function should_throw_if_sqlite_plugin_cannot_be_copied(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
         $db = new SQLiteDatabase($wpRootDir . '/wp-content', 'db.sqlite');
 
         $scaffolded = new Scaffolded($wpRootDir);
@@ -650,11 +680,12 @@ PHP;
      * It should throw if sqlite plugin db.copy file cannot be read
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_sqlite_plugin_db_copy_file_cannot_be_read(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
         $db = new SQLiteDatabase($wpRootDir . '/wp-content', 'db.sqlite');
 
         $scaffolded = new Scaffolded($wpRootDir);
@@ -675,11 +706,12 @@ PHP;
      * It should throw if sqlite drop-in placement fails
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_sqlite_drop_in_placement_fails(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
         $db = new SQLiteDatabase($wpRootDir . '/wp-content', 'db.sqlite');
 
         $scaffolded = new Scaffolded($wpRootDir);
@@ -700,11 +732,12 @@ PHP;
      * It should throw when setting db
      *
      * @test
+     * @group slow
      */
     public function should_throw_when_setting_db(): void
     {
         $wpRootDir = FS::tmpDir('scaffolded_');
-        Installation::scaffold($wpRootDir, '6.1.1');
+        $this->fastScaffold($wpRootDir, '6.1.1');
         $db = new SQLiteDatabase($wpRootDir . '/wp-content', 'db.sqlite');
 
         $scaffolded = new Scaffolded($wpRootDir);
