@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use lucatume\Rector\DowngradeCoalesceMatchAssignRector;
 use lucatume\Rector\DowngradeGetClosureCalledClassRector;
 use lucatume\Rector\DowngradePhpOsFamily;
 use lucatume\Rector\RemoveSuperglobalsFromClosureUse;
@@ -82,6 +83,9 @@ return static function (RectorConfig $rectorConfig): void {
 
     // Downgrade ReflectionFunction::getClosureCalledClass() (PHP 8.1+) for PHP < 8.1
     $rectorConfig->rule(DowngradeGetClosureCalledClassRector::class);
+
+    // Split `$x = $a ?? match(...)` before the match downgrade drops the `$a ??` fallback
+    $rectorConfig->rule(DowngradeCoalesceMatchAssignRector::class);
 
     $rectorConfig->ruleWithConfiguration(RemoveTypeHinting::class, [
         'lucatume\WPBrowser\Module\WPDb' => [
