@@ -306,6 +306,26 @@ class WP_SQLite_DB extends wpdb {
 		if ( isset( $GLOBALS['@pdo'] ) ) {
 			$pdo = $GLOBALS['@pdo'];
 		}
+
+		// Migrate the database file from a legacy path, if it exists.
+		if ( ! defined( 'DB_FILE' ) && ! file_exists( FQDB ) ) {
+			$old_db_path = FQDBDIR . '.ht.sqlite.php';
+
+			if ( file_exists( $old_db_path ) ) {
+				if ( ! rename( $old_db_path, FQDB ) ) {
+					wp_die( 'Failed to rename database file.', 'Error!' );
+				}
+
+				foreach ( array( '-wal', '-shm', '-journal' ) as $suffix ) {
+					if ( file_exists( $old_db_path . $suffix ) ) {
+						if ( ! rename( $old_db_path . $suffix, FQDB . $suffix ) ) {
+							wp_die( 'Failed to rename database file.', 'Error!' );
+						}
+					}
+				}
+			}
+		}
+
 		if ( defined( 'WP_SQLITE_AST_DRIVER' ) && WP_SQLITE_AST_DRIVER ) {
 			if ( null === $this->dbname || '' === $this->dbname ) {
 				$this->bail(
@@ -315,7 +335,6 @@ class WP_SQLite_DB extends wpdb {
 				return false;
 			}
 
-			require_once __DIR__ . '/../../wp-pdo-mysql-on-sqlite.php';
 			$this->ensure_database_directory( FQDB );
 
 			try {
