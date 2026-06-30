@@ -51,7 +51,3 @@ clean_procs:
 	rm -f var/_output/*.pid var/_output/*.running
 	set -o allexport && source tests/.env && set +o allexport && docker compose down
 .PHONY: clean_procs
-
-build_35:
-	bin/build_35.sh
-.PHONY: build_35
