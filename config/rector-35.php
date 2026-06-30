@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
-use Codeception\TestInterface;
+use lucatume\Rector\DowngradeGetClosureCalledClassRector;
+use lucatume\Rector\DowngradePhpOsFamily;
+use lucatume\Rector\RemoveSuperglobalsFromClosureUse;
 use lucatume\Rector\RemoveTypeHinting;
-use lucatume\Rector\SwapEventDispatcherEventNameParameters;
+use lucatume\Rector\SerializableThrowableCompatibilityRector;
 use Rector\Config\RectorConfig;
 use Rector\DowngradePhp72\Rector\ClassMethod\DowngradeParameterTypeWideningRector;
+use Rector\DowngradePhp81\Rector\FuncCall\DowngradeHashAlgorithmXxHashRector;
 use Rector\Renaming\Rector\MethodCall\RenameMethodRector;
 use Rector\Renaming\Rector\Name\RenameClassRector;
 use Rector\Renaming\Rector\PropertyFetch\RenamePropertyRector;
@@ -20,7 +23,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->paths([
         dirname(__DIR__) . '/includes',
         dirname(__DIR__) . '/src',
-        dirname(__DIR__) . '/tests',
+        dirname(__DIR__) . '/tests'
     ]);
 
     $rectorConfig->ruleWithConfiguration(RenameClassRector::class, [
@@ -45,10 +48,22 @@ return static function (RectorConfig $rectorConfig): void {
         new MethodCallRename('PHPUnit\Framework\Assert', 'assertFileDoesNotExist', 'assertFileNotExists')
     ]);
 
-    $rectorConfig->rule(SwapEventDispatcherEventNameParameters::class);
-
     $rectorConfig->sets([DowngradeLevelSetList::DOWN_TO_PHP_71]);
-    $rectorConfig->skip([DowngradeParameterTypeWideningRector::class]);
+    // DowngradeHashAlgorithmXxHashRector references \MHASH_XXH32 (PHP 8.1+) at instantiation,
+    // fataling on the PHP 8.0 transpile runtime. The source uses no xxh* hashing, so skip it.
+    $rectorConfig->skip([DowngradeParameterTypeWideningRector::class, DowngradeHashAlgorithmXxHashRector::class]);
+
+    // Downgrade PHP_OS_FAMILY (PHP 7.2+) to PHP_OS for PHP 7.1 compatibility
+    $rectorConfig->rule(DowngradePhpOsFamily::class);
+
+    // Make SerializableThrowable compatible with PHP <7.3 and downgrade str_contains()
+    $rectorConfig->rule(SerializableThrowableCompatibilityRector::class);
+
+    // Strip superglobals the arrow-function downgrade illegally captures into use()
+    $rectorConfig->rule(RemoveSuperglobalsFromClosureUse::class);
+
+    // Downgrade ReflectionFunction::getClosureCalledClass() (PHP 8.1+) for PHP < 8.1
+    $rectorConfig->rule(DowngradeGetClosureCalledClassRector::class);
 
     $rectorConfig->ruleWithConfiguration(RemoveTypeHinting::class, [
         'lucatume\WPBrowser\Module\WPDb' => [
@@ -80,6 +95,14 @@ return static function (RectorConfig $rectorConfig): void {
             'assertDirectoryExists' => [
                 RemoveTypeHinting::REMOVE_ALL => true
             ]
+        ],
+        'lucatume\WPBrowser\Module\WPLoader' => [
+            // from: public function _beforeSuite(array $settings = [])
+            // to: public function _beforeSuite($settings = [])
+            '_beforeSuite' => [
+                RemoveTypeHinting::REMOVE_RETURN_TYPE_HINTING => true,
+                RemoveTypeHinting::REMOVE_PARAM_TYPE_HINTING => ['settings']
+            ],
         ]
     ]);
 };
