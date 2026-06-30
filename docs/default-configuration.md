@@ -79,10 +79,19 @@ Commit the files that describe the environment: `codeception.yml`, the `tests/*.
 `tests/.env` and the database fixture `tests/Support/Data/dump.sql`, together with your plugin or theme
 code and tests.
 
-On a fresh clone, or on a CI runner, rebuild the `tests/_wordpress` installation with a single command:
+> If a global gitignore (e.g. `~/.gitignore_global`) excludes `*.sql`, the `dump.sql` fixture will not be
+> committed. `init wpbrowser` writes a `tests/Support/Data/.gitignore` with `!dump.sql` to force it back in;
+> if your project predates that, add `!tests/Support/Data/dump.sql` to your project `.gitignore`.
+
+On a fresh clone, or on a CI runner, install dependencies, rebuild the `tests/_wordpress` installation with
+[the `dev:rebuild` command](commands.md#devrebuild) and install the matching Chromedriver with
+[the `chromedriver:update` command](commands.md#chromedriverupdate):
 
 ```bash
+composer install
 vendor/bin/codecept dev:rebuild
+vendor/bin/codecept chromedriver:update
+vendor/bin/codecept run
 ```
 
 The command downloads WordPress, configures it to use SQLite and installs it in `tests/_wordpress`,
