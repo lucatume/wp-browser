@@ -10,6 +10,7 @@ use lucatume\Rector\SerializableThrowableCompatibilityRector;
 use Rector\Config\RectorConfig;
 use Rector\DowngradePhp72\Rector\ClassMethod\DowngradeParameterTypeWideningRector;
 use Rector\DowngradePhp81\Rector\FuncCall\DowngradeHashAlgorithmXxHashRector;
+use Rector\DowngradePhp81\Rector\StmtsAwareInterface\DowngradeSetAccessibleReflectionPropertyRector;
 use Rector\Renaming\Rector\MethodCall\RenameMethodRector;
 use Rector\Renaming\Rector\Name\RenameClassRector;
 use Rector\Renaming\Rector\PropertyFetch\RenamePropertyRector;
@@ -59,7 +60,16 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->sets([DowngradeLevelSetList::DOWN_TO_PHP_71]);
     // DowngradeHashAlgorithmXxHashRector references \MHASH_XXH32 (PHP 8.1+) at instantiation,
     // fataling on the PHP 8.0 transpile runtime. The source uses no xxh* hashing, so skip it.
-    $rectorConfig->skip([DowngradeParameterTypeWideningRector::class, DowngradeHashAlgorithmXxHashRector::class]);
+    //
+    // DowngradeSetAccessibleReflectionPropertyRector injects an unguarded $prop->setAccessible(true)
+    // after every `new ReflectionProperty`. The master source already guards each call with
+    // `PHP_VERSION_ID < 80100 && $prop->setAccessible(true)`, so the injected copies are redundant
+    // and, in one spot, land before the variable is assigned (fatal). Skip it; master's guards stand.
+    $rectorConfig->skip([
+        DowngradeParameterTypeWideningRector::class,
+        DowngradeHashAlgorithmXxHashRector::class,
+        DowngradeSetAccessibleReflectionPropertyRector::class,
+    ]);
 
     // Downgrade PHP_OS_FAMILY (PHP 7.2+) to PHP_OS for PHP 7.1 compatibility
     $rectorConfig->rule(DowngradePhpOsFamily::class);

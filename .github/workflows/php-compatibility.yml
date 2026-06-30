@@ -36,8 +36,15 @@ jobs:
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
-      - name: "Analyze for PHP 7.1 compatibility"
-        uses: pantheon-systems/phpcompatibility-action@v1
+      - name: "Setup PHP"
+        uses: "shivammathur/setup-php@v2"
         with:
-          test-versions: 7.1-7.4
-          paths: ${{ github.workspace }}/src
+          php-version: "7.4"
+          coverage: "none"
+      # phpcs only parses source, so skip plugins/scripts (chromedriver download etc.).
+      - name: "Install dependencies"
+        run: composer install --no-interaction --no-progress --no-plugins --no-scripts
+      - name: "Register PHPCompatibility standard"
+        run: vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility
+      - name: "Analyze for PHP 7.1-7.4 compatibility"
+        run: vendor/bin/phpcs -p --standard=config/php-compat.xml src
