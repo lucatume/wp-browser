@@ -19,6 +19,14 @@ use Rector\Set\ValueObject\DowngradeLevelSetList;
 use Rector\TypeDeclaration\Rector\ClassMethod\ArrayShapeFromConstantArrayReturnRector;
 use Rector\TypeDeclaration\Rector\Closure\AddClosureReturnTypeRector;
 
+// Load the custom rules explicitly so the harness does not depend on the target
+// project's composer autoload mapping the lucatume\Rector namespace. This lets the
+// transpile run against any source tree (e.g. a fresh master worktree) that only has
+// Rector installed. require_once is a no-op when composer already autoloaded them.
+foreach (glob(__DIR__ . '/rector/src/*.php') as $customRule) {
+    require_once $customRule;
+}
+
 return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->paths([
         dirname(__DIR__) . '/includes',

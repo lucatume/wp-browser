@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+#
+# Transpile the v4 master source down to this PHP 7.1-compatible v3.5 line.
+#
+# Run from a v3.5 branch checkout, on PHP 8.0 (the Rector step needs it):
+#
+#     plink 8.0
+#     bin/transpile-35 [<master-ref>]   # default master-ref: origin/master
+#
+# It transpiles in a throwaway worktree off master using this branch's harness
+# (config/rector-35.php + config/rector/src), then overlays the result over
+# src/, includes/ and tests/, restoring the v3.5-specific paths listed in
+# config/transpile-35-preserve.txt. composer.json, config/composer-35.json and
+# CHANGELOG.md are hand-maintained and left untouched.
+#
+# Afterwards, on PHP 7.4: composer dump-autoload && vendor/bin/codecept run unit,
+# review the diff, update CHANGELOG.md, commit.
+#
+set -euo pipefail
+
+MASTER_REF="${1:-origin/master}"
+RECTOR_VERSION="0.19.8"
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+die() { echo "transpile-35: $*" >&2; exit 1; }
+
+# --- preconditions ---------------------------------------------------------
+[ "$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')" = "8.0" ] \
+    || die "needs PHP 8.0 for the Rector step (run: plink 8.0). Current: $(php -r 'echo PHP_VERSION;')"
+
+[ -z "$(git status --porcelain)" ] \
+    || die "working tree is not clean; commit or stash first."
+
+command -v rsync >/dev/null || die "rsync is required."
+
+# --- master worktree -------------------------------------------------------
+git fetch --quiet origin
+WORKTREE="$(mktemp -d)/wpb-transpile-master"
+cleanup() { git worktree remove --force "$WORKTREE" 2>/dev/null || true; }
+trap cleanup EXIT
+
+echo "transpile-35: worktree off $MASTER_REF -> $WORKTREE"
+git worktree add --detach --quiet "$WORKTREE" "$MASTER_REF"
+
+# Use THIS branch's harness, not whatever master happens to carry.
+cp "$REPO_ROOT/config/rector-35.php" "$WORKTREE/config/rector-35.php"
+mkdir -p "$WORKTREE/config/rector"
+rsync -a --delete "$REPO_ROOT/config/rector/" "$WORKTREE/config/rector/"
+
+# --- transpile -------------------------------------------------------------
+(
+    cd "$WORKTREE"
+    echo "transpile-35: composer install + rector $RECTOR_VERSION"
+    composer install --no-interaction --no-progress
+    composer require --dev "rector/rector:$RECTOR_VERSION" -W --no-interaction --no-progress
+    composer dump-autoload -o
+    echo "transpile-35: running rector"
+    vendor/bin/rector process --config=config/rector-35.php --no-progress-bar
+)
+
+# --- overlay onto this branch ----------------------------------------------
+echo "transpile-35: overlaying src/ includes/ tests/"
+for d in src includes tests; do
+    rsync -a --delete "$WORKTREE/$d/" "$REPO_ROOT/$d/"
+done
+
+# Restore v3.5-specific paths the overlay would have dropped.
+echo "transpile-35: restoring v3.5-specific paths"
+while IFS= read -r pattern; do
+    case "$pattern" in ''|\#*) continue ;; esac
+    # Existence check on newline-delimited output (safe in $()); the actual restore
+    # pipes NUL-delimited paths straight to xargs so names with spaces survive.
+    # A bash $() command substitution strips NUL bytes, so it must not wrap the -z output.
+    [ -n "$(git ls-files "$pattern")" ] || continue
+    git ls-files -z "$pattern" | xargs -0 git checkout HEAD --
+done < "$REPO_ROOT/config/transpile-35-preserve.txt"
+
+cat <<'NEXT'
+
+transpile-35: done. Next, on PHP 7.4:
+  plink 7.4
+  composer dump-autoload
+  vendor/bin/codecept run unit
+  git diff            # review, then update CHANGELOG.md and commit
+NEXT
