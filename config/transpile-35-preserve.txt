@@ -7,3 +7,6 @@ tests/*__3.5__*
 
 # Runtime shim defining PHP 8.0 tokenizer constants used by Utils\Packer on PHP < 8.0.
 src/tokens-polyfill.php
+
+# v3.5-specific environment (snapshot version tag, service ports) the overlay must not clobber.
+tests/.env
