@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Refresh the bundled WordPress core PHPUnit test includes and the `sqlite-database-integration` plugin to their latest upstream versions (#809).
+
 ## [4.7.0] 2026-06-30;
 
 ### Added
