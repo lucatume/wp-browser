@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.7.1] 2026-06-30;
+
 ### Changed
 
 - Refresh the bundled WordPress core PHPUnit test includes and the `sqlite-database-integration` plugin to their latest upstream versions (#809).
@@ -3333,4 +3335,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.6.0]: https://github.com/lucatume/wp-browser/compare/4.5.15...4.6.0
 [4.6.1]: https://github.com/lucatume/wp-browser/compare/4.6.0...4.6.1
 [4.7.0]: https://github.com/lucatume/wp-browser/compare/4.6.1...4.7.0
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.7.0...HEAD
+[4.7.1]: https://github.com/lucatume/wp-browser/compare/4.7.0...4.7.1
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.7.1...HEAD
