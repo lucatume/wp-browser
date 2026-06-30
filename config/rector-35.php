@@ -10,6 +10,7 @@ use lucatume\Rector\RemoveTypeHinting;
 use lucatume\Rector\SerializableThrowableCompatibilityRector;
 use Rector\Config\RectorConfig;
 use Rector\DowngradePhp72\Rector\ClassMethod\DowngradeParameterTypeWideningRector;
+use Rector\DowngradePhp80\Rector\Expression\DowngradeMatchToSwitchRector;
 use Rector\DowngradePhp81\Rector\FuncCall\DowngradeHashAlgorithmXxHashRector;
 use Rector\DowngradePhp81\Rector\StmtsAwareInterface\DowngradeSetAccessibleReflectionPropertyRector;
 use Rector\Renaming\Rector\MethodCall\RenameMethodRector;
@@ -66,10 +67,15 @@ return static function (RectorConfig $rectorConfig): void {
     // after every `new ReflectionProperty`. The master source already guards each call with
     // `PHP_VERSION_ID < 80100 && $prop->setAccessible(true)`, so the injected copies are redundant
     // and, in one spot, land before the variable is assigned (fatal). Skip it; master's guards stand.
+    //
+    // DowngradeMatchToSwitchRector drops the left side of `$x = $a ?? match(...)`; skip it for
+    // MachineInformation (its only matches use that pattern) so DowngradeCoalesceMatchAssignRector
+    // can downgrade them without losing the constructor-argument fallback.
     $rectorConfig->skip([
         DowngradeParameterTypeWideningRector::class,
         DowngradeHashAlgorithmXxHashRector::class,
         DowngradeSetAccessibleReflectionPropertyRector::class,
+        DowngradeMatchToSwitchRector::class => [dirname(__DIR__) . '/src/Utils/MachineInformation.php'],
     ]);
 
     // Downgrade PHP_OS_FAMILY (PHP 7.2+) to PHP_OS for PHP 7.1 compatibility
