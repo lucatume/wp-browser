@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.7.0] 2026-06-30;
+
 ### Added
 
 - `dev:rebuild` command to build the `tests/_wordpress` installation used by the default configuration, e.g. on a fresh clone or in CI where it is not committed. Documented the default self-contained setup on GitHub Actions, with an example workflow (#807).
@@ -3326,4 +3328,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.5.15]: https://github.com/lucatume/wp-browser/compare/4.5.14...4.5.15
 [4.6.0]: https://github.com/lucatume/wp-browser/compare/4.5.15...4.6.0
 [4.6.1]: https://github.com/lucatume/wp-browser/compare/4.6.0...4.6.1
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.6.1...HEAD
+[4.7.0]: https://github.com/lucatume/wp-browser/compare/4.6.1...4.7.0
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.7.0...HEAD
