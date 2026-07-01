@@ -107,7 +107,7 @@ class WPTestCase extends Unit
      *
      * @var string[]
      */
-    protected $backupGlobalsBlacklist = [
+    protected $backupGlobalsExcludeList = [
         'wpdb',
         'wp_query',
         'wp',
@@ -152,7 +152,7 @@ class WPTestCase extends Unit
      *
      * @var array<string,array<int,string>>
      */
-    protected $backupStaticAttributesBlacklist = [
+    protected $backupStaticAttributesExcludeList = [
         // WordPress
         'WP_Block_Type_Registry' => ['instance'],
         'WP_Block_Bindings_Registry' => ['instance'],
@@ -206,8 +206,8 @@ class WPTestCase extends Unit
             && isset($_wpTestsBackupGlobalsExcludeList)
             && is_array($_wpTestsBackupGlobalsExcludeList)
         ) {
-            $this->backupGlobalsBlacklist = array_merge(
-                $this->backupGlobalsBlacklist,
+            $this->backupGlobalsExcludeList = array_merge(
+                $this->backupGlobalsExcludeList,
                 $_wpTestsBackupGlobalsExcludeList
             );
         }
@@ -238,8 +238,8 @@ class WPTestCase extends Unit
             && isset($_wpTestsBackupStaticAttributesExcludeList)
             && is_array($_wpTestsBackupStaticAttributesExcludeList)
         ) {
-            $this->backupStaticAttributesBlacklist = array_merge_recursive(
-                $this->backupStaticAttributesBlacklist,
+            $this->backupStaticAttributesExcludeList = array_merge_recursive(
+                $this->backupStaticAttributesExcludeList,
                 $_wpTestsBackupStaticAttributesExcludeList
             );
         }
@@ -257,7 +257,7 @@ class WPTestCase extends Unit
 
         $backupStaticPropertiesExcludeList = property_exists($this, 'backupStaticPropertiesExcludeList') ?
             $this->backupStaticPropertiesExcludeList :
-            array_merge($this->backupStaticAttributesBlacklist, $_wpTestsBackupStaticAttributesExcludeList);
+            array_merge($this->backupStaticAttributesExcludeList, $_wpTestsBackupStaticAttributesExcludeList);
         // @phpstan-ignore-next-line exists in PHPUnit >= 10.0.0
         $this->setBackupStaticPropertiesExcludeList($backupStaticPropertiesExcludeList);
     }
