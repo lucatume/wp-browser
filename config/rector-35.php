@@ -15,9 +15,7 @@ use Rector\DowngradePhp81\Rector\FuncCall\DowngradeHashAlgorithmXxHashRector;
 use Rector\DowngradePhp81\Rector\StmtsAwareInterface\DowngradeSetAccessibleReflectionPropertyRector;
 use Rector\Renaming\Rector\MethodCall\RenameMethodRector;
 use Rector\Renaming\Rector\Name\RenameClassRector;
-use Rector\Renaming\Rector\PropertyFetch\RenamePropertyRector;
 use Rector\Renaming\ValueObject\MethodCallRename;
-use Rector\Renaming\ValueObject\RenameProperty;
 use Rector\Set\ValueObject\DowngradeLevelSetList;
 use Rector\TypeDeclaration\Rector\ClassMethod\ArrayShapeFromConstantArrayReturnRector;
 use Rector\TypeDeclaration\Rector\Closure\AddClosureReturnTypeRector;
@@ -41,18 +39,12 @@ return static function (RectorConfig $rectorConfig): void {
         'Symfony\Contracts\EventDispatcher\Event' => 'Symfony\Component\EventDispatcher\Event',
         'Psr\EventDispatcher\EventDispatcherInterface' => 'Symfony\Component\EventDispatcher\EventDispatcherInterface'
     ]);
-    $rectorConfig->ruleWithConfiguration(RenamePropertyRector::class, [
-        new RenameProperty(
-            'lucatume\WPBrowser\TestCase\WPTestCase',
-            'backupStaticAttributesExcludeList',
-            'backupStaticAttributesBlacklist'
-        ),
-        new RenameProperty(
-            'lucatume\WPBrowser\TestCase\WPTestCase',
-            'backupGlobalsExcludeList',
-            'backupGlobalsBlacklist'
-        )
-    ]);
+    // NOTE: do NOT rename WPTestCase's backup*ExcludeList properties to the older
+    // *Blacklist names. PHPUnit 9.3+ (v3.5 runs 9.6) declares both, but treats a
+    // non-empty $backup*Blacklist as deprecated and adds a test warning, which fails
+    // any test that enables backupGlobals/backupStaticAttributes. The runtime already
+    // reflects 'backup*ExcludeList' for PHPUnit >= 9, so keeping the master names is
+    // both warning-free and consistent. See WPLoaderThemeBackupTest.
     $rectorConfig->ruleWithConfiguration(RenameMethodRector::class, [
         new MethodCallRename('PHPUnit\Framework\Assert', 'assertMatchesRegularExpression', 'assertRegExp'),
         new MethodCallRename('PHPUnit\Framework\Assert', 'assertDoesNotMatchRegularExpression', 'assertNotRegExp'),
