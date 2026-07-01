@@ -13,9 +13,7 @@ use Rector\DowngradePhp72\Rector\ClassMethod\DowngradeParameterTypeWideningRecto
 use Rector\DowngradePhp80\Rector\Expression\DowngradeMatchToSwitchRector;
 use Rector\DowngradePhp81\Rector\FuncCall\DowngradeHashAlgorithmXxHashRector;
 use Rector\DowngradePhp81\Rector\StmtsAwareInterface\DowngradeSetAccessibleReflectionPropertyRector;
-use Rector\Renaming\Rector\MethodCall\RenameMethodRector;
 use Rector\Renaming\Rector\Name\RenameClassRector;
-use Rector\Renaming\ValueObject\MethodCallRename;
 use Rector\Set\ValueObject\DowngradeLevelSetList;
 use Rector\TypeDeclaration\Rector\ClassMethod\ArrayShapeFromConstantArrayReturnRector;
 use Rector\TypeDeclaration\Rector\Closure\AddClosureReturnTypeRector;
@@ -45,11 +43,10 @@ return static function (RectorConfig $rectorConfig): void {
     // any test that enables backupGlobals/backupStaticAttributes. The runtime already
     // reflects 'backup*ExcludeList' for PHPUnit >= 9, so keeping the master names is
     // both warning-free and consistent. See WPLoaderThemeBackupTest.
-    $rectorConfig->ruleWithConfiguration(RenameMethodRector::class, [
-        new MethodCallRename('PHPUnit\Framework\Assert', 'assertMatchesRegularExpression', 'assertRegExp'),
-        new MethodCallRename('PHPUnit\Framework\Assert', 'assertDoesNotMatchRegularExpression', 'assertNotRegExp'),
-        new MethodCallRename('PHPUnit\Framework\Assert', 'assertFileDoesNotExist', 'assertFileNotExists')
-    ]);
+    // NOTE: do NOT rename these Assert methods to their pre-9.1 spellings
+    // (assertRegExp, assertNotRegExp, assertFileNotExists). PHPUnit 9.6 (the v3.5
+    // stack) declares both, but the old spellings are deprecated and emit warnings
+    // that fail the suite. Keep the master names, which are warning-free on 9.x.
 
     $rectorConfig->sets([DowngradeLevelSetList::DOWN_TO_PHP_71]);
     // DowngradeHashAlgorithmXxHashRector references \MHASH_XXH32 (PHP 8.1+) at instantiation,
