@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<ruleset name="wp-browser PHP 7.1-7.4 compatibility">
+    <description>PHPCompatibility check for the transpiled v3.5 line (PHP 7.1-7.4).</description>
+
+    <config name="testVersion" value="7.1-7.4"/>
+    <!-- Warnings (e.g. "global with $$key discouraged") are advisory; fail only on errors,
+         matching the previous pantheon-systems/phpcompatibility-action behaviour. -->
+    <config name="ignore_warnings_on_exit" value="1"/>
+    <rule ref="PHPCompatibility"/>
+
+    <!--
+        Constructs PHPCompatibility flags as "not present in PHP < 7.x" but that the transpiled
+        source guards at runtime, so they never execute on the older versions:
+        - FFI: behind an extension check and a try/catch (Utils\Filesystem cowCopy fast path).
+        - JsonException: a dead `catch` around json_encode/json_decode calls that pass no
+          JSON_THROW_ON_ERROR flag, so nothing is ever thrown (Utils\Packer).
+        - stream_isatty(): behind function_exists() (Process\SerializableThrowable).
+        - __serialize/__unserialize: the magic behaviour is gated by a PHP_VERSION_ID check.
+        These cannot be suppressed with a generated inline comment: Rector's format-preserving
+        printer does not reliably emit comments added to catch/class nodes, so the sniffs are
+        silenced here instead.
+    -->
+    <rule ref="PHPCompatibility.Classes.NewClasses.ffiFound"><severity>0</severity></rule>
+    <rule ref="PHPCompatibility.Classes.NewClasses.jsonexceptionFound"><severity>0</severity></rule>
+    <rule ref="PHPCompatibility.FunctionUse.NewFunctions.stream_isattyFound"><severity>0</severity></rule>
+    <rule ref="PHPCompatibility.FunctionNameRestrictions.NewMagicMethods.__serializeFound"><severity>0</severity></rule>
+    <rule ref="PHPCompatibility.FunctionNameRestrictions.NewMagicMethods.__unserializeFound"><severity>0</severity></rule>
+</ruleset>

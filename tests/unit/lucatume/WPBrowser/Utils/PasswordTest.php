@@ -4,6 +4,9 @@ namespace lucatume\WPBrowser\Utils;
 
 use Codeception\Test\Unit;
 
+/**
+ * @group fast
+ */
 class PasswordTest extends Unit
 {
 

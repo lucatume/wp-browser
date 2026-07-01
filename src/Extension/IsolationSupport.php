@@ -12,9 +12,9 @@ use Codeception\Extension;
 use Codeception\Test\TestCaseWrapper;
 use FilesystemIterator;
 use Iterator;
-use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
 use lucatume\WPBrowser\Process\SerializableThrowable;
 use lucatume\WPBrowser\Utils\MonkeyPatch;
+use lucatume\WPBrowser\Utils\PackedClosure;
 use lucatume\WPBrowser\Utils\Property;
 use PHPUnit\Framework\TestCase;
 use RecursiveDirectoryIterator;
@@ -44,7 +44,7 @@ class IsolationSupport extends Extension
 \$args = func_get_args();
 foreach(\$args as &\$arg){
     if(\$arg instanceof \Closure){
-        \$arg = new \lucatume\WPBrowser\Opis\Closure\SerializableClosure(\$arg);
+        \$arg = new \lucatume\WPBrowser\Utils\PackedClosure(\$arg);
     }
 }
 \$encodedDataSet = base64_encode(serialize(\$args)); 
@@ -395,7 +395,7 @@ PHP;
         }
 
         foreach ($data as &$dataElement) {
-            if ($dataElement instanceof SerializableClosure) {
+            if ($dataElement instanceof PackedClosure) {
                 $dataElement = $dataElement->getClosure();
             }
         }

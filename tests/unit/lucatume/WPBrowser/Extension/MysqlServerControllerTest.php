@@ -14,6 +14,9 @@ use PHPUnit\Framework\AssertionFailedError;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\NullOutput;
 
+/**
+ * @group fast
+ */
 class MysqlServerControllerTest extends \Codeception\Test\Unit
 {
     use UopzFunctions;

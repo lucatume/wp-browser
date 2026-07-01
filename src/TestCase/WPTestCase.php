@@ -107,13 +107,6 @@ class WPTestCase extends Unit
      *
      * @var string[]
      */
-    protected $backupGlobalsBlacklist = [];
-    /**
-     * A list of globals that should not be backed up: they are handled by the Core test case.
-     * PHPUnit >= 9.0.0.
-     *
-     * @var string[]
-     */
     protected $backupGlobalsExcludeList = [
         'wpdb',
         'wp_query',
@@ -156,13 +149,6 @@ class WPTestCase extends Unit
     /**
      * A list of static attributes that should not be backed up as they are wired to explode when doing so.
      * PHPUnit < 10.0.0.
-     *
-     * @var array<string,array<int,string>>
-     */
-    protected $backupStaticAttributesBlacklist = [];
-    /**
-     * A list of static attributes that should not be backed up as they are wired to explode when doing so.
-     * PHPUnit >= 9.0.0, < 10.0.0.
      *
      * @var array<string,array<int,string>>
      */
@@ -220,17 +206,10 @@ class WPTestCase extends Unit
             && isset($_wpTestsBackupGlobalsExcludeList)
             && is_array($_wpTestsBackupGlobalsExcludeList)
         ) {
-            if ($phpunitVersion < 9) {
-                $this->backupGlobalsBlacklist = array_merge(
-                    $this->backupGlobalsBlacklist,
-                    $_wpTestsBackupGlobalsExcludeList
-                );
-            } else {
-                $this->backupGlobalsExcludeList = array_merge(
-                    $this->backupGlobalsExcludeList,
-                    $_wpTestsBackupGlobalsExcludeList
-                );
-            }
+            $this->backupGlobalsExcludeList = array_merge(
+                $this->backupGlobalsExcludeList,
+                $_wpTestsBackupGlobalsExcludeList
+            );
         }
     }
     private function initBackupStaticPropertiesForPHPUnit(
@@ -247,6 +226,7 @@ class WPTestCase extends Unit
         if (!$isDefinedInThis && isset($_wpTestsBackupStaticAttributes) && is_bool($_wpTestsBackupStaticAttributes)) {
             $this->backupStaticAttributes = $_wpTestsBackupStaticAttributes;
         }
+
         $backupStaticAttributesExcludeListReflectionProperty = new ReflectionProperty(
             $this,
             $backupStaticAttributesExcludeListPropertyName
@@ -258,17 +238,10 @@ class WPTestCase extends Unit
             && isset($_wpTestsBackupStaticAttributesExcludeList)
             && is_array($_wpTestsBackupStaticAttributesExcludeList)
         ) {
-            if ($backupStaticAttributesExcludeListPropertyName === 'backupStaticAttributesBlacklist') {
-                $this->backupStaticAttributesBlacklist = array_merge_recursive(
-                    $this->backupStaticAttributesBlacklist,
-                    $_wpTestsBackupStaticAttributesExcludeList
-                );
-            } else {
-                $this->backupStaticAttributesExcludeList = array_merge_recursive(
-                    $this->backupStaticAttributesExcludeList,
-                    $_wpTestsBackupStaticAttributesExcludeList
-                );
-            }
+            $this->backupStaticAttributesExcludeList = array_merge_recursive(
+                $this->backupStaticAttributesExcludeList,
+                $_wpTestsBackupStaticAttributesExcludeList
+            );
         }
     }
     private function initBackupStaticPropertiesForPHPUnitGte10(): void
@@ -295,17 +268,9 @@ class WPTestCase extends Unit
      */
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
-        $phpunitVersion = (int)PHPUnitVersion::series();
-
-        if ($phpunitVersion < 9) {
-            // Swap values from the ExcludeList properties to the Blacklist properties for older PHPUnit versions.
-            $this->backupGlobalsBlacklist = $this->backupGlobalsExcludeList;
-            $this->backupGlobalsExcludeList = [];
-            $this->backupStaticAttributesBlacklist = $this->backupStaticAttributesExcludeList;
-            $this->backupStaticAttributesExcludeList = [];
-        }
-
         $this->initBackupGlobalsProperties();
+
+        $phpunitVersion = (int)PHPUnitVersion::series();
 
         if ($phpunitVersion < 9) {
             $this->initBackupStaticPropertiesForPHPUnit('backupStaticAttributes', 'backupStaticAttributesBlacklist');

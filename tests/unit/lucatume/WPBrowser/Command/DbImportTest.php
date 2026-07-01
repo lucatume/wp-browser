@@ -4,6 +4,7 @@
 namespace lucatume\WPBrowser\Command;
 
 use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
+use lucatume\WPBrowser\Tests\Traits\FastScaffold;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem;
@@ -17,16 +18,17 @@ use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 /**
- * @group slow
  */
 class DbImportTest extends \Codeception\Test\Unit
 {
     use TmpFilesCleanup;
+    use FastScaffold;
 
     /**
      * It should throw if path does not point to installation directory
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_path_does_not_point_to_installation_directory(): void
     {
@@ -46,11 +48,12 @@ class DbImportTest extends \Codeception\Test\Unit
      * It should throw if dump file does not exist
      *
      * @test
+     * @group slow
      */
     public function should_throw_if_dump_file_does_not_exist(): void
     {
         $path = Filesystem::tmpDir('dbexport_');
-        Installation::scaffold($path);
+        $this->fastScaffold($path);
         $input = new StringInput("$path $path/dump.sql");
         $output = new BufferedOutput();
 
@@ -66,6 +69,8 @@ class DbImportTest extends \Codeception\Test\Unit
      * It should throw if installation db cannot be found
      *
      * @test
+     * @group slow
+     * @group requires-mysql-server
      */
     public function should_throw_if_installation_db_cannot_be_found(): void
     {
@@ -76,7 +81,7 @@ class DbImportTest extends \Codeception\Test\Unit
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         touch("$path/dump.sql");
-        Installation::scaffold($path);
+        $this->fastScaffold($path);
         $input = new StringInput("$path $path/dump.sql");
         $output = new BufferedOutput();
 
@@ -92,6 +97,8 @@ class DbImportTest extends \Codeception\Test\Unit
      * It should correctly import db
      *
      * @test
+     * @group slow
+     * @group requires-mysql-server
      */
     public function should_correctly_import_db(): void
     {
@@ -101,7 +108,7 @@ class DbImportTest extends \Codeception\Test\Unit
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $installation = Installation::scaffold($path)
+        $installation = $this->fastScaffold($path)
             ->configure($db)
             ->install(
                 'http://wordpress.local',
@@ -131,12 +138,13 @@ class DbImportTest extends \Codeception\Test\Unit
      * It should correctly import sqlite db
      *
      * @test
+     * @group slow
      */
     public function should_correctly_import_sqlite_db(): void
     {
         $path = Filesystem::tmpDir('dbexport_');
         $db = new SQLiteDatabase($path, 'db.sqlite');
-        $installation = Installation::scaffold($path)
+        $installation = $this->fastScaffold($path)
             ->configure($db)
             ->install(
                 'http://wordpress.local',

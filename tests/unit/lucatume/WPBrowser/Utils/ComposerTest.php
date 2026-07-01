@@ -10,6 +10,9 @@ use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use PHPUnit\Framework\Assert;
 
+/**
+ * @group fast
+ */
 class ComposerTest extends \Codeception\Test\Unit
 {
     use UopzFunctions;

@@ -5,6 +5,9 @@ use Generator;
 use InvalidArgumentException;
 use lucatume\WPBrowser\Utils\Db;
 
+/**
+ * @group fast
+ */
 class dbTest extends Unit
 {
     public function testDbDsnMapTypeDataProvider(): array

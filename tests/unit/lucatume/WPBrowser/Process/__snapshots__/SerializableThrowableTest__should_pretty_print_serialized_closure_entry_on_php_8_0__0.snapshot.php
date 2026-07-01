@@ -1,12 +1,5 @@
-/tests/unit/lucatume/WPBrowser/Process/SerializableThrowableTest.php:44
-closure://static function () {
-   1|            $set = 'foo';
-   2|            $bar = 'bar';
-   3|
- > 4|            self::throwingMethod();
-   5|        }:4
-/includes/opis/closure/src/SerializableClosure.php:1
+/tests/unit/lucatume/WPBrowser/Process/SerializableThrowableTest.php:47
+closure://JHBhY2tlciA9IG5ldyBcbHVjYXR1bWVcV1BCcm93c2VyXFV0aWxzXFBhY2tlcigpOwokY2xvc3VyZSA9IHN0YXRpYyBmdW5jdGlvbiAoKSB7CiAgICAgICAgICAgICRzZXQgPSAnZm9vJzsKICAgICAgICAgICAgJGJhciA9ICdiYXInOwoKICAgICAgICAgICAgbHVjYXR1bWVcV1BCcm93c2VyXFByb2Nlc3NcU2VyaWFsaXphYmxlVGhyb3dhYmxlVGVzdDo6dGhyb3dpbmdNZXRob2QoKTsKICAgICAgICB9OwokY2xvc3VyZVRoaXMgPSBudWxsOwpyZXR1cm4gXENsb3N1cmU6OmJpbmQoJGNsb3N1cmUsICRjbG9zdXJlVGhpcywgJ2x1Y2F0dW1lXFxXUEJyb3dzZXJcXFByb2Nlc3NcXFNlcmlhbGl6YWJsZVRocm93YWJsZVRlc3QnKTs=:5
+/src/Utils/PackedClosure.php:1
 /tests/unit/lucatume/WPBrowser/Process/SerializableThrowableTest.php:1
 /tests/unit/lucatume/WPBrowser/Process/SerializableThrowableTest.php:1
-/vendor/symfony/console/Command/Command.php:1
-/vendor/bin/codecept:1

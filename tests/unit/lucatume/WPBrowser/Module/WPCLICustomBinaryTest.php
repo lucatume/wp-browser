@@ -9,6 +9,9 @@ use Codeception\Test\Unit;
 use lucatume\WPBrowser\Module\WPCLI;
 use lucatume\WPBrowser\Utils\Filesystem;
 
+/**
+ * @group fast
+ */
 class WPCLICustomBinaryTest extends Unit
 {
     /**

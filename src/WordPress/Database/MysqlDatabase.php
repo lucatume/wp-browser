@@ -318,6 +318,8 @@ class MysqlDatabase implements DatabaseInterface
             $this->create();
         }
 
+        $this->setWordPressCompatibleSqlMode($pdo);
+
         while (!feof($dumpFileHandle)) {
             $read = fgets($dumpFileHandle);
 
@@ -421,5 +423,32 @@ class MysqlDatabase implements DatabaseInterface
         $_ENV['DB_DIR'] = '';
         putenv('DB_FILE=');
         $_ENV['DB_FILE'] = '';
+    }
+
+    /**
+     * Mirrors WordPress core's wpdb::set_sql_mode(): strips session modes that
+     * conflict with WordPress' schema (notably `NO_ZERO_DATE` and the strict
+     * table modes) so that dumps produced by WordPress can be replayed on
+     * MySQL 8+ where those modes are enabled by default.
+     */
+    private function setWordPressCompatibleSqlMode(PDO $pdo): void
+    {
+        $incompatibleModes = [
+            'NO_ZERO_DATE',
+            'ONLY_FULL_GROUP_BY',
+            'STRICT_TRANS_TABLES',
+            'STRICT_ALL_TABLES',
+            'TRADITIONAL',
+            'ANSI',
+        ];
+
+        $stmt = $pdo->query('SELECT @@SESSION.sql_mode');
+        $currentModes = $stmt === false ? '' : (string)$stmt->fetchColumn();
+        $safeModes = array_diff(
+            array_filter(explode(',', $currentModes)),
+            $incompatibleModes
+        );
+
+        $pdo->exec("SET SESSION sql_mode='" . implode(',', $safeModes) . "'");
     }
 }

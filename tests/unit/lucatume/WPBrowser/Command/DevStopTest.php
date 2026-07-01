@@ -13,6 +13,9 @@ use lucatume\WPBrowser\Traits\UopzFunctions;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
+/**
+ * @group fast
+ */
 class DevStopTest extends \Codeception\Test\Unit
 {
     use UopzFunctions;

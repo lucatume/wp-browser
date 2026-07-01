@@ -17,6 +17,9 @@ use PDOStatement;
 use PHPUnit\Framework\AssertionFailedError;
 use RuntimeException;
 
+/**
+ * @group requires-mysql-server
+ */
 class WPDbTest extends Unit
 {
     use UopzFunctions;
@@ -120,6 +123,7 @@ SQL;
      * It should throw if specified dump file does not exist
      *
      * @test
+     * @group fast
      */
     public function it_should_throw_if_specified_dump_file_does_not_exist(): void
     {
@@ -137,6 +141,7 @@ SQL;
      * It should throw is specified dump file is not readable
      *
      * @test
+     * @group fast
      */
     public function it_should_throw_is_specified_dump_file_is_not_readable(): void
     {
@@ -158,6 +163,7 @@ SQL;
      * It should not try to replace the site url in the dump if url replacement is false
      *
      * @test
+     * @group fast
      */
     public function should_not_try_to_replace_the_site_url_in_the_dump_if_url_replacement_is_false(): void
     {
@@ -230,6 +236,7 @@ SQL;
      * It should support using DB url to set up module
      *
      * @test
+     * @group fast
      */
     public function should_support_using_db_url_to_set_up_module(): void
     {
@@ -248,6 +255,7 @@ SQL;
      * It should throw throw if dbUrl not set and credentials are missing
      *
      * @test
+     * @group fast
      */
     public function should_throw_throw_if_db_url_not_set_and_credentials_are_missing(): void
     {
@@ -265,6 +273,7 @@ SQL;
      *
      * @test
      * @group sqlite
+     * @group fast
      */
     public function should_throw_if_using_salite_database_and_url_replacement_function(): void
     {
@@ -308,6 +317,7 @@ SQL;
      *
      * @test
      * @group sqlite
+     * @group fast
      */
     public function should_initialize_correctly_on_existing_sqlite_file(): void
     {
@@ -328,6 +338,7 @@ SQL;
      *
      * @test
      * @group sqlite
+     * @group fast
      */
     public function should_initialize_correctly_with_sqlite_db_and_crate_if_not_exists_flag(): void
     {
@@ -348,6 +359,7 @@ SQL;
      *
      * @test
      * @group sqlite
+     * @group fast
      */
     public function should_support_post_operations_with_sqlite_db(): void
     {
@@ -389,6 +401,7 @@ SQL;
      *
      * @test
      * @group sqlite
+     * @group fast
      */
     public function should_support_user_operations_with_sqlite(): void
     {
@@ -422,6 +435,7 @@ SQL;
      *
      * @test
      * @group sqlite
+     * @group fast
      */
     public function should_support_blog_operations_with_sqlite(): void
     {
@@ -470,6 +484,7 @@ SQL;
      *
      * @test
      * @group sqlite
+     * @group fast
      */
     public function should_support_custom_post_operations_with_sqlite(): void
     {
@@ -549,6 +564,7 @@ SQL;
 
     /**
      * @dataProvider modesProvider
+     * @group fast
      */
     public function testGetDbhSetsModesOnDbh(array $currentModes, string $expectedModes): void
     {
@@ -596,6 +612,9 @@ SQL;
         $this->assertEquals($expectedModes, $setModes);
     }
 
+    /**
+     * @group fast
+     */
     public function testGetDbhWillNotSetModesOnSqlite(): void
     {
         $config = [

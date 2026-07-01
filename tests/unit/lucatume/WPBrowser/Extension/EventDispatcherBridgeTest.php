@@ -15,6 +15,9 @@ use PHPUnit\Framework\Assert;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
+/**
+ * @group fast
+ */
 class EventDispatcherBridgeTest extends Unit
 {
     use UopzFunctions;

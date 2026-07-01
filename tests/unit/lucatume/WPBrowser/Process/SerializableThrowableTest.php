@@ -6,11 +6,14 @@ use Codeception\Test\Unit;
 use Codeception\Util\StackTraceFilter;
 use Exception;
 use Generator;
-use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
+use lucatume\WPBrowser\Utils\PackedClosure;
 use RuntimeException;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 use Throwable;
 
+/**
+ * @group fast
+ */
 class SerializableThrowableTest extends Unit
 {
     use SnapshotAssertions;
@@ -52,7 +55,7 @@ class SerializableThrowableTest extends Unit
 
             self::throwingMethod();
         };
-        $s = serialize(new SerializableClosure($throwing));
+        $s = serialize(new PackedClosure($throwing));
         try {
             unserialize($s)();
         } catch (RuntimeException $t) {
@@ -63,7 +66,18 @@ class SerializableThrowableTest extends Unit
         $serializableThrowable->colorize(false);
         $serialized = serialize($serializableThrowable);
         $unserialized = unserialize($serialized)->getThrowable(SerializableThrowable::RELATIVE_PAHTNAMES);
-        return trim(StackTraceFilter::getFilteredStackTrace($unserialized));
+        $trace = StackTraceFilter::getFilteredStackTrace($unserialized);
+        $traceString = is_string($trace) ? $trace : '';
+
+        // Strip upstream runner frames (Symfony console, codecept bin, PHPUnit).
+        // These vary across PHP/Xdebug/opcache setups and are not what this test
+        // validates — the subject is the closure pretty-print in the middle frames.
+        $lines = array_filter(explode("\n", $traceString), static function (string $line) : bool {
+            return strncmp($line, '/vendor/', strlen('/vendor/')) !== 0
+                && strncmp($line, '/bin/', strlen('/bin/')) !== 0;
+        });
+
+        return trim(implode("\n", $lines));
     }
 
     /**

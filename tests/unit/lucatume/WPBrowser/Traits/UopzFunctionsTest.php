@@ -25,6 +25,9 @@ require_once codecept_data_dir('uopz-test/functions.php');
 require_once codecept_data_dir('uopz-test/global-classes.php');
 require_once codecept_data_dir('uopz-test/namespaced-classes.php');
 
+/**
+ * @group fast
+ */
 class UopzFunctionsTest extends Unit
 {
     use UopzFunctions;

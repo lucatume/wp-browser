@@ -4,6 +4,9 @@ namespace lucatume\WPBrowser\Module;
 
 use Codeception\Test\Unit;
 
+/**
+ * @group fast
+ */
 class WPBrowserMethodsTest extends Unit
 {
     use WPBrowserMethods;

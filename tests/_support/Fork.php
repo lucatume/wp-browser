@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Tests\Traits;
 
-use lucatume\WPBrowser\Opis\Closure\SerializableClosure;
 use lucatume\WPBrowser\Process\SerializableThrowable;
+use lucatume\WPBrowser\Utils\PackedClosure;
 
 /**
  * Class Fork.
@@ -139,7 +139,7 @@ class Fork
 
         try {
             $result = ($this->callback)();
-            $resultClosure = new SerializableClosure(static function () use ($result) {
+            $resultClosure = new PackedClosure(static function () use ($result) {
                 return $result;
             });
             $resultPayload = serialize($resultClosure);
@@ -160,7 +160,8 @@ class Fork
         while (true) {
             $chunk = substr($resultPayload, $offset, $this->ipcSocketChunkSize);
 
-            if ($chunk === '') {
+            // PHP < 8.0 returns false (not '') when $offset >= strlen($resultPayload).
+            if ($chunk === '' || $chunk === false) {
                 break;
             }
 
@@ -204,7 +205,7 @@ class Fork
         }
 
         try {
-            /** @var SerializableClosure|SerializableThrowable $unserializedPayload */
+            /** @var PackedClosure|SerializableThrowable $unserializedPayload */
             $unserializedPayload = @unserialize($resultPayload);
             $result = $unserializedPayload instanceof SerializableThrowable ?
                 $unserializedPayload->getThrowable() : $unserializedPayload->getClosure()();

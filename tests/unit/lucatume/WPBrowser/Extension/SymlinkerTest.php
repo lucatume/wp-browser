@@ -9,6 +9,7 @@ use Codeception\Exception\ModuleException;
 use Codeception\Suite;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Extension\Symlinker;
+use lucatume\WPBrowser\Tests\Traits\FastScaffold;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
@@ -20,6 +21,7 @@ class SymlinkerTest extends Unit
 {
     use LoopIsolation;
     use TmpFilesCleanup;
+    use FastScaffold;
 
     private function getSuiteEvent(): SuiteEvent
     {
@@ -31,6 +33,9 @@ class SymlinkerTest extends Unit
         return new SuiteEvent(new Suite());
     }
 
+    /**
+     * @group fast
+     */
     public function test_exists(): void
     {
         $symlinker = new Symlinker([
@@ -40,6 +45,9 @@ class SymlinkerTest extends Unit
         $this->assertInstanceOf(Symlinker::class, $symlinker);
     }
 
+    /**
+     * @group fast
+     */
     public function test_throw_if_wp_root_folder_is_not_set(): void
     {
         $this->expectException(ModuleConfigException::class);
@@ -66,6 +74,9 @@ class SymlinkerTest extends Unit
         });
     }
 
+    /**
+     * @group fast
+     */
     public function test_throw_if_plugins_are_not_array(): void
     {
         $this->expectException(ModuleConfigException::class);
@@ -79,6 +90,9 @@ class SymlinkerTest extends Unit
         $symlinker->onModuleInit($suiteEvent);
     }
 
+    /**
+     * @group fast
+     */
     public function test_throw_if_themes_are_not_array(): void
     {
         $this->expectException(ModuleConfigException::class);
@@ -92,11 +106,14 @@ class SymlinkerTest extends Unit
         $symlinker->onModuleInit($suiteEvent);
     }
 
+    /**
+     * @group slow
+     */
     public function test_without_plugins_or_themes(): void
     {
         $workingDir = FS::tmpDir('symlinker_');
         $wpRoot = FS::tmpDir('symlinker_');
-        Installation::scaffold($wpRoot);
+        $this->fastScaffold($wpRoot);
         $suiteEvent = $this->getSuiteEvent();
 
         $symlinker = new Symlinker([
@@ -113,6 +130,9 @@ class SymlinkerTest extends Unit
         });
     }
 
+    /**
+     * @group fast
+     */
     public function test_throws_if_plugin_file_does_not_exist(): void
     {
         $wpRoot = FS::tmpDir('symlinker_', [
@@ -133,6 +153,9 @@ class SymlinkerTest extends Unit
         ], []);
     }
 
+    /**
+     * @group fast
+     */
     public function test_throws_if_theme_is_not_a_directory(): void
     {
         $wpRoot = FS::tmpDir('symlinker_', [
@@ -153,6 +176,9 @@ class SymlinkerTest extends Unit
         ], []);
     }
 
+    /**
+     * @group slow
+     */
     public function test_with_relative_paths(): void
     {
         $workingDir = FS::tmpDir('symlinker_', [
@@ -224,7 +250,7 @@ PHP
             ]
         ]);
         $wpRoot = FS::tmpDir('symlinker_');
-        Installation::scaffold($wpRoot);
+        $this->fastScaffold($wpRoot);
         $suiteEvent = $this->getSuiteEvent();
 
         $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent) {
@@ -245,14 +271,14 @@ PHP
                 ]
             ], []);
 
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
             $symlinker->onModuleInit($suiteEvent);
 
@@ -267,17 +293,20 @@ PHP
 
             $symlinker->afterSuite($suiteEvent);
 
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
         });
     }
 
+    /**
+     * @group slow
+     */
     public function test_with_absolute_paths(): void
     {
         $workingDir = FS::tmpDir('symlinker_', [
@@ -349,7 +378,7 @@ PHP
             ]
         ]);
         $wpRoot = FS::tmpDir('symlinker_');
-        Installation::scaffold($wpRoot);
+        $this->fastScaffold($wpRoot);
         $suiteEvent = $this->getSuiteEvent();
 
         $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent) {
@@ -370,14 +399,14 @@ PHP
                 ]
             ], []);
 
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
             $symlinker->onModuleInit($suiteEvent);
 
@@ -392,17 +421,20 @@ PHP
 
             $symlinker->afterSuite($suiteEvent);
 
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
         });
     }
 
+    /**
+     * @group slow
+     */
     public function test_will_not_cleanup_after_suite_by_default(): void
     {
         $workingDir = FS::tmpDir('symlinker_', [
@@ -474,7 +506,7 @@ PHP
             ]
         ]);
         $wpRoot = FS::tmpDir('symlinker_');
-        Installation::scaffold($wpRoot);
+        $this->fastScaffold($wpRoot);
         $suiteEvent = $this->getSuiteEvent();
 
         $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent) {
@@ -494,14 +526,14 @@ PHP
                 ]
             ], []);
 
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
             $symlinker->onModuleInit($suiteEvent);
 
@@ -527,6 +559,9 @@ PHP
         });
     }
 
+    /**
+     * @group slow
+     */
     public function test_will_not_cleanup_after_suite_if_configured_not_to(): void
     {
         $workingDir = FS::tmpDir('symlinker_', [
@@ -598,7 +633,7 @@ PHP
             ]
         ]);
         $wpRoot = FS::tmpDir('symlinker_');
-        Installation::scaffold($wpRoot);
+        $this->fastScaffold($wpRoot);
         $suiteEvent = $this->getSuiteEvent();
 
         $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent) {
@@ -619,14 +654,14 @@ PHP
                 ]
             ], []);
 
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
             $symlinker->onModuleInit($suiteEvent);
 
@@ -652,6 +687,9 @@ PHP
         });
     }
 
+    /**
+     * @group slow
+     */
     public function test_will_leave_existing_symlinks_in_place(): void
     {
         $workingDir = FS::tmpDir('symlinker_', [
@@ -723,7 +761,7 @@ PHP
             ]
         ]);
         $wpRoot = FS::tmpDir('symlinker_');
-        Installation::scaffold($wpRoot);
+        $this->fastScaffold($wpRoot);
         $suiteEvent = $this->getSuiteEvent();
 
         $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent) {
@@ -786,6 +824,9 @@ PHP
         });
     }
 
+    /**
+     * @group slow
+     */
     public function test_will_throw_if_link_found_not_pointing_to_same_target(): void
     {
         $workingDir = FS::tmpDir('symlinker_', [
@@ -822,7 +863,7 @@ PHP
         ]);
         $wpRoot = FS::tmpDir('symlinker_');
         $otherDir = FS::tmpDir('symlinker_');
-        Installation::scaffold($wpRoot);
+        $this->fastScaffold($wpRoot);
         $suiteEvent = $this->getSuiteEvent();
 
         $this->expectException(ModuleException::class);
@@ -855,6 +896,9 @@ PHP
         });
     }
 
+    /**
+     * @group slow
+     */
     public function test_allows_the_dot_as_relative_path(): void
     {
         $workingDir = FS::tmpDir('symlinker_', [
@@ -866,7 +910,7 @@ PHP
 
         ]);
         $wpRoot = FS::tmpDir('symlinker_');
-        Installation::scaffold($wpRoot);
+        $this->fastScaffold($wpRoot);
         $suiteEvent = $this->getSuiteEvent();
 
         $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent) {
@@ -883,7 +927,7 @@ PHP
 
             $workDirBasename = basename($workingDir);
 
-            Assert::assertFileNotExists($wpRoot . "/wp-content/plugins/{$workDirBasename}/plugin.php");
+            Assert::assertFileDoesNotExist($wpRoot . "/wp-content/plugins/{$workDirBasename}/plugin.php");
 
             $symlinker->onModuleInit($suiteEvent);
 

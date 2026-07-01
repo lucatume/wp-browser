@@ -9,6 +9,9 @@ use lucatume\WPBrowser\Exceptions\RuntimeException;
 use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Composer;
 
+/**
+ * @group fast
+ */
 class ChromedriverTest extends Unit
 {
     use UopzFunctions;
@@ -151,7 +154,7 @@ class ChromedriverTest extends Unit
 
         $this->assertEquals(0, pcntl_wexitstatus($chromedriver->stop()));
 
-        $this->assertFileNotExists($pidFile);
+        $this->assertFileDoesNotExist($pidFile);
     }
 
     /**

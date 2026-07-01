@@ -8,6 +8,9 @@ use PDO;
 use RuntimeException;
 use wpdb;
 
+/**
+ * @group fast
+ */
 class wpTest extends Unit
 {
     private function makeMockWpdbWithTables(array $tables): array
@@ -42,6 +45,7 @@ class wpTest extends Unit
 
     /**
      * Test dropWpTables will drop all tables if whitelist not specified
+     * @group requires-mysql-server
      */
     public function test_drop_wp_tables_will_drop_all_tables_if_whitelist_not_specified(): void
     {
@@ -65,6 +69,7 @@ class wpTest extends Unit
 
     /**
      * Test dropWpTables will drop only tables in whitelist
+     * @group requires-mysql-server
      */
     public function test_drop_wp_tables_will_drop_only_tables_in_whitelist(): void
     {
@@ -86,6 +91,9 @@ class wpTest extends Unit
         $this->assertEquals('wp_custom_table_2', $pdo->query("SHOW TABLES LIKE 'wp_custom_table_2'")->fetchColumn());
     }
 
+    /**
+     * @group requires-mysql-server
+     */
     public function test_foreign_key_checks_will_not_prevent_table_dropping(): void
     {
         [$wpdb, $pdo] = $this->makeMockWpdbWithTables([
@@ -184,6 +192,7 @@ class wpTest extends Unit
 
     /**
      * Test emptyWpTables will empty all tables if whitelist not specified
+     * @group requires-mysql-server
      */
     public function test_empty_wp_tables_will_empty_all_tables_if_whitelist_not_specified(): void
     {
@@ -217,6 +226,7 @@ class wpTest extends Unit
 
     /**
      * Test emptyWpTables will empty only tables in whitelist
+     * @group requires-mysql-server
      */
     public function test_empty_wp_tables_will_empty_only_tables_in_whitelist(): void
     {

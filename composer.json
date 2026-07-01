@@ -45,6 +45,7 @@
     "phpstan/extension-installer": "^1.0",
     "phpstan/phpstan-symfony": "^0.12.44",
     "squizlabs/php_codesniffer": "^3.7",
+    "phpcompatibility/php-compatibility": "^9.3",
     "lucatume/codeception-snapshot-assertions": "^0.4"
   },
   "autoload": {
@@ -53,12 +54,12 @@
         "src/",
         "src/Deprecated"
       ],
-      "Hautelook\\Phpass\\": "includes/Hautelook/Phpass",
-      "lucatume\\WPBrowser\\Opis\\Closure\\" : "includes/opis/closure/src"
+      "Hautelook\\Phpass\\": "includes/Hautelook/Phpass"
     },
     "files": [
+      "src/tokens-polyfill.php",
       "src/version-4-aliases.php",
-      "src/Deprecated/deprecated-functions.php",
+      "src/deprecated-functions.php",
       "src/functions.php",
       "src/shim.php"
     ]

@@ -9,6 +9,9 @@ use lucatume\WPBrowser\Process\Protocol\Control;
 use lucatume\WPBrowser\Process\Protocol\ProtocolException;
 use lucatume\WPBrowser\Traits\UopzFunctions;
 
+/**
+ * @group fast
+ */
 class ControlTest extends Unit
 {
     use UopzFunctions;

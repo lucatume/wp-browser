@@ -8,6 +8,9 @@ use lucatume\WPBrowser\Utils\MonkeyPatch;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
+/**
+ * @group fast
+ */
 class MonkeyCacheClearTest extends Unit
 {
     /**

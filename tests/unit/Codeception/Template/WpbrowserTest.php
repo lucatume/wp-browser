@@ -4,6 +4,8 @@ namespace Codeception\Template;
 
 use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
 use lucatume\WPBrowser\Tests\FSTemplates\BedrockProject;
+use lucatume\WPBrowser\Tests\Traits\FastScaffold;
+use lucatume\WPBrowser\Tests\Traits\PhaseTimer;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Codeception;
 use lucatume\WPBrowser\Utils\Env;
@@ -15,12 +17,13 @@ use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 /**
- * @group slow
  */
 class WpbrowserTest extends \Codeception\Test\Unit
 {
     use TmpFilesCleanup;
     use SnapshotAssertions;
+    use PhaseTimer;
+    use FastScaffold;
 
     private function mockComposerBin(string $directory): void
     {
@@ -41,6 +44,19 @@ EOT;
 
     private function replaceRandomPorts(array $expected, array $actual, string $file): array
     {
+        // symfony/yaml 6/7 dump an empty inline map as `{  }`, symfony/yaml 8 (PHP 8.4+) as `{}`;
+        // normalize both so the scaffolded codeception.yml snapshots match across versions.
+        $normalizeEmptyMaps = static function (array $lines) : array {
+            return array_map(
+                static function (string $line) : string {
+                    return (string)preg_replace('/\{ +\}/', '{}', $line);
+                },
+                $lines
+            );
+        };
+        $expected = $normalizeEmptyMaps($expected);
+        $actual = $normalizeEmptyMaps($actual);
+
         if (substr_compare($file, 'tests/.env', -strlen('tests/.env')) !== 0) {
             return [$expected, $actual];
         }
@@ -63,6 +79,7 @@ EOT;
      * It should scaffold for plugin with plugin.php file
      *
      * @test
+     * @group slow
      */
     public function should_scaffold_for_plugin_with_plugin_php_file(): void
     {
@@ -132,6 +149,7 @@ EOT;
      * It should scaffold for plugin with non plugin.php file
      *
      * @test
+     * @group slow
      */
     public function should_scaffold_for_plugin_with_non_plugin_php_file(): void
     {
@@ -318,6 +336,7 @@ EOT;
      * It should scaffold for theme correctly
      *
      * @test
+     * @group slow
      */
     public function should_scaffold_for_theme_correctly(): void
     {
@@ -395,6 +414,7 @@ PHP
      * It should scaffold for child theme correctly
      *
      * @test
+     * @group slow
      */
     public function should_scaffold_for_child_theme_correctly(): void
     {
@@ -554,6 +574,8 @@ PHP
      * It should scaffold for single site correctly
      *
      * @test
+     * @group slow
+     * @group requires-mysql-server
      */
     public function should_scaffold_for_single_site_correctly(): void
     {
@@ -580,7 +602,7 @@ EOT;
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        Installation::scaffold($projectDir . '/site')
+        $this->fastScaffold($projectDir . '/site')
             ->configure($db)->install('https://the-project.local', 'admin', 'secret', 'admin@the-project.local', 'The Project');
 
         $this->mockComposerBin($projectDir . '/site');
@@ -628,6 +650,8 @@ EOT;
      * It should scaffold for multi-site correctly
      *
      * @test
+     * @group slow
+     * @group requires-mysql-server
      */
     public function should_scaffold_for_multi_site_correctly(): void
     {
@@ -640,22 +664,31 @@ EOT;
 }
 EOT;
 
-        $projectDir = FS::tmpDir('setup_', [
-            'site' => [
-                'composer.json' => $composerFileCode,
-                'vendor' => [
-                    'bin' => [
-                    ]
-                ],
-            ]
-        ]);
+        $projectDir = $this->phase('FS::tmpDir (tree)', function () use ($composerFileCode) {
+            return FS::tmpDir('setup_', [
+                'site' => [
+                    'composer.json' => $composerFileCode,
+                    'vendor' => [
+                        'bin' => [
+                        ]
+                    ],
+                ]
+            ]);
+        });
         $dbName = Random::dbName();
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        Installation::scaffold($projectDir . '/site')
-            ->configure($db, InstallationStateInterface::MULTISITE_SUBDOMAIN)->install('https://the-project.local', 'admin', 'secret', 'admin@the-project.local', 'The Project');
+        $scaffolded = $this->phase('Installation::scaffold', function () use ($projectDir) {
+            return $this->fastScaffold($projectDir . '/site');
+        });
+        $configured = $this->phase('configure (multisite subdomain)', function () use ($scaffolded, $db) {
+            return $scaffolded->configure($db, InstallationStateInterface::MULTISITE_SUBDOMAIN);
+        });
+        $this->phase('install (multisite)', function () use ($configured) {
+            return $configured->install('https://the-project.local', 'admin', 'secret', 'admin@the-project.local', 'The Project');
+        });
 
         $this->mockComposerBin($projectDir . '/site');
 
@@ -672,7 +705,9 @@ EOT;
             "yes\n" // Yes, use recommended setup.
         );
 
-        $process->mustRun();
+        $this->phase('codecept init wpbrowser (subprocess)', function () use ($process) {
+            return $process->mustRun();
+        });
 
         $this->assertDirectoryExists($projectDir . '/site/wp-content/mu-plugins/sqlite-database-integration');
         $this->assertFileExists($projectDir . '/site/wp-content/db.php');
@@ -688,20 +723,25 @@ EOT;
         unlink($projectDir . '/site/' . Codeception::dataDir() . '/db.sqlite');
         unlink($projectDir . '/site/' . Codeception::dataDir() . '/dump.sql');
 
-        $this->assertMatchesStringSnapshot(file_get_contents($projectDir . '/site/codeception.yml'));
+        $this->phase('assertMatchesStringSnapshot codeception.yml', function () use ($projectDir) {
+            return $this->assertMatchesStringSnapshot(file_get_contents($projectDir . '/site/codeception.yml'));
+        });
         // Random ports will change: visit the data to replace the random ports with a placeholder.
-        $this->assertMatchesDirectorySnapshot(
-            $projectDir . '/site/tests',
-            function (array $expected, array $actual, string $file) {
-                return $this->replaceRandomPorts($expected, $actual, $file);
-            }
-        );
+        $this->phase('assertMatchesDirectorySnapshot tests', function () use ($projectDir) {
+            return $this->assertMatchesDirectorySnapshot(
+                $projectDir . '/site/tests',
+                function (array $expected, array $actual, string $file) {
+                    return $this->replaceRandomPorts($expected, $actual, $file);
+                }
+            );
+        });
     }
 
     /**
      * It should scaffold correctly on site with non default structure
      *
      * @test
+     * @group slow
      */
     public function should_scaffold_correctly_on_site_with_non_default_structure(): void
     {
@@ -750,6 +790,7 @@ EOT;
      * It should scaffold correctly on site with non default structure using default configuration
      *
      * @test
+     * @group slow
      */
     public function should_scaffold_correctly_on_site_with_non_default_structure_using_default_configuration(): void
     {

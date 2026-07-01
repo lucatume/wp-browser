@@ -8,13 +8,19 @@ use Codeception\Exception\ExtensionException;
 use Codeception\Lib\Console\Output;
 use Codeception\Suite;
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Command\ParallelRun\WorkerResourceEnv;
 use lucatume\WPBrowser\Extension\ChromeDriverController;
 use lucatume\WPBrowser\ManagedProcess\ChromeDriver;
 use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Composer;
+use lucatume\WPBrowser\Utils\Filesystem;
 use stdClass;
+use Symfony\Component\Console\Output\BufferedOutput;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
+/**
+ * @group fast
+ */
 class ChromeDriverControllerTest extends Unit
 {
     use UopzFunctions;
@@ -26,6 +32,19 @@ class ChromeDriverControllerTest extends Unit
     private $output;
 
     /**
+     * @var string|null
+     */
+    private $savedNeedsChromedriverServer;
+    /**
+     * @var string|null
+     */
+    private $savedNeedsChromedriverEnv;
+    /**
+     * @var string|false
+     */
+    private $savedNeedsChromedriverGetenv = false;
+
+    /**
      * @before
      * @after
      */
@@ -34,6 +53,37 @@ class ChromeDriverControllerTest extends Unit
         $pidFile = ChromeDriver::getPidFile();
         if (is_file($pidFile)) {
             unlink($pidFile);
+        }
+    }
+
+    /**
+     * @before
+     */
+    public function isolateWorkerNeedsChromedriverEnv(): void
+    {
+        $var = WorkerResourceEnv::ENV_NEEDS_CHROMEDRIVER;
+        $this->savedNeedsChromedriverServer = array_key_exists($var, $_SERVER) ? (string)$_SERVER[$var] : null;
+        $this->savedNeedsChromedriverEnv    = array_key_exists($var, $_ENV) ? (string)$_ENV[$var] : null;
+        $this->savedNeedsChromedriverGetenv = getenv($var);
+
+        unset($_SERVER[$var], $_ENV[$var]);
+        putenv($var);
+    }
+
+    /**
+     * @after
+     */
+    public function restoreWorkerNeedsChromedriverEnv(): void
+    {
+        $var = WorkerResourceEnv::ENV_NEEDS_CHROMEDRIVER;
+        if ($this->savedNeedsChromedriverServer !== null) {
+            $_SERVER[$var] = $this->savedNeedsChromedriverServer;
+        }
+        if ($this->savedNeedsChromedriverEnv !== null) {
+            $_ENV[$var] = $this->savedNeedsChromedriverEnv;
+        }
+        if ($this->savedNeedsChromedriverGetenv !== false) {
+            putenv($var . '=' . $this->savedNeedsChromedriverGetenv);
         }
     }
 
@@ -148,7 +198,7 @@ class ChromeDriverControllerTest extends Unit
 
         $extension = new ChromeDriverController($config, $options);
 
-        $this->assertFileNotExists(ChromeDriver::getPidFile());
+        $this->assertFileDoesNotExist(ChromeDriver::getPidFile());
 
         $mockSuite = $this->make(Suite::class, ['getName' => 'end2end']);
         $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
@@ -163,7 +213,7 @@ class ChromeDriverControllerTest extends Unit
      */
     public function should_start_for_all_suites_if_no_suites_specified(): void
     {
-        $this->assertFileNotExists(ChromeDriver::getPidFile());
+        $this->assertFileDoesNotExist(ChromeDriver::getPidFile());
 
         $config = [];
         $options = [];
@@ -183,7 +233,7 @@ class ChromeDriverControllerTest extends Unit
      */
     public function should_handle_chromedriver_lifecycle(): void
     {
-        $this->assertFileNotExists(ChromeDriver::getPidFile());
+        $this->assertFileDoesNotExist(ChromeDriver::getPidFile());
 
         $config = ['suites' => ['end2end']];
         $options = [];
@@ -197,7 +247,7 @@ class ChromeDriverControllerTest extends Unit
 
         $extension->stop($this->output);
 
-        $this->assertFileNotExists(ChromeDriver::getPidFile());
+        $this->assertFileDoesNotExist(ChromeDriver::getPidFile());
 
         $extension->stop($this->output);
     }
@@ -238,7 +288,7 @@ class ChromeDriverControllerTest extends Unit
      */
     public function should_correctly_produce_information(): void
     {
-        $this->assertFileNotExists(ChromeDriver::getPidFile());
+        $this->assertFileDoesNotExist(ChromeDriver::getPidFile());
 
         $config = ['suites' => ['end2end']];
         $options = [];
@@ -250,9 +300,11 @@ class ChromeDriverControllerTest extends Unit
 
         $this->assertFileExists(ChromeDriver::getPidFile());
 
+        $expectedPidFile = Filesystem::relativePath(codecept_root_dir(), ChromeDriver::getPidFile());
+
         $this->assertEquals([
             'running' => 'yes',
-            'pidFile' => 'var/_output/chromedriver.pid',
+            'pidFile' => $expectedPidFile,
             'port' => 4444,
         ], $extension->getInfo());
 
@@ -260,7 +312,7 @@ class ChromeDriverControllerTest extends Unit
 
         $this->assertEquals([
             'running' => 'no',
-            'pidFile' => 'var/_output/chromedriver.pid',
+            'pidFile' => $expectedPidFile,
             'port' => 4444,
         ], $extension->getInfo());
     }
@@ -272,7 +324,7 @@ class ChromeDriverControllerTest extends Unit
      */
     public function should_throw_if_binary_set_and_is_not_string(): void
     {
-        $this->assertFileNotExists(ChromeDriver::getPidFile());
+        $this->assertFileDoesNotExist(ChromeDriver::getPidFile());
 
         $config = ['suites' => ['end2end'], 'binary' => 23];
         $options = [];
@@ -294,7 +346,7 @@ class ChromeDriverControllerTest extends Unit
      */
     public function should_throw_if_binary_set_and_is_not_executable(): void
     {
-        $this->assertFileNotExists(ChromeDriver::getPidFile());
+        $this->assertFileDoesNotExist(ChromeDriver::getPidFile());
 
         $config = ['suites' => ['end2end'], 'binary' => __DIR__ . '/foo-bar.file'];
         $options = [];
@@ -307,5 +359,27 @@ class ChromeDriverControllerTest extends Unit
         $this->expectExceptionMessage('The "binary" configuration option must be an executable file.');
 
         $extension->onModuleInit($this->make(SuiteEvent::class, ['getSuite' => $mockSuite]));
+    }
+
+    public function test_start_skips_when_worker_marked_as_not_needing_chromedriver(): void
+    {
+        $_SERVER[WorkerResourceEnv::ENV_NEEDS_CHROMEDRIVER] = '0';
+        $_ENV[WorkerResourceEnv::ENV_NEEDS_CHROMEDRIVER]    = '0';
+        putenv(WorkerResourceEnv::ENV_NEEDS_CHROMEDRIVER . '=0');
+
+        try {
+            $controller = new ChromeDriverController([], []);
+            $output = new BufferedOutput();
+            $controller->start($output);
+
+            $this->assertStringContainsString(
+                'ChromeDriver not needed by this worker; skipping.',
+                $output->fetch()
+            );
+            $this->assertFileDoesNotExist(ChromeDriver::getPidFile());
+        } finally {
+            unset($_SERVER[WorkerResourceEnv::ENV_NEEDS_CHROMEDRIVER], $_ENV[WorkerResourceEnv::ENV_NEEDS_CHROMEDRIVER]);
+            putenv(WorkerResourceEnv::ENV_NEEDS_CHROMEDRIVER);
+        }
     }
 }

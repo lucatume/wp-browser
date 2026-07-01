@@ -6,6 +6,9 @@ use Codeception\Test\Unit;
 use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\MachineInformation;
 
+/**
+ * @group fast
+ */
 class MachineInformationTest extends Unit
 {
     use UopzFunctions;

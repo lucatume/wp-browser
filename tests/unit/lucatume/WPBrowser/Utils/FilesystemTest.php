@@ -8,6 +8,9 @@ use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Filesystem;
 use RuntimeException;
 
+/**
+ * @group fast
+ */
 class FilesystemTest extends Unit
 {
     use TmpFilesCleanup;
@@ -140,7 +143,7 @@ class FilesystemTest extends Unit
 
         Filesystem::rrmdir($root . '/sub-dir-1/delme.txt');
 
-        $this->assertFileNotExists($root . '/sub-dir-1/delme.txt');
+        $this->assertFileDoesNotExist($root . '/sub-dir-1/delme.txt');
 
         Filesystem::rrmdir($root);
 

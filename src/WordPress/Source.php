@@ -13,8 +13,11 @@ class Source
     {
         $envSourceDir = Env::get('WPBROWSER_WORDPRESS_SOURCE_DIR', null);
 
-        if (is_string($envSourceDir) && is_dir($envSourceDir . DIRECTORY_SEPARATOR . $version)) {
-            return $envSourceDir . DIRECTORY_SEPARATOR . $version;
+        if (is_string($envSourceDir)) {
+            $envVersionDir = $envSourceDir . DIRECTORY_SEPARATOR . $version;
+            if (is_file($envVersionDir . '/wp-config-sample.php')) {
+                return $envVersionDir;
+            }
         }
 
         $cacheDir = FS::cacheDir();

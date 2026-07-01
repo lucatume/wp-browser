@@ -19,6 +19,9 @@ use stdClass;
 use Symfony\Component\Yaml\Yaml;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
+/**
+ * @group fast
+ */
 class DockerComposeControllerTest extends Unit
 {
     use UopzFunctions;

@@ -199,9 +199,10 @@ class EndToEndTester extends \Codeception\Actor
 
 <<< /tests/Support/EndToEndTester.php <<<
 
->>> /tests/Support/Data/.gitkeep >>>
+>>> /tests/Support/Data/.gitignore >>>
+!dump.sql
 
-<<< /tests/Support/Data/.gitkeep <<<
+<<< /tests/Support/Data/.gitignore <<<
 
 >>> /tests/EndToEnd/_bootstrap.php >>>
 <?php
@@ -272,8 +273,8 @@ TEST_TABLE_PREFIX=test_
 WORDPRESS_TABLE_PREFIX=wp_
 
 # The URL and domain of the WordPress site used in end-to-end tests.
-WORDPRESS_URL=http://localhost:45130
-WORDPRESS_DOMAIN=localhost:45130
+WORDPRESS_URL=http://localhost:17209
+WORDPRESS_DOMAIN=localhost:17209
 WORDPRESS_ADMIN_PATH=/wp-admin
 
 # The username and password of the administrator user of the WordPress site used in end-to-end tests.
@@ -282,10 +283,13 @@ WORDPRESS_ADMIN_PASSWORD=password
 
 # The host and port of the ChromeDriver server that will be used in end-to-end tests.
 CHROMEDRIVER_HOST=localhost
-CHROMEDRIVER_PORT=53682
+CHROMEDRIVER_PORT=9945
 
 # The port on which the PHP built-in server will serve the WordPress installation.
-BUILTIN_SERVER_PORT=45130
+BUILTIN_SERVER_PORT=17209
+# The WordPress version installed by `init`, reused by the `dev:rebuild` command.
+WORDPRESS_VERSION=7.0
+
 
 <<< /tests/.env <<<
 
@@ -341,6 +345,7 @@ extensions:
         - lucatume\WPBrowser\Command\DevStop
         - lucatume\WPBrowser\Command\DevInfo
         - lucatume\WPBrowser\Command\DevRestart
+        - lucatume\WPBrowser\Command\DevRebuild
         - lucatume\WPBrowser\Command\ChromedriverUpdate
 
 <<< /codeception.yml <<<

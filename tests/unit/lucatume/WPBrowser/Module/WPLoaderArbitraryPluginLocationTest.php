@@ -6,8 +6,10 @@ use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Tests\Traits\DatabaseAssertions;
+use lucatume\WPBrowser\Tests\Traits\FastScaffold;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
 use lucatume\WPBrowser\Tests\Traits\MainInstallationAccess;
+use lucatume\WPBrowser\Tests\Traits\PhaseTimer;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
@@ -19,6 +21,10 @@ use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 // @group slow
 // @group isolated-2
+/**
+ * @group slow
+ * @group requires-mysql-server
+ */
 class WPLoaderArbitraryPluginLocationTest extends Unit
 {
     use SnapshotAssertions;
@@ -26,6 +32,8 @@ class WPLoaderArbitraryPluginLocationTest extends Unit
     use LoopIsolation;
     use TmpFilesCleanup;
     use MainInstallationAccess;
+    use PhaseTimer;
+    use FastScaffold;
 
     /**
      * @var \Codeception\Lib\ModuleContainer
@@ -64,7 +72,7 @@ class WPLoaderArbitraryPluginLocationTest extends Unit
     public function test_loads_plugins_from_default_location_correctly(): void
     {
         $projectDir = FS::tmpDir('wploader_');
-        $installation = Installation::scaffold($projectDir);
+        $installation = $this->fastScaffold($projectDir);
         $dbName = Random::dbName();
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
@@ -139,7 +147,7 @@ PHP
     public function test_loads_plugins_and_ensures_them_loaded(): void
     {
         $projectDir = FS::tmpDir('wploader_');
-        $installation = Installation::scaffold($projectDir);
+        $installation = $this->fastScaffold($projectDir);
         $dbName = Random::dbName();
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
@@ -248,7 +256,7 @@ PHP;
             ]
         ]);
         $wpRootDir = $projectDir . '/var/wordpress';
-        $installation = Installation::scaffold($wpRootDir);
+        $installation = $this->fastScaffold($wpRootDir);
         $dbName = Random::dbName();
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
@@ -257,7 +265,7 @@ PHP;
         // Copy WooCommerce from the main installation to a temporary directory.
         $tmpDir = sys_get_temp_dir();
         $mainWPInstallationRootDir = Env::get('WORDPRESS_ROOT_DIR');
-        if (!FS::recurseCopy(
+        if (!FS::cowCopy(
             $mainWPInstallationRootDir . '/wp-content/plugins/woocommerce',
             $tmpDir . '/external-woocommerce'
         )) {
@@ -265,7 +273,7 @@ PHP;
         }
         $externalAbsolutePathPluginDir = $tmpDir . '/external-woocommerce';
         $this->assertFileExists($externalAbsolutePathPluginDir . '/woocommerce.php');
-        if (!FS::recurseCopy(
+        if (!FS::cowCopy(
             codecept_data_dir('plugins/some-external-plugin'),
             $projectDir . '/vendor/acme/some-external-plugin'
         )) {
@@ -389,7 +397,7 @@ PHP;
             ]
         ]);
         $wpRootDir = $projectDir . '/var/wordpress';
-        $installation = Installation::scaffold($wpRootDir);
+        $installation = $this->fastScaffold($wpRootDir);
         $dbName = Random::dbName();
         $dbHost = Env::get('WORDPRESS_DB_HOST');
         $dbUser = Env::get('WORDPRESS_DB_USER');
@@ -398,7 +406,7 @@ PHP;
         // Copy WooCommerce from the main installation to a temporary directory.
         $tmpDir = sys_get_temp_dir();
         $mainWPInstallationRootDir = Env::get('WORDPRESS_ROOT_DIR');
-        if (!FS::recurseCopy(
+        if (!FS::cowCopy(
             $mainWPInstallationRootDir . '/wp-content/plugins/woocommerce',
             $tmpDir . '/external-woocommerce'
         )) {
@@ -406,7 +414,7 @@ PHP;
         }
         $externalAbsolutePathPluginDir = $tmpDir . '/external-woocommerce';
         $this->assertFileExists($externalAbsolutePathPluginDir . '/woocommerce.php');
-        if (!FS::recurseCopy(
+        if (!FS::cowCopy(
             codecept_data_dir('plugins/some-external-plugin'),
             $projectDir . '/vendor/acme/some-external-plugin'
         )) {

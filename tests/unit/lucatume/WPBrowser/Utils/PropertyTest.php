@@ -61,6 +61,9 @@ class PropertyAccessTestTargetGrandchild extends PropertyAccessTestTargetChild
     public static $publicStatic = 1731;
 }
 
+/**
+ * @group fast
+ */
 class PropertyTest extends Unit
 {
     /**

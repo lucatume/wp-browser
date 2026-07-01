@@ -40,8 +40,7 @@ class FiltersGroup
      *                                        the default one.
      * @param callable|null       $addWith    The callable that should be used to add the filters, or `null` to use the
      */
-    public function __construct(
-        array $filters = [],
+    public function __construct(array $filters = [],
         ?callable $removeWith = null,
         ?callable $addWith = null
     ) {

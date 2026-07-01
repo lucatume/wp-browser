@@ -6,6 +6,9 @@ use Codeception\Test\Unit;
 use lucatume\WPBrowser\Iterators\Filters\SetupTearDownQueriesFilter as Filter;
 use UnitTester;
 
+/**
+ * @group fast
+ */
 class SetupTearDownQueriesFilterTest extends Unit
 {
     protected $backupGlobals = false;

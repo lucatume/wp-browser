@@ -3,6 +3,9 @@
 use Codeception\Test\Unit;
 use Generator;
 
+/**
+ * @group fast
+ */
 class UserTest extends Unit
 {
     public function usernamesDataSet(): array

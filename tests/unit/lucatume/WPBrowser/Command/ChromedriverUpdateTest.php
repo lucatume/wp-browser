@@ -8,6 +8,9 @@ use lucatume\WPBrowser\Exceptions\RuntimeException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 
+/**
+ * @group fast
+ */
 class ChromedriverUpdateTest extends \Codeception\Test\Unit
 {
     /**

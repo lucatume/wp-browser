@@ -33,7 +33,7 @@ class GenerationCommandsTest extends Unit
      */
     public function removeTestCaseFile(): void
     {
-        if (!file_exists($this->testCaseFile)) {
+        if ($this->testCaseFile === null || !file_exists($this->testCaseFile)) {
             return;
         }
 
@@ -71,25 +71,18 @@ class GenerationCommandsTest extends Unit
 
         $suite = static::$suite;
 
-        // Generate the test example.
+        $testCaseFileRelativePath = "tests/{$suite}/{$commandClass}Test.php";
+        $this->testCaseFile = codecept_root_dir($testCaseFileRelativePath);
+
         (new Process([PHP_BINARY, $codeceptionBin, $commandName, $suite, $commandClass]))->mustRun();
 
-        $testCaseFileRelativePath = "tests/{$suite}/{$commandClass}Test.php";
-        $testCaseFile = codecept_root_dir($testCaseFileRelativePath);
-
-        $this->assertFileExists($testCaseFile);
-
-        $this->testCaseFile = $testCaseFile;
+        $this->assertFileExists($this->testCaseFile);
 
         $runProcess = new Process(
             [PHP_BINARY, $codeceptionBin, 'codeception:run', $testCaseFileRelativePath]
         );
         $runProcess->run();
         $exitCode = $runProcess->getExitCode();
-
-        if ($exitCode !== 0) {
-            $this->testCaseFile = null;
-        }
 
         $this->assertEquals(0, $exitCode, $this->formatRunProcessOutput($runProcess));
     }

@@ -7,6 +7,9 @@ use lucatume\WPBrowser\Exceptions\InvalidArgumentException;
 use lucatume\WPBrowser\Utils\Filesystem;
 use lucatume\WPBrowser\WordPress\CliProcess;
 
+/**
+ * @group fast
+ */
 class CliProcessTest extends \Codeception\Test\Unit
 {
     /**

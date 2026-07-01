@@ -3,6 +3,7 @@
 namespace lucatume\WPBrowser\Extension;
 
 use Codeception\Exception\ExtensionException;
+use lucatume\WPBrowser\Command\ParallelRun\WorkerResourceEnv;
 use lucatume\WPBrowser\ManagedProcess\ChromeDriver;
 use lucatume\WPBrowser\Utils\ChromedriverInstaller;
 use lucatume\WPBrowser\Utils\Composer;
@@ -18,6 +19,11 @@ class ChromeDriverController extends ServiceExtension
      */
     public function start(OutputInterface $output): void
     {
+        if (WorkerResourceEnv::isDisabled(WorkerResourceEnv::ENV_NEEDS_CHROMEDRIVER)) {
+            $output->writeln('ChromeDriver not needed by this worker; skipping.');
+            return;
+        }
+
         $pidFile = $this->getPidFile();
 
         if ($this->isProcessRunning($pidFile)) {

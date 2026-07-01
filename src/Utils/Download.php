@@ -41,12 +41,9 @@ class Download
         curl_setopt($curlHandle, CURLOPT_TIMEOUT, 120);
         curl_setopt($curlHandle, CURLOPT_FILE, $file);
 
-        // Set the user agent header.
-        curl_setopt(
-            $curlHandle,
-            CURLOPT_USERAGENT,
-            'Mozilla/5.0 (compatible; Embedded MySql; +https://github.com/lucatume/wp-browser'
-        );
+        // dev.mysql.com's CDN now 403s non-tool user agents; mirror the curl CLI's UA, which is allowed.
+        $curlVersion = curl_version();
+        curl_setopt($curlHandle, CURLOPT_USERAGENT, 'curl/' . ($curlVersion['version'] ?? '8.7.1'));
 
         if (!$verifyHost) {
             /** @noinspection CurlSslServerSpoofingInspection */

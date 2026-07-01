@@ -31,6 +31,9 @@ class _UseMemoInvocableObject
     }
 }
 
+/**
+ * @group fast
+ */
 class functionsTest extends \Codeception\Test\Unit
 {
 

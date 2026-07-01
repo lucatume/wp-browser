@@ -4,6 +4,9 @@ use Codeception\Test\Unit;
 use InvalidArgumentException;
 use lucatume\WPBrowser\Polyfills\Dotenv\Dotenv;
 
+/**
+ * @group fast
+ */
 class DotenvTest extends Unit
 {
     /**

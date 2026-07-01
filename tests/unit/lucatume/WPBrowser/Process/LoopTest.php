@@ -6,6 +6,9 @@ namespace Unit\lucatume\WPBrowser\Process;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Process\Loop;
 
+/**
+ * @group fast
+ */
 class LoopTest extends Unit
 {
     /**

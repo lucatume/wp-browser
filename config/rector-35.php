@@ -2,53 +2,85 @@
 
 declare(strict_types=1);
 
-use Codeception\TestInterface;
+use lucatume\Rector\DowngradeCoalesceMatchAssignRector;
+use lucatume\Rector\DowngradeGetClosureCalledClassRector;
+use lucatume\Rector\DowngradePhpOsFamily;
+use lucatume\Rector\RemoveSuperglobalsFromClosureUse;
 use lucatume\Rector\RemoveTypeHinting;
-use lucatume\Rector\SwapEventDispatcherEventNameParameters;
+use lucatume\Rector\SerializableThrowableCompatibilityRector;
 use Rector\Config\RectorConfig;
 use Rector\DowngradePhp72\Rector\ClassMethod\DowngradeParameterTypeWideningRector;
-use Rector\Renaming\Rector\MethodCall\RenameMethodRector;
+use Rector\DowngradePhp80\Rector\Expression\DowngradeMatchToSwitchRector;
+use Rector\DowngradePhp81\Rector\FuncCall\DowngradeHashAlgorithmXxHashRector;
+use Rector\DowngradePhp81\Rector\StmtsAwareInterface\DowngradeSetAccessibleReflectionPropertyRector;
 use Rector\Renaming\Rector\Name\RenameClassRector;
-use Rector\Renaming\Rector\PropertyFetch\RenamePropertyRector;
-use Rector\Renaming\ValueObject\MethodCallRename;
-use Rector\Renaming\ValueObject\RenameProperty;
 use Rector\Set\ValueObject\DowngradeLevelSetList;
 use Rector\TypeDeclaration\Rector\ClassMethod\ArrayShapeFromConstantArrayReturnRector;
 use Rector\TypeDeclaration\Rector\Closure\AddClosureReturnTypeRector;
+
+// Load the custom rules explicitly so the harness does not depend on the target
+// project's composer autoload mapping the lucatume\Rector namespace. This lets the
+// transpile run against any source tree (e.g. a fresh master worktree) that only has
+// Rector installed. require_once is a no-op when composer already autoloaded them.
+foreach (glob(__DIR__ . '/rector/src/*.php') as $customRule) {
+    require_once $customRule;
+}
 
 return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->paths([
         dirname(__DIR__) . '/includes',
         dirname(__DIR__) . '/src',
-        dirname(__DIR__) . '/tests',
+        dirname(__DIR__) . '/tests'
     ]);
 
     $rectorConfig->ruleWithConfiguration(RenameClassRector::class, [
         'Symfony\Contracts\EventDispatcher\Event' => 'Symfony\Component\EventDispatcher\Event',
         'Psr\EventDispatcher\EventDispatcherInterface' => 'Symfony\Component\EventDispatcher\EventDispatcherInterface'
     ]);
-    $rectorConfig->ruleWithConfiguration(RenamePropertyRector::class, [
-        new RenameProperty(
-            'lucatume\WPBrowser\TestCase\WPTestCase',
-            'backupStaticAttributesExcludeList',
-            'backupStaticAttributesBlacklist'
-        ),
-        new RenameProperty(
-            'lucatume\WPBrowser\TestCase\WPTestCase',
-            'backupGlobalsExcludeList',
-            'backupGlobalsBlacklist'
-        )
-    ]);
-    $rectorConfig->ruleWithConfiguration(RenameMethodRector::class, [
-        new MethodCallRename('PHPUnit\Framework\Assert', 'assertMatchesRegularExpression', 'assertRegExp'),
-        new MethodCallRename('PHPUnit\Framework\Assert', 'assertDoesNotMatchRegularExpression', 'assertNotRegExp'),
-        new MethodCallRename('PHPUnit\Framework\Assert', 'assertFileDoesNotExist', 'assertFileNotExists')
-    ]);
-
-    $rectorConfig->rule(SwapEventDispatcherEventNameParameters::class);
+    // NOTE: do NOT rename WPTestCase's backup*ExcludeList properties to the older
+    // *Blacklist names. PHPUnit 9.3+ (v3.5 runs 9.6) declares both, but treats a
+    // non-empty $backup*Blacklist as deprecated and adds a test warning, which fails
+    // any test that enables backupGlobals/backupStaticAttributes. The runtime already
+    // reflects 'backup*ExcludeList' for PHPUnit >= 9, so keeping the master names is
+    // both warning-free and consistent. See WPLoaderThemeBackupTest.
+    // NOTE: do NOT rename these Assert methods to their pre-9.1 spellings
+    // (assertRegExp, assertNotRegExp, assertFileNotExists). PHPUnit 9.6 (the v3.5
+    // stack) declares both, but the old spellings are deprecated and emit warnings
+    // that fail the suite. Keep the master names, which are warning-free on 9.x.
 
     $rectorConfig->sets([DowngradeLevelSetList::DOWN_TO_PHP_71]);
-    $rectorConfig->skip([DowngradeParameterTypeWideningRector::class]);
+    // DowngradeHashAlgorithmXxHashRector references \MHASH_XXH32 (PHP 8.1+) at instantiation,
+    // fataling on the PHP 8.0 transpile runtime. The source uses no xxh* hashing, so skip it.
+    //
+    // DowngradeSetAccessibleReflectionPropertyRector injects an unguarded $prop->setAccessible(true)
+    // after every `new ReflectionProperty`. The master source already guards each call with
+    // `PHP_VERSION_ID < 80100 && $prop->setAccessible(true)`, so the injected copies are redundant
+    // and, in one spot, land before the variable is assigned (fatal). Skip it; master's guards stand.
+    //
+    // DowngradeMatchToSwitchRector drops the left side of `$x = $a ?? match(...)`; skip it for
+    // MachineInformation (its only matches use that pattern) so DowngradeCoalesceMatchAssignRector
+    // can downgrade them without losing the constructor-argument fallback.
+    $rectorConfig->skip([
+        DowngradeParameterTypeWideningRector::class,
+        DowngradeHashAlgorithmXxHashRector::class,
+        DowngradeSetAccessibleReflectionPropertyRector::class,
+        DowngradeMatchToSwitchRector::class => [dirname(__DIR__) . '/src/Utils/MachineInformation.php'],
+    ]);
+
+    // Downgrade PHP_OS_FAMILY (PHP 7.2+) to PHP_OS for PHP 7.1 compatibility
+    $rectorConfig->rule(DowngradePhpOsFamily::class);
+
+    // Make SerializableThrowable compatible with PHP <7.3 and downgrade str_contains()
+    $rectorConfig->rule(SerializableThrowableCompatibilityRector::class);
+
+    // Strip superglobals the arrow-function downgrade illegally captures into use()
+    $rectorConfig->rule(RemoveSuperglobalsFromClosureUse::class);
+
+    // Downgrade ReflectionFunction::getClosureCalledClass() (PHP 8.1+) for PHP < 8.1
+    $rectorConfig->rule(DowngradeGetClosureCalledClassRector::class);
+
+    // Split `$x = $a ?? match(...)` before the match downgrade drops the `$a ??` fallback
+    $rectorConfig->rule(DowngradeCoalesceMatchAssignRector::class);
 
     $rectorConfig->ruleWithConfiguration(RemoveTypeHinting::class, [
         'lucatume\WPBrowser\Module\WPDb' => [
@@ -80,6 +112,14 @@ return static function (RectorConfig $rectorConfig): void {
             'assertDirectoryExists' => [
                 RemoveTypeHinting::REMOVE_ALL => true
             ]
+        ],
+        'lucatume\WPBrowser\Module\WPLoader' => [
+            // from: public function _beforeSuite(array $settings = [])
+            // to: public function _beforeSuite($settings = [])
+            '_beforeSuite' => [
+                RemoveTypeHinting::REMOVE_RETURN_TYPE_HINTING => true,
+                RemoveTypeHinting::REMOVE_PARAM_TYPE_HINTING => ['settings']
+            ],
         ]
     ]);
 };

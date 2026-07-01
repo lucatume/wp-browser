@@ -8,12 +8,15 @@ use Codeception\Exception\ExtensionException;
 use Codeception\Lib\Console\Output;
 use Codeception\Suite;
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Command\ParallelRun\WorkerResourceEnv;
 use lucatume\WPBrowser\Extension\BuiltInServerController;
 use lucatume\WPBrowser\ManagedProcess\PhpBuiltInServer;
 use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Composer;
+use lucatume\WPBrowser\Utils\Filesystem;
 use lucatume\WPBrowser\Utils\Random;
 use stdClass;
+use Symfony\Component\Console\Output\BufferedOutput;
 use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
 
 class PhpBuiltInServerMock extends PhpBuiltInServer
@@ -47,6 +50,50 @@ class BuiltInServerControllerTest extends Unit
      * @var \Codeception\Lib\Console\Output
      */
     private $output;
+
+    /**
+     * @var string|null
+     */
+    private $savedNeedsServerServer;
+    /**
+     * @var string|null
+     */
+    private $savedNeedsServerEnv;
+    /**
+     * @var string|false
+     */
+    private $savedNeedsServerGetenv = false;
+
+    /**
+     * @before
+     */
+    public function isolateWorkerNeedsServerEnv(): void
+    {
+        $var = WorkerResourceEnv::ENV_NEEDS_SERVER;
+        $this->savedNeedsServerServer = array_key_exists($var, $_SERVER) ? (string)$_SERVER[$var] : null;
+        $this->savedNeedsServerEnv    = array_key_exists($var, $_ENV) ? (string)$_ENV[$var] : null;
+        $this->savedNeedsServerGetenv = getenv($var);
+
+        unset($_SERVER[$var], $_ENV[$var]);
+        putenv($var);
+    }
+
+    /**
+     * @after
+     */
+    public function restoreWorkerNeedsServerEnv(): void
+    {
+        $var = WorkerResourceEnv::ENV_NEEDS_SERVER;
+        if ($this->savedNeedsServerServer !== null) {
+            $_SERVER[$var] = $this->savedNeedsServerServer;
+        }
+        if ($this->savedNeedsServerEnv !== null) {
+            $_ENV[$var] = $this->savedNeedsServerEnv;
+        }
+        if ($this->savedNeedsServerGetenv !== false) {
+            putenv($var . '=' . $this->savedNeedsServerGetenv);
+        }
+    }
 
     /**
      * @before
@@ -98,6 +145,7 @@ class BuiltInServerControllerTest extends Unit
      *
      * @test
      * @dataProvider notArrayOfStringsProvider
+     * @group fast
      * @param mixed $suites
      */
     public function should_throw_if_suite_configuration_parameter_is_not_array_of_strings($suites): void
@@ -131,6 +179,7 @@ class BuiltInServerControllerTest extends Unit
      *
      * @test
      * @dataProvider notIntGreaterThanZeroProvider
+     * @group fast
      * @param mixed $port
      */
     public function should_throw_if_config_port_is_not_int_greater_than_0($port): void
@@ -168,6 +217,7 @@ class BuiltInServerControllerTest extends Unit
      *
      * @test
      * @dataProvider notValidDirectoryProvider
+     * @group fast
      * @param mixed $docroot
      */
     public function should_throw_if_config_docroot_is_not_existing_directory($docroot): void
@@ -189,6 +239,7 @@ class BuiltInServerControllerTest extends Unit
      *
      * @test
      * @dataProvider notIntGreaterThanZeroProvider
+     * @group fast
      * @param mixed $workers
      */
     public function should_throw_if_config_workers_is_not_int_greater_than_0($workers): void
@@ -228,6 +279,7 @@ class BuiltInServerControllerTest extends Unit
      *
      * @test
      * @dataProvider notAssociativeArrayWithStringsProvider
+     * @group fast
      * @param mixed $env
      */
     public function should_throw_if_config_env_is_not_associative_array_with_string_keys($env): void
@@ -251,6 +303,7 @@ class BuiltInServerControllerTest extends Unit
      * It should replace CC root dir placeholder in env array
      *
      * @test
+     * @group fast
      */
     public function should_replace_cc_root_dir_placeholder_in_env_array(): void
     {
@@ -289,7 +342,7 @@ class BuiltInServerControllerTest extends Unit
 
         $extension->stop($this->output);
 
-        $this->assertFileNotExists(PhpBuiltInServer::getPidFile());
+        $this->assertFileDoesNotExist(PhpBuiltInServer::getPidFile());
 
         $extension->stop($this->output);
     }
@@ -330,9 +383,10 @@ class BuiltInServerControllerTest extends Unit
      */
     public function should_correctly_produce_information(): void
     {
-        $this->assertFileNotExists(PhpBuiltInServer::getPidFile());
+        $this->assertFileDoesNotExist(PhpBuiltInServer::getPidFile());
 
-        $config = ['docroot' => __DIR__, 'port' => 8923];
+        $port = Random::openLocalhostPort();
+        $config = ['docroot' => __DIR__, 'port' => $port];
         $options = [];
 
         $extension = new BuiltInServerController($config, $options);
@@ -342,13 +396,15 @@ class BuiltInServerControllerTest extends Unit
 
         $this->assertFileExists(PhpBuiltInServer::getPidFile());
 
+        $expectedPidFile = Filesystem::relativePath(codecept_root_dir(), PhpBuiltInServer::getPidFile());
+
         $this->assertEquals([
             'running' => 'yes',
-            'pidFile' => 'var/_output/php-built-in-server.pid',
-            'port' => 8923,
+            'pidFile' => $expectedPidFile,
+            'port' => $port,
             'docroot' => ltrim(str_replace(getcwd(), '', __DIR__),DIRECTORY_SEPARATOR),
             'workers' => 5,
-            'url' => 'http://localhost:8923/',
+            'url' => "http://localhost:{$port}/",
             'env' => [],
         ], $extension->getInfo());
 
@@ -356,12 +412,37 @@ class BuiltInServerControllerTest extends Unit
 
         $this->assertEquals([
             'running' => 'no',
-            'pidFile' => 'var/_output/php-built-in-server.pid',
-            'port' => 8923,
+            'pidFile' => $expectedPidFile,
+            'port' => $port,
             'docroot' => ltrim(str_replace(getcwd(), '', __DIR__), DIRECTORY_SEPARATOR),
             'workers' => 5,
-            'url' => 'http://localhost:8923/',
+            'url' => "http://localhost:{$port}/",
             'env' => [],
         ], $extension->getInfo());
+    }
+
+    public function test_start_skips_when_worker_marked_as_not_needing_server(): void
+    {
+        $_SERVER[WorkerResourceEnv::ENV_NEEDS_SERVER] = '0';
+        $_ENV[WorkerResourceEnv::ENV_NEEDS_SERVER]    = '0';
+        putenv(WorkerResourceEnv::ENV_NEEDS_SERVER . '=0');
+
+        try {
+            $controller = new BuiltInServerController(
+                ['docroot' => __DIR__],
+                []
+            );
+            $output = new BufferedOutput();
+            $controller->start($output);
+
+            $this->assertStringContainsString(
+                'PHP built-in server not needed by this worker; skipping.',
+                $output->fetch()
+            );
+            $this->assertFileDoesNotExist(PhpBuiltInServer::getPidFile());
+        } finally {
+            unset($_SERVER[WorkerResourceEnv::ENV_NEEDS_SERVER], $_ENV[WorkerResourceEnv::ENV_NEEDS_SERVER]);
+            putenv(WorkerResourceEnv::ENV_NEEDS_SERVER);
+        }
     }
 }

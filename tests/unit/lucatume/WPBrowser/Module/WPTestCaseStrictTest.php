@@ -7,6 +7,7 @@ use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\TestCase\WPTestCase;
+use lucatume\WPBrowser\Tests\Traits\FastScaffold;
 use lucatume\WPBrowser\Tests\Traits\LoopIsolation;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Utils\Env;
@@ -23,6 +24,7 @@ class WPTestCaseStrictTest extends Unit
 {
     use LoopIsolation;
     use TmpFilesCleanup;
+    use FastScaffold;
 
     private function module(array $moduleContainerConfig = [], ?array $moduleConfig = null): WPLoader
     {
@@ -58,6 +60,10 @@ class WPTestCaseStrictTest extends Unit
         $this->module();
     }
 
+    /**
+     * @group slow
+     * @group requires-mysql-server
+     */
     public function test_will_fail_if_db_connection_closed_during_setup_before_class(): void
     {
         $wpRootDir = FS::tmpDir('wploader_');
@@ -66,7 +72,7 @@ class WPTestCaseStrictTest extends Unit
         $dbUser = Env::get('WORDPRESS_DB_USER');
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost);
-        Installation::scaffold($wpRootDir);
+        $this->fastScaffold($wpRootDir);
         $db->create();
         $testcaseFile = $wpRootDir . '/BreakingTest.php';
         $testCaseFileContents = <<<PHP
@@ -176,12 +182,13 @@ PHP;
      * It should not be strict about wpdb connection id in SQLite database
      *
      * @test
+     * @group slow
      */
     public function should_not_be_strict_about_wpdb_connection_id_in_sq_lite_database(): void
     {
         $wpRootDir = FS::tmpDir('wploader_');
         $db = new SQLiteDatabase($wpRootDir, 'db.sqlite', 'wptests_');
-        Installation::scaffold($wpRootDir);
+        $this->fastScaffold($wpRootDir);
         $db->create();
         $testcaseFile = $wpRootDir . '/BreakingTest.php';
         $testCaseFileContents = <<<PHP

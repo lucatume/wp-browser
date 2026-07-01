@@ -7,6 +7,9 @@ use Codeception\Lib\ModuleContainer;
 use Codeception\Test\Unit;
 use lucatume\WPBrowser\Utils\Env;
 
+/**
+ * @group fast
+ */
 class WPLoaderRelativeConfigTest extends Unit
 {
     /**

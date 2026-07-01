@@ -4,6 +4,7 @@
 namespace unit\lucatume\WPBrowser\WordPress\Database;
 
 use Codeception\Test\Unit;
+use lucatume\WPBrowser\Tests\Traits\FastScaffold;
 use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
 use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Env;
@@ -19,17 +20,18 @@ use lucatume\WPBrowser\WordPress\WPConfigFile;
 use PDO;
 
 /**
- * @group slow
  */
 class MysqlDatabaseTest extends Unit
 {
     use UopzFunctions;
     use TmpFilesCleanup;
+    use FastScaffold;
 
     /**
      * It should allow getting the db credentials and DSN
      *
      * @test
+     * @group fast
      */
     public function should_allow_getting_the_db_credentials_and_dsn(): void
     {
@@ -51,6 +53,7 @@ class MysqlDatabaseTest extends Unit
      * It should build correctly from wp-config file
      *
      * @test
+     * @group fast
      */
     public function should_build_correctly_from_wp_config_file(): void
     {
@@ -78,6 +81,8 @@ class MysqlDatabaseTest extends Unit
      * It should allow db operations
      *
      * @test
+     * @group fast
+     * @group requires-mysql-server
      */
     public function should_allow_db_operations(): void
     {
@@ -101,6 +106,8 @@ class MysqlDatabaseTest extends Unit
      * It should allow options operations
      *
      * @test
+     * @group slow
+     * @group requires-mysql-server
      */
     public function should_allow_options_operations(): void
     {
@@ -112,7 +119,7 @@ class MysqlDatabaseTest extends Unit
         $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
         $configurationData = new ConfigurationData();
         $configurationData->setConst('WP_PLUGIN_DIR', $wpRootDir . '/site-plugins');
-        Installation::scaffold($wpRootDir, '6.1.1')
+        $this->fastScaffold($wpRootDir, '6.1.1')
             ->configure($db, InstallationStateInterface::SINGLE_SITE, $configurationData)
             ->install(
                 'https://wp.local',
@@ -146,6 +153,7 @@ class MysqlDatabaseTest extends Unit
      * It should throw if dump file does not exist
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_dump_file_does_not_exist(): void
     {
@@ -165,6 +173,7 @@ class MysqlDatabaseTest extends Unit
      * It should throw if dump cannot be opened to import
      *
      * @test
+     * @group fast
      */
     public function should_throw_if_dump_cannot_be_opened_to_import(): void
     {
@@ -186,6 +195,8 @@ class MysqlDatabaseTest extends Unit
      * It should import database dumps correctly
      *
      * @test
+     * @group fast
+     * @group requires-mysql-server
      */
     public function should_import_database_dumps_correctly(): void
     {
@@ -204,6 +215,8 @@ class MysqlDatabaseTest extends Unit
      * It should throw if dump line execution fails
      *
      * @test
+     * @group fast
+     * @group requires-mysql-server
      */
     public function should_throw_if_dump_line_execution_fails(): void
     {
@@ -223,6 +236,8 @@ class MysqlDatabaseTest extends Unit
      * It should correctly handle import files using transactions
      *
      * @test
+     * @group fast
+     * @group requires-mysql-server
      */
     public function should_correctly_handle_import_files_using_transactions(): void
     {
@@ -241,6 +256,8 @@ class MysqlDatabaseTest extends Unit
      * It should allow dumping the database contents
      *
      * @test
+     * @group fast
+     * @group requires-mysql-server
      */
     public function should_allow_dumping_the_database_contents(): void
     {
@@ -273,6 +290,8 @@ class MysqlDatabaseTest extends Unit
      * It should throw if dump file cannot be exported
      *
      * @test
+     * @group fast
+     * @group requires-mysql-server
      */
     public function should_throw_if_dump_file_cannot_be_exported(): void
     {
