@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Transpile the v4 changes from 4.6.0 to 4.7.1 down to the PHP 7.1-compatible v3.5 line (#810).
+
 ## [3.7.20] 2026-06-30;
 
 ### Changed
