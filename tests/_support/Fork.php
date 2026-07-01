@@ -160,7 +160,8 @@ class Fork
         while (true) {
             $chunk = substr($resultPayload, $offset, $this->ipcSocketChunkSize);
 
-            if ($chunk === '') {
+            // PHP < 8.0 returns false (not '') when $offset >= strlen($resultPayload).
+            if ($chunk === '' || $chunk === false) {
                 break;
             }
 
