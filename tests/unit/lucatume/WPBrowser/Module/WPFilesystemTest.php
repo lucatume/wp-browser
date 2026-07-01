@@ -459,7 +459,7 @@ class WPFilesystemTest extends Unit
         $sut->deleteUploadedFile('test_1/test_2/file.txt');
 
         $sut->dontSeeUploadedFileFound('test_1/test_2/file.txt');
-        $this->assertFileNotExists($wpRoot . '/wp-content/uploads/test_1/test_2/file.txt');
+        $this->assertFileDoesNotExist($wpRoot . '/wp-content/uploads/test_1/test_2/file.txt');
     }
 
     /**
@@ -490,7 +490,7 @@ class WPFilesystemTest extends Unit
         $sut->deleteUploadedFile("$Y/$m/file.txt");
 
         $sut->dontSeeUploadedFileFound("$Y/$m/file.txt");
-        $this->assertFileNotExists($wpRoot . "/wp-content/uploads/$Y/$m/file.txt");
+        $this->assertFileDoesNotExist($wpRoot . "/wp-content/uploads/$Y/$m/file.txt");
     }
 
     /**
@@ -516,11 +516,11 @@ class WPFilesystemTest extends Unit
         $sut->cleanUploadsDir('test_1');
 
         $this->assertFileExists($wpRoot . '/wp-content/uploads/test_1');
-        $this->assertFileNotExists($wpRoot . '/wp-content/uploads/test_1/file.txt');
+        $this->assertFileDoesNotExist($wpRoot . '/wp-content/uploads/test_1/file.txt');
 
         $sut->cleanUploadsDir();
 
-        $this->assertFileNotExists($wpRoot . '/wp-content/uploads/test_1');
+        $this->assertFileDoesNotExist($wpRoot . '/wp-content/uploads/test_1');
     }
 
     /**
@@ -559,12 +559,12 @@ class WPFilesystemTest extends Unit
         $this->assertFileExists($wpRoot . "/wp-content/uploads/$Y/$m");
         $this->assertFileExists($wpRoot . "/wp-content/uploads/$Y/$m/test_1");
         $this->assertFileExists($wpRoot . "/wp-content/uploads/$Y/$m/file.txt");
-        $this->assertFileNotExists($wpRoot . "/wp-content/uploads/$Y/$m/test_1/test_2");
+        $this->assertFileDoesNotExist($wpRoot . "/wp-content/uploads/$Y/$m/test_1/test_2");
 
         $sut->cleanUploadsDir('/', time());
 
         $this->assertFileExists($wpRoot . "/wp-content/uploads/$Y/$m");
-        $this->assertFileNotExists($wpRoot . "/wp-content/uploads/$Y/$m/test_1");
+        $this->assertFileDoesNotExist($wpRoot . "/wp-content/uploads/$Y/$m/test_1");
     }
 
     /**
@@ -596,7 +596,7 @@ class WPFilesystemTest extends Unit
         $dest = $wpRoot . '/wp-content/uploads/folder2';
 
         $this->assertFileExists($src);
-        $this->assertFileNotExists($dest);
+        $this->assertFileDoesNotExist($dest);
 
         $sut->copyDirToUploads($src, 'folder2');
 
@@ -635,7 +635,7 @@ class WPFilesystemTest extends Unit
         $dest = $wpRoot . "/wp-content/uploads/$Y/$m/folder2";
 
         $this->assertFileExists($src);
-        $this->assertFileNotExists($dest);
+        $this->assertFileDoesNotExist($dest);
 
         $sut->copyDirToUploads($src, 'folder2', time());
 
@@ -665,7 +665,7 @@ class WPFilesystemTest extends Unit
 
         $dest = $wpRoot . '/wp-content/uploads/some-file.txt';
 
-        $this->assertFileNotExists($dest);
+        $this->assertFileDoesNotExist($dest);
 
         $sut->writeToUploadedFile('some-file.txt', 'foo');
 
@@ -701,7 +701,7 @@ class WPFilesystemTest extends Unit
 
         $dest = $wpRoot . "/wp-content/uploads/$Y/$m/some-file.txt";
 
-        $this->assertFileNotExists($dest);
+        $this->assertFileDoesNotExist($dest);
 
         $sut->writeToUploadedFile('some-file.txt', 'foo', time());
 
@@ -730,7 +730,7 @@ class WPFilesystemTest extends Unit
 
         $dest = $wpRoot . '/wp-content/uploads/some-file.txt';
 
-        $this->assertFileNotExists($dest);
+        $this->assertFileDoesNotExist($dest);
 
         $sut->writeToUploadedFile('some-file.txt', 'foo');
         $sut->openUploadedFile('some-file.txt');
@@ -767,7 +767,7 @@ class WPFilesystemTest extends Unit
 
         $dest = $wpRoot . "/wp-content/uploads/$Y/$m/some-file.txt";
 
-        $this->assertFileNotExists($dest);
+        $this->assertFileDoesNotExist($dest);
 
         $sut->writeToUploadedFile('some-file.txt', 'foo', 'today');
         $sut->openUploadedFile('some-file.txt', 'today');
@@ -820,7 +820,7 @@ class WPFilesystemTest extends Unit
 
         $sut->deletePluginFile('plugin1/some-file.txt');
 
-        $this->assertFileNotExists($pluginFolder . '/some-file.txt');
+        $this->assertFileDoesNotExist($pluginFolder . '/some-file.txt');
 
         $sut->dontSeePluginFileFound('plugin1/some-file.txt');
 
@@ -836,7 +836,7 @@ class WPFilesystemTest extends Unit
 
         $sut->cleanPluginDir('plugin1');
 
-        $this->assertFileNotExists($pluginFolder . '/some-file.txt');
+        $this->assertFileDoesNotExist($pluginFolder . '/some-file.txt');
     }
 
     /**
@@ -883,7 +883,7 @@ class WPFilesystemTest extends Unit
 
         $sut->deleteThemeFile('theme1/some-file.txt');
 
-        $this->assertFileNotExists($themeFolder . '/some-file.txt');
+        $this->assertFileDoesNotExist($themeFolder . '/some-file.txt');
 
         $sut->dontSeeThemeFileFound('theme1/some-file.txt');
 
@@ -899,7 +899,7 @@ class WPFilesystemTest extends Unit
 
         $sut->cleanThemeDir('theme1');
 
-        $this->assertFileNotExists($themeFolder . '/some-file.txt');
+        $this->assertFileDoesNotExist($themeFolder . '/some-file.txt');
     }
 
     /**
@@ -946,7 +946,7 @@ class WPFilesystemTest extends Unit
 
         $sut->deleteMuPluginFile('muplugin1/some-file.txt');
 
-        $this->assertFileNotExists($mupluginFolder . '/some-file.txt');
+        $this->assertFileDoesNotExist($mupluginFolder . '/some-file.txt');
 
         $sut->dontSeeMuPluginFileFound('muplugin1/some-file.txt');
 
@@ -962,7 +962,7 @@ class WPFilesystemTest extends Unit
 
         $sut->cleanMuPluginDir('muplugin1');
 
-        $this->assertFileNotExists($mupluginFolder . '/some-file.txt');
+        $this->assertFileDoesNotExist($mupluginFolder . '/some-file.txt');
     }
 
     /**
@@ -1005,8 +1005,8 @@ PHP;
         $sut->_after(new class('test-test-test') extends Unit {
         });
 
-        $this->assertFileNotExists($pluginFile);
-        $this->assertFileNotExists($pluginFolder);
+        $this->assertFileDoesNotExist($pluginFile);
+        $this->assertFileDoesNotExist($pluginFolder);
     }
 
     /**
@@ -1048,7 +1048,7 @@ PHP;
         $sut->_after(new class('test-test-test') extends Unit {
         });
 
-        $this->assertFileNotExists($pluginFile);
+        $this->assertFileDoesNotExist($pluginFile);
         $this->assertFileExists($pluginsFolder);
     }
 
@@ -1093,7 +1093,7 @@ PHP;
         $sut->_after(new class('test-test-test') extends Unit {
         });
 
-        $this->assertFileNotExists($muPluginFile);
+        $this->assertFileDoesNotExist($muPluginFile);
         $this->assertFileExists($muPluginFolder);
     }
 
@@ -1145,8 +1145,8 @@ PHP;
         $sut->_after(new class('test-test-test') extends Unit {
         });
 
-        $this->assertFileNotExists($themeStyleFile);
-        $this->assertFileNotExists($themeIndexFile);
+        $this->assertFileDoesNotExist($themeStyleFile);
+        $this->assertFileDoesNotExist($themeIndexFile);
     }
 
     /**
@@ -1201,9 +1201,9 @@ PHP;
         $sut->_after(new class('test-test-test') extends Unit {
         });
 
-        $this->assertFileNotExists($themeStyleFile);
-        $this->assertFileNotExists($themeIndexFile);
-        $this->assertFileNotExists($themeFunctionsFile);
+        $this->assertFileDoesNotExist($themeStyleFile);
+        $this->assertFileDoesNotExist($themeIndexFile);
+        $this->assertFileDoesNotExist($themeFunctionsFile);
     }
 
     /**
@@ -1248,8 +1248,8 @@ PHP;
         $sut->_after(new class('test-test-test') extends Unit {
         });
 
-        $this->assertFileNotExists($pluginFile);
-        $this->assertFileNotExists($pluginFolder);
+        $this->assertFileDoesNotExist($pluginFile);
+        $this->assertFileDoesNotExist($pluginFolder);
     }
 
     /**
@@ -1295,7 +1295,7 @@ PHP;
         $sut->_after(new class('test-test-test') extends Unit {
         });
 
-        $this->assertFileNotExists($muPluginFile);
+        $this->assertFileDoesNotExist($muPluginFile);
         $this->assertFileExists($muPluginFolder);
     }
 
@@ -1352,9 +1352,9 @@ PHP;
         $sut->_after(new class('test-test-test') extends Unit {
         });
 
-        $this->assertFileNotExists($themeStyleFile);
-        $this->assertFileNotExists($themeIndexFile);
-        $this->assertFileNotExists($themeFunctionsFile);
+        $this->assertFileDoesNotExist($themeStyleFile);
+        $this->assertFileDoesNotExist($themeIndexFile);
+        $this->assertFileDoesNotExist($themeFunctionsFile);
     }
 
     public function plugin_path_with_diff_path_separators_data_provider(): array
@@ -1407,7 +1407,7 @@ PHP;
         $sut->_after(new class('test-test-test') extends Unit {
         });
 
-        $this->assertFileNotExists($pluginFile);
+        $this->assertFileDoesNotExist($pluginFile);
         $this->assertFileExists($pluginsFolder);
     }
 

@@ -87,6 +87,6 @@ class PidBasedControllerTest extends \Codeception\Test\Unit
         }
 
         $this->assertFalse($testClass->openIsProcessRunning($pidFile));
-        $this->assertFileNotExists($pidFile);
+        $this->assertFileDoesNotExist($pidFile);
     }
 }

@@ -65,7 +65,7 @@ class ParallelWorkerReporterTest extends Unit
 
         chmod($readOnlyDir, 0755);
 
-        $this->assertFileNotExists($unwritable);
+        $this->assertFileDoesNotExist($unwritable);
         $this->assertStringNotContainsString('Fatal error', $process->getOutput() . $process->getErrorOutput());
         $this->assertStringNotContainsString('Uncaught', $process->getOutput() . $process->getErrorOutput());
     }

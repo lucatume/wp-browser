@@ -24,7 +24,7 @@ class WPDbTablePrefixCest
             $secondaryTableName = $I->grabPrefixedTableNameFor($table);
 
             $I->assertNotEquals($tableName, $secondaryTableName);
-            $I->assertRegExp("/^.*_2_{$table}\$/", $secondaryTableName);
+            $I->assertMatchesRegularExpression("/^.*_2_{$table}\$/", $secondaryTableName);
         }
     }
 

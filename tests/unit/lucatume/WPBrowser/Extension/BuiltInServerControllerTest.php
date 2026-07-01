@@ -342,7 +342,7 @@ class BuiltInServerControllerTest extends Unit
 
         $extension->stop($this->output);
 
-        $this->assertFileNotExists(PhpBuiltInServer::getPidFile());
+        $this->assertFileDoesNotExist(PhpBuiltInServer::getPidFile());
 
         $extension->stop($this->output);
     }
@@ -383,7 +383,7 @@ class BuiltInServerControllerTest extends Unit
      */
     public function should_correctly_produce_information(): void
     {
-        $this->assertFileNotExists(PhpBuiltInServer::getPidFile());
+        $this->assertFileDoesNotExist(PhpBuiltInServer::getPidFile());
 
         $port = Random::openLocalhostPort();
         $config = ['docroot' => __DIR__, 'port' => $port];
@@ -439,7 +439,7 @@ class BuiltInServerControllerTest extends Unit
                 'PHP built-in server not needed by this worker; skipping.',
                 $output->fetch()
             );
-            $this->assertFileNotExists(PhpBuiltInServer::getPidFile());
+            $this->assertFileDoesNotExist(PhpBuiltInServer::getPidFile());
         } finally {
             unset($_SERVER[WorkerResourceEnv::ENV_NEEDS_SERVER], $_ENV[WorkerResourceEnv::ENV_NEEDS_SERVER]);
             putenv(WorkerResourceEnv::ENV_NEEDS_SERVER);

@@ -188,7 +188,7 @@ class ClosureStreamWrapperTest extends Unit
             $files = glob($tmpDir . '/*');
             $this->assertEmpty($files);
 
-            $this->assertFileNotExists($tmpDir . '/debug.php');
+            $this->assertFileDoesNotExist($tmpDir . '/debug.php');
         } finally {
             chdir($originalCwd);
         }

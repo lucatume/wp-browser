@@ -271,14 +271,14 @@ PHP
                 ]
             ], []);
 
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
             $symlinker->onModuleInit($suiteEvent);
 
@@ -293,14 +293,14 @@ PHP
 
             $symlinker->afterSuite($suiteEvent);
 
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
         });
     }
 
@@ -399,14 +399,14 @@ PHP
                 ]
             ], []);
 
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
             $symlinker->onModuleInit($suiteEvent);
 
@@ -421,14 +421,14 @@ PHP
 
             $symlinker->afterSuite($suiteEvent);
 
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
         });
     }
 
@@ -526,14 +526,14 @@ PHP
                 ]
             ], []);
 
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
             $symlinker->onModuleInit($suiteEvent);
 
@@ -654,14 +654,14 @@ PHP
                 ]
             ], []);
 
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileNotExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/functions.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/style.css');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
+            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
 
             $symlinker->onModuleInit($suiteEvent);
 
@@ -927,7 +927,7 @@ PHP
 
             $workDirBasename = basename($workingDir);
 
-            Assert::assertFileNotExists($wpRoot . "/wp-content/plugins/{$workDirBasename}/plugin.php");
+            Assert::assertFileDoesNotExist($wpRoot . "/wp-content/plugins/{$workDirBasename}/plugin.php");
 
             $symlinker->onModuleInit($suiteEvent);
 

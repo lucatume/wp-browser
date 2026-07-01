@@ -34,8 +34,8 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInSqlString($sql);
 
-        $this->assertRegExp('~.*original.dev.*~', $sql);
-        $this->assertNotRegExp('/.*some-wp.dev.*/', $sql);
+        $this->assertMatchesRegularExpression('~.*original.dev.*~', $sql);
+        $this->assertDoesNotMatchRegularExpression('/.*some-wp.dev.*/', $sql);
     }
 
     /**
@@ -55,8 +55,8 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInSqlString($sql);
 
-        $this->assertRegExp('/.*some-wp.dev.*/', $sql);
-        $this->assertNotRegExp('~.*original.dev/wp.*~', $sql);
+        $this->assertMatchesRegularExpression('/.*some-wp.dev.*/', $sql);
+        $this->assertDoesNotMatchRegularExpression('~.*original.dev/wp.*~', $sql);
     }
 
     /**
@@ -78,8 +78,8 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInSqlString($sql);
 
-        $this->assertRegExp('~.*http:\\/\\/some-wp.dev.*~', $sql);
-        $this->assertNotRegExp('~.*https:\\/\\/original.dev/wp.*~', $sql);
+        $this->assertMatchesRegularExpression('~.*http:\\/\\/some-wp.dev.*~', $sql);
+        $this->assertDoesNotMatchRegularExpression('~.*https:\\/\\/original.dev/wp.*~', $sql);
     }
 
     /**
@@ -101,8 +101,8 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInSqlString($sql);
 
-        $this->assertRegExp('~.*https:\\/\\/some-wp.dev.*~', $sql);
-        $this->assertNotRegExp('~.*https:\\/\\/original.dev/wp.*~', $sql);
+        $this->assertMatchesRegularExpression('~.*https:\\/\\/some-wp.dev.*~', $sql);
+        $this->assertDoesNotMatchRegularExpression('~.*https:\\/\\/original.dev/wp.*~', $sql);
     }
 
     /**
@@ -135,7 +135,7 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInMultisiteSqlString($sut->replaceSiteDomainInSqlString($sql));
 
-        $this->assertRegExp('~.*original.dev/wp.*~', $sql);
+        $this->assertMatchesRegularExpression('~.*original.dev/wp.*~', $sql);
     }
 
     /**
@@ -168,8 +168,8 @@ SQL;
 
         $sql = $sut->replaceSiteDomainInMultisiteSqlString($sut->replaceSiteDomainInSqlString($sql));
 
-        $this->assertRegExp('~.*some-wp.dev.*~', $sql);
-        $this->assertNotRegExp('~.*original.dev/wp.*~', $sql);
+        $this->assertMatchesRegularExpression('~.*some-wp.dev.*~', $sql);
+        $this->assertDoesNotMatchRegularExpression('~.*original.dev/wp.*~', $sql);
     }
 
     /**
