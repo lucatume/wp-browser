@@ -9,7 +9,7 @@ use lucatume\WPBrowser\WordPress\WPConfigFile;
 
 use function wp_slash;
 
-class InstallAction implements CodeExecutionActionInterface
+class InstallAction
 {
     use WordPressChecks;
 

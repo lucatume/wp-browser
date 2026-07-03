@@ -6,7 +6,7 @@ use Closure;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequest;
 use lucatume\WPBrowser\WordPress\WPConfigFile;
 
-class CheckWordPressInstalledAction implements CodeExecutionActionInterface
+class CheckWordPressInstalledAction
 {
     private FileRequest $request;
 

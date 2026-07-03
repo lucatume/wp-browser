@@ -21,7 +21,6 @@ class TestEnvironment
      * @var array<string,array<string,mixed>>
      */
     public array $extensionsEnabled = [];
-    public ?string $dumpFile = null;
     public ?Closure $afterSuccess = null;
     /**
      * @var array<class-string>

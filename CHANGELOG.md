@@ -17,6 +17,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 
+- Remove dead code: the unused `Module\WPLoader\Filters`/`FiltersGroup` classes (not wired to `WPLoader` since v4), `WordPress\FileRequests\FilePostRequest` with `FileRequestFactory::buildPostRequest()`, the write-only `FileRequest::setServerVar()`/`setConstant()`, the decorative `WordPress\CodeExecution\CodeExecutionActionInterface`, `Utils\Composer::allowPluginsFromPackage()`/`getDecodedContents()`, `Generators\Date::zero()`, `Project\TestEnvironment::$dumpFile`, `ManagedProcessInterface::ERR_STOP` and the unreachable PHPUnit `<8.0` branch of `WPTestCasePHPUnitMethodsTrait` (the package requires PHP ^8.0). No user-facing API is affected (#813).
+
 - Remove dead internal classes: `Utils\DockerCompose`, `Environment\Constants`, `Events\EventDispatcherException`, `Polyfills\Dotenv\Dotenv` and the `WordPress\CodeExecution` `ExitAction`/`ThrowAction` test doubles. No user-facing API is affected (#812).
 
 - Drop the v3.5 downgrade Rector harness (`config/rector-35.php`, `config/composer-35.json`, the `RemoveTypeHinting`/`DowngradePhpOsFamily`/`SerializableThrowableCompatibilityRector` rules, the `bin/build-35-*` build scripts, and the dead `build_35` Makefile target) from `master`; it now lives entirely on the v3.5 branch (#810).

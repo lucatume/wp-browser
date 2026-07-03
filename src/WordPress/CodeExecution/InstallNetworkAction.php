@@ -9,7 +9,7 @@ use lucatume\WPBrowser\WordPress\PreloadFilters;
 use WP_Error;
 use function install_network;
 
-class InstallNetworkAction implements CodeExecutionActionInterface
+class InstallNetworkAction
 {
     private FileRequest $request;
 
