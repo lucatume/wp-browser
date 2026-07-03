@@ -45,7 +45,7 @@ class MysqlServerControllerTest extends \Codeception\Test\Unit
         // No MySQL server is reachable unless a test says otherwise.
         $this->setClassMock(PDO::class, $this->makeEmptyClass(PDO::class, [
             '__construct' => function (): void {
-                throw new PDOException('Connection refused');
+                throw new PDOException('Connection refused', 2002);
             }
         ]));
 
@@ -417,7 +417,10 @@ class MysqlServerControllerTest extends \Codeception\Test\Unit
         $output = new BufferedOutput();
         $controller->start($output);
 
-        $this->assertStringContainsString('already running', $output->fetch());
+        $this->assertStringContainsString(
+            'already running on port ' . MysqlServer::PORT_DEFAULT,
+            $output->fetch()
+        );
     }
 
     public function testGetPort(): void
@@ -589,6 +592,17 @@ class MysqlServerControllerTest extends \Codeception\Test\Unit
             'mysql command' => "mysql -h 127.0.0.1 -P {$port} -u wordpress -p'wordpress'",
             'mysql root command' => "mysql -h 127.0.0.1 -P {$port} -u root"
         ], $controller->getInfo());
+    }
+
+    public function testGetInfoReportsRunningWhenServerReachableOnPort(): void
+    {
+        // No PID file, but a PDO connection to the configured port succeeds.
+        $this->setClassMock(PDO::class, $this->makeEmptyClass(PDO::class, []));
+
+        $controller = new MysqlServerController([], []);
+        $info = $controller->getInfo();
+
+        $this->assertEquals('yes', $info['running']);
     }
 
     public function testGetInfoWithCustomConfig(): void

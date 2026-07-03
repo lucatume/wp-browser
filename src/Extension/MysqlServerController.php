@@ -68,8 +68,10 @@ class MysqlServerController extends ServiceExtension
             );
 
             return true;
-        } catch (\PDOException) {
-            return false;
+        } catch (\PDOException $e) {
+            // An auth or protocol-level error still proves a server is listening on the port;
+            // only a failure to connect at all (2002/2003) means no server is there.
+            return !in_array((int)$e->getCode(), [2002, 2003], true);
         }
     }
 

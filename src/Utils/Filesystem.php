@@ -157,6 +157,8 @@ class Filesystem
             return false;
         }
 
+        $destination = (string)str_replace(['~', '\ '], [self::homeDir(), ' '], $destination);
+
         try {
             if (is_dir($resolvedSource)) {
                 self::symfonyFilesystem()->mirror(
