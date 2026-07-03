@@ -393,7 +393,7 @@ class ParallelRun extends Run implements CustomCommandInterface
         $output->writeln('<info>MySQL not reachable at ' . $host . '; starting a managed instance...</info>');
 
         $baseDbName = (string)($envVars['WORDPRESS_DB_NAME'] ?? 'wordpress');
-        $dataDir    = $cwd . '/var/_output/_mysql_server';
+        $dataDir    = codecept_output_dir('_mysql_server');
         if (!is_dir($dataDir) && !mkdir($dataDir, 0777, true) && !is_dir($dataDir)) {
             throw new RuntimeException("Failed to create MySQL data directory: {$dataDir}");
         }
