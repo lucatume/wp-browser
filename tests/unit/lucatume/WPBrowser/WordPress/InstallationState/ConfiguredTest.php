@@ -13,8 +13,6 @@ use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\CodeExecution\CodeExecutionFactory;
-use lucatume\WPBrowser\WordPress\CodeExecution\ExitAction;
-use lucatume\WPBrowser\WordPress\CodeExecution\ThrowAction;
 use lucatume\WPBrowser\WordPress\ConfigurationData;
 use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
 use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
@@ -351,7 +349,10 @@ class ConfiguredTest extends Unit
 
         $this->setMethodReturn(CodeExecutionFactory::class,
             'toInstallWordPress',
-            (new ExitAction(1, 'errors occurred'))->getClosure());
+            static function (): mixed {
+                fwrite(STDOUT, 'errors occurred');
+                exit(1);
+            });
 
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::INSTALLATION_FAIL);
@@ -385,7 +386,9 @@ class ConfiguredTest extends Unit
 
         $this->setMethodReturn(CodeExecutionFactory::class,
             'toInstallWordPress',
-            (new ThrowAction(new Exception('Something is amiss')))->getClosure());
+            static function (): mixed {
+                throw new Exception('Something is amiss');
+            });
 
         $this->expectException(InstallationException::class);
         $this->expectExceptionCode(InstallationException::INSTALLATION_FAIL);

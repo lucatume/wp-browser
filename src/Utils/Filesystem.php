@@ -13,7 +13,7 @@ namespace lucatume\WPBrowser\Utils;
 use Exception;
 use InvalidArgumentException;
 use lucatume\WPBrowser\Exceptions\RuntimeException;
-use org\bovigo\vfs\vfsStream;
+use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
 
 /**
@@ -40,38 +40,12 @@ class Filesystem
      */
     public static function rrmdir(string $src): bool
     {
-        if (is_file($src) || is_link($src)) {
-            if (!unlink($src)) {
-                return false;
-            }
-        }
-
-        if (!is_dir($src)) {
+        try {
+            self::symfonyFilesystem()->remove($src);
             return true;
+        } catch (IOException) {
+            return false;
         }
-
-        $dir = opendir($src);
-
-        if ($dir === false) {
-            throw new RuntimeException("Could not open dir {$dir}.");
-        }
-
-        while (false !== ($file = readdir($dir))) {
-            if (($file !== '.') && ($file !== '..')) {
-                $full = $src . '/' . $file;
-                if (is_dir($full)) {
-                    if (!self::rrmdir($full)) {
-                        return false;
-                    }
-                } else {
-                    unlink($full);
-                }
-            }
-        }
-        closedir($dir);
-        rmdir($src);
-
-        return true;
     }
 
     /**
@@ -177,50 +151,34 @@ class Filesystem
      */
     public static function recurseCopy(string $source, string $destination): bool
     {
-        if (!is_dir($destination) && !mkdir($destination) && !is_dir($destination)) {
-            throw new RuntimeException(sprintf('Directory "%s" was not created', $destination));
-        }
-
         $resolvedSource = self::resolvePath($source);
 
         if ($resolvedSource === false) {
             return false;
         }
 
-        $resolvedDestination = self::resolvePath($destination);
-
-        if ($resolvedDestination === false) {
-            return false;
-        }
-
-        $escapedSource = escapeshellarg($resolvedSource);
-        $escapedDestination = escapeshellarg($resolvedDestination);
-        if (DIRECTORY_SEPARATOR === '\\') {
-            $command = "xcopy /E /I /Y $escapedSource $escapedDestination";
-        } else {
-            if (is_dir($resolvedSource)) {
-                $resolvedSource = rtrim($resolvedSource, '\\/') . '/.';
-                $resolvedDestination = rtrim($resolvedDestination, '\\/') . '/';
-            }
-            $escapedSource = escapeshellarg($resolvedSource);
-            $escapedDestination = escapeshellarg($resolvedDestination);
-            $command = "cp -R $escapedSource $escapedDestination";
-        }
+        $destination = (string)str_replace(['~', '\ '], [self::homeDir(), ' '], $destination);
 
         try {
-            exec($command, $output, $exitCode);
-        } catch (Exception $e) {
-            $exitCode = $e->getCode();
-            $output = $e->getMessage();
-        }
-
-        if ($exitCode !== 0) {
-            codecept_debug("Recursive copy failed with exit code $exitCode and message: " .
-                (is_string($output) ? $output : implode(PHP_EOL, $output)));
+            if (is_dir($resolvedSource)) {
+                self::symfonyFilesystem()->mirror(
+                    $resolvedSource,
+                    $destination,
+                    null,
+                    ['override' => true, 'copy_on_windows' => true]
+                );
+            } else {
+                self::symfonyFilesystem()->copy(
+                    $resolvedSource,
+                    rtrim($destination, '\\/') . '/' . basename($resolvedSource),
+                    true
+                );
+            }
+            return true;
+        } catch (IOException $e) {
+            codecept_debug('Recursive copy failed: ' . $e->getMessage());
             return false;
         }
-
-        return true;
     }
 
     /**

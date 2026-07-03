@@ -102,7 +102,6 @@ class ParallelRun extends Run implements CustomCommandInterface
 
         $start = microtime(true);
 
-        $failed = false;
         $eventFiles = [];
         $eventOffsets = [];
         $logFiles = [];
@@ -175,7 +174,6 @@ class ParallelRun extends Run implements CustomCommandInterface
                     $this->drainEvents($eventFiles[$i], $eventOffsets, $i, $aggregator);
                     if (!$p->isRunning()) {
                         if (!$p->isSuccessful()) {
-                            $failed = true;
                             $aggregator->recordCrash($i, $p->getExitCode() ?? -1);
                         }
                         unset($remaining[$i]);
@@ -206,7 +204,7 @@ class ParallelRun extends Run implements CustomCommandInterface
             $this->teardownWorkers($workers, $cwd ?? '.', $output);
         }
 
-        return ($failed || $aggregator->hasFailures()) ? 1 : 0;
+        return $aggregator->hasFailures() ? 1 : 0;
     }
 
     /**
@@ -393,7 +391,7 @@ class ParallelRun extends Run implements CustomCommandInterface
         $output->writeln('<info>MySQL not reachable at ' . $host . '; starting a managed instance...</info>');
 
         $baseDbName = (string)($envVars['WORDPRESS_DB_NAME'] ?? 'wordpress');
-        $dataDir    = $cwd . '/var/_output/_mysql_server';
+        $dataDir    = codecept_output_dir('_mysql_server');
         if (!is_dir($dataDir) && !mkdir($dataDir, 0777, true) && !is_dir($dataDir)) {
             throw new RuntimeException("Failed to create MySQL data directory: {$dataDir}");
         }

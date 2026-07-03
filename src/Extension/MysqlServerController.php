@@ -19,14 +19,14 @@ class MysqlServerController extends ServiceExtension
     public function start(OutputInterface $output): void
     {
         $pidFile = $this->getPidFile();
+        $port = $this->getPort();
 
-        if ($this->isProcessRunning($pidFile)) {
-            $output->writeln('MySQL server already running.');
+        if ($this->isProcessRunning($pidFile) || $this->isMysqlServerReachable($port)) {
+            $output->writeln("MySQL server already running on port $port.");
 
             return;
         }
 
-        $port = $this->getPort();
         $database = $this->getDatabase();
         $user = $this->getUser();
         $password = $this->getPassword();
@@ -55,6 +55,24 @@ class MysqlServerController extends ServiceExtension
     public function getPidFile(): string
     {
         return codecept_output_dir(self::PID_FILE_NAME);
+    }
+
+    private function isMysqlServerReachable(int $port): bool
+    {
+        try {
+            new \PDO(
+                "mysql:host=127.0.0.1;port={$port}",
+                $this->getUser(),
+                $this->getPassword(),
+                [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_TIMEOUT => 1]
+            );
+
+            return true;
+        } catch (\PDOException $e) {
+            // An auth or protocol-level error still proves a server is listening on the port;
+            // only a failure to connect at all (2002/2003) means no server is there.
+            return !in_array((int)$e->getCode(), [2002, 2003], true);
+        }
     }
 
     private function getDatabase(): string
@@ -127,7 +145,7 @@ class MysqlServerController extends ServiceExtension
     public function stop(OutputInterface $output): void
     {
         $pidFile = $this->getPidFile();
-        $mysqlServerPid = (int)file_get_contents($pidFile);
+        $mysqlServerPid = is_file($pidFile) ? (int)file_get_contents($pidFile) : 0;
 
         if (!$mysqlServerPid) {
             $output->writeln('MySQL server not running.');
@@ -155,7 +173,7 @@ class MysqlServerController extends ServiceExtension
      */
     public function getInfo(): array
     {
-        $isRunning = is_file($this->getPidFile());
+        $isRunning = is_file($this->getPidFile()) || $this->isMysqlServerReachable($this->getPort());
 
         $info = [
             'running' => $isRunning ? 'yes' : 'no',
