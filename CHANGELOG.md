@@ -7,17 +7,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- `MysqlServerController` now probes the configured port before starting a server: a MySQL instance reachable on the port is reused instead of racing to start (and download) a second one. Fixes `parallel-run` workers, whose per-worker output dirs hid the shared server's PID file.
-- `parallel-run` prints `FAILURES!` instead of `OK` when a worker crashes before reporting results.
-- `parallel-run` resolves the managed MySQL data dir through `codecept_output_dir()` instead of a hardcoded `var/_output` path that ignored `paths.output` overrides and broke the 103-char unix socket path limit on deep checkouts.
+- `MysqlServerController` now probes the configured port with a PDO handshake before starting a server: a MySQL instance reachable on the port is reused instead of racing to start (and download) a second one. Fixes `parallel-run` workers, whose per-worker output dirs hid the shared server's PID file (#812).
+- `parallel-run` prints `FAILURES!` instead of `OK` when a worker crashes before reporting results (#812).
+- `parallel-run` resolves the managed MySQL data dir through `codecept_output_dir()` instead of a hardcoded `var/_output` path that ignored `paths.output` overrides and broke the 103-char unix socket path limit on deep checkouts (#812).
 
 ### Changed
 
-- `Utils\Filesystem::rrmdir()` and `recurseCopy()` now delegate to the bundled `symfony/filesystem` component instead of a hand-rolled recursive delete and a `cp -R`/`xcopy` shell-out; public signatures and bool return contracts are unchanged.
+- `Utils\Filesystem::rrmdir()` and `recurseCopy()` now delegate to the bundled `symfony/filesystem` component instead of a hand-rolled recursive delete and a `cp -R`/`xcopy` shell-out; public signatures are unchanged, and failure paths that previously threw (unreadable dir, uncreatable destination) now return `false` like the other failure modes (#812).
 
 ### Removed
 
-- Remove dead internal classes: `Utils\DockerCompose`, `Environment\Constants`, `Events\EventDispatcherException`, `Polyfills\Dotenv\Dotenv` and the `WordPress\CodeExecution` `ExitAction`/`ThrowAction` test doubles. No user-facing API is affected.
+- Remove dead internal classes: `Utils\DockerCompose`, `Environment\Constants`, `Events\EventDispatcherException`, `Polyfills\Dotenv\Dotenv` and the `WordPress\CodeExecution` `ExitAction`/`ThrowAction` test doubles. No user-facing API is affected (#812).
 
 - Drop the v3.5 downgrade Rector harness (`config/rector-35.php`, `config/composer-35.json`, the `RemoveTypeHinting`/`DowngradePhpOsFamily`/`SerializableThrowableCompatibilityRector` rules, the `bin/build-35-*` build scripts, and the dead `build_35` Makefile target) from `master`; it now lives entirely on the v3.5 branch (#810).
 

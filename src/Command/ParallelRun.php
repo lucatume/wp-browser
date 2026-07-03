@@ -102,7 +102,6 @@ class ParallelRun extends Run implements CustomCommandInterface
 
         $start = microtime(true);
 
-        $failed = false;
         $eventFiles = [];
         $eventOffsets = [];
         $logFiles = [];
@@ -175,7 +174,6 @@ class ParallelRun extends Run implements CustomCommandInterface
                     $this->drainEvents($eventFiles[$i], $eventOffsets, $i, $aggregator);
                     if (!$p->isRunning()) {
                         if (!$p->isSuccessful()) {
-                            $failed = true;
                             $aggregator->recordCrash($i, $p->getExitCode() ?? -1);
                         }
                         unset($remaining[$i]);
@@ -206,7 +204,7 @@ class ParallelRun extends Run implements CustomCommandInterface
             $this->teardownWorkers($workers, $cwd ?? '.', $output);
         }
 
-        return ($failed || $aggregator->hasFailures()) ? 1 : 0;
+        return $aggregator->hasFailures() ? 1 : 0;
     }
 
     /**

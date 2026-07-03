@@ -159,7 +159,12 @@ class Filesystem
 
         try {
             if (is_dir($resolvedSource)) {
-                self::symfonyFilesystem()->mirror($resolvedSource, $destination);
+                self::symfonyFilesystem()->mirror(
+                    $resolvedSource,
+                    $destination,
+                    null,
+                    ['override' => true, 'copy_on_windows' => true]
+                );
             } else {
                 self::symfonyFilesystem()->copy(
                     $resolvedSource,

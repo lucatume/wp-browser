@@ -10,6 +10,8 @@ use lucatume\WPBrowser\Tests\Traits\ClassStubs;
 use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\Download;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
+use PDO;
+use PDOException;
 use PHPUnit\Framework\AssertionFailedError;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -37,6 +39,13 @@ class MysqlServerControllerTest extends \Codeception\Test\Unit
         $this->setClassMock(Download::class, $this->makeEmpty(Download::class, [
             'fileFromUrl' => function (string $url, string $file): void {
                 throw new AssertionFAiledError("Unexpected Download::fileFromUrl call for URL $url and file $file");
+            }
+        ]));
+
+        // No MySQL server is reachable unless a test says otherwise.
+        $this->setClassMock(PDO::class, $this->makeEmptyClass(PDO::class, [
+            '__construct' => function (): void {
+                throw new PDOException('Connection refused');
             }
         ]));
 
@@ -392,6 +401,25 @@ class MysqlServerControllerTest extends \Codeception\Test\Unit
         $controller->start(new NullOutput);
     }
 
+    public function testWillNotStartIfServerReachableOnPort(): void
+    {
+        // A PDO connection to the configured port succeeds: a MySQL server is already there.
+        $this->setClassMock(PDO::class, $this->makeEmptyClass(PDO::class, []));
+        $this->setClassMock(MysqlServer::class, $this->makeEmptyClass(MysqlServer::class, [
+            '__construct' => function () {
+                throw new AssertionFailedError(
+                    'The MysqlServer constructor should not be called.'
+                );
+            },
+        ]));
+
+        $controller = new MysqlServerController([], []);
+        $output = new BufferedOutput();
+        $controller->start($output);
+
+        $this->assertStringContainsString('already running', $output->fetch());
+    }
+
     public function testGetPort(): void
     {
         $controller = new MysqlServerController([
@@ -413,6 +441,10 @@ class MysqlServerControllerTest extends \Codeception\Test\Unit
             ])
         );
         $pidFile = (new MysqlServerController([], []))->getPidFile();
+        $pidFileExists = false;
+        $this->setFunctionReturn('is_file', function (string $file) use ($pidFile, &$pidFileExists): bool {
+            return $file === $pidFile ? $pidFileExists : is_file($file);
+        }, true);
         $this->setFunctionReturn('file_get_contents', function (string $file) use ($pidFile): string|false {
             if ($file === $pidFile) {
                 return '12345';
@@ -434,6 +466,7 @@ class MysqlServerControllerTest extends \Codeception\Test\Unit
 
         $controller = new MysqlServerController($config, $options);
         $controller->start($output);
+        $pidFileExists = true;
         $controller->stop($output);
         $port = MysqlServer::PORT_DEFAULT;
         $this->assertEquals(
@@ -489,6 +522,10 @@ class MysqlServerControllerTest extends \Codeception\Test\Unit
             ])
         );
         $pidFile = (new MysqlServerController([], []))->getPidFile();
+        $pidFileExists = false;
+        $this->setFunctionReturn('is_file', function (string $file) use ($pidFile, &$pidFileExists): bool {
+            return $file === $pidFile ? $pidFileExists : is_file($file);
+        }, true);
         $this->setFunctionReturn('file_get_contents', function (string $file) use ($pidFile): string|false {
             if ($file === $pidFile) {
                 return '12345';
@@ -504,6 +541,7 @@ class MysqlServerControllerTest extends \Codeception\Test\Unit
 
         $controller = new MysqlServerController($config, $options);
         $controller->start($output);
+        $pidFileExists = true;
         $this->expectException(ExtensionException::class);
         $this->expectExceptionMessage("Could not delete PID file '$pidFile'.");
         $controller->stop($output);

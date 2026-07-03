@@ -21,7 +21,7 @@ class MysqlServerController extends ServiceExtension
         $pidFile = $this->getPidFile();
         $port = $this->getPort();
 
-        if ($this->isProcessRunning($pidFile) || $this->isPortAcceptingConnections($port)) {
+        if ($this->isProcessRunning($pidFile) || $this->isMysqlServerReachable($port)) {
             $output->writeln("MySQL server already running on port $port.");
 
             return;
@@ -57,17 +57,20 @@ class MysqlServerController extends ServiceExtension
         return codecept_output_dir(self::PID_FILE_NAME);
     }
 
-    private function isPortAcceptingConnections(int $port): bool
+    private function isMysqlServerReachable(int $port): bool
     {
-        $socket = @stream_socket_client("tcp://127.0.0.1:{$port}", $errno, $errstr, 1);
+        try {
+            new \PDO(
+                "mysql:host=127.0.0.1;port={$port}",
+                $this->getUser(),
+                $this->getPassword(),
+                [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_TIMEOUT => 1]
+            );
 
-        if ($socket === false) {
+            return true;
+        } catch (\PDOException) {
             return false;
         }
-
-        fclose($socket);
-
-        return true;
     }
 
     private function getDatabase(): string
@@ -140,7 +143,7 @@ class MysqlServerController extends ServiceExtension
     public function stop(OutputInterface $output): void
     {
         $pidFile = $this->getPidFile();
-        $mysqlServerPid = (int)file_get_contents($pidFile);
+        $mysqlServerPid = is_file($pidFile) ? (int)file_get_contents($pidFile) : 0;
 
         if (!$mysqlServerPid) {
             $output->writeln('MySQL server not running.');
@@ -168,7 +171,7 @@ class MysqlServerController extends ServiceExtension
      */
     public function getInfo(): array
     {
-        $isRunning = is_file($this->getPidFile());
+        $isRunning = is_file($this->getPidFile()) || $this->isMysqlServerReachable($this->getPort());
 
         $info = [
             'running' => $isRunning ? 'yes' : 'no',
