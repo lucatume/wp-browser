@@ -5,7 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- `Utils\Filesystem::rrmdir()` and `recurseCopy()` now delegate to the bundled `symfony/filesystem` component instead of a hand-rolled recursive delete and a `cp -R`/`xcopy` shell-out; public signatures and bool return contracts are unchanged.
+
 ### Removed
+
+- Remove dead internal classes: `Utils\DockerCompose`, `Environment\Constants`, `Events\EventDispatcherException`, `Polyfills\Dotenv\Dotenv` and the `WordPress\CodeExecution` `ExitAction`/`ThrowAction` test doubles. No user-facing API is affected.
 
 - Drop the v3.5 downgrade Rector harness (`config/rector-35.php`, `config/composer-35.json`, the `RemoveTypeHinting`/`DowngradePhpOsFamily`/`SerializableThrowableCompatibilityRector` rules, the `bin/build-35-*` build scripts, and the dead `build_35` Makefile target) from `master`; it now lives entirely on the v3.5 branch (#810).
 
