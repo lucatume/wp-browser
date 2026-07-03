@@ -6,6 +6,9 @@ directory under the codeception output directory and initialize the server in th
 The aim of this extension is to allow running integration tests against a real MySQL server, without having to
 install and configure a MySQL server on the machine.
 
+If a MySQL server is already reachable on the configured port, the extension will reuse it instead of starting
+a new one; a server reused this way is not stopped by the extension.
+
 !!! warning
 
     Currently the MySQL Community Server version installed by this extension (8.4.2 LTS) **is not available for Windows on ARM.**  
