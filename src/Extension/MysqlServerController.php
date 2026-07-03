@@ -19,14 +19,14 @@ class MysqlServerController extends ServiceExtension
     public function start(OutputInterface $output): void
     {
         $pidFile = $this->getPidFile();
+        $port = $this->getPort();
 
-        if ($this->isProcessRunning($pidFile)) {
-            $output->writeln('MySQL server already running.');
+        if ($this->isProcessRunning($pidFile) || $this->isPortAcceptingConnections($port)) {
+            $output->writeln("MySQL server already running on port $port.");
 
             return;
         }
 
-        $port = $this->getPort();
         $database = $this->getDatabase();
         $user = $this->getUser();
         $password = $this->getPassword();
@@ -55,6 +55,19 @@ class MysqlServerController extends ServiceExtension
     public function getPidFile(): string
     {
         return codecept_output_dir(self::PID_FILE_NAME);
+    }
+
+    private function isPortAcceptingConnections(int $port): bool
+    {
+        $socket = @stream_socket_client("tcp://127.0.0.1:{$port}", $errno, $errstr, 1);
+
+        if ($socket === false) {
+            return false;
+        }
+
+        fclose($socket);
+
+        return true;
     }
 
     private function getDatabase(): string

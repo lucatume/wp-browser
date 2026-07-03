@@ -372,10 +372,13 @@ class MysqlServerControllerTest extends \Codeception\Test\Unit
 
     public function testWillNotRestartIfAlreadyRunning(): void
     {
-        // Mock the PID file existence.
+        // Mock a PID file pointing at this very process, which is alive by definition.
         $pidFile = (new MysqlServerController([], []))->getPidFile();
         $this->setFunctionReturn('is_file', function (string $file) use ($pidFile): bool {
             return $file === $pidFile ? true : is_file($file);
+        }, true);
+        $this->setFunctionReturn('file_get_contents', function (string $file) use ($pidFile) {
+            return $file === $pidFile ? (string)getmypid() : file_get_contents($file);
         }, true);
         $this->setClassMock(MysqlServer::class, $this->makeEmptyClass(MysqlServer::class, [
             '__construct' => function () {

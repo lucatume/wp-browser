@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- `MysqlServerController` now probes the configured port before starting a server: a MySQL instance reachable on the port is reused instead of racing to start (and download) a second one. Fixes `parallel-run` workers, whose per-worker output dirs hid the shared server's PID file.
+- `parallel-run` prints `FAILURES!` instead of `OK` when a worker crashes before reporting results.
+- `parallel-run` resolves the managed MySQL data dir through `codecept_output_dir()` instead of a hardcoded `var/_output` path that ignored `paths.output` overrides and broke the 103-char unix socket path limit on deep checkouts.
+
 ### Changed
 
 - `Utils\Filesystem::rrmdir()` and `recurseCopy()` now delegate to the bundled `symfony/filesystem` component instead of a hand-rolled recursive delete and a `cp -R`/`xcopy` shell-out; public signatures and bool return contracts are unchanged.
