@@ -13,9 +13,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- The `unit` suite is split in two: `tests/unit` now holds only real unit tests (no WordPress, no database, no managed services) and the new `tests/integration` suite holds the 33 test files that load WordPress, hit MySQL, or drive a real installation (all `assertInIsolation`-based `WPLoader*`/`LoadSandbox` tests included). The `BuiltInServerController`, `ChromeDriverController` and `MysqlServerController` extensions are now scoped via their existing `suites` option so `codecept run unit` starts no servers.
 - `Utils\Filesystem::rrmdir()` and `recurseCopy()` now delegate to the bundled `symfony/filesystem` component instead of a hand-rolled recursive delete and a `cp -R`/`xcopy` shell-out; public signatures are unchanged, and failure paths that previously threw (unreadable dir, uncreatable destination) now return `false` like the other failure modes (#812).
 
 ### Removed
+
+- The unit test suite no longer loads `php-stubs/wordpress-stubs` in the main process: the few WordPress functions the fork-based tests need are shimmed in the fork child, and a minimal autoloadable `wpdb` double replaces the stub class. Groundwork for fork-based test isolation, where a stub-free parent process is required to load real WordPress in children (#814).
 
 - Remove dead code: the unused `Module\WPLoader\Filters`/`FiltersGroup` classes (not wired to `WPLoader` since v4), `WordPress\FileRequests\FilePostRequest` with `FileRequestFactory::buildPostRequest()`, the write-only `FileRequest::setServerVar()`/`setConstant()`, the decorative `WordPress\CodeExecution\CodeExecutionActionInterface`, `Utils\Composer::allowPluginsFromPackage()`/`getDecodedContents()`, `Generators\Date::zero()`, `Project\TestEnvironment::$dumpFile`, `ManagedProcessInterface::ERR_STOP` and the unreachable PHPUnit `<8.0` branch of `WPTestCasePHPUnitMethodsTrait` (the package requires PHP ^8.0). No user-facing API is affected (#813).
 

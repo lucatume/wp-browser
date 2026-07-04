@@ -122,6 +122,8 @@ class Fork
             posix_kill($pid, 9 /* SIGKILL */);
         });
 
+        require_once __DIR__ . '/fork-wp-shims.php';
+
         try {
             $result = ($this->callback)();
             $resultClosure = new PackedClosure(static function () use ($result) {

@@ -73,7 +73,10 @@
       "lucatume\\WPBrowser\\Tests\\FSTemplates\\": "tests/_support/FSTemplates",
       "lucatume\\WPBrowser\\Tests\\Traits\\": "tests/_support/Traits",
       "lucatume\\Rector\\": "config/rector/src"
-    }
+    },
+    "classmap": [
+      "tests/_support/classmap"
+    ]
   },
   "extra": {
     "_hash": "484f861f69198089cab0e642f27e5653"
@@ -102,7 +105,10 @@
       "typos --config ./config/typos.toml -w"
     ],
     "pre-commit": [
-      "@stan", "@cs-fix", "@cs", "@typos"
+      "@stan",
+      "@cs-fix",
+      "@cs",
+      "@typos"
     ]
   },
   "suggest": {

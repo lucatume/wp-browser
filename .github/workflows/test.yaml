@@ -40,6 +40,7 @@ jobs:
           - acceptance
           - climodule
           - functional
+          - integration
           - muloader
           - unit
           # - webdriver # Disabled until the webdriver tests are fixed.
@@ -133,6 +134,7 @@ jobs:
           - acceptance
           - climodule
           - functional
+          - integration
           - muloader
           - unit
           # - webdriver # Disabled until the webdriver tests are fixed.

@@ -20,16 +20,19 @@ wpFolder: '%WORDPRESS_ROOT_DIR%'
 extensions:
     config:
         "lucatume\\WPBrowser\\Extension\\BuiltInServerController":
+            suites: [acceptance, climodule, functional, muloader, webdriver, wpcli_module, wploader_multisite, wploader_wpdb_interaction, wploadersuite, integration]
             docroot: '%WORDPRESS_ROOT_DIR%'
             port: '%WORDPRESS_LOCALHOST_PORT%'
             workers: 5
         "lucatume\\WPBrowser\\Extension\\ChromeDriverController":
+            suites: [acceptance, climodule, functional, muloader, webdriver, wpcli_module, wploader_multisite, wploader_wpdb_interaction, wploadersuite, integration]
             port: '%CHROMEDRIVER_PORT%'
             binary: '%CHROMEDRIVER_BINARY%'
         "lucatume\\WPBrowser\\Extension\\DockerComposeController":
             compose-file: docker-compose.yml
             env-file: tests/.env
         "lucatume\\WPBrowser\\Extension\\MysqlServerController":
+            suites: [acceptance, climodule, functional, muloader, webdriver, wpcli_module, wploader_multisite, wploader_wpdb_interaction, wploadersuite, integration]
             port: '%WORDPRESS_DB_LOCALHOST_PORT%'
             database: '%WORDPRESS_DB_NAME%'
             user: '%WORDPRESS_DB_USER%'

@@ -25,14 +25,6 @@ class WPLoaderLoadOnlyTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($module) {
-            // WordPress' functions are stubbed by wordpress-stubs in unit tests: override them to do something.
-            $did_actions = [];
-            uopz_set_return('do_action', static function ($action) use (&$did_actions) {
-                $did_actions[$action] = true;
-            }, true);
-            uopz_set_return('did_action', static function ($action) use (&$did_actions) {
-                return isset($did_actions[$action]);
-            }, true);
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 $this->fail('The WPLoader::installAndBootstrapInstallation method should not be called');
@@ -59,14 +51,6 @@ class WPLoaderLoadOnlyTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($module) {
-            // WordPress' functions are stubbed by wordpress-stubs in unit tests: override them to do something.
-            $did_actions = [];
-            uopz_set_return('do_action', static function ($action) use (&$did_actions) {
-                $did_actions[$action] = true;
-            }, true);
-            uopz_set_return('did_action', static function ($action) use (&$did_actions) {
-                return isset($did_actions[$action]);
-            }, true);
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
@@ -109,14 +93,6 @@ class WPLoaderLoadOnlyTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($testDbName, $testDbHost, $testDbPassword, $testDbUser, $module) {
-            // WordPress' functions are stubbed by wordpress-stubs in unit tests: override them to do something.
-            $did_actions = [];
-            uopz_set_return('do_action', static function ($action) use (&$did_actions) {
-                $did_actions[$action] = true;
-            }, true);
-            uopz_set_return('did_action', static function ($action) use (&$did_actions) {
-                return isset($did_actions[$action]);
-            }, true);
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
@@ -148,14 +124,6 @@ class WPLoaderLoadOnlyTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($module) {
-            // WordPress' functions are stubbed by wordpress-stubs in unit tests: override them to do something.
-            $did_actions = [];
-            uopz_set_return('do_action', static function ($action) use (&$did_actions) {
-                $did_actions[$action] = true;
-            }, true);
-            uopz_set_return('did_action', static function ($action) use (&$did_actions) {
-                return isset($did_actions[$action]);
-            }, true);
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
@@ -184,14 +152,6 @@ class WPLoaderLoadOnlyTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($module) {
-            // WordPress' functions are stubbed by wordpress-stubs in unit tests: override them to do something.
-            $did_actions = [];
-            uopz_set_return('do_action', static function ($action) use (&$did_actions) {
-                $did_actions[$action] = true;
-            }, true);
-            uopz_set_return('did_action', static function ($action) use (&$did_actions) {
-                return isset($did_actions[$action]);
-            }, true);
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
