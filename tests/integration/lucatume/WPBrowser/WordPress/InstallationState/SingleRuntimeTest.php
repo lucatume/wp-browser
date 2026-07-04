@@ -25,6 +25,41 @@ class SingleRuntimeTest extends \Codeception\Test\Unit
     use \lucatume\WPBrowser\Tests\Traits\FastScaffold;
 
     /**
+     * @var bool
+     */
+    protected $cleanupTmpAfterTest = false;
+    /**
+     * @var string|null
+     */
+    private static $sharedWpRootDir;
+    /**
+     * @var MysqlDatabase|null
+     */
+    private static $sharedDb;
+
+    private function sharedInstalledSingle(): Single
+    {
+        if (self::$sharedWpRootDir === null) {
+            $wpRootDir = FS::tmpDir('single_shared_');
+            $dbName = Random::dbName();
+            $dbHost = Env::get('WORDPRESS_DB_HOST');
+            $dbUser = Env::get('WORDPRESS_DB_USER');
+            $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+            self::$sharedDb = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+            $this->fastScaffold($wpRootDir, '6.1.1')->configure(self::$sharedDb)->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
+            self::$sharedWpRootDir = $wpRootDir;
+        }
+
+        return new Single(self::$sharedWpRootDir, self::$sharedWpRootDir . '/wp-config.php');
+    }
+
+    /**
      * It should allow getting information about the installation
      *
      * @test
@@ -33,21 +68,8 @@ class SingleRuntimeTest extends \Codeception\Test\Unit
      */
     public function should_allow_getting_information_about_the_installation(): void
     {
-        $wpRootDir = FS::tmpDir('single_j');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure($db)->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test'
-        );
-
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
+        $single = $this->sharedInstalledSingle();
+        $wpRootDir = self::$sharedWpRootDir;
 
         $this->assertFalse($single->isMultisite());
         $this->assertEquals($wpRootDir . '/', $single->getWpRootDir());
@@ -85,25 +107,12 @@ class SingleRuntimeTest extends \Codeception\Test\Unit
      */
     public function should_allow_getting_the_db(): void
     {
-        $wpRootDir = FS::tmpDir('single_k');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure($db)->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test');
+        $single = $this->sharedInstalledSingle();
 
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
-
-        $this->assertEquals($dbName, $single->getDb()->getDbName());
-        $this->assertEquals($dbHost, $single->getDb()->getDbHost());
-        $this->assertEquals($dbUser, $single->getDb()->getDbUser());
-        $this->assertEquals($dbPassword, $single->getDb()->getDbPassword());
+        $this->assertEquals(self::$sharedDb->getDbName(), $single->getDb()->getDbName());
+        $this->assertEquals(Env::get('WORDPRESS_DB_HOST'), $single->getDb()->getDbHost());
+        $this->assertEquals(Env::get('WORDPRESS_DB_USER'), $single->getDb()->getDbUser());
+        $this->assertEquals(Env::get('WORDPRESS_DB_PASSWORD'), $single->getDb()->getDbPassword());
     }
 
     /**
@@ -184,27 +193,14 @@ class SingleRuntimeTest extends \Codeception\Test\Unit
      */
     public function should_allow_getting_the_site_constants(): void
     {
-        $wpRootDir = FS::tmpDir('single_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure($db)->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test');
-
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
+        $single = $this->sharedInstalledSingle();
         $constants = $single->getConstants();
 
         $expected = [
-            'DB_NAME' => $dbName,
-            'DB_USER' => $dbUser,
-            'DB_PASSWORD' => $dbPassword,
-            'DB_HOST' => $dbHost,
+            'DB_NAME' => self::$sharedDb->getDbName(),
+            'DB_USER' => self::$sharedDb->getDbUser(),
+            'DB_PASSWORD' => self::$sharedDb->getDbPassword(),
+            'DB_HOST' => self::$sharedDb->getDbHost(),
             'DB_CHARSET' => 'utf8',
             'DB_COLLATE' => '',
             'AUTH_KEY' => $single->getAuthKey(),
@@ -216,7 +212,7 @@ class SingleRuntimeTest extends \Codeception\Test\Unit
             'LOGGED_IN_SALT' => $single->getLoggedInSalt(),
             'NONCE_SALT' => $single->getNonceSalt(),
             'WP_DEBUG' => false,
-            'ABSPATH' => $wpRootDir
+            'ABSPATH' => self::$sharedWpRootDir
         ];
         $this->assertCount(count($expected), $constants);
         foreach ($expected as $key => $expectedValue) {
@@ -233,20 +229,7 @@ class SingleRuntimeTest extends \Codeception\Test\Unit
      */
     public function should_allow_getting_the_site_globals(): void
     {
-        $wpRootDir = FS::tmpDir('single_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure($db)->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test');
-
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
+        $single = $this->sharedInstalledSingle();
         $globals = $single->getGlobals();
 
         $expected = [
@@ -267,25 +250,10 @@ class SingleRuntimeTest extends \Codeception\Test\Unit
      */
     public function should_allow_working_with_options(): void
     {
-        $wpRootDir = FS::tmpDir('single_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $this->fastScaffold($wpRootDir, '6.1.1')
-            ->configure($db, InstallationStateInterface::SINGLE_SITE)
-            ->install(
-                'https://wp.local',
-                'admin',
-                'password',
-                'admin@wp.local',
-                'Test');
-
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
+        $single = $this->sharedInstalledSingle();
 
         $this->assertEquals(1, $single->updateOption('foo', 'bar'));
-        $this->assertEquals('bar', $db->getOption('foo'));
+        $this->assertEquals('bar', self::$sharedDb->getOption('foo'));
     }
 
     /**
@@ -297,22 +265,7 @@ class SingleRuntimeTest extends \Codeception\Test\Unit
      */
     public function should_throw_if_trying_to_execute_non_static_closure_in_word_press(): void
     {
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost);
-        $wpRootDir = FS::tmpDir('single_');
-        $this->fastScaffold($wpRootDir, '6.1.1')
-            ->configure($db)
-            ->install(
-                'https://wp.local',
-                'admin',
-                'password',
-                'admin@wp.local',
-                'Test'
-            );
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
+        $single = $this->sharedInstalledSingle();
 
         $this->expectException(InvalidArgumentException::class);
 
@@ -331,26 +284,37 @@ class SingleRuntimeTest extends \Codeception\Test\Unit
      */
     public function should_allow_executing_a_closure_in_word_press(): void
     {
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost);
-        $wpRootDir = FS::tmpDir('single_');
-        $this->fastScaffold($wpRootDir, '6.1.1')
-            ->configure($db)
-            ->install(
-                'https://wp.local',
-                'admin',
-                'password',
-                'admin@wp.local',
-                'Test'
-            );
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
+        $single = $this->sharedInstalledSingle();
 
         $this->assertEquals('https://wp.local',
             $single->executeClosureInWordPress(static function () {
                 return get_option('siteurl');
             }));
+    }
+
+    /**
+     * It should expose the content, plugins, mu-plugins and themes directories
+     *
+     * Directory getters come from ConfiguredStateTrait and their WP_CONTENT_DIR,
+     * WP_PLUGIN_DIR and WPMU_PLUGIN_DIR variants are covered in ConfiguredTest;
+     * this asserts the wiring on the installed Single state.
+     *
+     * @test
+     * @group slow
+     * @group requires-mysql-server
+     */
+    public function should_expose_the_installation_directories(): void
+    {
+        $single = $this->sharedInstalledSingle();
+        $wpRootDir = self::$sharedWpRootDir;
+
+        $this->assertEquals($wpRootDir . '/wp-content', $single->getContentDir());
+        $this->assertEquals($wpRootDir . '/wp-content/some/path', $single->getContentDir('/some/path'));
+        $this->assertEquals($wpRootDir . '/wp-content/plugins', $single->getPluginsDir());
+        $this->assertEquals($wpRootDir . '/wp-content/plugins/plugin-1.php', $single->getPluginsDir('plugin-1.php'));
+        $this->assertEquals($wpRootDir . '/wp-content/mu-plugins', $single->getMuPluginsDir());
+        $this->assertEquals($wpRootDir . '/wp-content/mu-plugins/plugin-1.php', $single->getMuPluginsDir('plugin-1.php'));
+        $this->assertEquals($wpRootDir . '/wp-content/themes', $single->getThemesDir());
+        $this->assertEquals($wpRootDir . '/wp-content/themes/some-theme', $single->getThemesDir('some-theme'));
     }
 }

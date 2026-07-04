@@ -120,9 +120,10 @@ class DbImportTest extends \Codeception\Test\Unit
         $input = new StringInput("$path $path/dump.sql");
         $output = new BufferedOutput();
 
-        (new DbExport())->run($input, $output);
+        $exportExit = (new DbExport())->run($input, $output);
         $installation->runWpCliCommandOrThrow(['db', 'reset', '--yes']);
 
+        $this->assertEquals(0, $exportExit);
         $this->assertFileExists("$path/dump.sql");
 
         $input = new StringInput("$path $path/dump.sql");
@@ -156,12 +157,13 @@ class DbImportTest extends \Codeception\Test\Unit
         $input = new StringInput("$path $path/dump.sql");
         $output = new BufferedOutput();
 
-        (new DbExport())->run($input, $output);
+        $exportExit = (new DbExport())->run($input, $output);
         // Drop the database by deleting it.
         if (!unlink("$path/db.sqlite")) {
             throw new \RuntimeException("Could not delete sqlite db file.");
         }
 
+        $this->assertEquals(0, $exportExit);
         $this->assertFileExists("$path/dump.sql");
 
         $input = new StringInput("$path $path/dump.sql");

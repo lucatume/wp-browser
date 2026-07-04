@@ -215,13 +215,6 @@ class WPTestCaseStrictTest extends Unit
             throw new \RuntimeException('Could not write BreakingTest.php.');
         }
 
-        // Run a test using the default value, strict.
-        $this->config = [
-            'wpRootFolder' => $wpRootDir,
-            'dbUrl' => $db->getDbUrl()
-        ];
-        $wpLoader = $this->module();
-
         // Run a test using the default value, strict. It will not fail since strict mode is disabled for SQLite.
         $this->config = [
             'wpRootFolder' => $wpRootDir,

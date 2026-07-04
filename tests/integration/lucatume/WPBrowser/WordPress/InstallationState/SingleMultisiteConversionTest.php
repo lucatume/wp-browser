@@ -16,6 +16,7 @@ use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
 use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\Installation;
 use lucatume\WPBrowser\WordPress\InstallationException;
+use lucatume\WPBrowser\WordPress\WPDieException;
 
 
 class SingleMultisiteConversionTest extends \Codeception\Test\Unit
@@ -281,7 +282,7 @@ class SingleMultisiteConversionTest extends \Codeception\Test\Unit
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost);
         $wpRootDir = FS::tmpDir('single_');
-        $this->fastScaffold($wpRootDir, '6.1.1')
+        $single = $this->fastScaffold($wpRootDir, '6.1.1')
             ->configure($db)
             ->install(
                 'https://wp.local',
@@ -289,7 +290,11 @@ class SingleMultisiteConversionTest extends \Codeception\Test\Unit
                 'password',
                 'admin@wp.local',
                 'Test'
-            )
-            ->convertToMultisite(false);
+            );
+        $db->query("DELETE FROM {$db->getTablePrefix()}options WHERE option_name = 'siteurl'");
+
+        $this->expectException(WPDieException::class);
+
+        $single->convertToMultisite(false);
     }
 }

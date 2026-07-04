@@ -12,7 +12,6 @@ use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem;
 use lucatume\WPBrowser\Utils\Random;
 use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
-use lucatume\WPBrowser\WordPress\Database\SQLiteDatabase;
 use lucatume\WPBrowser\WordPress\DbException;
 use lucatume\WPBrowser\WordPress\Installation;
 use Symfony\Component\Console\Input\StringInput;
@@ -95,68 +94,4 @@ class DbExportTest extends \Codeception\Test\Unit
         $command->run($input, $output);
     }
 
-    /**
-     * It should correctly dump db
-     *
-     * @test
-     * @group slow
-     * @group requires-mysql-server
-     */
-    public function should_correctly_dump_db(): void
-    {
-        $path = Filesystem::tmpDir('dbexport_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $this->fastScaffold($path)
-            ->configure($db)
-            ->install(
-                'http://wordpress.local',
-                'admin',
-                'admin',
-                'admin@wordpress.local',
-                'Test'
-            );
-        $input = new StringInput("$path $path/dump.sql");
-        $output = new BufferedOutput();
-
-        $command = new DbExport();
-
-        $exit = $command->run($input, $output);
-
-        $this->assertEquals(0, $exit);
-        $this->assertFileExists("$path/dump.sql");
-    }
-
-    /**
-     * It should correctly dump sqlite db
-     *
-     * @test
-     * @group slow
-     */
-    public function should_correctly_dump_sqlite_db(): void
-    {
-        $path = Filesystem::tmpDir('dbexport_');
-        $db = new SQLiteDatabase($path, 'db.sqlite');
-        $this->fastScaffold($path)
-            ->configure($db)
-            ->install(
-                'http://wordpress.local',
-                'admin',
-                'admin',
-                'admin@wordpress.local',
-                'Test'
-            );
-        $input = new StringInput("$path $path/dump.sql");
-        $output = new BufferedOutput();
-
-        $command = new DbExport();
-
-        $exit = $command->run($input, $output);
-
-        $this->assertEquals(0, $exit);
-        $this->assertFileExists("$path/dump.sql");
-    }
 }

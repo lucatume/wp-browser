@@ -25,6 +25,78 @@ class MultisiteTest extends Unit
     use FastScaffold;
 
     /**
+     * @var bool
+     */
+    protected $cleanupTmpAfterTest = false;
+    /**
+     * @var array{string, MysqlDatabase}|null
+     */
+    private static $sharedInstallation;
+    /**
+     * @var array{string, MysqlDatabase}|null
+     */
+    private static $sharedContentDirInstallation;
+
+    /**
+     * @return array{string, MysqlDatabase}
+     */
+    private function sharedInstallation(): array
+    {
+        if (self::$sharedInstallation === null) {
+            $wpRootDir = FS::tmpDir('multisite_');
+            $dbName = Random::dbName();
+            $dbHost = Env::get('WORDPRESS_DB_HOST');
+            $dbUser = Env::get('WORDPRESS_DB_USER');
+            $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+            $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+            $this->fastScaffold($wpRootDir, '6.1.1')->configure(
+                $db,
+                InstallationStateInterface::MULTISITE_SUBFOLDER
+            )->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
+            self::$sharedInstallation = [$wpRootDir, $db];
+        }
+
+        return self::$sharedInstallation;
+    }
+
+    /**
+     * @return array{string, MysqlDatabase}
+     */
+    private function sharedContentDirInstallation(): array
+    {
+        if (self::$sharedContentDirInstallation === null) {
+            $wpRootDir = FS::tmpDir('multisite_');
+            $dbName = Random::dbName();
+            $dbHost = Env::get('WORDPRESS_DB_HOST');
+            $dbUser = Env::get('WORDPRESS_DB_USER');
+            $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+            $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+            $configurationData = (new ConfigurationData())
+                ->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content');
+            $this->fastScaffold($wpRootDir, '6.1.1')->configure(
+                $db,
+                InstallationStateInterface::MULTISITE_SUBFOLDER,
+                $configurationData
+            )->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
+            self::$sharedContentDirInstallation = [$wpRootDir, $db];
+        }
+
+        return self::$sharedContentDirInstallation;
+    }
+
+    /**
      * It should throw if trying to build on missing root directory
      *
      * @test
@@ -192,31 +264,26 @@ class MultisiteTest extends Unit
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_MULTISITE);
-
-        $multisite->scaffold('6.1.1');
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_MULTISITE);
-
-        $multisite->configure($db);
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_MULTISITE);
-
-        $multisite->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test'
-        );
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_MULTISITE);
-
-        $multisite->convertToMultisite();
+        $calls = [
+            fn() => $multisite->scaffold('6.1.1'),
+            fn() => $multisite->configure($db),
+            fn() => $multisite->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            ),
+            fn() => $multisite->convertToMultisite(),
+        ];
+        foreach ($calls as $i => $call) {
+            try {
+                $call();
+                $this->fail("Expected InstallationException from call $i");
+            } catch (InstallationException $e) {
+                $this->assertEquals(InstallationException::STATE_MULTISITE, $e->getCode(), "call $i");
+            }
+        }
     }
 
     /**
@@ -228,19 +295,7 @@ class MultisiteTest extends Unit
      */
     public function should_allow_fetching_information_from_the_installation(): void
     {
-        $wpRootDir = FS::tmpDir('multisite_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure($db)->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test'
-        )->convertToMultisite();
+        [$wpRootDir] = $this->sharedInstallation();
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
@@ -280,22 +335,11 @@ class MultisiteTest extends Unit
      */
     public function should_allow_getting_the_db(): void
     {
-        $wpRootDir = FS::tmpDir('multisite_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure(
-            $db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER
-        )->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test'
-        );
+        [$wpRootDir, $db] = $this->sharedInstallation();
+        $dbName = $db->getDbName();
+        $dbHost = $db->getDbHost();
+        $dbUser = $db->getDbUser();
+        $dbPassword = $db->getDbPassword();
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
@@ -314,22 +358,11 @@ class MultisiteTest extends Unit
      */
     public function should_allow_getting_the_site_constants(): void
     {
-        $wpRootDir = FS::tmpDir('multisite_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure(
-            $db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER
-        )->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test'
-        );
+        [$wpRootDir, $db] = $this->sharedInstallation();
+        $dbName = $db->getDbName();
+        $dbHost = $db->getDbHost();
+        $dbUser = $db->getDbUser();
+        $dbPassword = $db->getDbPassword();
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
         $constants = $multisite->getConstants();
@@ -374,22 +407,7 @@ class MultisiteTest extends Unit
      */
     public function should_allow_getting_the_site_globals(): void
     {
-        $wpRootDir = FS::tmpDir('multisite_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure(
-            $db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER
-        )->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test'
-        );
+        [$wpRootDir] = $this->sharedInstallation();
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
         $globals = $multisite->getGlobals();
@@ -412,22 +430,7 @@ class MultisiteTest extends Unit
      */
     public function should_return_plugins_directory(): void
     {
-        $wpRootDir = FS::tmpDir('multisite_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure(
-            $db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER
-        )->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test'
-        );
+        [$wpRootDir] = $this->sharedInstallation();
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
@@ -443,25 +446,7 @@ class MultisiteTest extends Unit
      */
     public function should_return_plugin_directory_build_from_wp_content_dir_if_set(): void
     {
-        $wpRootDir = FS::tmpDir('multisite_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $configurationData = (new ConfigurationData())
-            ->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure(
-            $db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER,
-            $configurationData
-        )->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test'
-        );
+        [$wpRootDir] = $this->sharedContentDirInstallation();
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
@@ -513,22 +498,7 @@ class MultisiteTest extends Unit
      */
     public function should_return_mu_plugins_directory(): void
     {
-        $wpRootDir = FS::tmpDir('multisite_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure(
-            $db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER
-        )->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test'
-        );
+        [$wpRootDir] = $this->sharedInstallation();
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
@@ -544,25 +514,7 @@ class MultisiteTest extends Unit
      */
     public function should_return_mu_plugin_directory_build_from_wp_content_dir_if_set(): void
     {
-        $wpRootDir = FS::tmpDir('multisite_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $configurationData = (new ConfigurationData())
-            ->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure(
-            $db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER,
-            $configurationData
-        )->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test'
-        );
+        [$wpRootDir] = $this->sharedContentDirInstallation();
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
@@ -614,22 +566,7 @@ class MultisiteTest extends Unit
      */
     public function should_return_themes_directory(): void
     {
-        $wpRootDir = FS::tmpDir('multisite_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure(
-            $db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER
-        )->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test'
-        );
+        [$wpRootDir] = $this->sharedInstallation();
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
@@ -650,25 +587,7 @@ class MultisiteTest extends Unit
      */
     public function should_return_themes_directory_built_from_wp_content_dir_if_set(): void
     {
-        $wpRootDir = FS::tmpDir('multisite_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $configurationData = (new ConfigurationData())
-            ->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure(
-            $db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER,
-            $configurationData
-        )->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test'
-        );
+        [$wpRootDir] = $this->sharedContentDirInstallation();
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
@@ -689,24 +608,7 @@ class MultisiteTest extends Unit
      */
     public function should_return_content_dir(): void
     {
-        $wpRootDir = FS::tmpDir('multisite_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $configurationData = (new ConfigurationData());
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure(
-            $db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER,
-            $configurationData
-        )->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test'
-        );
+        [$wpRootDir] = $this->sharedInstallation();
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
@@ -727,25 +629,7 @@ class MultisiteTest extends Unit
      */
     public function should_return_content_directory_build_from_the_wp_content_if_set(): void
     {
-        $wpRootDir = FS::tmpDir('multisite_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $configurationData = (new ConfigurationData())
-            ->setConst('WP_CONTENT_DIR', $wpRootDir . '/site-content');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure(
-            $db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER,
-            $configurationData
-        )->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test'
-        );
+        [$wpRootDir] = $this->sharedContentDirInstallation();
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
@@ -799,23 +683,7 @@ class MultisiteTest extends Unit
      */
     public function should_throw_if_trying_to_execute_a_non_static_closure_in_word_press(): void
     {
-        $wpRootDir = FS::tmpDir('multisite_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure(
-            $db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER
-        )
-            ->install(
-                'https://wp.local',
-                'admin',
-                'password',
-                'admin@wp.local',
-                'Test'
-            );
+        [$wpRootDir] = $this->sharedInstallation();
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
@@ -835,23 +703,7 @@ class MultisiteTest extends Unit
      */
     public function should_allow_executing_a_closure_in_word_press(): void
     {
-        $wpRootDir = FS::tmpDir('multisite_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure(
-            $db,
-            InstallationStateInterface::MULTISITE_SUBFOLDER
-        )
-            ->install(
-                'https://wp.local',
-                'admin',
-                'password',
-                'admin@wp.local',
-                'Test'
-            );
+        [$wpRootDir] = $this->sharedInstallation();
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 

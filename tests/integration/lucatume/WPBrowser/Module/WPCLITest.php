@@ -469,17 +469,33 @@ class WPCLITest extends Unit
         $this->assertEquals($expected, $commandLine);
     }
 
+    public function flagsConfigProvider(): array
+    {
+        return [
+            'skip-plugins' => [['skip-plugins' => true], ['--skip-plugins']],
+            'skip-themes' => [['skip-themes' => true], ['--skip-themes']],
+            'skip-packages' => [['skip-packages' => true], ['--skip-packages']],
+            'color' => [['color' => true], ['--color']],
+            'no-color' => [['no-color' => true], ['--no-color']],
+            'allow-root' => [['allow-root' => true], ['--allow-root']],
+            'debug and quiet' => [['debug' => true, 'quiet' => true], ['--debug', '--quiet']],
+        ];
+    }
+
     /**
-     * It should allow configuring wp-cli to skip plugins
+     * It should allow configuring wp-cli flags from the module configuration
      *
      * @test
+     * @dataProvider flagsConfigProvider
+     * @group fast
      */
-    public function should_allow_configuring_wp_cli_to_skip_plugins(): void
-    {
-        $wpcli = $this->module([
+    public function should_allow_configuring_wp_cli_flags_from_the_module_configuration(
+        array $config,
+        array $expectedFlags
+    ): void {
+        $wpcli = $this->module(array_merge([
             'path' => self::$installation->getWpRootDir(),
-            'skip-plugins' => true
-        ]);
+        ], $config));
 
         $wpcli->cli(['core', 'version']);
 
@@ -488,138 +504,42 @@ class WPCLITest extends Unit
 
         $expected = implode(
             ' ',
-            array_map('escapeshellarg', [
-                PHP_BINARY,
-                $wpCliPhar,
-                '--skip-plugins',
-                'core',
-                'version'
-            ])
+            array_map('escapeshellarg', array_merge(
+                [PHP_BINARY, $wpCliPhar],
+                $expectedFlags,
+                ['core', 'version']
+            ))
         );
         $this->assertEquals($expected, $commandLine);
     }
 
-    /**
-     * It should allow configuring wp-cli to skip themes
-     *
-     * @test
-     */
-    public function should_allow_configuring_wp_cli_to_skip_themes(): void
+    public function invalidArrayOfStringsConfigProvider(): array
     {
-        $wpcli = $this->module([
-            'path' => self::$installation->getWpRootDir(),
-            'skip-themes' => true
-        ]);
-
-        $wpcli->cli(['core', 'version']);
-
-        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
-        $wpCliPhar = CliProcess::getWpCliPharPathname();
-
-        $expected = implode(
-            ' ',
-            array_map('escapeshellarg', [
-                PHP_BINARY,
-                $wpCliPhar,
-                '--skip-themes',
-                'core',
-                'version'
-            ])
-        );
-        $this->assertEquals($expected, $commandLine);
+        return [
+            'exec not an array' => ['exec', 23],
+            'exec not an array of strings' => ['exec', ['echo "Hello World!"', 23]],
+            'require not an array' => ['require', 23],
+            'require not an array of strings' => ['require', ['php-file-1.php', 23]],
+        ];
     }
 
     /**
-     * It should allow configuring wp-cli to skip packages
+     * It should throw if exec or require configuration parameter is not an array of strings
      *
      * @test
-     */
-    public function should_allow_configuring_wp_cli_to_skip_packages(): void
-    {
-        $wpcli = $this->module([
-            'path' => self::$installation->getWpRootDir(),
-            'skip-packages' => true
-        ]);
-
-        $wpcli->cli(['core', 'version']);
-
-        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
-        $wpCliPhar = CliProcess::getWpCliPharPathname();
-
-        $expected = implode(
-            ' ',
-            array_map('escapeshellarg', [
-                PHP_BINARY,
-                $wpCliPhar,
-                '--skip-packages',
-                'core',
-                'version'
-            ])
-        );
-        $this->assertEquals($expected, $commandLine);
-    }
-
-    /**
-     * It should throw if exec configuration parameter is not an array
-     *
-     * @test
+     * @dataProvider invalidArrayOfStringsConfigProvider
      * @group fast
+     * @param mixed $configValue
      */
-    public function should_throw_if_exec_configuration_parameter_is_not_an_array(): void
-    {
+    public function should_throw_if_exec_or_require_configuration_parameter_is_not_an_array_of_strings(
+        string $configKey,
+        $configValue
+    ): void {
         $this->expectException(ModuleConfigException::class);
 
         $this->module([
             'path' => self::$installation->getWpRootDir(),
-            'exec' => 23
-        ]);
-    }
-
-    /**
-     * It should throw if require configuration parameter is not an array
-     *
-     * @test
-     * @group fast
-     */
-    public function should_throw_if_require_configuration_parameter_is_not_an_array(): void
-    {
-        $this->expectException(ModuleConfigException::class);
-
-        $this->module([
-            'path' => self::$installation->getWpRootDir(),
-            'require' => 23
-        ]);
-    }
-
-    /**
-     * It should throw if exec configuration parameter is not an array of strings
-     *
-     * @test
-     * @group fast
-     */
-    public function should_throw_if_exec_configuration_parameter_is_not_an_array_of_strings(): void
-    {
-        $this->expectException(ModuleConfigException::class);
-
-        $this->module([
-            'path' => self::$installation->getWpRootDir(),
-            'exec' => ['echo "Hello World!"', 23]
-        ]);
-    }
-
-    /**
-     * It should throw if require configuration parameter is not an array of strings
-     *
-     * @test
-     * @group fast
-     */
-    public function should_throw_if_require_configuration_parameter_is_not_an_array_of_strings(): void
-    {
-        $this->expectException(ModuleConfigException::class);
-
-        $this->module([
-            'path' => self::$installation->getWpRootDir(),
-            'require' => ['php-file-1.php', 23]
+            $configKey => $configValue
         ]);
     }
 
@@ -772,128 +692,6 @@ class WPCLITest extends Unit
             'path' => self::$installation->getWpRootDir(),
             'context' => 2389,
         ]);
-    }
-
-    /**
-     * It should allow configuring wp-cli context, debug and quiet options
-     *
-     * @test
-     */
-    public function should_allow_configuring_wp_cli_context_debug_and_quiet_options(): void
-    {
-        $wpcli = $this->module([
-            'path' => self::$installation->getWpRootDir(),
-            'debug' => true,
-            'quiet' => true
-        ]);
-
-        $wpcli->cli(['core', 'version']);
-
-        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
-        $wpCliPhar = CliProcess::getWpCliPharPathname();
-
-        $expected = implode(
-            ' ',
-            array_map('escapeshellarg', [
-                PHP_BINARY,
-                $wpCliPhar,
-                '--debug',
-                '--quiet',
-                'core',
-                'version'
-            ])
-        );
-        $this->assertEquals($expected, $commandLine);
-    }
-
-    /**
-     * It should allow configuring wp-cli to run with color
-     *
-     * @test
-     */
-    public function should_allow_configuring_wp_cli_to_run_with_color(): void
-    {
-        $wpcli = $this->module([
-            'path' => self::$installation->getWpRootDir(),
-            'color' => true
-        ]);
-
-        $wpcli->cli(['core', 'version']);
-
-        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
-        $wpCliPhar = CliProcess::getWpCliPharPathname();
-
-        $expected = implode(
-            ' ',
-            array_map('escapeshellarg', [
-                PHP_BINARY,
-                $wpCliPhar,
-                '--color',
-                'core',
-                'version'
-            ])
-        );
-        $this->assertEquals($expected, $commandLine);
-    }
-
-    /**
-     * It should allow configuring wp-cli to run without color
-     *
-     * @test
-     */
-    public function should_allow_configuring_wp_cli_to_run_without_color(): void
-    {
-        $wpcli = $this->module([
-            'path' => self::$installation->getWpRootDir(),
-            'no-color' => true
-        ]);
-
-        $wpcli->cli(['core', 'version']);
-
-        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
-        $wpCliPhar = CliProcess::getWpCliPharPathname();
-
-        $expected = implode(
-            ' ',
-            array_map('escapeshellarg', [
-                PHP_BINARY,
-                $wpCliPhar,
-                '--no-color',
-                'core',
-                'version'
-            ])
-        );
-        $this->assertEquals($expected, $commandLine);
-    }
-
-    /**
-     * It should allow configuring wp-cli to run with allow-root
-     *
-     * @test
-     */
-    public function should_allow_configuring_wp_cli_to_run_with_allow_root(): void
-    {
-        $wpcli = $this->module([
-            'path' => self::$installation->getWpRootDir(),
-            'allow-root' => true
-        ]);
-
-        $wpcli->cli(['core', 'version']);
-
-        $commandLine = $wpcli->grabLastCliProcess()->getCommandLine();
-        $wpCliPhar = CliProcess::getWpCliPharPathname();
-
-        $expected = implode(
-            ' ',
-            array_map('escapeshellarg', [
-                PHP_BINARY,
-                $wpCliPhar,
-                '--allow-root',
-                'core',
-                'version'
-            ])
-        );
-        $this->assertEquals($expected, $commandLine);
     }
 
     /**

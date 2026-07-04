@@ -27,6 +27,26 @@ class ScaffoldedTest extends Unit
     use FastScaffold;
 
     /**
+     * @var bool
+     */
+    protected $cleanupTmpAfterTest = false;
+    /**
+     * @var string|null
+     */
+    private static $scaffoldedWpRootDir;
+
+    private function scaffoldedWpRootDir(): string
+    {
+        if (self::$scaffoldedWpRootDir === null) {
+            $wpRootDir = FS::tmpDir('scaffolded_');
+            $this->fastScaffold($wpRootDir, '6.1.1');
+            self::$scaffoldedWpRootDir = $wpRootDir;
+        }
+
+        return self::$scaffoldedWpRootDir;
+    }
+
+    /**
      * It should throw when building on non existing root directory
      *
      * @test
@@ -101,8 +121,7 @@ class ScaffoldedTest extends Unit
      */
     public function should_allow_getting_information_from_the_installation(): void
     {
-        $wpRootDir = FS::tmpDir('scaffolded_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $state = new Scaffolded($wpRootDir);
 
@@ -120,8 +139,7 @@ class ScaffoldedTest extends Unit
      */
     public function should_throw_if_trying_to_assess_multisite_configuration(): void
     {
-        $wpRootDir = FS::tmpDir('scaffolded_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $state = new Scaffolded($wpRootDir);
 
@@ -282,55 +300,29 @@ PHP;
      */
     public function should_throw_when_trying_to_get_salts()
     {
-        $wpRootDir = FS::tmpDir('empty-dir_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $scaffolded = new Scaffolded($wpRootDir);
 
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getAuthKey();
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getSecureAuthKey();
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getLoggedInKey();
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getNonceKey();
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getAuthSalt();
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getSecureAuthSalt();
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getLoggedInSalt();
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getNonceSalt();
-
-        $this->expectedException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getSalts();
+        $getters = [
+            'getAuthKey',
+            'getSecureAuthKey',
+            'getLoggedInKey',
+            'getNonceKey',
+            'getAuthSalt',
+            'getSecureAuthSalt',
+            'getLoggedInSalt',
+            'getNonceSalt',
+            'getSalts',
+        ];
+        foreach ($getters as $getter) {
+            try {
+                $scaffolded->$getter();
+                $this->fail("Expected InstallationException from $getter");
+            } catch (InstallationException $e) {
+                $this->assertEquals(InstallationException::STATE_SCAFFOLDED, $e->getCode(), $getter);
+            }
+        }
     }
 
     /**
@@ -341,8 +333,7 @@ PHP;
      */
     public function should_throw_when_trying_to_get_table_prefix(): void
     {
-        $wpRootDir = FS::tmpDir('scaffolded_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -360,8 +351,7 @@ PHP;
      */
     public function should_throw_if_trying_to_install()
     {
-        $wpRootDir = FS::tmpDir('scaffolded_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -379,8 +369,7 @@ PHP;
      */
     public function should_throw_if_trying_to_convert_to_multisite(): void
     {
-        $wpRootDir = FS::tmpDir('scaffolded_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -398,8 +387,7 @@ PHP;
      */
     public function should_throw_if_trying_to_scaffold_again(): void
     {
-        $wpRootDir = FS::tmpDir('scaffolded_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -417,8 +405,7 @@ PHP;
      */
     public function should_throw_if_trying_to_get_the_wp_config_php_file_path(): void
     {
-        $wpRootDir = FS::tmpDir('scaffolded_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -436,8 +423,7 @@ PHP;
      */
     public function should_not_be_configured(): void
     {
-        $wpRootDir = FS::tmpDir('scaffolded_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -452,8 +438,7 @@ PHP;
      */
     public function should_throw_if_trying_to_get_a_constant(): void
     {
-        $wpRootDir = FS::tmpDir('scaffolded_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -471,8 +456,7 @@ PHP;
      */
     public function should_throw_if_trying_to_get_the_db(): void
     {
-        $wpRootDir = FS::tmpDir('scaffolded_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -490,8 +474,7 @@ PHP;
      */
     public function should_allow_getting_the_installation_constants(): void
     {
-        $wpRootDir = FS::tmpDir('scaffolded_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -509,8 +492,7 @@ PHP;
      */
     public function should_allow_getting_the_installation_globals(): void
     {
-        $wpRootDir = FS::tmpDir('scaffolded_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -528,8 +510,7 @@ PHP;
      */
     public function should_return_plugins_directory(): void
     {
-        $wpRootDir = FS::tmpDir('scaffolded_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -566,8 +547,7 @@ PHP;
      */
     public function should_return_themes_directory(): void
     {
-        $wpRootDir = FS::tmpDir('scaffolded_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -584,8 +564,7 @@ PHP;
      */
     public function should_allow_getting_the_content_dir_path(): void
     {
-        $wpRootDir = FS::tmpDir('scaffolded_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -602,8 +581,7 @@ PHP;
      */
     public function should_throw_if_trying_to_update_option(): void
     {
-        $wpRootDir = FS::tmpDir('scaffolded_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $scaffolded = new Scaffolded($wpRootDir);
 
@@ -621,8 +599,7 @@ PHP;
      */
     public function should_throw_if_trying_to_execute_closure_in_word_press(): void
     {
-        $wpRootDir = FS::tmpDir('scaffolded_');
-        $this->fastScaffold($wpRootDir, '6.1.1');
+        $wpRootDir = $this->scaffoldedWpRootDir();
 
         $scaffolded = new Scaffolded($wpRootDir);
 
