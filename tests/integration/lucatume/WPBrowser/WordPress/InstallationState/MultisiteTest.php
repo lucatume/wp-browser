@@ -192,31 +192,26 @@ class MultisiteTest extends Unit
 
         $multisite = new Multisite($wpRootDir, $wpRootDir . '/wp-config.php');
 
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_MULTISITE);
-
-        $multisite->scaffold('6.1.1');
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_MULTISITE);
-
-        $multisite->configure($db);
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_MULTISITE);
-
-        $multisite->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test'
-        );
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_MULTISITE);
-
-        $multisite->convertToMultisite();
+        $calls = [
+            fn() => $multisite->scaffold('6.1.1'),
+            fn() => $multisite->configure($db),
+            fn() => $multisite->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            ),
+            fn() => $multisite->convertToMultisite(),
+        ];
+        foreach ($calls as $i => $call) {
+            try {
+                $call();
+                $this->fail("Expected InstallationException from call $i");
+            } catch (InstallationException $e) {
+                $this->assertEquals(InstallationException::STATE_MULTISITE, $e->getCode(), "call $i");
+            }
+        }
     }
 
     /**

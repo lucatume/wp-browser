@@ -287,50 +287,25 @@ PHP;
 
         $scaffolded = new Scaffolded($wpRootDir);
 
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getAuthKey();
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getSecureAuthKey();
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getLoggedInKey();
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getNonceKey();
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getAuthSalt();
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getSecureAuthSalt();
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getLoggedInSalt();
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getNonceSalt();
-
-        $this->expectedException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SCAFFOLDED);
-
-        $scaffolded->getSalts();
+        $getters = [
+            'getAuthKey',
+            'getSecureAuthKey',
+            'getLoggedInKey',
+            'getNonceKey',
+            'getAuthSalt',
+            'getSecureAuthSalt',
+            'getLoggedInSalt',
+            'getNonceSalt',
+            'getSalts',
+        ];
+        foreach ($getters as $getter) {
+            try {
+                $scaffolded->$getter();
+                $this->fail("Expected InstallationException from $getter");
+            } catch (InstallationException $e) {
+                $this->assertEquals(InstallationException::STATE_SCAFFOLDED, $e->getCode(), $getter);
+            }
+        }
     }
 
     /**
