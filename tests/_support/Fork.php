@@ -10,13 +10,12 @@ use lucatume\WPBrowser\Utils\PackedClosure;
 
 class Fork
 {
-    public const DEFAULT_TERMINATOR = '__WPBROWSER_SEPARATOR__';
+    private const TERMINATOR = '__WPBROWSER_SEPARATOR__';
     private const IPC_SOCKET_CHUNK_SIZE = 2048;
     private const TIMEOUT = 30;
 
     private static ?\Closure $childShutdownHandler = null;
     private static bool $shutdownHookRegistered = false;
-    private \Closure $callback;
 
     /**
      * Call from the global bootstrap, before Codeception registers its ErrorHandler shutdown handler.
@@ -42,16 +41,6 @@ class Fork
 
     public static function executeClosure(\Closure $callback): mixed
     {
-        return (new self($callback))->execute();
-    }
-
-    public function __construct(\Closure $callback)
-    {
-        $this->callback = $callback;
-    }
-
-    public function execute(): mixed
-    {
         if (!(function_exists('pcntl_fork') && function_exists('posix_kill'))) {
             throw new \RuntimeException('pcntl and posix extensions missing.');
         }
@@ -72,18 +61,18 @@ class Fork
         }
 
         if ($pid === 0) {
-            $this->executeFork($sockets);
+            self::executeFork($callback, $sockets);
             // Unreachable unless the self-SIGKILL failed: never fall through into the parent flow.
             exit(0);
         }
 
-        return $this->executeMain($pid, $sockets);
+        return self::executeMain($pid, $sockets);
     }
 
     /**
      * @param array{0: resource, 1: resource} $sockets
      */
-    private function executeFork(array $sockets): void
+    private static function executeFork(\Closure $callback, array $sockets): void
     {
         fclose($sockets[1]);
         $ipcSocket = $sockets[0];
@@ -94,18 +83,21 @@ class Fork
             die('Failed to get pid');
         }
 
-        self::$childShutdownHandler = function () use ($pid, $ipcSocket, &$didWritePayload) {
+        self::$childShutdownHandler = static function () use ($pid, $ipcSocket, &$didWritePayload) {
             if (!$didWritePayload) {
                 // Reached on `exit`: flush pending output buffers now to capture throwing callbacks.
                 try {
-                    $level = ob_get_level();
-                    while (ob_get_level() > 0 && $level-- > 0) {
+                    for ($level = ob_get_level(); $level > 0; $level--) {
                         ob_end_flush();
                     }
-                    $throwable = new \RuntimeException('Fork child exited before returning a result.');
+                    $lastError = error_get_last();
+                    $throwable = new \RuntimeException(
+                        'Fork child exited before returning a result.'
+                        . ($lastError !== null ? ' Last error: ' . $lastError['message'] : '')
+                    );
                 } catch (\Throwable $throwable) {
                 }
-                $this->writeResultPayload($ipcSocket, serialize(new SerializableThrowable($throwable)));
+                self::writeResultPayload($ipcSocket, serialize(new SerializableThrowable($throwable)));
                 $didWritePayload = true;
             }
             fclose($ipcSocket);
@@ -116,7 +108,7 @@ class Fork
         self::registerChildShutdownHandler();
 
         try {
-            $result = ($this->callback)();
+            $result = $callback();
             $resultClosure = new PackedClosure(static function () use ($result) {
                 return $result;
             });
@@ -125,7 +117,7 @@ class Fork
             $resultPayload = serialize(new SerializableThrowable($throwable));
         }
 
-        $this->writeResultPayload($ipcSocket, $resultPayload);
+        self::writeResultPayload($ipcSocket, $resultPayload);
         $didWritePayload = true;
         fclose($ipcSocket);
 
@@ -139,7 +131,7 @@ class Fork
      *
      * @param resource $ipcSocket
      */
-    private function writeResultPayload($ipcSocket, string $resultPayload): void
+    private static function writeResultPayload($ipcSocket, string $resultPayload): void
     {
         $encoded = base64_encode($resultPayload);
         $length = strlen($encoded);
@@ -156,26 +148,27 @@ class Fork
             $offset += $written;
         }
 
-        fwrite($ipcSocket, self::DEFAULT_TERMINATOR);
+        fwrite($ipcSocket, self::TERMINATOR);
     }
 
     /**
      * @param array{0: resource, 1: resource} $sockets
      * @throws \Throwable
      */
-    private function executeMain(int $pid, array $sockets): mixed
+    private static function executeMain(int $pid, array $sockets): mixed
     {
         fclose($sockets[0]);
         $ipcSocket = $sockets[1];
         $resultPayload = '';
         $deadline = Debug::isEnabled() ? INF : microtime(true) + self::TIMEOUT;
 
-        while (!str_ends_with($resultPayload, self::DEFAULT_TERMINATOR) && !feof($ipcSocket)) {
+        while (!str_ends_with($resultPayload, self::TERMINATOR) && !feof($ipcSocket)) {
             $read = [$ipcSocket];
             $write = null;
             $except = null;
 
-            if (stream_select($read, $write, $except, 1) > 0) {
+            // Silenced: EINTR makes stream_select return false with a warning; the loop just retries.
+            if (@stream_select($read, $write, $except, 1) > 0) {
                 $resultPayload .= (string)fread($ipcSocket, self::IPC_SOCKET_CHUNK_SIZE);
             }
 
@@ -195,7 +188,7 @@ class Fork
         /** @noinspection PhpComposerExtensionStubsInspection */
         pcntl_waitpid($pid, $status);
 
-        if (!str_ends_with($resultPayload, self::DEFAULT_TERMINATOR)) {
+        if (!str_ends_with($resultPayload, self::TERMINATOR)) {
             $exitDetail = pcntl_wifsignaled($status) ?
                 'killed by signal ' . pcntl_wtermsig($status)
                 : 'exited with status ' . pcntl_wexitstatus($status);
@@ -205,7 +198,7 @@ class Fork
             );
         }
 
-        $resultPayload = substr($resultPayload, 0, -strlen(self::DEFAULT_TERMINATOR));
+        $resultPayload = substr($resultPayload, 0, -strlen(self::TERMINATOR));
 
         $unserializedPayload = @unserialize((string)base64_decode($resultPayload, true));
 
@@ -220,12 +213,6 @@ class Fork
             );
         }
 
-        $result = $unserializedPayload->getClosure()();
-
-        if ($result instanceof \Throwable) {
-            throw $result;
-        }
-
-        return $result;
+        return $unserializedPayload->getClosure()();
     }
 }
