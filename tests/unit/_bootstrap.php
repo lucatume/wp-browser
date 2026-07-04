@@ -4,8 +4,6 @@
 use lucatume\WPBrowser\Utils\Env;
 use lucatume\WPBrowser\Utils\Filesystem as FS;
 
-require_once dirname(__DIR__, 2) . '/vendor/php-stubs/wordpress-stubs/wordpress-stubs.php';
-
 Env::loadEnvMap(
     [
         'WPBROWSER_WORDPRESS_SOURCE_DIR' => FS::realpath(FS::cacheDir() . '/wordpress'),

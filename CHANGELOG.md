@@ -17,6 +17,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 
+- The unit test suite no longer loads `php-stubs/wordpress-stubs` in the main process: the few WordPress functions the fork-based tests need are shimmed in the fork child, and a minimal autoloadable `wpdb` double replaces the stub class. Groundwork for fork-based test isolation, where a stub-free parent process is required to load real WordPress in children (#814).
+
 - Remove dead code: the unused `Module\WPLoader\Filters`/`FiltersGroup` classes (not wired to `WPLoader` since v4), `WordPress\FileRequests\FilePostRequest` with `FileRequestFactory::buildPostRequest()`, the write-only `FileRequest::setServerVar()`/`setConstant()`, the decorative `WordPress\CodeExecution\CodeExecutionActionInterface`, `Utils\Composer::allowPluginsFromPackage()`/`getDecodedContents()`, `Generators\Date::zero()`, `Project\TestEnvironment::$dumpFile`, `ManagedProcessInterface::ERR_STOP` and the unreachable PHPUnit `<8.0` branch of `WPTestCasePHPUnitMethodsTrait` (the package requires PHP ^8.0). No user-facing API is affected (#813).
 
 - Remove dead internal classes: `Utils\DockerCompose`, `Environment\Constants`, `Events\EventDispatcherException`, `Polyfills\Dotenv\Dotenv` and the `WordPress\CodeExecution` `ExitAction`/`ThrowAction` test doubles. No user-facing API is affected (#812).
