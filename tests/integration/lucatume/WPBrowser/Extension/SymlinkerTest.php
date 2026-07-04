@@ -34,6 +34,75 @@ class SymlinkerTest extends Unit
     }
 
     /**
+     * @return array<string,array<string,array<string,array<string,string>>>>
+     */
+    private function getAcmeVendorScaffold(): array
+    {
+        return [
+            'vendor' => [
+                'acme' => [
+                    'plugin-1' => [
+                        'plugin-1.php' => <<< PHP
+                        <?php
+                        /** Plugin Name: Plugin 1 */
+                        function plugin_1_canary() {}
+
+                        register_activation_hook( __FILE__, 'activate_plugin_1' );
+                        function activate_plugin_1(){
+                            update_option('plugin_1_activated', 1);
+                    }
+                    PHP
+                    ],
+                    'plugin-2' => [
+                        'main.php' => <<< PHP
+                        <?php
+                        /** Plugin Name: Plugin 2 */
+                        function plugin_2_canary() {}
+
+                        register_activation_hook( __FILE__, 'activate_plugin_2' );
+                        function activate_plugin_2(){
+                            update_option('plugin_2_activated', 1);
+                    }
+                    PHP
+                    ],
+                    'theme-1' => [
+                        'style.css' => <<< CSS
+                        /*
+                        Theme Name: Theme 1
+                        */
+                        CSS,
+                        'index.php' => '<?php // This file is required for the theme to work. ?>',
+                        'functions.php' => <<< PHP
+                        <?php
+                        function theme_1_some_function() {
+                            return 'test-test-test';
+                        }
+
+                        add_action('after_setup_theme','theme_1_some_function');
+                        PHP
+                    ],
+                    'theme-2' => [
+                        'style.css' => <<< CSS
+                        /*
+                        Theme Name: Theme 2
+                        */
+                        CSS,
+                        'index.php' => '<?php // This file is required for the theme to work. ?>',
+                        'functions.php' => <<< PHP
+                        <?php
+                        function theme_2_some_function() {
+                            return 'test-test-test';
+                        }
+
+                        add_action('after_setup_theme','theme_2_some_function');
+                        PHP
+                    ]
+                ]
+            ]
+        ];
+    }
+
+    /**
      * @group fast
      */
     public function test_exists(): void
@@ -177,91 +246,43 @@ class SymlinkerTest extends Unit
     }
 
     /**
+     * @return array<string,array{bool}>
+     */
+    public function pluginAndThemePathsProvider(): array
+    {
+        return [
+            'relative paths' => [false],
+            'absolute paths' => [true],
+        ];
+    }
+
+    /**
+     * @dataProvider pluginAndThemePathsProvider
      * @group slow
      */
-    public function test_with_relative_paths(): void
+    public function test_symlinks_plugins_and_themes(bool $useAbsolutePaths): void
     {
-        $workingDir = FS::tmpDir('symlinker_', [
-            'vendor' => [
-                'acme' => [
-                    'plugin-1' => [
-                        'plugin-1.php' => <<< PHP
-                        <?php
-                        /** Plugin Name: Plugin 1 */
-                        function plugin_1_canary() {}
-
-                        register_activation_hook( __FILE__, 'activate_plugin_1' );
-                        function activate_plugin_1(){
-                            update_option('plugin_1_activated', 1);
-                    }
-                    PHP
-                    ],
-                    'plugin-2' => [
-                        'main.php' => <<< PHP
-                        <?php
-                        /** Plugin Name: Plugin 2 */
-                        function plugin_2_canary() {}
-
-                        register_activation_hook( __FILE__, 'activate_plugin_2' );
-                        function activate_plugin_2(){
-                            update_option('plugin_2_activated', 1);
-                    }
-                    PHP
-                    ],
-                    'theme-1' => [
-                        'style.css' => <<< CSS
-                        /*
-                        Theme Name: Theme 1
-                        */
-                        CSS,
-                        'index.php' => '<?php // This file is required for the theme to work. ?>',
-                        'functions.php' => <<< PHP
-                        <?php
-                        function theme_1_some_function() {
-                            return 'test-test-test';
-                        }
-
-                        add_action('after_setup_theme','theme_1_some_function');
-                        PHP
-                    ],
-                    'theme-2' => [
-                        'style.css' => <<< CSS
-                        /*
-                        Theme Name: Theme 2
-                        */
-                        CSS,
-                        'index.php' => '<?php // This file is required for the theme to work. ?>',
-                        'functions.php' => <<< PHP
-                        <?php
-                        function theme_2_some_function() {
-                            return 'test-test-test';
-                        }
-
-                        add_action('after_setup_theme','theme_2_some_function');
-                        PHP
-                    ]
-                ]
-            ]
-        ]);
+        $workingDir = FS::tmpDir('symlinker_', $this->getAcmeVendorScaffold());
         $wpRoot = FS::tmpDir('symlinker_');
         $this->fastScaffold($wpRoot);
         $suiteEvent = $this->getSuiteEvent();
 
-        $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent) {
+        $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent, $useAbsolutePaths) {
             chdir($workingDir);
 
             Assert::assertSame($workingDir, getcwd());
 
+            $prefix = $useAbsolutePaths ? $workingDir . '/' : '';
             $symlinker = new Symlinker([
                 'wpRootFolder' => $wpRoot,
                 'cleanupAfterSuite' => true,
                 'plugins' => [
-                    'vendor/acme/plugin-1',
-                    'vendor/acme/plugin-2'
+                    $prefix . 'vendor/acme/plugin-1',
+                    $prefix . 'vendor/acme/plugin-2'
                 ],
                 'themes' => [
-                    'vendor/acme/theme-1',
-                    'vendor/acme/theme-2'
+                    $prefix . 'vendor/acme/theme-1',
+                    $prefix . 'vendor/acme/theme-2'
                 ]
             ], []);
 
@@ -299,204 +320,35 @@ class SymlinkerTest extends Unit
     }
 
     /**
-     * @group slow
+     * @return array<string,array{array<string,bool>}>
      */
-    public function test_with_absolute_paths(): void
+    public function noCleanupConfigProvider(): array
     {
-        $workingDir = FS::tmpDir('symlinker_', [
-            'vendor' => [
-                'acme' => [
-                    'plugin-1' => [
-                        'plugin-1.php' => <<< PHP
-                        <?php
-                        /** Plugin Name: Plugin 1 */
-                        function plugin_1_canary() {}
-
-                        register_activation_hook( __FILE__, 'activate_plugin_1' );
-                        function activate_plugin_1(){
-                            update_option('plugin_1_activated', 1);
-                    }
-                    PHP
-                    ],
-                    'plugin-2' => [
-                        'main.php' => <<< PHP
-                        <?php
-                        /** Plugin Name: Plugin 2 */
-                        function plugin_2_canary() {}
-
-                        register_activation_hook( __FILE__, 'activate_plugin_2' );
-                        function activate_plugin_2(){
-                            update_option('plugin_2_activated', 1);
-                    }
-                    PHP
-                    ],
-                    'theme-1' => [
-                        'style.css' => <<< CSS
-                        /*
-                        Theme Name: Theme 1
-                        */
-                        CSS,
-                        'index.php' => '<?php // This file is required for the theme to work. ?>',
-                        'functions.php' => <<< PHP
-                        <?php
-                        function theme_1_some_function() {
-                            return 'test-test-test';
-                        }
-
-                        add_action('after_setup_theme','theme_1_some_function');
-                        PHP
-                    ],
-                    'theme-2' => [
-                        'style.css' => <<< CSS
-                        /*
-                        Theme Name: Theme 2
-                        */
-                        CSS,
-                        'index.php' => '<?php // This file is required for the theme to work. ?>',
-                        'functions.php' => <<< PHP
-                        <?php
-                        function theme_2_some_function() {
-                            return 'test-test-test';
-                        }
-
-                        add_action('after_setup_theme','theme_2_some_function');
-                        PHP
-                    ]
-                ]
-            ]
-        ]);
-        $wpRoot = FS::tmpDir('symlinker_');
-        $this->fastScaffold($wpRoot);
-        $suiteEvent = $this->getSuiteEvent();
-
-        $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent) {
-            chdir($workingDir);
-
-            Assert::assertSame($workingDir, getcwd());
-
-            $symlinker = new Symlinker([
-                'wpRootFolder' => $wpRoot,
-                'cleanupAfterSuite' => true,
-                'plugins' => [
-                    $workingDir . '/vendor/acme/plugin-1',
-                    $workingDir . '/vendor/acme/plugin-2'
-                ],
-                'themes' => [
-                    $workingDir . '/vendor/acme/theme-1',
-                    $workingDir . '/vendor/acme/theme-2'
-                ]
-            ], []);
-
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
-
-            $symlinker->onModuleInit($suiteEvent);
-
-            Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
-
-            $symlinker->afterSuite($suiteEvent);
-
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
-        });
+        return [
+            'by default' => [[]],
+            'if configured not to' => [['cleanupAfterSuite' => false]],
+        ];
     }
 
     /**
+     * @param array<string,bool> $extraConfig
+     *
+     * @dataProvider noCleanupConfigProvider
      * @group slow
      */
-    public function test_will_not_cleanup_after_suite_by_default(): void
+    public function test_will_not_cleanup_after_suite(array $extraConfig): void
     {
-        $workingDir = FS::tmpDir('symlinker_', [
-            'vendor' => [
-                'acme' => [
-                    'plugin-1' => [
-                        'plugin-1.php' => <<< PHP
-                        <?php
-                        /** Plugin Name: Plugin 1 */
-                        function plugin_1_canary() {}
-
-                        register_activation_hook( __FILE__, 'activate_plugin_1' );
-                        function activate_plugin_1(){
-                            update_option('plugin_1_activated', 1);
-                    }
-                    PHP
-                    ],
-                    'plugin-2' => [
-                        'main.php' => <<< PHP
-                        <?php
-                        /** Plugin Name: Plugin 2 */
-                        function plugin_2_canary() {}
-
-                        register_activation_hook( __FILE__, 'activate_plugin_2' );
-                        function activate_plugin_2(){
-                            update_option('plugin_2_activated', 1);
-                    }
-                    PHP
-                    ],
-                    'theme-1' => [
-                        'style.css' => <<< CSS
-                        /*
-                        Theme Name: Theme 1
-                        */
-                        CSS,
-                        'index.php' => '<?php // This file is required for the theme to work. ?>',
-                        'functions.php' => <<< PHP
-                        <?php
-                        function theme_1_some_function() {
-                            return 'test-test-test';
-                        }
-
-                        add_action('after_setup_theme','theme_1_some_function');
-                        PHP
-                    ],
-                    'theme-2' => [
-                        'style.css' => <<< CSS
-                        /*
-                        Theme Name: Theme 2
-                        */
-                        CSS,
-                        'index.php' => '<?php // This file is required for the theme to work. ?>',
-                        'functions.php' => <<< PHP
-                        <?php
-                        function theme_2_some_function() {
-                            return 'test-test-test';
-                        }
-
-                        add_action('after_setup_theme','theme_2_some_function');
-                        PHP
-                    ]
-                ]
-            ]
-        ]);
+        $workingDir = FS::tmpDir('symlinker_', $this->getAcmeVendorScaffold());
         $wpRoot = FS::tmpDir('symlinker_');
         $this->fastScaffold($wpRoot);
         $suiteEvent = $this->getSuiteEvent();
 
-        $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent) {
+        $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent, $extraConfig) {
             chdir($workingDir);
 
             Assert::assertSame($workingDir, getcwd());
 
-            $symlinker = new Symlinker([
+            $symlinker = new Symlinker(array_merge([
                 'wpRootFolder' => $wpRoot,
                 'plugins' => [
                     $workingDir . '/vendor/acme/plugin-1',
@@ -506,129 +358,7 @@ class SymlinkerTest extends Unit
                     $workingDir . '/vendor/acme/theme-1',
                     $workingDir . '/vendor/acme/theme-2'
                 ]
-            ], []);
-
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileDoesNotExist($wpRoot . '/wp-content/themes/theme-2/functions.php');
-
-            $symlinker->onModuleInit($suiteEvent);
-
-            Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
-
-            $symlinker->afterSuite($suiteEvent);
-
-            Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
-            Assert::assertFileExists($wpRoot . '/wp-content/plugins/plugin-2/main.php');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-1/style.css');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-1/index.php');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-1/functions.php');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/style.css');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/index.php');
-            Assert::assertFileExists($wpRoot . '/wp-content/themes/theme-2/functions.php');
-        });
-    }
-
-    /**
-     * @group slow
-     */
-    public function test_will_not_cleanup_after_suite_if_configured_not_to(): void
-    {
-        $workingDir = FS::tmpDir('symlinker_', [
-            'vendor' => [
-                'acme' => [
-                    'plugin-1' => [
-                        'plugin-1.php' => <<< PHP
-                        <?php
-                        /** Plugin Name: Plugin 1 */
-                        function plugin_1_canary() {}
-
-                        register_activation_hook( __FILE__, 'activate_plugin_1' );
-                        function activate_plugin_1(){
-                            update_option('plugin_1_activated', 1);
-                    }
-                    PHP
-                    ],
-                    'plugin-2' => [
-                        'main.php' => <<< PHP
-                        <?php
-                        /** Plugin Name: Plugin 2 */
-                        function plugin_2_canary() {}
-
-                        register_activation_hook( __FILE__, 'activate_plugin_2' );
-                        function activate_plugin_2(){
-                            update_option('plugin_2_activated', 1);
-                    }
-                    PHP
-                    ],
-                    'theme-1' => [
-                        'style.css' => <<< CSS
-                        /*
-                        Theme Name: Theme 1
-                        */
-                        CSS,
-                        'index.php' => '<?php // This file is required for the theme to work. ?>',
-                        'functions.php' => <<< PHP
-                        <?php
-                        function theme_1_some_function() {
-                            return 'test-test-test';
-                        }
-
-                        add_action('after_setup_theme','theme_1_some_function');
-                        PHP
-                    ],
-                    'theme-2' => [
-                        'style.css' => <<< CSS
-                        /*
-                        Theme Name: Theme 2
-                        */
-                        CSS,
-                        'index.php' => '<?php // This file is required for the theme to work. ?>',
-                        'functions.php' => <<< PHP
-                        <?php
-                        function theme_2_some_function() {
-                            return 'test-test-test';
-                        }
-
-                        add_action('after_setup_theme','theme_2_some_function');
-                        PHP
-                    ]
-                ]
-            ]
-        ]);
-        $wpRoot = FS::tmpDir('symlinker_');
-        $this->fastScaffold($wpRoot);
-        $suiteEvent = $this->getSuiteEvent();
-
-        $this->assertInIsolation(static function () use ($workingDir, $wpRoot, $suiteEvent) {
-            chdir($workingDir);
-
-            Assert::assertSame($workingDir, getcwd());
-
-            $symlinker = new Symlinker([
-                'wpRootFolder' => $wpRoot,
-                'cleanupAfterSuite' => false,
-                'plugins' => [
-                    $workingDir . '/vendor/acme/plugin-1',
-                    $workingDir . '/vendor/acme/plugin-2'
-                ],
-                'themes' => [
-                    $workingDir . '/vendor/acme/theme-1',
-                    $workingDir . '/vendor/acme/theme-2'
-                ]
-            ], []);
+            ], $extraConfig), []);
 
             Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-1/plugin-1.php');
             Assert::assertFileDoesNotExist($wpRoot . '/wp-content/plugins/plugin-2/main.php');
@@ -668,68 +398,7 @@ class SymlinkerTest extends Unit
      */
     public function test_will_leave_existing_symlinks_in_place(): void
     {
-        $workingDir = FS::tmpDir('symlinker_', [
-            'vendor' => [
-                'acme' => [
-                    'plugin-1' => [
-                        'plugin-1.php' => <<< PHP
-                        <?php
-                        /** Plugin Name: Plugin 1 */
-                        function plugin_1_canary() {}
-
-                        register_activation_hook( __FILE__, 'activate_plugin_1' );
-                        function activate_plugin_1(){
-                            update_option('plugin_1_activated', 1);
-                    }
-                    PHP
-                    ],
-                    'plugin-2' => [
-                        'main.php' => <<< PHP
-                        <?php
-                        /** Plugin Name: Plugin 2 */
-                        function plugin_2_canary() {}
-
-                        register_activation_hook( __FILE__, 'activate_plugin_2' );
-                        function activate_plugin_2(){
-                            update_option('plugin_2_activated', 1);
-                    }
-                    PHP
-                    ],
-                    'theme-1' => [
-                        'style.css' => <<< CSS
-                        /*
-                        Theme Name: Theme 1
-                        */
-                        CSS,
-                        'index.php' => '<?php // This file is required for the theme to work. ?>',
-                        'functions.php' => <<< PHP
-                        <?php
-                        function theme_1_some_function() {
-                            return 'test-test-test';
-                        }
-
-                        add_action('after_setup_theme','theme_1_some_function');
-                        PHP
-                    ],
-                    'theme-2' => [
-                        'style.css' => <<< CSS
-                        /*
-                        Theme Name: Theme 2
-                        */
-                        CSS,
-                        'index.php' => '<?php // This file is required for the theme to work. ?>',
-                        'functions.php' => <<< PHP
-                        <?php
-                        function theme_2_some_function() {
-                            return 'test-test-test';
-                        }
-
-                        add_action('after_setup_theme','theme_2_some_function');
-                        PHP
-                    ]
-                ]
-            ]
-        ]);
+        $workingDir = FS::tmpDir('symlinker_', $this->getAcmeVendorScaffold());
         $wpRoot = FS::tmpDir('symlinker_');
         $this->fastScaffold($wpRoot);
         $suiteEvent = $this->getSuiteEvent();

@@ -171,11 +171,33 @@ class LoadSandboxTest extends Unit
     }
 
     /**
+     * @return array<string,array{int,string}>
+     */
+    public function notInstalledProvider(): array
+    {
+        return [
+            'single site' => [
+                InstallationStateInterface::SINGLE_SITE,
+                InstallationException::becauseWordPressIsNotInstalled()->getMessage()
+            ],
+            'multisite subdomain' => [
+                InstallationStateInterface::MULTISITE_SUBDOMAIN,
+                InstallationException::becauseWordPressMultsiteIsNotInstalled(true)->getMessage()
+            ],
+            'multisite subfolder' => [
+                InstallationStateInterface::MULTISITE_SUBFOLDER,
+                InstallationException::becauseWordPressMultsiteIsNotInstalled(false)->getMessage()
+            ],
+        ];
+    }
+
+    /**
      * It should handle not installed
      *
      * @test
+     * @dataProvider notInstalledProvider
      */
-    public function should_handle_not_installed(): void
+    public function should_handle_not_installed(int $multisite, string $expectedMessage): void
     {
         $wpRootDir = FS::tmpDir('sandbox_');
         $dbName = Random::dbName();
@@ -184,71 +206,11 @@ class LoadSandboxTest extends Unit
         $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
         $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
         $this->fastScaffold($wpRootDir, '6.1.1')
-            ->configure($db);
+            ->configure($db, $multisite);
         $db->create();
 
         $this->expectException(InstallationException::class);
-        $this->expectExceptionMessage(
-            InstallationException::becauseWordPressIsNotInstalled()->getMessage()
-        );
-
-        $loadSandbox = new LoadSandbox($wpRootDir, 'wordpress.test');
-
-        $this->assertInIsolation(static function () use ($loadSandbox) {
-            $loadSandbox->load();
-        });
-    }
-
-    /**
-     * It should handle not installed multisite subdomain
-     *
-     * @test
-     */
-    public function should_handle_not_installed_multisite_subdomain(): void
-    {
-        $wpRootDir = FS::tmpDir('sandbox_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
-        $this->fastScaffold($wpRootDir, '6.1.1')
-            ->configure($db, InstallationStateInterface::MULTISITE_SUBDOMAIN);
-        $db->create();
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionMessage(
-            InstallationException::becauseWordPressMultsiteIsNotInstalled(true)->getMessage()
-        );
-
-        $loadSandbox = new LoadSandbox($wpRootDir, 'wordpress.test');
-
-        $this->assertInIsolation(static function () use ($loadSandbox) {
-            $loadSandbox->load();
-        });
-    }
-
-    /**
-     * It should handle not installed multisite subfolder
-     *
-     * @test
-     */
-    public function should_handle_not_installed_multisite_subfolder(): void
-    {
-        $wpRootDir = FS::tmpDir('sandbox_');
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'wp_');
-        $this->fastScaffold($wpRootDir, '6.1.1')
-            ->configure($db, InstallationStateInterface::MULTISITE_SUBFOLDER);
-        $db->create();
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionMessage(
-            InstallationException::becauseWordPressMultsiteIsNotInstalled(false)->getMessage()
-        );
+        $this->expectExceptionMessage($expectedMessage);
 
         $loadSandbox = new LoadSandbox($wpRootDir, 'wordpress.test');
 

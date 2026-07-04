@@ -164,13 +164,13 @@ class SingleConstructionTest extends \Codeception\Test\Unit
     }
 
     /**
-     * It should throw if trying to install again
+     * It should throw if trying to install again or scaffold
      *
      * @test
      * @group slow
      * @group requires-mysql-server
      */
-    public function should_throw_if_trying_to_install_again(): void
+    public function should_throw_if_trying_to_install_again_or_scaffold(): void
     {
         $dbName = Random::dbName();
         $dbHost = Env::get('WORDPRESS_DB_HOST');
@@ -188,46 +188,24 @@ class SingleConstructionTest extends \Codeception\Test\Unit
 
         $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
 
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SINGLE);
+        try {
+            $single->install(
+                'https://wp.local',
+                'admin',
+                'password',
+                'admin@wp.local',
+                'Test'
+            );
+            $this->fail('Installing again should throw an InstallationException.');
+        } catch (InstallationException $e) {
+            $this->assertEquals(InstallationException::STATE_SINGLE, $e->getCode());
+        }
 
-        $single->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test'
-        );
-    }
-
-    /**
-     * It should throw if trying to scaffold
-     *
-     * @test
-     * @group slow
-     * @group requires-mysql-server
-     */
-    public function should_throw_if_trying_to_scaffold(): void
-    {
-        $dbName = Random::dbName();
-        $dbHost = Env::get('WORDPRESS_DB_HOST');
-        $dbUser = Env::get('WORDPRESS_DB_USER');
-        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
-        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost);
-        $wpRootDir = FS::tmpDir('single_');
-        $this->fastScaffold($wpRootDir, '6.1.1')->configure($db)->install(
-            'https://wp.local',
-            'admin',
-            'password',
-            'admin@wp.local',
-            'Test'
-        );
-
-        $single = new Single($wpRootDir, $wpRootDir . '/wp-config.php');
-
-        $this->expectException(InstallationException::class);
-        $this->expectExceptionCode(InstallationException::STATE_SINGLE);
-
-        $single->scaffold();
+        try {
+            $single->scaffold();
+            $this->fail('Scaffolding should throw an InstallationException.');
+        } catch (InstallationException $e) {
+            $this->assertEquals(InstallationException::STATE_SINGLE, $e->getCode());
+        }
     }
 }
