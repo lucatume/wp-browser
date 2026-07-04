@@ -10,7 +10,7 @@ use WP_Error;
 
 use function activate_plugin;
 
-class ActivatePluginAction implements CodeExecutionActionInterface
+class ActivatePluginAction
 {
     private FileRequest $request;
 

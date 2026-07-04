@@ -18,9 +18,6 @@ class Composer
     public const ERR_UPDATE_FAILED = 4;
     const ERR_DECODING_FAILED = 5;
     private string $composerJsonFile;
-    /**
-     * @var StdClass
-     */
     private stdClass $decoded;
 
     public static function vendorDir(?string $path = null): string
@@ -145,14 +142,6 @@ class Composer
     }
 
     /**
-     * @return stdClass
-     */
-    public function getDecodedContents(): stdClass
-    {
-        return $this->decoded;
-    }
-
-    /**
      * @throws JsonException
      */
     public function getContents(): string
@@ -160,18 +149,5 @@ class Composer
         $encoded = json_encode($this->decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
         /** @var string $encoded */
         return $encoded;
-    }
-
-    public function allowPluginsFromPackage(string $package): void
-    {
-        if (!isset($this->decoded->config)) {
-            $this->decoded->config = new StdClass();
-        }
-
-        if (!isset($this->decoded->config->{'allow-plugins'})) {
-            $this->decoded->config->{'allow-plugins'} = new StdClass();
-        }
-
-        $this->decoded->config->{'allow-plugins'}->{$package} = true;
     }
 }
