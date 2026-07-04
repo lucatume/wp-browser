@@ -33,6 +33,10 @@ if (function_exists('uopz_allow_exit')) {
     uopz_allow_exit(true);
 }
 
+// Register the fork-child reporting hook ahead of Codeception's ErrorHandler shutdown handler.
+require_once __DIR__ . '/_support/Fork.php';
+lucatume\WPBrowser\Tests\Traits\Fork::registerChildShutdownHandler();
+
 // This is here to test the EventDispatcherBridge extension.
 Dispatcher::addListener(Events::MODULE_INIT, function (SuiteEvent $suiteEvent) {
     $suiteName = $suiteEvent->getSuite()?->getName();

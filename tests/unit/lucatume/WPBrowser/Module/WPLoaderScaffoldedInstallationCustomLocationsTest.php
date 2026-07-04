@@ -28,6 +28,7 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($wpRootFolder, $module) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
@@ -61,6 +62,7 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($wpRootFolder, $contentDir, $module) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
@@ -91,6 +93,7 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($wpRootFolder, $pluginsDir, $module) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
@@ -123,6 +126,7 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($wpRootFolder, $pluginsDir, $module) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
@@ -155,6 +159,7 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($contentDir, $wpRootFolder, $muPluginsDir, $module) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
@@ -186,6 +191,7 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($wpRootFolder, $module) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
@@ -222,6 +228,7 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($wpRootFolder, $module, $contentDir) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
@@ -255,6 +262,7 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($wpRootFolder, $module, $pluginsDir) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
@@ -290,6 +298,7 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($wpRootFolder, $module, $pluginsDir2) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
@@ -323,6 +332,7 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($wpRootFolder, $module, $muPluginsDir) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
@@ -356,6 +366,7 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($module) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             try {
                 $module->_initialize();
             } catch (\Throwable $e) {
@@ -384,6 +395,7 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($module) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             try {
                 $module->_initialize();
             } catch (\Throwable $e) {
@@ -412,6 +424,7 @@ class WPLoaderScaffoldedInstallationCustomLocationsTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($module) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             try {
                 $module->_initialize();
             } catch (\Throwable $e) {

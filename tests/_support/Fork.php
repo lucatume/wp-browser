@@ -17,6 +17,8 @@ use lucatume\WPBrowser\Utils\PackedClosure;
 class Fork
 {
     const DEFAULT_TERMINATOR = '__WPBROWSER_SEPARATOR__';
+    private static ?\Closure $childShutdownHandler = null;
+    private static bool $shutdownHookRegistered = false;
     private \Closure $callback;
     private bool $quiet = false;
     /**
@@ -24,6 +26,28 @@ class Fork
      */
     private int $ipcSocketChunkSize = 2048;
     private string $terminator = self::DEFAULT_TERMINATOR;
+
+    /**
+     * Call from the global bootstrap, before Codeception registers its ErrorHandler shutdown handler.
+     *
+     * Code run in fork children may `exit` by design (e.g. WordPress' not-installed redirect); the child then walks
+     * the shutdown-function queue inherited from the parent. Codeception's ErrorHandler shutdown handler `exit(125)`s
+     * in that scenario, aborting the queue before a handler registered by `executeFork()` could report back to the
+     * parent. Registering this hook early puts the fork reporting logic ahead of it in the queue.
+     */
+    public static function registerChildShutdownHandler(): void
+    {
+        if (self::$shutdownHookRegistered) {
+            return;
+        }
+
+        self::$shutdownHookRegistered = true;
+        register_shutdown_function(static function (): void {
+            if (self::$childShutdownHandler !== null) {
+                (self::$childShutdownHandler)();
+            }
+        });
+    }
 
     public static function executeClosure(
         \Closure $callback,
@@ -112,17 +136,26 @@ class Fork
             fclose(STDERR);
         }
 
-        register_shutdown_function(static function () use ($pid, $ipcSocket, &$didWriteTerminator, $terminator) {
+        self::$childShutdownHandler = function () use ($pid, $ipcSocket, &$didWriteTerminator, $terminator) {
             if (!$didWriteTerminator) {
-                fwrite($ipcSocket, $terminator);
+                // Reached on `exit`: flush pending output buffers now to capture throwing callbacks.
+                try {
+                    $level = ob_get_level();
+                    while (ob_get_level() > 0 && $level-- > 0) {
+                        ob_end_flush();
+                    }
+                    fwrite($ipcSocket, $terminator);
+                } catch (\Throwable $throwable) {
+                    $this->writeResultPayload($ipcSocket, serialize(new SerializableThrowable($throwable)));
+                }
                 $didWriteTerminator = true;
             }
             fclose($ipcSocket);
             /** @noinspection PhpComposerExtensionStubsInspection */
             posix_kill($pid, 9 /* SIGKILL */);
-        });
-
-        require_once __DIR__ . '/fork-wp-shims.php';
+        };
+        // Fallback for children forked outside a bootstrapped Codeception run.
+        self::registerChildShutdownHandler();
 
         try {
             $result = ($this->callback)();
@@ -132,17 +165,22 @@ class Fork
             $resultPayload = serialize($resultClosure);
         } catch (\Throwable $throwable) {
             $resultPayload = serialize(new SerializableThrowable($throwable));
-        } finally {
-            if (!isset($resultPayload)) {
-                // Something went wrong.
-                fwrite($ipcSocket, serialize(null));
-                fwrite($ipcSocket, $this->terminator);
-                $didWriteTerminator = true;
-                /** @noinspection PhpComposerExtensionStubsInspection */
-                posix_kill($pid, 9 /* SIGKILL */);
-            }
         }
 
+        $this->writeResultPayload($ipcSocket, $resultPayload);
+        $didWriteTerminator = true;
+        fclose($ipcSocket);
+
+        // Kill the child process now with a signal that will not run shutdown handlers.
+        /** @noinspection PhpComposerExtensionStubsInspection */
+        posix_kill($pid, 9 /* SIGKILL */);
+    }
+
+    /**
+     * @param resource $ipcSocket
+     */
+    private function writeResultPayload($ipcSocket, string $resultPayload): void
+    {
         $offset = 0;
         while (true) {
             $chunk = substr($resultPayload, $offset, $this->ipcSocketChunkSize);
@@ -155,12 +193,6 @@ class Fork
             $offset += $this->ipcSocketChunkSize;
         }
         fwrite($ipcSocket, $this->terminator);
-        $didWriteTerminator = true;
-        fclose($ipcSocket);
-
-        // Kill the child process now with a signal that will not run shutdown handlers.
-        /** @noinspection PhpComposerExtensionStubsInspection */
-        posix_kill($pid, 9 /* SIGKILL */);
     }
 
     /**
@@ -172,38 +204,44 @@ class Fork
         fclose($sockets[0]);
         $resultPayload = '';
 
-        /** @noinspection PhpComposerExtensionStubsInspection */
-        while (pcntl_wait($status, 1 /* WNOHANG */) <= 0) {
-            $chunk = fread($sockets[1], $this->ipcSocketChunkSize);
-            $resultPayload .= $chunk;
-        }
-
-        while (!str_ends_with($resultPayload, $this->terminator)) {
-            $chunk = fread($sockets[1], $this->ipcSocketChunkSize);
-            $resultPayload .= $chunk;
+        while (!str_ends_with($resultPayload, $this->terminator) && !feof($sockets[1])) {
+            $resultPayload .= (string)fread($sockets[1], $this->ipcSocketChunkSize);
         }
 
         fclose($sockets[1]);
+        /** @noinspection PhpComposerExtensionStubsInspection */
+        pcntl_waitpid($pid, $status);
 
-        if (str_ends_with($resultPayload, $this->terminator)) {
-            $resultPayload = substr($resultPayload, 0, -strlen($this->terminator));
+        if (!str_ends_with($resultPayload, $this->terminator)) {
+            $exitDetail = pcntl_wifsignaled($status) ?
+                'killed by signal ' . pcntl_wtermsig($status)
+                : 'exited with status ' . pcntl_wexitstatus($status);
+            throw new \RuntimeException(
+                "Fork child died ($exitDetail) without sending a result; partial payload: "
+                . substr($resultPayload, -512)
+            );
         }
 
-        try {
-            /** @var PackedClosure|SerializableThrowable $unserializedPayload */
-            $unserializedPayload = @unserialize($resultPayload);
-            $result = $unserializedPayload instanceof SerializableThrowable ?
-                $unserializedPayload->getThrowable() : $unserializedPayload->getClosure()();
-        } catch (\Throwable $t) {
-            $result = $resultPayload;
+        $resultPayload = substr($resultPayload, 0, -strlen($this->terminator));
+
+        $unserializedPayload = @unserialize($resultPayload);
+
+        if ($unserializedPayload instanceof SerializableThrowable) {
+            throw $unserializedPayload->getThrowable();
         }
+
+        if (!$unserializedPayload instanceof PackedClosure) {
+            throw new \RuntimeException(
+                'Fork child sent an unreadable result (fatal error in child?); raw payload: '
+                . substr($resultPayload, -512)
+            );
+        }
+
+        $result = $unserializedPayload->getClosure()();
 
         if ($result instanceof \Throwable) {
             throw $result;
         }
-
-        /** @noinspection PhpComposerExtensionStubsInspection */
-        posix_kill($pid, 9 /* SIGKILL */);
 
         return $result;
     }

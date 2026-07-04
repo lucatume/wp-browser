@@ -25,6 +25,7 @@ class WPLoaderLoadOnlyTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($module) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 $this->fail('The WPLoader::installAndBootstrapInstallation method should not be called');
@@ -51,6 +52,7 @@ class WPLoaderLoadOnlyTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($module) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
@@ -93,6 +95,7 @@ class WPLoaderLoadOnlyTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($testDbName, $testDbHost, $testDbPassword, $testDbUser, $module) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
@@ -124,6 +127,7 @@ class WPLoaderLoadOnlyTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($module) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
@@ -152,6 +156,7 @@ class WPLoaderLoadOnlyTest extends Unit
         ]);
 
         Fork::executeClosure(function () use ($module) {
+            require_once __DIR__ . '/../../../../_support/fork-wp-shims.php';
             // Partial mocking the function that would load WordPress.
             uopz_set_return(WPLoader::class, 'installAndBootstrapInstallation', function () {
                 return true;
