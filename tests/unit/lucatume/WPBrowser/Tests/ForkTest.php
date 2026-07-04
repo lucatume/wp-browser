@@ -22,6 +22,16 @@ class ForkTest extends Unit
         });
     }
 
+    public function testReportsChildExitingWithoutResult(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('exited before returning a result');
+
+        Fork::executeClosure(static function (): void {
+            exit(0);
+        });
+    }
+
     public function testThrowsWhenChildDiesWithoutResult(): void
     {
         $this->expectException(\RuntimeException::class);
