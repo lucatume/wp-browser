@@ -4,52 +4,42 @@ declare(strict_types=1);
 
 namespace lucatume\WPBrowser\Tests\Traits;
 
+use Codeception\Util\Debug;
 use lucatume\WPBrowser\Process\SerializableThrowable;
 use lucatume\WPBrowser\Utils\PackedClosure;
 
-/**
- * Class Fork.
- *
- * @since TBD
- *
- * @package lucatume\WPBrowser\Tests;
- */
 class Fork
 {
-    const DEFAULT_TERMINATOR = '__WPBROWSER_SEPARATOR__';
-    private \Closure $callback;
-    private bool $quiet = false;
+    private const TERMINATOR = '__WPBROWSER_SEPARATOR__';
+    private const IPC_SOCKET_CHUNK_SIZE = 2048;
+    private const TIMEOUT = 30;
+
+    private static ?\Closure $childShutdownHandler = null;
+    private static bool $shutdownHookRegistered = false;
+
     /**
-     * @var int<0, max>
+     * Call from the global bootstrap, before Codeception registers its ErrorHandler shutdown handler.
+     *
+     * Code run in fork children may `exit` by design (e.g. WordPress' not-installed redirect); the child then walks
+     * the shutdown-function queue inherited from the parent. Codeception's ErrorHandler shutdown handler `exit(125)`s
+     * in that scenario, aborting the queue before a handler registered by `executeFork()` could report back to the
+     * parent. Registering this hook early puts the fork reporting logic ahead of it in the queue.
      */
-    private int $ipcSocketChunkSize = 2048;
-    private string $terminator = self::DEFAULT_TERMINATOR;
-
-    public static function executeClosure(
-        \Closure $callback,
-        bool $quiet = false,
-        int $ipcSocketChunkSize = 2048,
-        string $terminator = self::DEFAULT_TERMINATOR
-    ): mixed {
-        return (new self($callback))
-            ->setQuiet($quiet)
-            ->setIpcSocketChunkSize($ipcSocketChunkSize)
-            ->setTerminator($terminator)
-            ->execute();
-    }
-
-    public function __construct(\Closure $callback)
+    public static function registerChildShutdownHandler(): void
     {
-        $this->callback = $callback;
+        if (self::$shutdownHookRegistered) {
+            return;
+        }
+
+        self::$shutdownHookRegistered = true;
+        register_shutdown_function(static function (): void {
+            if (self::$childShutdownHandler !== null) {
+                (self::$childShutdownHandler)();
+            }
+        });
     }
 
-    public function setQuiet(bool $quiet): self
-    {
-        $this->quiet = $quiet;
-        return $this;
-    }
-
-    public function execute(): mixed
+    public static function executeClosure(\Closure $callback): mixed
     {
         if (!(function_exists('pcntl_fork') && function_exists('posix_kill'))) {
             throw new \RuntimeException('pcntl and posix extensions missing.');
@@ -65,97 +55,70 @@ class Fork
 
         $pid = pcntl_fork();
         if ($pid === -1) {
+            fclose($sockets[0]);
+            fclose($sockets[1]);
             throw new \RuntimeException('Failed to fork');
         }
 
-
         if ($pid === 0) {
-            $this->executeFork($sockets);
+            self::executeFork($callback, $sockets);
+            // Unreachable unless the self-SIGKILL failed: never fall through into the parent flow.
+            exit(0);
         }
 
-        return $this->executeMain($pid, $sockets);
-    }
-
-    public function setIpcSocketChunkSize(int $ipcSocketChunkSize): self
-    {
-        if ($ipcSocketChunkSize < 0) {
-            throw new \InvalidArgumentException('ipcSocketChunkSize must be a positive integer');
-        }
-
-        $this->ipcSocketChunkSize = $ipcSocketChunkSize;
-        return $this;
-    }
-
-    public function setTerminator(string $terminator): self
-    {
-        $this->terminator = $terminator;
-        return $this;
+        return self::executeMain($pid, $sockets);
     }
 
     /**
      * @param array{0: resource, 1: resource} $sockets
      */
-    private function executeFork(array $sockets): void
+    private static function executeFork(\Closure $callback, array $sockets): void
     {
         fclose($sockets[1]);
         $ipcSocket = $sockets[0];
         $pid = getmypid();
-        $didWriteTerminator = false;
-        $terminator = $this->terminator;
+        $didWritePayload = false;
 
         if ($pid === false) {
             die('Failed to get pid');
         }
 
-        if ($this->quiet) {
-            fclose(STDOUT);
-            fclose(STDERR);
-        }
-
-        register_shutdown_function(static function () use ($pid, $ipcSocket, &$didWriteTerminator, $terminator) {
-            if (!$didWriteTerminator) {
-                fwrite($ipcSocket, $terminator);
-                $didWriteTerminator = true;
+        self::$childShutdownHandler = static function () use ($pid, $ipcSocket, &$didWritePayload) {
+            if (!$didWritePayload) {
+                // Reached on `exit`: flush pending output buffers now to capture throwing callbacks.
+                try {
+                    for ($level = ob_get_level(); $level > 0; $level--) {
+                        ob_end_flush();
+                    }
+                    $lastError = error_get_last();
+                    $throwable = new \RuntimeException(
+                        'Fork child exited before returning a result.'
+                        . ($lastError !== null ? ' Last error: ' . $lastError['message'] : '')
+                    );
+                } catch (\Throwable $throwable) {
+                }
+                self::writeResultPayload($ipcSocket, serialize(new SerializableThrowable($throwable)));
+                $didWritePayload = true;
             }
             fclose($ipcSocket);
             /** @noinspection PhpComposerExtensionStubsInspection */
             posix_kill($pid, 9 /* SIGKILL */);
-        });
-
-        require_once __DIR__ . '/fork-wp-shims.php';
+        };
+        // Fallback for children forked outside a bootstrapped Codeception run.
+        self::registerChildShutdownHandler();
 
         try {
-            $result = ($this->callback)();
+            $result = $callback();
             $resultClosure = new PackedClosure(static function () use ($result) {
                 return $result;
             });
             $resultPayload = serialize($resultClosure);
         } catch (\Throwable $throwable) {
             $resultPayload = serialize(new SerializableThrowable($throwable));
-        } finally {
-            if (!isset($resultPayload)) {
-                // Something went wrong.
-                fwrite($ipcSocket, serialize(null));
-                fwrite($ipcSocket, $this->terminator);
-                $didWriteTerminator = true;
-                /** @noinspection PhpComposerExtensionStubsInspection */
-                posix_kill($pid, 9 /* SIGKILL */);
-            }
         }
 
-        $offset = 0;
-        while (true) {
-            $chunk = substr($resultPayload, $offset, $this->ipcSocketChunkSize);
-
-            if ($chunk === '') {
-                break;
-            }
-
-            fwrite($ipcSocket, $chunk);
-            $offset += $this->ipcSocketChunkSize;
-        }
-        fwrite($ipcSocket, $this->terminator);
-        $didWriteTerminator = true;
+        self::writeResultPayload($ipcSocket, $resultPayload);
+        $didWritePayload = true;
         fclose($ipcSocket);
 
         // Kill the child process now with a signal that will not run shutdown handlers.
@@ -164,47 +127,92 @@ class Fork
     }
 
     /**
+     * Base64 keeps the terminator out of the payload bytes ('__' cannot appear in base64 output).
+     *
+     * @param resource $ipcSocket
+     */
+    private static function writeResultPayload($ipcSocket, string $resultPayload): void
+    {
+        $encoded = base64_encode($resultPayload);
+        $length = strlen($encoded);
+        $offset = 0;
+
+        while ($offset < $length) {
+            $written = fwrite($ipcSocket, substr($encoded, $offset, self::IPC_SOCKET_CHUNK_SIZE));
+
+            if ($written === false || $written === 0) {
+                // Parent gone or socket dead: nothing left to report to.
+                return;
+            }
+
+            $offset += $written;
+        }
+
+        fwrite($ipcSocket, self::TERMINATOR);
+    }
+
+    /**
      * @param array{0: resource, 1: resource} $sockets
      * @throws \Throwable
      */
-    private function executeMain(int $pid, array $sockets): mixed
+    private static function executeMain(int $pid, array $sockets): mixed
     {
         fclose($sockets[0]);
+        $ipcSocket = $sockets[1];
         $resultPayload = '';
+        $deadline = Debug::isEnabled() ? INF : microtime(true) + self::TIMEOUT;
 
+        while (!str_ends_with($resultPayload, self::TERMINATOR) && !feof($ipcSocket)) {
+            $read = [$ipcSocket];
+            $write = null;
+            $except = null;
+
+            // Silenced: EINTR makes stream_select return false with a warning; the loop just retries.
+            if (@stream_select($read, $write, $except, 1) > 0) {
+                $resultPayload .= (string)fread($ipcSocket, self::IPC_SOCKET_CHUNK_SIZE);
+            }
+
+            if (microtime(true) > $deadline) {
+                fclose($ipcSocket);
+                /** @noinspection PhpComposerExtensionStubsInspection */
+                posix_kill($pid, 9 /* SIGKILL */);
+                pcntl_waitpid($pid, $status);
+                throw new \RuntimeException(
+                    'Fork child timed out after ' . self::TIMEOUT . 's; partial payload: '
+                    . substr($resultPayload, -512)
+                );
+            }
+        }
+
+        fclose($ipcSocket);
         /** @noinspection PhpComposerExtensionStubsInspection */
-        while (pcntl_wait($status, 1 /* WNOHANG */) <= 0) {
-            $chunk = fread($sockets[1], $this->ipcSocketChunkSize);
-            $resultPayload .= $chunk;
+        pcntl_waitpid($pid, $status);
+
+        if (!str_ends_with($resultPayload, self::TERMINATOR)) {
+            $exitDetail = pcntl_wifsignaled($status) ?
+                'killed by signal ' . pcntl_wtermsig($status)
+                : 'exited with status ' . pcntl_wexitstatus($status);
+            throw new \RuntimeException(
+                "Fork child died ($exitDetail) without sending a result; partial payload: "
+                . substr($resultPayload, -512)
+            );
         }
 
-        while (!str_ends_with($resultPayload, $this->terminator)) {
-            $chunk = fread($sockets[1], $this->ipcSocketChunkSize);
-            $resultPayload .= $chunk;
+        $resultPayload = substr($resultPayload, 0, -strlen(self::TERMINATOR));
+
+        $unserializedPayload = @unserialize((string)base64_decode($resultPayload, true));
+
+        if ($unserializedPayload instanceof SerializableThrowable) {
+            throw $unserializedPayload->getThrowable();
         }
 
-        fclose($sockets[1]);
-
-        if (str_ends_with($resultPayload, $this->terminator)) {
-            $resultPayload = substr($resultPayload, 0, -strlen($this->terminator));
+        if (!$unserializedPayload instanceof PackedClosure) {
+            throw new \RuntimeException(
+                'Fork child sent an unreadable result (fatal error in child?); raw payload: '
+                . substr($resultPayload, -512)
+            );
         }
 
-        try {
-            /** @var PackedClosure|SerializableThrowable $unserializedPayload */
-            $unserializedPayload = @unserialize($resultPayload);
-            $result = $unserializedPayload instanceof SerializableThrowable ?
-                $unserializedPayload->getThrowable() : $unserializedPayload->getClosure()();
-        } catch (\Throwable $t) {
-            $result = $resultPayload;
-        }
-
-        if ($result instanceof \Throwable) {
-            throw $result;
-        }
-
-        /** @noinspection PhpComposerExtensionStubsInspection */
-        posix_kill($pid, 9 /* SIGKILL */);
-
-        return $result;
+        return $unserializedPayload->getClosure()();
     }
 }
