@@ -111,8 +111,8 @@ jobs:
       - name: Run tests
         id: test
         run: >-
-          if [ "${{ matrix.suite }}" = "unit" ]; then
-            vendor/bin/codecept parallel-run unit --workers=auto;
+          if [ "${{ matrix.suite }}" = "unit" ] || [ "${{ matrix.suite }}" = "integration" ]; then
+            vendor/bin/codecept parallel-run ${{ matrix.suite }} --workers=auto;
           else
             vendor/bin/codecept run ${{ matrix.suite }};
           fi
@@ -205,8 +205,8 @@ jobs:
       - name: Run tests
         id: test
         run: >-
-          if [ "${{ matrix.suite }}" = "unit" ]; then
-            vendor/bin/codecept parallel-run unit --workers=auto;
+          if [ "${{ matrix.suite }}" = "unit" ] || [ "${{ matrix.suite }}" = "integration" ]; then
+            vendor/bin/codecept parallel-run ${{ matrix.suite }} --workers=auto;
           else
             vendor/bin/codecept run ${{ matrix.suite }};
           fi
