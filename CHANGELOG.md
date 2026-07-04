@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- The `unit` suite is split in two: `tests/unit` now holds only real unit tests (no WordPress, no database, no managed services) and the new `tests/integration` suite holds the 33 test files that load WordPress, hit MySQL, or drive a real installation (all `assertInIsolation`-based `WPLoader*`/`LoadSandbox` tests included). The `BuiltInServerController`, `ChromeDriverController` and `MysqlServerController` extensions are now scoped via their existing `suites` option so `codecept run unit` starts no servers.
 - `Utils\Filesystem::rrmdir()` and `recurseCopy()` now delegate to the bundled `symfony/filesystem` component instead of a hand-rolled recursive delete and a `cp -R`/`xcopy` shell-out; public signatures are unchanged, and failure paths that previously threw (unreadable dir, uncreatable destination) now return `false` like the other failure modes (#812).
 
 ### Removed
