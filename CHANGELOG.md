@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Transpile the v4 unreleased changes (test suite split, dead-code removal, `MysqlServerController` port reuse, `parallel-run` fixes, `Utils\Filesystem` delegation to `symfony/filesystem`) down to the PHP 7.1-compatible v3.5 line (#817).
+
 ## [3.8.0] 2026-07-01;
 
 ### Changed
