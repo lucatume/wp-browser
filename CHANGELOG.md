@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.8.1] 2026-07-05;
+
 ### Changed
 
 - Transpile the v4 unreleased changes (test suite split, dead-code removal, `MysqlServerController` port reuse, `parallel-run` fixes, `Utils\Filesystem` delegation to `symfony/filesystem`) down to the PHP 7.1-compatible v3.5 line (#817).
@@ -2190,4 +2192,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.7.18]: https://github.com/lucatume/wp-browser/compare/3.7.17...3.7.18
 [3.7.19]: https://github.com/lucatume/wp-browser/compare/3.7.18...3.7.19
 [3.8.0]: https://github.com/lucatume/wp-browser/compare/3.7.19...3.8.0
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.8.0...HEAD
+[3.8.1]: https://github.com/lucatume/wp-browser/compare/3.8.0...3.8.1
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.8.1...HEAD
