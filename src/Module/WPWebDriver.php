@@ -178,7 +178,7 @@ class WPWebDriver extends WebDriver
      * ```php
      * $today = date('Y-m-d');
      * $I->amOnPage('/concerts?date=' . $today);
-     * $I->assertMatchesRegularExpression('#\\/concerts$#', $I->grabFullUrl());
+     * $I->assertRegExp('#\\/concerts$#', $I->grabFullUrl());
      * ```
      *
      * @return string The full page URL.

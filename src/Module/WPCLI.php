@@ -396,7 +396,7 @@ class WPCLI extends Module
      */
     public function seeShellOutputMatches(string $regex): void
     {
-        $this->assertMatchesRegularExpression($regex, $this->grabLastShellOutput());
+        $this->assertRegExp($regex, $this->grabLastShellOutput());
     }
 
     /**
@@ -415,7 +415,7 @@ class WPCLI extends Module
      */
     public function dontSeeShellOutputMatches(string $regex): void
     {
-        $this->assertDoesNotMatchRegularExpression($regex, $this->grabLastShellOutput());
+        $this->assertNotRegExp($regex, $this->grabLastShellOutput());
     }
 
     /**

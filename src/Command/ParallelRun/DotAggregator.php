@@ -167,8 +167,8 @@ final class DotAggregator
             $this->formatMemory(memory_get_peak_usage(true))
         ));
 
-        $style = ($this->totalFailures + $this->totalErrors + count($this->crashedWorkers)) > 0 ? 'error' : 'info';
-        $header = ($this->totalFailures + $this->totalErrors) > 0 ? 'FAILURES!' : 'OK';
+        $style = $this->hasFailures() ? 'error' : 'info';
+        $header = $this->hasFailures() ? 'FAILURES!' : 'OK';
         $this->output->writeln(sprintf('<%s>%s</%s>', $style, $header, $style));
         $this->output->writeln(sprintf(
             'Tests: %d, Assertions: %d, Failures: %d, Errors: %d, Skipped: %d',

@@ -34,16 +34,24 @@ trait ConfiguredStateTrait
     /**
      * @throws InstallationException
      */
-    public function getAuthKey(): string
+    private function getStringConstant(string $constant): string
     {
-        $constant = $this->wpConfigFile->getConstant('AUTH_KEY');
-        if (!is_string($constant)) {
+        $value = $this->wpConfigFile->getConstant($constant);
+        if (!is_string($value)) {
             throw new InstallationException(
-                "Expected AUTH_KEY to be a string, got: " . gettype($constant),
+                "Expected $constant to be a string, got: " . gettype($value),
                 InstallationException::CONST_NOT_STRING
             );
         }
-        return $constant;
+        return $value;
+    }
+
+    /**
+     * @throws InstallationException
+     */
+    public function getAuthKey(): string
+    {
+        return $this->getStringConstant('AUTH_KEY');
     }
 
     /**
@@ -51,14 +59,7 @@ trait ConfiguredStateTrait
      */
     public function getSecureAuthKey(): string
     {
-        $constant = $this->wpConfigFile->getConstant('SECURE_AUTH_KEY');
-        if (!is_string($constant)) {
-            throw new InstallationException(
-                "Expected SECURE_AUTH_KEY to be a string, got: " . gettype($constant),
-                InstallationException::CONST_NOT_STRING
-            );
-        }
-        return $constant;
+        return $this->getStringConstant('SECURE_AUTH_KEY');
     }
 
     /**
@@ -66,14 +67,7 @@ trait ConfiguredStateTrait
      */
     public function getLoggedInKey(): string
     {
-        $constant = $this->wpConfigFile->getConstant('LOGGED_IN_KEY');
-        if (!is_string($constant)) {
-            throw new InstallationException(
-                "Expected LOGGED_IN_KEY to be a string, got: " . gettype($constant),
-                InstallationException::CONST_NOT_STRING
-            );
-        }
-        return $constant;
+        return $this->getStringConstant('LOGGED_IN_KEY');
     }
 
     /**
@@ -81,14 +75,7 @@ trait ConfiguredStateTrait
      */
     public function getNonceKey(): string
     {
-        $constant = $this->wpConfigFile->getConstant('NONCE_KEY');
-        if (!is_string($constant)) {
-            throw new InstallationException(
-                "Expected NONCE_KEY to be a string, got: " . gettype($constant),
-                InstallationException::CONST_NOT_STRING
-            );
-        }
-        return $constant;
+        return $this->getStringConstant('NONCE_KEY');
     }
 
     /**
@@ -96,14 +83,7 @@ trait ConfiguredStateTrait
      */
     public function getAuthSalt(): string
     {
-        $constant = $this->wpConfigFile->getConstant('AUTH_SALT');
-        if (!is_string($constant)) {
-            throw new InstallationException(
-                "Expected AUTH_SALT to be a string, got: " . gettype($constant),
-                InstallationException::CONST_NOT_STRING
-            );
-        }
-        return $constant;
+        return $this->getStringConstant('AUTH_SALT');
     }
 
     /**
@@ -111,14 +91,7 @@ trait ConfiguredStateTrait
      */
     public function getSecureAuthSalt(): string
     {
-        $constant = $this->wpConfigFile->getConstant('SECURE_AUTH_SALT');
-        if (!is_string($constant)) {
-            throw new InstallationException(
-                "Expected SECURE_AUTH_SALT to be a string, got: " . gettype($constant),
-                InstallationException::CONST_NOT_STRING
-            );
-        }
-        return $constant;
+        return $this->getStringConstant('SECURE_AUTH_SALT');
     }
 
     /**
@@ -126,14 +99,7 @@ trait ConfiguredStateTrait
      */
     public function getLoggedInSalt(): string
     {
-        $constant = $this->wpConfigFile->getConstant('LOGGED_IN_SALT');
-        if (!is_string($constant)) {
-            throw new InstallationException(
-                "Expected LOGGED_IN_SALT to be a string, got: " . gettype($constant),
-                InstallationException::CONST_NOT_STRING
-            );
-        }
-        return $constant;
+        return $this->getStringConstant('LOGGED_IN_SALT');
     }
 
     /**
@@ -141,15 +107,7 @@ trait ConfiguredStateTrait
      */
     public function getNonceSalt(): string
     {
-        $constant = $this->wpConfigFile->getConstant('NONCE_SALT');
-        if (!is_string($constant)) {
-            throw new InstallationException(
-                "Expected NONCE_SALT to be a string, got: " . gettype($constant),
-                InstallationException::CONST_NOT_STRING
-            );
-        }
-
-        return $constant;
+        return $this->getStringConstant('NONCE_SALT');
     }
 
     /**

@@ -3058,9 +3058,8 @@ class WPDb extends Db
         $sth = $dbh->prepare('SHOW TABLES LIKE :table');
         $this->debugSection('Query', $sth->queryString);
         $sth->execute(['table' => $table]);
-        $count = $sth->rowCount();
 
-        return $count === 1;
+        return $sth->rowCount() === 1;
     }
 
     /**

@@ -1,0 +1,624 @@
+<?php
+
+namespace Codeception\Template;
+
+use lucatume\WPBrowser\Adapters\Symfony\Component\Process\Process;
+use lucatume\WPBrowser\Tests\FSTemplates\BedrockProject;
+use lucatume\WPBrowser\Tests\Traits\FastScaffold;
+use lucatume\WPBrowser\Tests\Traits\PhaseTimer;
+use lucatume\WPBrowser\Tests\Traits\TmpFilesCleanup;
+use lucatume\WPBrowser\Utils\Codeception;
+use lucatume\WPBrowser\Utils\Env;
+use lucatume\WPBrowser\Utils\Filesystem as FS;
+use lucatume\WPBrowser\Utils\Random;
+use lucatume\WPBrowser\WordPress\Database\MysqlDatabase;
+use lucatume\WPBrowser\WordPress\Installation;
+use lucatume\WPBrowser\WordPress\InstallationState\InstallationStateInterface;
+use tad\Codeception\SnapshotAssertions\SnapshotAssertions;
+
+/**
+ */
+class WpbrowserTest extends \Codeception\Test\Unit
+{
+    use TmpFilesCleanup;
+    use SnapshotAssertions;
+    use PhaseTimer;
+    use FastScaffold;
+
+    private function mockComposerBin(string $directory): void
+    {
+        $binCode = <<< EOT
+#!/bin/sh
+touch composer.lock
+mkdir -p ./vendor/bin
+touch ./vendor/bin/chromedriver
+EOT;
+        if (!file_put_contents($directory . '/composer', $binCode)) {
+            throw new \RuntimeException("Could not create mock composer binary in $directory.");
+        }
+
+        if (!chmod($directory . '/composer', 0755)) {
+            throw new \RuntimeException("Could not make mock composer binary in $directory executable.");
+        }
+    }
+
+    private function replaceRandomPorts(array $expected, array $actual, string $file): array
+    {
+        // symfony/yaml 6/7 dump an empty inline map as `{  }`, symfony/yaml 8 (PHP 8.4+) as `{}`;
+        // normalize both so the scaffolded codeception.yml snapshots match across versions.
+        $normalizeEmptyMaps = static function (array $lines) : array {
+            return array_map(
+                static function (string $line) : string {
+                    return (string)preg_replace('/\{ +\}/', '{}', $line);
+                },
+                $lines
+            );
+        };
+        $expected = $normalizeEmptyMaps($expected);
+        $actual = $normalizeEmptyMaps($actual);
+
+        if (substr_compare($file, 'tests/.env', -strlen('tests/.env')) !== 0) {
+            return [$expected, $actual];
+        }
+
+        $expected = explode(
+            "\n",
+            preg_replace('/\\d{3,}$/um', '{port}', implode("\n", $expected))
+        );
+
+
+        $actual = explode(
+            "\n",
+            preg_replace('/\\d{3,}$/um', '{port}', implode("\n", $actual))
+        );
+
+        return [$expected, $actual];
+    }
+
+    public function pluginEntryFileProvider(): array
+    {
+        return [
+            'plugin.php' => ['plugin.php'],
+            'main-file.php' => ['main-file.php'],
+        ];
+    }
+
+    /**
+     * It should scaffold for plugin
+     *
+     * @test
+     * @group slow
+     * @dataProvider pluginEntryFileProvider
+     */
+    public function should_scaffold_for_plugin(string $entryFile): void
+    {
+        $composerFileCode = <<< EOT
+{
+  "name": "acme/plugin-89",
+  "type": "wordpress-plugin",
+  "require": {},
+  "require-dev": {}
+}
+EOT;
+
+        $projectDir = FS::tmpDir('setup_', [
+            'plugin_89' => [
+                $entryFile => "<?php\n/* Plugin Name: Plugin 89 */",
+                'composer.json' => $composerFileCode,
+                'vendor' => [
+                    'bin' => [
+                    ]
+                ],
+            ]
+        ]);
+
+        $this->mockComposerBin($projectDir . '/plugin_89');
+
+        $command = [
+            PHP_BINARY,
+            codecept_root_dir("vendor/bin/codecept"),
+            'init',
+            'wpbrowser',
+            '--path=' . $projectDir . '/plugin_89'
+        ];
+        $process = new Process($command, null, [
+            'COMPOSER_BIN_DIR' => $projectDir . '/plugin_89/vendor/bin'
+        ]);
+
+        $process->setInput(
+            "yes\n" // Yes, use recommended setup.
+        );
+
+        $process->mustRun();
+
+        // Remove the generated files that are not needed for the snapshot.
+        FS::rrmdir($projectDir . '/plugin_89/' . Codeception::supportDir() . '/_generated');
+
+        $this->assertFileExists($projectDir . '/plugin_89/vendor/bin/chromedriver');
+        $this->assertFileExists($projectDir . '/plugin_89/tests/_wordpress/wp-config.php');
+        $this->assertFileExists($projectDir . '/plugin_89/' . Codeception::dataDir() . '/dump.sql');
+
+        // Remove generated or downloaded files that are not needed for the snapshot.
+        FS::rrmdir($projectDir . '/plugin_89/tests/_wordpress');
+        FS::rrmdir($projectDir . '/plugin_89/vendor');
+        FS::rrmdir($projectDir . '/plugin_89/var');
+        unlink($projectDir . '/plugin_89/' . Codeception::dataDir() . '/dump.sql');
+        unlink($projectDir . '/plugin_89/composer');
+
+        // Random ports will change: visit the data to replace the random ports with a placeholder.
+        $this->assertMatchesDirectorySnapshot(
+            $projectDir . '/plugin_89',
+            function () {
+                return $this->replaceRandomPorts(...func_get_args());
+            }
+        );
+    }
+
+    public function pluginCustomEntryFileProvider(): array
+    {
+        return [
+            'plugin.php' => ['plugin.php'],
+            'main.php' => ['main.php'],
+        ];
+    }
+
+    /**
+     * It should scaffold for plugin custom
+     *
+     * @test
+     * @dataProvider pluginCustomEntryFileProvider
+     */
+    public function should_scaffold_for_plugin_custom(string $entryFile): void
+    {
+        $composerFileCode = <<< EOT
+{
+  "name": "acme/plugin-89",
+  "type": "wordpress-plugin",
+  "require": {},
+  "require-dev": {}
+}
+EOT;
+
+        $projectDir = FS::tmpDir('setup_', [
+            'plugin_89' => [
+                $entryFile => "<?php\n/* Plugin Name: Plugin 89 */",
+                'composer.json' => $composerFileCode,
+                'vendor' => [
+                    'bin' => [
+                    ]
+                ],
+            ]
+        ]);
+
+        $command = [
+            PHP_BINARY,
+            codecept_root_dir("vendor/bin/codecept"),
+            'init',
+            'wpbrowser',
+            '--path=' . $projectDir . '/plugin_89'
+        ];
+        $process = new Process($command, null, ['COMPOSER_BIN_DIR' => $projectDir . '/plugin_89/vendor/bin']);
+
+        $process->setInput(
+            "no\n" // No, do not use recommended setup.
+        );
+
+        $process->mustRun();
+
+        // Remove the generated files that are not needed for the snapshot.
+        FS::rrmdir($projectDir . '/plugin_89/' . Codeception::supportDir() . '/_generated');
+        FS::rrmdir($projectDir . '/plugin_89/tests/_wordpress');
+        FS::rrmdir($projectDir . '/plugin_89/vendor');
+        FS::rrmdir($projectDir . '/plugin_89/var');
+        $dataDir = Codeception::dataDir($projectDir . '/plugin_89');
+        file_exists($dataDir . "/dump.sql") && unlink($dataDir . "/dump.sql");
+
+
+        // Random ports will change: visit the data to replace the random ports with a placeholder.
+        $this->assertMatchesDirectorySnapshot(
+            $projectDir . '/plugin_89',
+            function () {
+                return $this->replaceRandomPorts(...func_get_args());
+            }
+        );
+    }
+
+    public function recommendedSetupProvider(): array
+    {
+        return [
+            'recommended' => [true],
+            'custom' => [false],
+        ];
+    }
+
+    /**
+     * It should scaffold for theme
+     *
+     * @test
+     * @group slow
+     * @dataProvider recommendedSetupProvider
+     */
+    public function should_scaffold_for_theme(bool $recommended): void
+    {
+        $composerFileCode = <<< EOT
+{
+  "name": "acme/theme-23",
+  "type": "wordpress-theme",
+  "require": {},
+  "require-dev": {}
+}
+EOT;
+
+        $projectDir = FS::tmpDir('setup_', [
+            'theme_23' => [
+                'style.css' => "/*\nTheme Name: Theme 23\n*/",
+                'functions.php' => <<<PHP
+<?php
+function theme_23_some_function() {
+    return 'test-test-test';
+}
+
+add_action('after_setup_theme', 'theme_23_some_function');
+PHP
+,
+                'index.php' => '<?php // This file is required for the theme to work. ?>',
+                'composer.json' => $composerFileCode,
+                'vendor' => [
+                    'bin' => [
+                    ]
+                ],
+            ]
+        ]);
+
+        $this->mockComposerBin($projectDir . '/theme_23');
+
+        $command = [
+            PHP_BINARY,
+            codecept_root_dir("vendor/bin/codecept"),
+            'init',
+            'wpbrowser',
+            '--path=' . $projectDir . '/theme_23'
+        ];
+        $process = new Process($command, null, ['COMPOSER_BIN_DIR' => $projectDir . '/theme_23/vendor/bin']);
+
+        $process->setInput(
+            $recommended ? "yes\n" : "no\n"
+        );
+
+        $process->mustRun();
+
+        // Remove the generated files that are not needed for the snapshot.
+        FS::rrmdir($projectDir . '/theme_23/' . Codeception::supportDir() . '/_generated');
+
+        if ($recommended) {
+            $this->assertFileExists($projectDir . '/theme_23/vendor/bin/chromedriver');
+            $this->assertFileExists($projectDir . '/theme_23/tests/_wordpress/wp-config.php');
+            $this->assertFileExists($projectDir . '/theme_23/' . Codeception::dataDir() . '/dump.sql');
+        }
+
+        // Remove generated or downloaded files that are not needed for the snapshot.
+        FS::rrmdir($projectDir . '/theme_23/tests/_wordpress');
+        FS::rrmdir($projectDir . '/theme_23/vendor');
+        FS::rrmdir($projectDir . '/theme_23/var');
+        if ($recommended) {
+            unlink($projectDir . '/theme_23/' . Codeception::dataDir() . '/dump.sql');
+            unlink($projectDir . '/theme_23/composer');
+        } else {
+            $dataDir = Codeception::dataDir($projectDir . '/theme_23');
+            file_exists($dataDir . "/dump.sql") && unlink($dataDir . "/dump.sql");
+        }
+
+        // Random ports will change: visit the data to replace the random ports with a placeholder.
+        $this->assertMatchesDirectorySnapshot(
+            $projectDir . '/theme_23',
+            function () {
+                return $this->replaceRandomPorts(...func_get_args());
+            }
+        );
+    }
+
+    /**
+     * It should scaffold for child theme correctly
+     *
+     * @test
+     * @group slow
+     */
+    public function should_scaffold_for_child_theme_correctly(): void
+    {
+        $composerFileCode = <<< EOT
+{
+  "name": "acme/theme-23",
+  "type": "wordpress-theme",
+  "require": {},
+  "require-dev": {}
+}
+EOT;
+
+        $projectDir = FS::tmpDir('setup_', [
+            'theme_23' => [
+                'style.css' => <<<EOT
+/*
+Theme Name: Theme 23
+Template: twentytwentyfour
+*/
+EOT
+,
+                'functions.php' => <<<PHP
+<?php
+function theme_23_some_function() {
+    return 'test-test-test';
+}
+
+add_action('after_setup_theme', 'theme_23_some_function');
+PHP
+,
+                'index.php' => '<?php // This file is required for the theme to work. ?>',
+                'composer.json' => $composerFileCode,
+                'vendor' => [
+                    'bin' => [
+                    ]
+                ],
+            ]
+        ]);
+
+        $this->mockComposerBin($projectDir . '/theme_23');
+
+        $command = [
+            PHP_BINARY,
+            codecept_root_dir("vendor/bin/codecept"),
+            'init',
+            'wpbrowser',
+            '--path=' . $projectDir . '/theme_23'
+        ];
+        $process = new Process($command, null, ['COMPOSER_BIN_DIR' => $projectDir . '/theme_23/vendor/bin']);
+
+        $process->setInput(
+            "yes\n" // Yes, use recommended setup.
+        );
+
+        $process->mustRun();
+
+        // Remove the generated files that are not needed for the snapshot.
+        FS::rrmdir($projectDir . '/theme_23/' . Codeception::supportDir() . '/_generated');
+
+        $this->assertFileExists($projectDir . '/theme_23/vendor/bin/chromedriver');
+        $this->assertFileExists($projectDir . '/theme_23/tests/_wordpress/wp-config.php');
+        $this->assertFileExists($projectDir . '/theme_23/' . Codeception::dataDir() . '/dump.sql');
+
+        // Remove generated or downloaded files that are not needed for the snapshot.
+        FS::rrmdir($projectDir . '/theme_23/tests/_wordpress');
+        FS::rrmdir($projectDir . '/theme_23/vendor');
+        FS::rrmdir($projectDir . '/theme_23/var');
+        unlink($projectDir . '/theme_23/' . Codeception::dataDir() . '/dump.sql');
+        unlink($projectDir . '/theme_23/composer');
+
+        // Random ports will change: visit the data to replace the random ports with a placeholder.
+        $this->assertMatchesDirectorySnapshot(
+            $projectDir . '/theme_23',
+            function () {
+                return $this->replaceRandomPorts(...func_get_args());
+            }
+        );
+    }
+
+    /**
+     * It should scaffold for single site correctly
+     *
+     * @test
+     * @group slow
+     * @group requires-mysql-server
+     */
+    public function should_scaffold_for_single_site_correctly(): void
+    {
+        $composerFileCode = <<< EOT
+{
+  "name": "acme/site-project",
+  "type": "project",
+  "require": {},
+  "require-dev": {}
+}
+EOT;
+
+        $projectDir = FS::tmpDir('setup_', [
+            'site' => [
+                'composer.json' => $composerFileCode,
+                'vendor' => [
+                    'bin' => [
+                    ]
+                ],
+            ]
+        ]);
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $this->fastScaffold($projectDir . '/site')
+            ->configure($db)->install('https://the-project.local', 'admin', 'secret', 'admin@the-project.local', 'The Project');
+
+        $this->mockComposerBin($projectDir . '/site');
+
+        $command = [
+            PHP_BINARY,
+            codecept_root_dir("vendor/bin/codecept"),
+            'init',
+            'wpbrowser',
+            '--path=' . $projectDir . '/site'
+        ];
+        $process = new Process($command, null, ['COMPOSER_BIN_DIR' => $projectDir . '/site/vendor/bin']);
+
+        $process->setInput(
+            "yes\n" // Yes, use recommended setup.
+        );
+
+        $process->mustRun();
+
+        $this->assertDirectoryExists($projectDir . '/site/wp-content/mu-plugins/sqlite-database-integration');
+        $this->assertFileExists($projectDir . '/site/wp-content/db.php');
+        $this->assertFileExists($projectDir . '/site/' . Codeception::dataDir() . '/dump.sql');
+        $this->assertFileExists($projectDir . '/site/' . Codeception::dataDir() . '/db.sqlite');
+        $this->assertFileExists($projectDir . '/site/tests/EndToEnd/ActivationCest.php');
+        $this->assertFileExists($projectDir . '/site/tests/Integration/SampleTest.php');
+        $this->assertFileExists($projectDir . '/site/codeception.yml');
+
+        // Remove the generated files that are not needed for the snapshot.
+        FS::rrmdir($projectDir . '/site/' . Codeception::supportDir() . '/_generated');
+        // Remove the binary sqlite file and the dump file.
+        unlink($projectDir . '/site/' . Codeception::dataDir() . '/db.sqlite');
+        unlink($projectDir . '/site/' . Codeception::dataDir() . '/dump.sql');
+
+        $this->assertMatchesStringSnapshot(file_get_contents($projectDir . '/site/codeception.yml'));
+        // Random ports will change: visit the data to replace the random ports with a placeholder.
+        $this->assertMatchesDirectorySnapshot(
+            $projectDir . '/site/tests',
+            function (array $expected, array $actual, string $file) {
+                return $this->replaceRandomPorts($expected, $actual, $file);
+            }
+        );
+    }
+
+    /**
+     * It should scaffold for multi-site correctly
+     *
+     * @test
+     * @group slow
+     * @group requires-mysql-server
+     */
+    public function should_scaffold_for_multi_site_correctly(): void
+    {
+        $composerFileCode = <<< EOT
+{
+  "name": "acme/site-project",
+  "type": "project",
+  "require": {},
+  "require-dev": {}
+}
+EOT;
+
+        $projectDir = $this->phase('FS::tmpDir (tree)', function () use ($composerFileCode) {
+            return FS::tmpDir('setup_', [
+                'site' => [
+                    'composer.json' => $composerFileCode,
+                    'vendor' => [
+                        'bin' => [
+                        ]
+                    ],
+                ]
+            ]);
+        });
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        $scaffolded = $this->phase('Installation::scaffold', function () use ($projectDir) {
+            return $this->fastScaffold($projectDir . '/site');
+        });
+        $configured = $this->phase('configure (multisite subdomain)', function () use ($scaffolded, $db) {
+            return $scaffolded->configure($db, InstallationStateInterface::MULTISITE_SUBDOMAIN);
+        });
+        $this->phase('install (multisite)', function () use ($configured) {
+            return $configured->install('https://the-project.local', 'admin', 'secret', 'admin@the-project.local', 'The Project');
+        });
+
+        $this->mockComposerBin($projectDir . '/site');
+
+        $command = [
+            PHP_BINARY,
+            codecept_root_dir("vendor/bin/codecept"),
+            'init',
+            'wpbrowser',
+            '--path=' . $projectDir . '/site'
+        ];
+        $process = new Process($command, null, ['COMPOSER_BIN_DIR' => $projectDir . '/site/vendor/bin']);
+
+        $process->setInput(
+            "yes\n" // Yes, use recommended setup.
+        );
+
+        $this->phase('codecept init wpbrowser (subprocess)', function () use ($process) {
+            return $process->mustRun();
+        });
+
+        $this->assertDirectoryExists($projectDir . '/site/wp-content/mu-plugins/sqlite-database-integration');
+        $this->assertFileExists($projectDir . '/site/wp-content/db.php');
+        $this->assertFileExists($projectDir . '/site/' . Codeception::dataDir() . '/dump.sql');
+        $this->assertFileExists($projectDir . '/site/' . Codeception::dataDir() . '/db.sqlite');
+        $this->assertFileExists($projectDir . '/site/tests/EndToEnd/ActivationCest.php');
+        $this->assertFileExists($projectDir . '/site/tests/Integration/SampleTest.php');
+        $this->assertFileExists($projectDir . '/site/codeception.yml');
+
+        // Remove the generated files that are not needed for the snapshot.
+        FS::rrmdir($projectDir . '/site/' . Codeception::supportDir() . '/_generated');
+        // Remove the binary sqlite file and the dump file.
+        unlink($projectDir . '/site/' . Codeception::dataDir() . '/db.sqlite');
+        unlink($projectDir . '/site/' . Codeception::dataDir() . '/dump.sql');
+
+        $this->phase('assertMatchesStringSnapshot codeception.yml', function () use ($projectDir) {
+            return $this->assertMatchesStringSnapshot(file_get_contents($projectDir . '/site/codeception.yml'));
+        });
+        // Random ports will change: visit the data to replace the random ports with a placeholder.
+        $this->phase('assertMatchesDirectorySnapshot tests', function () use ($projectDir) {
+            return $this->assertMatchesDirectorySnapshot(
+                $projectDir . '/site/tests',
+                function (array $expected, array $actual, string $file) {
+                    return $this->replaceRandomPorts($expected, $actual, $file);
+                }
+            );
+        });
+    }
+
+    /**
+     * It should scaffold correctly on site with non default structure
+     *
+     * @test
+     * @group slow
+     * @dataProvider recommendedSetupProvider
+     */
+    public function should_scaffold_correctly_on_site_with_non_default_structure(bool $recommended): void
+    {
+        if (PHP_VERSION < 8.0) {
+            $this->markTestSkipped('This test requires PHP 8.0 or higher.');
+        }
+
+        $projectDir = FS::tmpDir('setup_');
+        $dbName = Random::dbName();
+        $dbHost = Env::get('WORDPRESS_DB_HOST');
+        $dbUser = Env::get('WORDPRESS_DB_USER');
+        $dbPassword = Env::get('WORDPRESS_DB_PASSWORD');
+        $db = new MysqlDatabase($dbName, $dbUser, $dbPassword, $dbHost, 'test_');
+        (new BedrockProject($db, 'https://the-project.local'))->scaffold($projectDir);
+
+        $this->mockComposerBin($projectDir);
+
+        $command = [
+            PHP_BINARY,
+            codecept_root_dir("vendor/bin/codecept"),
+            'init',
+            'wpbrowser',
+            '--path=' . $projectDir
+        ];
+        $process = new Process($command);
+
+        $process->setInput(
+            $recommended ? "yes\n" : "no\n"
+        );
+
+        $process->mustRun();
+
+        // Remove some hashed files.
+        FS::rrmdir($projectDir . '/' . Codeception::supportDir() . '/_generated');
+        if ($recommended) {
+            FS::rrmdir($projectDir . '/' . Codeception::dataDir() . '/db.sqlite');
+            FS::rrmdir($projectDir . '/' . Codeception::dataDir() . '/dump.sql');
+        }
+
+        // Random ports will change: visit the data to replace the random ports with a placeholder.
+        $this->assertMatchesDirectorySnapshot(
+            $projectDir . '/tests',
+            function () {
+                return $this->replaceRandomPorts(...func_get_args());
+            }
+        );
+    }
+}

@@ -5,7 +5,7 @@ namespace lucatume\WPBrowser\WordPress\CodeExecution;
 use Closure;
 use lucatume\WPBrowser\WordPress\FileRequests\FileRequest;
 
-class ExecuteClosureAction implements CodeExecutionActionInterface
+class ExecuteClosureAction
 {
     /**
      * @var \lucatume\WPBrowser\WordPress\FileRequests\FileRequest

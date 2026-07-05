@@ -48,16 +48,6 @@ class Date
     }
 
     /**
-     * Returns the 0 time string in WordPress specific format.
-     *
-     * @return string The "0000-00-00 00:00:00" string.
-     */
-    public static function zero(): string
-    {
-        return '0000-00-00 00:00:00';
-    }
-
-    /**
      * The current date in GMT time.
      *
      * @return false|string The formatted date or `false` on failure.

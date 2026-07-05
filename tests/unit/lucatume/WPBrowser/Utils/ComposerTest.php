@@ -227,8 +227,11 @@ class ComposerTest extends \Codeception\Test\Unit
     {
         $composer = new Composer();
         $this->assertEquals(
-            json_decode(file_get_contents(codecept_root_dir('composer.json')), false),
-            $composer->getDecodedContents()
+            json_encode(
+                json_decode(file_get_contents(codecept_root_dir('composer.json')), false),
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+            ),
+            $composer->getContents()
         );
     }
 
