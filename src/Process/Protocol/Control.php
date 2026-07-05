@@ -4,7 +4,6 @@ namespace lucatume\WPBrowser\Process\Protocol;
 
 use Codeception\Configuration;
 use Codeception\Exception\ConfigurationException;
-use lucatume\WPBrowser\Polyfills\Dotenv\Dotenv;
 
 class Control
 {

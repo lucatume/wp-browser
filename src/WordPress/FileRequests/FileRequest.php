@@ -50,10 +50,6 @@ abstract class FileRequest
     use WordPressChecks;
 
     /**
-     * @var array<string,mixed>
-     */
-    private $serverVars = [];
-    /**
      * @var array<Closure>
      */
     private $preloadClosures = [];
@@ -135,16 +131,9 @@ abstract class FileRequest
         $_SERVER['REQUEST_URI'] = $this->requestUri;
         $_SERVER['HTTP_HOST'] = $this->domain;
 
-        foreach ($this->serverVars as $key => $value) {
-            $_SERVER[$key] = $value;
-        }
-
         switch ($method) {
             case 'GET':
                 $_GET = array_merge($_GET, $this->requestVars);
-                break;
-            case 'POST':
-                $_POST = $this->requestVars;
                 break;
             default:
                 throw new FileRequestException(sprintf('Unsupported request method: %s', $method));
@@ -289,12 +278,6 @@ abstract class FileRequest
         }
     }
 
-    public function setServerVar(string $key, string $value): FileRequest
-    {
-        $this->serverVars[$key] = $value;
-        return $this;
-    }
-
     public function addPreloadClosure(Closure $preloadClosure): FileRequest
     {
         $this->preloadClosures[] = $preloadClosure;
@@ -313,16 +296,6 @@ abstract class FileRequest
      * @param int|string|float|bool $value
      */
     public function defineConstant(string $constant, $value): FileRequest
-    {
-        $this->constants[$constant] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param bool|int|float|string $value
-     */
-    public function setConstant(string $constant, $value): FileRequest
     {
         $this->constants[$constant] = $value;
 

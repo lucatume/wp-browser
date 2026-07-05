@@ -22,7 +22,7 @@ class Composer
      */
     private $composerJsonFile;
     /**
-     * @var StdClass
+     * @var stdClass
      */
     private $decoded;
 
@@ -151,14 +151,6 @@ class Composer
     }
 
     /**
-     * @return stdClass
-     */
-    public function getDecodedContents(): stdClass
-    {
-        return $this->decoded;
-    }
-
-    /**
      * @throws JsonException
      */
     public function getContents(): string
@@ -169,18 +161,5 @@ class Composer
         }
         /** @var string $encoded */
         return $encoded;
-    }
-
-    public function allowPluginsFromPackage(string $package): void
-    {
-        if (!isset($this->decoded->config)) {
-            $this->decoded->config = new StdClass();
-        }
-
-        if (!isset($this->decoded->config->{'allow-plugins'})) {
-            $this->decoded->config->{'allow-plugins'} = new StdClass();
-        }
-
-        $this->decoded->config->{'allow-plugins'}->{$package} = true;
     }
 }

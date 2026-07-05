@@ -68,7 +68,10 @@
     "psr-4": {
       "lucatume\\WPBrowser\\Tests\\FSTemplates\\": "tests/_support/FSTemplates",
       "lucatume\\WPBrowser\\Tests\\Traits\\": "tests/_support/Traits"
-    }
+    },
+    "classmap": [
+      "tests/_support/classmap"
+    ]
   },
   "extra": {
     "_hash": "484f861f69198089cab0e642f27e5653"

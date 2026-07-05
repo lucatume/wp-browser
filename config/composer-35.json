@@ -67,7 +67,10 @@
   "autoload-dev": {
     "psr-4": {
       "lucatume\\WPBrowser\\Tests\\": "tests/_support"
-    }
+    },
+    "classmap": [
+      "tests/_support/classmap"
+    ]
   },
   "extra": {
     "_hash": "484f861f69198089cab0e642f27e5653"

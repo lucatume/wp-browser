@@ -10,7 +10,7 @@ use WP_Theme;
 use function switch_theme;
 use function wp_get_theme;
 
-class ThemeSwitchAction implements CodeExecutionActionInterface
+class ThemeSwitchAction
 {
     /**
      * @var \lucatume\WPBrowser\WordPress\FileRequests\FileRequest

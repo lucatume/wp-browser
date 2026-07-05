@@ -342,7 +342,7 @@ class BuiltInServerControllerTest extends Unit
 
         $extension->stop($this->output);
 
-        $this->assertFileDoesNotExist(PhpBuiltInServer::getPidFile());
+        $this->assertFileNotExists(PhpBuiltInServer::getPidFile());
 
         $extension->stop($this->output);
     }
@@ -383,7 +383,7 @@ class BuiltInServerControllerTest extends Unit
      */
     public function should_correctly_produce_information(): void
     {
-        $this->assertFileDoesNotExist(PhpBuiltInServer::getPidFile());
+        $this->assertFileNotExists(PhpBuiltInServer::getPidFile());
 
         $port = Random::openLocalhostPort();
         $config = ['docroot' => __DIR__, 'port' => $port];

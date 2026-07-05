@@ -6,13 +6,13 @@ use Exception;
 use lucatume\WPBrowser\Process\SerializableThrowable;
 use lucatume\WPBrowser\Traits\UopzFunctions;
 use lucatume\WPBrowser\Utils\PackedClosure;
-use PHPUnit\Framework\TestCase;
+use Codeception\Test\Unit;
 use Throwable;
 
 /**
  * @group fast
  */
-class ResponseTest extends TestCase
+class ResponseTest extends Unit
 {
     use UopzFunctions;
 

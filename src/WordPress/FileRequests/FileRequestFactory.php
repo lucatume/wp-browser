@@ -77,25 +77,4 @@ class FileRequestFactory
 
         return $resolved;
     }
-
-    /**
-     * @param array<string,mixed> $queryArgs
-     */
-    public function buildPostRequest(string $requestUri, array $queryArgs): FilePostRequest
-    {
-        $targetFile = rtrim($this->wpRootDir, '\\/') . '/' . ltrim($requestUri, '\\/');
-        $cookies = [];
-
-        $queryArgs = $this->resolveQueryArgs($queryArgs);
-
-        return new FilePostRequest(
-            $this->domain,
-            $requestUri,
-            $targetFile,
-            $queryArgs,
-            $cookies,
-            $this->redirectFiles,
-            $this->presetGlobalVars
-        );
-    }
 }

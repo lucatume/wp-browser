@@ -143,7 +143,7 @@ class FilesystemTest extends Unit
 
         Filesystem::rrmdir($root . '/sub-dir-1/delme.txt');
 
-        $this->assertFileDoesNotExist($root . '/sub-dir-1/delme.txt');
+        $this->assertFileNotExists($root . '/sub-dir-1/delme.txt');
 
         Filesystem::rrmdir($root);
 

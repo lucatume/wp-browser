@@ -154,7 +154,7 @@ class ChromedriverTest extends Unit
 
         $this->assertEquals(0, pcntl_wexitstatus($chromedriver->stop()));
 
-        $this->assertFileDoesNotExist($pidFile);
+        $this->assertFileNotExists($pidFile);
     }
 
     /**

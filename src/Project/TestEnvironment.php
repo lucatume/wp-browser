@@ -55,10 +55,6 @@ class TestEnvironment
      */
     public $extensionsEnabled = [];
     /**
-     * @var string|null
-     */
-    public $dumpFile;
-    /**
      * @var \Closure|null
      */
     public $afterSuccess;

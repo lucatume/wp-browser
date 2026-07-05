@@ -38,13 +38,25 @@ class DbDump
      */
     public function replaceSiteDomainInSqlArray(array $sql): array
     {
+        return $this->replaceSiteDomainInJoinedSql($sql, false);
+    }
+
+    /**
+     * @param array<string> $sql
+     *
+     * @return array<string>
+     */
+    private function replaceSiteDomainInJoinedSql(array $sql, bool $multisite): array
+    {
         if (empty($sql)) {
             return [];
         }
 
         $delimiter = md5(uniqid('delim', true));
         $joined = implode($delimiter, $sql);
-        $replaced = $this->replaceSiteDomainInSqlString($joined);
+        $replaced = $multisite ?
+            $this->replaceSiteDomainInMultisiteSqlString($joined)
+            : $this->replaceSiteDomainInSqlString($joined);
 
         return explode($delimiter, $replaced);
     }
@@ -58,15 +70,7 @@ class DbDump
      */
     public function replaceSiteDomainInMultisiteSqlArray(array $sql): array
     {
-        if (empty($sql)) {
-            return [];
-        }
-
-        $delimiter = md5(uniqid('delim', true));
-        $joined = implode($delimiter, $sql);
-        $replaced = $this->replaceSiteDomainInMultisiteSqlString($joined);
-
-        return explode($delimiter, $replaced);
+        return $this->replaceSiteDomainInJoinedSql($sql, true);
     }
 
     /**
