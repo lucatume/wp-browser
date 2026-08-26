@@ -61,18 +61,19 @@ EOT;
             return [$expected, $actual];
         }
 
-        $expected = explode(
-            "\n",
-            preg_replace('/\\d{3,}$/um', '{port}', implode("\n", $expected))
-        );
+        // The scaffolded WordPress version tracks the latest release: normalize it to a placeholder.
+        $normalizeEnv = static function (array $lines) : array {
+            return explode(
+                "\n",
+                preg_replace(
+                    ['/\\d{3,}$/um', '/^WORDPRESS_VERSION=.*$/um'],
+                    ['{port}', 'WORDPRESS_VERSION={version}'],
+                    implode("\n", $lines)
+                )
+            );
+        };
 
-
-        $actual = explode(
-            "\n",
-            preg_replace('/\\d{3,}$/um', '{port}', implode("\n", $actual))
-        );
-
-        return [$expected, $actual];
+        return [$normalizeEnv($expected), $normalizeEnv($actual)];
     }
 
     public function pluginEntryFileProvider(): array

@@ -1,16 +1,3 @@
->>> /functions.php >>>
-<?php
-function theme_23_some_function() {
-    return 'test-test-test';
-}
-
-add_action('after_setup_theme', 'theme_23_some_function');
-<<< /functions.php <<<
-
->>> /index.php >>>
-<?php // This file is required for the theme to work. ?>
-<<< /index.php <<<
-
 >>> /tests/EndToEnd.suite.yml >>>
 # EndToEnd suite configuration
 #
@@ -96,9 +83,9 @@ class SampleTest extends WPTestCase
         $this->assertInstanceOf(\WP_Post::class, $post);
     }
 
-    public function test_theme_active(): void
+    public function test_plugin_active(): void
     {
-        $this->assertTrue(wp_get_theme()->stylesheet === 'theme_23');
+        $this->assertTrue(is_plugin_active('plugin_89/main-file.php'));
     }
 }
 <<< /tests/Integration/SampleTest.php <<<
@@ -225,8 +212,8 @@ modules:
            domain: '%WORDPRESS_DOMAIN%'
            adminEmail: 'admin@%WORDPRESS_DOMAIN%'
            title: 'Integration Tests'
-           plugins: []
-           theme: '.'
+           plugins: ['./main-file.php']
+           theme: ''
 <<< /tests/Integration.suite.yml <<<
 
 >>> /tests/EndToEnd/_bootstrap.php >>>
@@ -261,12 +248,20 @@ use EndToEndTester;
 
 class ActivationCest
 {
-    public function test_it_activates_correctly(EndToEndTester $I): void
+    public function test_it_deactivates_activates_correctly(EndToEndTester $I): void
     {
         $I->loginAsAdmin();
-        $I->amOnAdminPage('/themes.php');
+        $I->amOnPluginsPage();
 
-        $I->seeElement('.theme.active[data-slug="theme-23"]');
+        $I->seePluginActivated('plugin-89');
+
+        $I->deactivatePlugin('plugin-89');
+
+        $I->seePluginDeactivated('plugin-89');
+
+        $I->activatePlugin('plugin-89');
+
+        $I->seePluginActivated('plugin-89');
     }
 }
 
@@ -290,8 +285,8 @@ TEST_TABLE_PREFIX=test_
 WORDPRESS_TABLE_PREFIX=wp_
 
 # The URL and domain of the WordPress site used in end-to-end tests.
-WORDPRESS_URL=http://localhost:45628
-WORDPRESS_DOMAIN=localhost:45628
+WORDPRESS_URL=http://localhost:47021
+WORDPRESS_DOMAIN=localhost:47021
 WORDPRESS_ADMIN_PATH=/wp-admin
 
 # The username and password of the administrator user of the WordPress site used in end-to-end tests.
@@ -300,10 +295,10 @@ WORDPRESS_ADMIN_PASSWORD=password
 
 # The host and port of the ChromeDriver server that will be used in end-to-end tests.
 CHROMEDRIVER_HOST=localhost
-CHROMEDRIVER_PORT=13862
+CHROMEDRIVER_PORT=6736
 
 # The port on which the PHP built-in server will serve the WordPress installation.
-BUILTIN_SERVER_PORT=45628
+BUILTIN_SERVER_PORT=47021
 # The WordPress version installed by `init`, reused by the `dev:rebuild` command.
 WORDPRESS_VERSION=6.8.1
 
@@ -350,7 +345,7 @@ extensions:
                 DB_FILE: db.sqlite
         lucatume\WPBrowser\Extension\Symlinker:
             wpRootFolder: '%WORDPRESS_ROOT_DIR%'
-            themes:
+            plugins:
                 - .
     commands:
         - lucatume\WPBrowser\Command\RunOriginal
@@ -369,18 +364,16 @@ extensions:
 
 <<< /codeception.yml <<<
 
->>> /style.css >>>
-/*
-Theme Name: Theme 23
-Template: twentytwentyfour
-*/
-<<< /style.css <<<
-
 >>> /composer.json >>>
 {
-  "name": "acme/theme-23",
-  "type": "wordpress-theme",
+  "name": "acme/plugin-89",
+  "type": "wordpress-plugin",
   "require": {},
   "require-dev": {}
 }
 <<< /composer.json <<<
+
+>>> /main-file.php >>>
+<?php
+/* Plugin Name: Plugin 89 */
+<<< /main-file.php <<<

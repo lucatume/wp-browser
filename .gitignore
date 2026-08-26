@@ -14,6 +14,7 @@ var
 codeception.yml
 tests/*.suite.yml
 tests/_output
+tests/_support/_generated
 docker-compose.override.yml
 
 # Patchwork cache folder.

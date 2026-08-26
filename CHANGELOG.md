@@ -4,6 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Run the `integration` suite in CI: it was never part of the workflow matrix, so the only tests covering the scaffold templates, the `WPLoader` bootstrap and the WordPress installation API went unchecked on every pull request (#821).
+- Transpile the v4 4.7.2 changes down to the PHP 7.1-compatible v3.5 line: the bundled core PHPUnit suite unhooks core icon registration after the first `init`, and the scaffold snapshot tests normalize `WORDPRESS_VERSION` so a new WordPress release does not break them (#819, #821). (thanks @jonwaldstein)
+
+### Fixed
+
+- The version-tagged (`__3.5__`) snapshots of the scaffold, WP-CLI module and scaffolded-installation tests moved to `tests/integration` along with their test classes: left behind under `tests/unit` by the previous transpile, they were re-created on every run instead of being compared (#821).
+
 ## [3.8.1] 2026-07-05;
 
 ### Changed
