@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.8.2] 2026-08-26;
+
 ### Changed
 
 - Run the `integration` suite in CI: it was never part of the workflow matrix, so the only tests covering the scaffold templates, the `WPLoader` bootstrap and the WordPress installation API went unchecked on every pull request (#821).
@@ -2202,4 +2204,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.7.19]: https://github.com/lucatume/wp-browser/compare/3.7.18...3.7.19
 [3.8.0]: https://github.com/lucatume/wp-browser/compare/3.7.19...3.8.0
 [3.8.1]: https://github.com/lucatume/wp-browser/compare/3.8.0...3.8.1
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.8.1...HEAD
+[3.8.2]: https://github.com/lucatume/wp-browser/compare/3.8.1...3.8.2
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.8.2...HEAD
