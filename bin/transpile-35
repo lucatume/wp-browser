@@ -70,11 +70,8 @@ done
 echo "transpile-35: restoring v3.5-specific paths"
 while IFS= read -r pattern; do
     case "$pattern" in ''|\#*) continue ;; esac
-    # Existence check on newline-delimited output (safe in $()); the actual restore
-    # pipes NUL-delimited paths straight to xargs so names with spaces survive.
-    # A bash $() command substitution strips NUL bytes, so it must not wrap the -z output.
-    [ -n "$(git ls-files "$pattern")" ] || continue
-    git ls-files -z "$pattern" | xargs -0 git checkout HEAD --
+    # NUL-delimited so names with spaces survive; -r skips patterns matching nothing.
+    git ls-files -z "$pattern" | xargs -0 -r git checkout HEAD --
 done < "$REPO_ROOT/config/transpile-35-preserve.txt"
 
 cat <<'NEXT'
