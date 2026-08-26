@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.7.2] 2026-08-26;
+
 ### Fixed
 
 - Unhook core icon registration after the first `init` in the bundled core PHPUnit suite, matching WordPress 7.1's test suite, to avoid duplicate icon registration errors when `init` re-fires (#819). (thanks @jonwaldstein)
@@ -3361,4 +3363,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [4.6.1]: https://github.com/lucatume/wp-browser/compare/4.6.0...4.6.1
 [4.7.0]: https://github.com/lucatume/wp-browser/compare/4.6.1...4.7.0
 [4.7.1]: https://github.com/lucatume/wp-browser/compare/4.7.0...4.7.1
-[unreleased]: https://github.com/lucatume/wp-browser/compare/4.7.1...HEAD
+[4.7.2]: https://github.com/lucatume/wp-browser/compare/4.7.1...4.7.2
+[unreleased]: https://github.com/lucatume/wp-browser/compare/4.7.2...HEAD
