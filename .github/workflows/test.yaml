@@ -42,6 +42,7 @@ jobs:
           # - acceptance # Disabled due to newer WordPress versions requirements.
           - climodule
           - functional
+          - integration
           - muloader
           - unit --skip-group=slow
           - unit --group=isolated-1
