@@ -10,3 +10,7 @@ src/tokens-polyfill.php
 
 # v3.5-specific environment (snapshot version tag, service ports) the overlay must not clobber.
 tests/.env
+
+# Codeception actions trait generated for the v3.5 suite layout (tests/_support); master
+# uses tests/Support and does not carry it, so the overlay would delete it.
+tests/_support/_generated/*
