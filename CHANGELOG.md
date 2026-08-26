@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- Unhook core icon registration after the first `init` in the bundled core PHPUnit suite, matching WordPress 7.1's test suite, to avoid duplicate icon registration errors when `init` re-fires (#819). (thanks @jonwaldstein)
+- The scaffold snapshot tests normalize `WORDPRESS_VERSION` in `tests/.env` to a placeholder, so a new WordPress release no longer breaks them (#819).
 - `MysqlServerController` now probes the configured port with a PDO handshake before starting a server: a MySQL instance reachable on the port is reused instead of racing to start (and download) a second one. Fixes `parallel-run` workers, whose per-worker output dirs hid the shared server's PID file (#812).
 - `parallel-run` prints `FAILURES!` instead of `OK` when a worker crashes before reporting results (#812).
 - `parallel-run` resolves the managed MySQL data dir through `codecept_output_dir()` instead of a hardcoded `var/_output` path that ignored `paths.output` overrides and broke the 103-char unix socket path limit on deep checkouts (#812).
