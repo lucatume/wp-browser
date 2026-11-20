@@ -20,7 +20,7 @@ use Rector\Config\RectorConfig;
  * because Rector doesn't handle file-level statement additions well.
  */
 return static function (RectorConfig $rectorConfig): void {
-    $corePHPUnitDir = dirname(__DIR__) . '/includes/core-phpunit/includes';
+    $corePHPUnitDir = getenv('CORE_PHPUNIT_INCLUDES') ?: dirname(__DIR__) . '/includes/core-phpunit/includes';
 
     $rectorConfig->paths([
         $corePHPUnitDir
