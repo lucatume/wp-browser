@@ -1,0 +1,97 @@
+diff --git a/tests/phpunit/includes/abstract-testcase.php b/tests/phpunit/includes/abstract-testcase.php
+--- a/tests/phpunit/includes/abstract-testcase.php
++++ b/tests/phpunit/includes/abstract-testcase.php
+@@ -142,8 +142,10 @@
+ 		 * again in its own process, on top of the class fixtures the parent process
+ 		 * already committed, and would collide with them, e.g. a second `User 1`.
+ 		 */
+-		_delete_all_data();
+-		self::flush_cache();
++		if ( defined( 'WP_RUN_CORE_TESTS' ) && WP_RUN_CORE_TESTS ) {
++			_delete_all_data();
++			self::flush_cache();
++		}
+ 
+ 		$class                             = get_called_class();
+ 		self::$meta_before_class[ $class ] = self::backup_meta_state();
+@@ -257,7 +259,9 @@
+ 		$this->clean_up_global_scope();
+ 
+ 		$this->original_locale             = $GLOBALS['locale'] ?? null;
+-		$this->original_translation_locale = WP_Translation_Controller::get_instance()->get_locale();
++		$this->original_translation_locale = class_exists( WP_Translation_Controller::class )
++			? WP_Translation_Controller::get_instance()->get_locale()
++			: null;
+ 
+ 		/*
+ 		 * When running core tests, ensure that post types and taxonomies
+@@ -842,7 +846,7 @@
+ 		$class       = new ReflectionClass( $this );
+ 		$reflectors  = array(
+ 			'class'  => array_merge( array_values( $class->getTraits() ), array( $class ) ),
+-			'method' => array( $class->getMethod( $method_name ) ),
++			'method' => $class->hasMethod( $method_name ) ? array( $class->getMethod( $method_name ) ) : array(),
+ 		);
+ 		$annotations = array(
+ 			'class'  => array(),
+ diff --git a/tests/phpunit/includes/bootstrap.php b/tests/phpunit/includes/bootstrap.php
+--- a/tests/phpunit/includes/bootstrap.php
++++ b/tests/phpunit/includes/bootstrap.php
+@@ -374,7 +374,9 @@
+ $phpmailer = new MockPHPMailer( true );
+ 
+ // Delete any default posts & related data.
+-_delete_all_posts();
++if ( ! isset( $GLOBALS['__PHPUNIT_BOOTSTRAP'] ) ) {
++	_delete_all_posts();
++}
+ 
+ // Load class aliases for compatibility with PHPUnit 6+.
+ if ( version_compare( tests_get_phpunit_version(), '6.0', '>=' ) ) {
+@@ -570,14 +572,16 @@
+ // PHPUnit 10 and later have no TestListener interface, so the filter is not declared there.
+-if ( version_compare( tests_get_phpunit_version(), '6.0', '<' ) ) {
++$has_group_filter_trait = trait_exists( Yoast\PHPUnitPolyfills\TestListeners\TestListenerDefaultImplementation::class );
++if ( $has_group_filter_trait && version_compare( tests_get_phpunit_version(), '6.0', '<' ) ) {
+ 	class WP_PHPUnit_Default_Group_Filter implements PHPUnit_Framework_TestListener {
+ 		use Yoast\PHPUnitPolyfills\TestListeners\TestListenerDefaultImplementation, WP_PHPUnit_Default_Group_Filter_Methods {
+ 			WP_PHPUnit_Default_Group_Filter_Methods::start_test_suite insteadof Yoast\PHPUnitPolyfills\TestListeners\TestListenerDefaultImplementation;
+ 		}
+ 	}
+-} elseif ( interface_exists( 'PHPUnit\Framework\TestListener' ) ) {
++} elseif ( $has_group_filter_trait && interface_exists( 'PHPUnit\Framework\TestListener' ) ) {
+ 	class WP_PHPUnit_Default_Group_Filter implements PHPUnit\Framework\TestListener {
+ 		use Yoast\PHPUnitPolyfills\TestListeners\TestListenerDefaultImplementation, WP_PHPUnit_Default_Group_Filter_Methods {
+ 			WP_PHPUnit_Default_Group_Filter_Methods::start_test_suite insteadof Yoast\PHPUnitPolyfills\TestListeners\TestListenerDefaultImplementation;
+ 		}
+ 	}
+ }
++unset( $has_group_filter_trait );
+diff --git a/tests/phpunit/includes/functions.php b/tests/phpunit/includes/functions.php
+--- a/tests/phpunit/includes/functions.php
++++ b/tests/phpunit/includes/functions.php
+@@ -122,8 +122,9 @@
+ 
+-	// Retrieve all attachment posts, and delete them along with the attached media.
+-	$attachments = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment'" );
+-	foreach ( $attachments as $attachment ) {
+-		wp_delete_attachment( $attachment, true );
++	if ( defined( 'WP_RUN_CORE_TESTS' ) && WP_RUN_CORE_TESTS ) {
++		$attachments = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment'" );
++		foreach ( $attachments as $attachment ) {
++			wp_delete_attachment( $attachment, true );
++		}
+ 	}
+ 
+ 	foreach ( array(
+diff --git a/tests/phpunit/includes/testcase-ajax.php b/tests/phpunit/includes/testcase-ajax.php
+--- a/tests/phpunit/includes/testcase-ajax.php
++++ b/tests/phpunit/includes/testcase-ajax.php
+@@ -23,6 +23,7 @@
+ 	protected static $_core_actions_get = array(
+ 		'fetch-list',
+ 		'ajax-tag-search',
++		'wp-compression-test',
+ 		'imgedit-preview',
+ 		'oembed-cache',
+ 		'autocomplete-user',

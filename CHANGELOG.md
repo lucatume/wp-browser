@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- The core PHPUnit updater reports failures and leaves existing includes untouched if generation fails.
+- The core PHPUnit updater falls back to installed PHP 8.3 when the default PHP is incompatible.
+
 ## [4.7.2] 2026-08-26;
 
 ### Fixed

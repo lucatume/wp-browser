@@ -1,43 +1,75 @@
-#! /usr/bin/env sh
+#!/usr/bin/env bash
 
-set -eu
+set -euo pipefail
 
 script_dir=$(dirname "$0")
-root_dir=$(cd "$script_dir/.." && pwd)
+CDPATH='' cd "${script_dir:?}/.."
+core_dir=includes/core-phpunit
 
-rm -rf "${root_dir}"/includes/core-phpunit/includes &&
-  rm -rf "${root_dir}"/includes/core-phpunit/wordpress-develop &&
-  mkdir -p "${root_dir}"/includes/core-phpunit &&
-  cd "${root_dir}"/includes/core-phpunit &&
-  git clone -n --depth=1 --filter=tree:0 https://github.com/WordPress/wordpress-develop &&
-  cd wordpress-develop &&
-  git sparse-checkout set --no-cone tests/phpunit/includes &&
-  git checkout &&
-  cd .. &&
-  mv  wordpress-develop/tests/phpunit/includes ./includes &&
-  rm -rf wordpress-develop &&
-  cd "${root_dir}" &&
-  # Run Rector to apply transformations (class renaming, method modifications, etc.)
-  vendor/bin/rector process --config="${root_dir}/config/rector-core-phpunit.php" &&
-  echo "Adding namespaces to test case files..." && 
-  for file in testcase-ajax.php testcase-canonical.php testcase-rest-api.php testcase-rest-controller.php testcase-rest-post-type-controller.php testcase-xml.php testcase-xmlrpc.php; do
-    sed -i.bak '1a\
+for tool in vendor/bin/rector vendor/bin/phpcbf; do
+  if [ ! -x "$tool" ]; then
+    printf '%s is missing or not executable. Run composer install.\n' "$tool" >&2
+    exit 1
+  fi
+done
+
+can_run_tools() {
+  "$1" -n -r 'exit((int) (PHP_VERSION_ID < 80002 || PHP_VERSION_ID >= 80400));' 2>/dev/null
+}
+
+php_bin=php
+if ! can_run_tools "$php_bin"; then
+  if can_run_tools php8.3; then
+    php_bin=php8.3
+  elif php83_prefix=$(brew --prefix php@8.3 2>/dev/null) && can_run_tools "$php83_prefix/bin/php"; then
+    php_bin="$php83_prefix/bin/php"
+  else
+    printf 'The pinned updater tools need PHP 8.0.2–8.3. Install PHP 8.3 or put a compatible php on PATH.\n' >&2
+    exit 1
+  fi
+fi
+
+update_dir=$(mktemp -d "${core_dir:?}/.update.XXXXXX")
+trap 'rm -rf "${update_dir:?}"' EXIT
+checkout_dir="$update_dir/wordpress-develop"
+CORE_PHPUNIT_INCLUDES="$PWD/$checkout_dir/tests/phpunit/includes"
+export CORE_PHPUNIT_INCLUDES
+
+git -c credential.helper= clone -c credential.helper= -n --depth=1 --filter=tree:0 \
+  https://github.com/WordPress/wordpress-develop "$checkout_dir"
+git -C "$checkout_dir" sparse-checkout set --no-cone tests/phpunit/includes
+git -C "$checkout_dir" checkout
+git -C "$checkout_dir" apply "$PWD/config/core-phpunit-compat.patch"
+
+"$php_bin" vendor/bin/rector process --config=config/rector-core-phpunit.php
+
+printf 'Adding namespaces to test case files...\n'
+for file in testcase-ajax.php testcase-canonical.php testcase-rest-api.php testcase-rest-controller.php testcase-rest-post-type-controller.php testcase-xml.php testcase-xmlrpc.php; do
+  sed -i.bak '1a\
 \
 namespace lucatume\\WPBrowser\\TestCase;\
 \
-' "${root_dir}/includes/core-phpunit/includes/${file}"
-    rm -f "${root_dir}/includes/core-phpunit/includes/${file}.bak"
-  done &&
-  # Add use statement for WPTestCase to abstract-testcase.php
-  sed -i.bak '2a\
+' "$CORE_PHPUNIT_INCLUDES/$file"
+  rm -f "${CORE_PHPUNIT_INCLUDES:?}/$file.bak"
+done
+
+sed -i.bak '2a\
 use lucatume\\WPBrowser\\TestCase\\WPTestCase;\
 \
-' "${root_dir}/includes/core-phpunit/includes/abstract-testcase.php" &&
-  rm -f "${root_dir}/includes/core-phpunit/includes/abstract-testcase.php.bak" &&
-  # Run Rector again to prefix global class names (needs namespaces to be in place first)
-  echo "Prefixing global class names..." &&
-  vendor/bin/rector process --config="${root_dir}/config/rector-core-phpunit.php" &&
-  # Run phpcbf to fix code style
-  echo "Running phpcbf on core-phpunit files..." &&
-  vendor/bin/phpcbf --standard=WordPress "${root_dir}/includes/core-phpunit" || true
+' "$CORE_PHPUNIT_INCLUDES/abstract-testcase.php"
+rm -f "${CORE_PHPUNIT_INCLUDES:?}/abstract-testcase.php.bak"
 
+printf 'Prefixing global class names...\n'
+"$php_bin" vendor/bin/rector process --config=config/rector-core-phpunit.php
+
+printf 'Running phpcbf on core-phpunit files...\n'
+phpcbf_fixed=1
+"$php_bin" vendor/bin/phpcbf --standard=WordPress "$CORE_PHPUNIT_INCLUDES" || {
+  status=$?
+  if [ "$status" -ne "$phpcbf_fixed" ]; then
+    exit "$status"
+  fi
+}
+
+rm -rf "${core_dir:?}/includes"
+mv "${CORE_PHPUNIT_INCLUDES:?}" "${core_dir:?}/includes"
