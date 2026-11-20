@@ -170,11 +170,12 @@ class WPLoaderDbDumpsSqliteBedrockTest extends \Codeception\Test\Unit
      * @test
      * @group sqlite
      * @group slow
+     * @dataProvider sqliteCoreVersions
      */
-    public function should_initialize_correctly_with_sqlite_database(): void
+    public function should_initialize_correctly_with_sqlite_database(string $version): void
     {
         $wpRootDir = FS::tmpDir('wploader_');
-        $this->fastScaffold($wpRootDir);
+        $this->fastScaffold($wpRootDir, $version);
         $dbPathname = $wpRootDir . '/db.sqlite';
         Installation::placeSqliteMuPlugin($wpRootDir . '/wp-content/mu-plugins', $wpRootDir . '/wp-content');
 
@@ -190,9 +191,39 @@ class WPLoaderDbDumpsSqliteBedrockTest extends \Codeception\Test\Unit
 
             Assert::assertTrue(function_exists('do_action'));
             Assert::assertInstanceOf(\WP_User::class, wp_get_current_user());
+
+            $seededPost = wp_insert_post(['post_title' => 'Seeded post'], true);
+            Assert::assertIsInt($seededPost);
+
+            $upload = wp_upload_bits('seeded.txt', null, 'Seeded attachment');
+            Assert::assertFalse($upload['error']);
+            $attachment = wp_insert_attachment(['post_mime_type' => 'text/plain'], $upload['file'], 0, true);
+            Assert::assertIsInt($attachment);
+
+            require_once ABSPATH . 'wp-admin/includes/ajax-actions.php';
+            $case = new class ('testCoreLifecycle') extends \lucatume\WPBrowser\TestCase\WPAjaxTestCase {
+            };
+            $case::set_up_before_class();
+            Assert::assertSame($seededPost, get_post($seededPost)?->ID);
+
+            $case->set_up();
+            $compressionRegistered = has_action('wp_ajax_wp-compression-test', 'wp_ajax_wp_compression_test') !== false;
+            $postId = $case->factory()->post->create();
+            Assert::assertSame($postId, get_post($postId)?->ID);
+            $case->tear_down();
+            $case::tear_down_after_class();
+
+            Assert::assertSame(
+                ['compression handler' => true, 'seeded upload' => true],
+                ['compression handler' => $compressionRegistered, 'seeded upload' => is_file($upload['file'])]
+            );
         });
     }
 
+    public function sqliteCoreVersions(): array
+    {
+        return [['latest'], ['6.1.1']];
+    }
 
     /**
      * It should initialize correctly with Sqlite database in loadOnly mode

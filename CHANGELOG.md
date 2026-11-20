@@ -5,10 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Refresh the bundled WordPress core PHPUnit test includes.
+
 ### Fixed
 
 - The core PHPUnit updater reports failures and leaves existing includes untouched if generation fails.
 - The core PHPUnit updater falls back to installed PHP 8.3 when the default PHP is incompatible.
+
+### Breaking change
+
+- Core PHPUnit factories can now throw `WP_UnitTest_Factory_Exception` instead of returning `WP_Error`, `null`, or other failure values. This also affects factories used through `WPLoader::factory()` and `WPTestCase::factory()`.
 
 ## [4.7.2] 2026-08-26;
 
