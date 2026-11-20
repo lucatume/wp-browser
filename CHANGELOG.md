@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Refresh the bundled WordPress core PHPUnit test includes.
+- Refresh the bundled `sqlite-database-integration` plugin to version 3.1.3.
 
 ### Fixed
 

@@ -16,6 +16,8 @@
  *   https://github.com/mysql/mysql-workbench/blob/8.0.38/library/parsers/grammars/MySQLLexer.g4
  *   https://github.com/mysql/mysql-workbench/blob/8.0.38/library/parsers/grammars/predefined.tokens
  *   https://github.com/mysql/mysql-workbench/blob/8.0.38/library/parsers/mysql/MySQLBaseLexer.cpp
+ *
+ * @access private
  */
 class WP_MySQL_Lexer {
 	/**
@@ -32,6 +34,7 @@ class WP_MySQL_Lexer {
 	const SQL_MODE_PIPES_AS_CONCAT      = 2;
 	const SQL_MODE_IGNORE_SPACE         = 4;
 	const SQL_MODE_NO_BACKSLASH_ESCAPES = 8;
+	const SQL_MODE_ANSI_QUOTES          = 16;
 
 	/**
 	 * Character masks for frequently used character classes.
@@ -39,9 +42,10 @@ class WP_MySQL_Lexer {
 	 * These are intended to be used with "strspn()" and "strcspn()" functions
 	 * for fast character class matching in the SQL payload.
 	 */
-	const WHITESPACE_MASK = " \t\n\r\f";
+	const WHITESPACE_MASK = " \t\n\r\f\v";
 	const DIGIT_MASK      = '0123456789';
 	const HEX_DIGIT_MASK  = '0123456789abcdefABCDEF';
+	const IDENTIFIER_MASK = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$';
 
 	/**
 	 * Tokens from the MySQL Workbench "predefined.tokens" list.
@@ -939,6 +943,32 @@ class WP_MySQL_Lexer {
 	// Special tokens
 	const WHITESPACE = 0;
 	const EOF        = -1;
+
+	/**
+	 * Lexer states that a token sets for the next one, like MySQL's
+	 * "next_state". They use MySQL's names from sql/sql_lex.cc, with the
+	 * abbreviations written out:
+	 *
+	 *   - STATE_START (MY_LEX_START): The default state.
+	 *   - STATE_IDENTIFIER_SEPARATOR (MY_LEX_IDENT_SEP): Set by a name before
+	 *     "." and a name character. The "." is then a separator, even before
+	 *     digits ("t.1"), and the name is an identifier, even if it's
+	 *     a keyword ("order.id").
+	 *   - STATE_IDENTIFIER_START (MY_LEX_IDENT_START): Set by a "." before
+	 *     a name character. The name is then always an identifier
+	 *     ("t.order", "t.1", "t.x'41'").
+	 *   - STATE_IDENTIFIER_OR_KEYWORD (MY_LEX_IDENT_OR_KEYWORD): Set by "@@"
+	 *     before a name character. The name is then an identifier or
+	 *     a keyword, even before "." ("@@session.x"), but never a number
+	 *     or a literal ("@@123").
+	 *
+	 * A "." that ends a number sets no state, so "1.FROM" is a number and
+	 * a keyword.
+	 */
+	private const STATE_START                 = -2;
+	private const STATE_IDENTIFIER_SEPARATOR  = -3;
+	private const STATE_IDENTIFIER_START      = -4;
+	private const STATE_IDENTIFIER_OR_KEYWORD = -5;
 
 	/**
 	 * A map of SQL keyword string values to their corresponding token types.
@@ -2112,6 +2142,13 @@ class WP_MySQL_Lexer {
 	private $sql;
 
 	/**
+	 * Byte length of the SQL payload.
+	 *
+	 * @var int
+	 */
+	private $sql_length;
+
+	/**
 	 * The version of the MySQL server that the SQL payload is intended for.
 	 *
 	 * This is used to determine which tokens are valid for the given MySQL
@@ -2166,6 +2203,13 @@ class WP_MySQL_Lexer {
 	private $token_type;
 
 	/**
+	 * The lexer state that the previous token set for the next one.
+	 *
+	 * @var int
+	 */
+	private $next_state = self::STATE_START;
+
+	/**
 	 * Whether the tokenizer is inside an active MySQL-specific comment.
 	 *
 	 * MySQL supports a special comment syntax whose content is recognized as
@@ -2189,6 +2233,7 @@ class WP_MySQL_Lexer {
 		array $sql_modes = array()
 	) {
 		$this->sql           = $sql;
+		$this->sql_length    = strlen( $sql );
 		$this->mysql_version = $mysql_version;
 
 		foreach ( $sql_modes as $sql_mode ) {
@@ -2201,6 +2246,19 @@ class WP_MySQL_Lexer {
 				$this->sql_modes |= self::SQL_MODE_IGNORE_SPACE;
 			} elseif ( 'NO_BACKSLASH_ESCAPES' === $sql_mode ) {
 				$this->sql_modes |= self::SQL_MODE_NO_BACKSLASH_ESCAPES;
+			} elseif ( 'ANSI_QUOTES' === $sql_mode ) {
+				$this->sql_modes |= self::SQL_MODE_ANSI_QUOTES;
+			} elseif ( 'ANSI' === $sql_mode ) {
+				/*
+				 * Expand the composite ANSI mode into its lexer-relevant components.
+				 * The ANSI mode also implies REAL_AS_FLOAT and ONLY_FULL_GROUP_BY,
+				 * which do not affect the lexer.
+				 *
+				 * See: https://dev.mysql.com/doc/refman/8.4/en/sql-mode.html#sqlmode_ansi
+				 */
+				$this->sql_modes |= self::SQL_MODE_PIPES_AS_CONCAT
+					| self::SQL_MODE_IGNORE_SPACE
+					| self::SQL_MODE_ANSI_QUOTES;
 			}
 		}
 	}
@@ -2226,6 +2284,9 @@ class WP_MySQL_Lexer {
 			$this->token_type = null;
 			return false;
 		}
+
+		// Skip leading whitespace inline for optimal performance.
+		$this->bytes_already_read += strspn( $this->sql, self::WHITESPACE_MASK, $this->bytes_already_read );
 
 		do {
 			$this->token_starts_at = $this->bytes_already_read;
@@ -2284,10 +2345,51 @@ class WP_MySQL_Lexer {
 	 * @return WP_MySQL_Token[] An array of token objects representing the remaining tokens.
 	 */
 	public function remaining_tokens(): array {
-		$tokens = array();
-		while ( true === $this->next_token() ) {
-			$token    = $this->get_token();
-			$tokens[] = $token;
+		$tokens                            = array();
+		$no_backslash_escapes_sql_mode_set = $this->is_sql_mode_active(
+			self::SQL_MODE_NO_BACKSLASH_ESCAPES
+		);
+
+		while ( true ) {
+			// Bail on EOF, or on a null token type once at least one byte has
+			// been consumed (read_next_token() hit invalid input mid-stream).
+			if (
+				self::EOF === $this->token_type
+				|| ( null === $this->token_type && $this->bytes_already_read > 0 )
+			) {
+				$this->token_type = null;
+				break;
+			}
+
+			// Skip leading whitespace inline for optimal performance.
+			$this->bytes_already_read += strspn( $this->sql, self::WHITESPACE_MASK, $this->bytes_already_read );
+
+			do {
+				$this->token_starts_at = $this->bytes_already_read;
+				$this->token_type      = $this->read_next_token();
+			} while (
+				self::WHITESPACE === $this->token_type
+				|| self::COMMENT === $this->token_type
+				|| self::MYSQL_COMMENT_START === $this->token_type
+				|| self::MYSQL_COMMENT_END === $this->token_type
+			);
+
+			if ( null === $this->token_type ) {
+				break;
+			}
+
+			$tokens[] = new WP_MySQL_Token(
+				$this->token_type,
+				$this->token_starts_at,
+				$this->bytes_already_read - $this->token_starts_at,
+				$this->sql,
+				$no_backslash_escapes_sql_mode_set
+			);
+
+			if ( self::EOF === $this->token_type ) {
+				$this->token_type = null;
+				break;
+			}
 		}
 		return $tokens;
 	}
@@ -2351,23 +2453,99 @@ class WP_MySQL_Lexer {
 	}
 
 	private function read_next_token(): ?int {
+		// Read and reset the state that the previous token set.
+		$state            = $this->next_state;
+		$this->next_state = self::STATE_START;
+
+		// After "." or "@@", read a name, never a number or a literal.
+		if ( self::STATE_START !== $state ) {
+			if ( self::STATE_IDENTIFIER_START === $state ) {
+				return $this->read_identifier();
+			}
+			if ( self::STATE_IDENTIFIER_OR_KEYWORD === $state ) {
+				$type = $this->read_identifier();
+				return self::IDENTIFIER === $type
+					? $this->determine_identifier_or_keyword_type( $this->get_current_token_bytes() )
+					: $type;
+			}
+		}
+
 		$byte      = $this->sql[ $this->bytes_already_read ] ?? null;
 		$next_byte = $this->sql[ $this->bytes_already_read + 1 ] ?? null;
 
-		if ( "'" === $byte || '"' === $byte || '`' === $byte ) {
+		// A map for a single-byte symbol fast path.
+		static $single_byte_ops = array(
+			'(' => self::OPEN_PAR_SYMBOL,
+			')' => self::CLOSE_PAR_SYMBOL,
+			',' => self::COMMA_SYMBOL,
+			';' => self::SEMICOLON_SYMBOL,
+			'+' => self::PLUS_OPERATOR,
+			'~' => self::BITWISE_NOT_OPERATOR,
+			'%' => self::MOD_OPERATOR,
+			'^' => self::BITWISE_XOR_OPERATOR,
+			'?' => self::PARAM_MARKER,
+			'{' => self::OPEN_CURLY_SYMBOL,
+			'}' => self::CLOSE_CURLY_SYMBOL,
+			'=' => self::EQUAL_OPERATOR,
+		);
+
+		// Fast path for keywords and identifiers.
+		// `$byte > "\x7F"` catches any non-ASCII byte (0x80-0xFF); read_identifier()
+		// restricts the accepted identifier codepoints to U+0080-U+FFFF.
+		// `"'" !== $next_byte` defers x'..', n'..' and similar special
+		// literals to their dedicated branches below; only single quotes
+		// form those, regardless of SQL mode.
+		if (
+			(
+				( $byte >= 'a' && $byte <= 'z' )
+				|| ( $byte >= 'A' && $byte <= 'Z' )
+				|| $byte > "\x7F"
+			)
+			&& "'" !== $next_byte
+		) {
+			$started_at = $this->bytes_already_read;
+			$type       = $this->read_identifier();
+			if ( self::IDENTIFIER === $type ) {
+				// Inline the keyword lookup on the hot identifier path: most
+				// identifiers are not keywords, so this avoids two method calls
+				// (token-bytes extraction + keyword determination) per token.
+				$keyword = self::TOKENS[ strtoupper(
+					substr( $this->sql, $started_at, $this->bytes_already_read - $started_at )
+				) ] ?? self::IDENTIFIER;
+				// Before "." and a name, a keyword is an identifier ("order.id").
+				// read_identifier() sets STATE_IDENTIFIER_SEPARATOR in that case.
+				if (
+					self::IDENTIFIER !== $keyword
+					&& self::STATE_IDENTIFIER_SEPARATOR !== $this->next_state
+				) {
+					$type = $this->resolve_keyword_type( $keyword );
+				}
+			}
+		} elseif ( null !== $byte && isset( $single_byte_ops[ $byte ] ) ) {
+			// Fast path for single-byte symbols.
+			$this->bytes_already_read += 1;
+			$type                      = $single_byte_ops[ $byte ];
+		} elseif ( "'" === $byte || '"' === $byte || '`' === $byte ) {
 			$type = $this->read_quoted_text();
 		} elseif ( null !== $byte && strspn( $byte, self::DIGIT_MASK ) > 0 ) {
 			$type = $this->read_number();
 		} elseif ( '.' === $byte ) {
-			if ( null !== $next_byte && strspn( $next_byte, self::DIGIT_MASK ) > 0 ) {
+			if (
+				null !== $next_byte
+				&& strspn( $next_byte, self::DIGIT_MASK ) > 0
+				// Right after a name, it is a qualified name separator.
+				&& self::STATE_IDENTIFIER_SEPARATOR !== $state
+			) {
 				$type = $this->read_number();
 			} else {
 				$this->bytes_already_read += 1;
 				$type                      = self::DOT_SYMBOL;
+
+				// A name character right after it starts a qualified name part.
+				if ( null !== $next_byte && ( strspn( $next_byte, self::IDENTIFIER_MASK ) > 0 || $next_byte > "\x7F" ) ) {
+					$this->next_state = self::STATE_IDENTIFIER_START;
+				}
 			}
-		} elseif ( '=' === $byte ) {
-			$this->bytes_already_read += 1;
-			$type                      = self::EQUAL_OPERATOR;
 		} elseif ( ':' === $byte ) {
 			$this->bytes_already_read += 1; // Consume the ':'.
 			if ( '=' === $next_byte ) {
@@ -2414,13 +2592,10 @@ class WP_MySQL_Lexer {
 			} else {
 				$type = self::LOGICAL_NOT_OPERATOR;
 			}
-		} elseif ( '+' === $byte ) {
-			$this->bytes_already_read += 1;
-			$type                      = self::PLUS_OPERATOR;
 		} elseif ( '-' === $byte ) {
 			if (
 				'-' === $next_byte
-				&& $this->bytes_already_read + 2 < strlen( $this->sql )
+				&& $this->bytes_already_read + 2 < $this->sql_length
 				&& strspn( $this->sql[ $this->bytes_already_read + 2 ], self::WHITESPACE_MASK ) > 0
 			) {
 				$type = $this->read_line_comment();
@@ -2465,9 +2640,6 @@ class WP_MySQL_Lexer {
 				$this->bytes_already_read += 1;
 				$type                      = self::DIV_OPERATOR;
 			}
-		} elseif ( '%' === $byte ) {
-			$this->bytes_already_read += 1;
-			$type                      = self::MOD_OPERATOR;
 		} elseif ( '&' === $byte ) {
 			$this->bytes_already_read += 1; // Consume the '&'.
 			if ( '&' === $next_byte ) {
@@ -2476,9 +2648,6 @@ class WP_MySQL_Lexer {
 			} else {
 				$type = self::BITWISE_AND_OPERATOR;
 			}
-		} elseif ( '^' === $byte ) {
-			$this->bytes_already_read += 1;
-			$type                      = self::BITWISE_XOR_OPERATOR;
 		} elseif ( '|' === $byte ) {
 			$this->bytes_already_read += 1; // Consume the '|'.
 			if ( '|' === $next_byte ) {
@@ -2489,33 +2658,23 @@ class WP_MySQL_Lexer {
 			} else {
 				$type = self::BITWISE_OR_OPERATOR;
 			}
-		} elseif ( '~' === $byte ) {
-			$this->bytes_already_read += 1;
-			$type                      = self::BITWISE_NOT_OPERATOR;
-		} elseif ( ',' === $byte ) {
-			$this->bytes_already_read += 1;
-			$type                      = self::COMMA_SYMBOL;
-		} elseif ( ';' === $byte ) {
-			$this->bytes_already_read += 1;
-			$type                      = self::SEMICOLON_SYMBOL;
-		} elseif ( '(' === $byte ) {
-			$this->bytes_already_read += 1;
-			$type                      = self::OPEN_PAR_SYMBOL;
-		} elseif ( ')' === $byte ) {
-			$this->bytes_already_read += 1;
-			$type                      = self::CLOSE_PAR_SYMBOL;
-		} elseif ( '{' === $byte ) {
-			$this->bytes_already_read += 1;
-			$type                      = self::OPEN_CURLY_SYMBOL;
-		} elseif ( '}' === $byte ) {
-			$this->bytes_already_read += 1;
-			$type                      = self::CLOSE_CURLY_SYMBOL;
 		} elseif ( '@' === $byte ) {
 			$this->bytes_already_read += 1; // Consume the '@'.
 
 			if ( '@' === $next_byte ) {
 				$this->bytes_already_read += 1; // Consume the second '@'.
 				$type                      = self::AT_AT_SIGN_SYMBOL;
+
+				// The name after it may be a keyword ("session" in "@@session.x").
+				// As in MySQL, it can't be empty, and only backticks can quote it.
+				if (
+					strspn( $this->sql, self::IDENTIFIER_MASK, $this->bytes_already_read, 1 ) > 0
+					|| ( $this->sql[ $this->bytes_already_read ] ?? '' ) > "\x7F"
+				) {
+					$this->next_state = self::STATE_IDENTIFIER_OR_KEYWORD;
+				} elseif ( '`' !== ( $this->sql[ $this->bytes_already_read ] ?? '' ) ) {
+					return null; // Invalid input.
+				}
 			} else {
 				/**
 				 * Check whether the '@' marks an unquoted user-defined variable:
@@ -2525,7 +2684,7 @@ class WP_MySQL_Lexer {
 				 *   1. Starts with a '@'.
 				 *   2. Allowed following characters are ASCII a-z, A-Z, 0-9, _, ., $.
 				 */
-				$length = strspn( $this->sql, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.$', $this->bytes_already_read );
+				$length = strspn( $this->sql, self::IDENTIFIER_MASK . '.', $this->bytes_already_read );
 				if ( $length > 0 ) {
 					$this->bytes_already_read += $length;
 					$type                      = self::AT_TEXT_SUFFIX;
@@ -2533,9 +2692,6 @@ class WP_MySQL_Lexer {
 					$type = self::AT_SIGN_SYMBOL;
 				}
 			}
-		} elseif ( '?' === $byte ) {
-			$this->bytes_already_read += 1;
-			$type                      = self::PARAM_MARKER;
 		} elseif ( '\\' === $byte ) {
 			$this->bytes_already_read += 1; // Consume the '\'.
 			if ( 'N' === $next_byte ) {
@@ -2560,13 +2716,9 @@ class WP_MySQL_Lexer {
 		} elseif ( null === $byte ) {
 			$type = self::EOF;
 		} else {
-			$started_at = $this->bytes_already_read;
-			$type       = $this->read_identifier();
+			$type = $this->read_identifier();
 			if ( self::IDENTIFIER === $type ) {
-				// When preceded by a dot, it is always an identifier.
-				if ( $started_at > 0 && '.' === $this->sql[ $started_at - 1 ] ) {
-					$type = self::IDENTIFIER;
-				} elseif ( '_' === $byte && isset( self::UNDERSCORE_CHARSETS[ strtolower( $this->get_current_token_bytes() ) ] ) ) {
+				if ( '_' === $byte && isset( self::UNDERSCORE_CHARSETS[ strtolower( $this->get_current_token_bytes() ) ] ) ) {
 					$type = self::UNDERSCORE_CHARSET;
 				} else {
 					$type = $this->determine_identifier_or_keyword_type( $this->get_current_token_bytes() );
@@ -2588,13 +2740,13 @@ class WP_MySQL_Lexer {
 	 * Read an unquoted identifier.
 	 *
 	 * This function reads characters that are allowed in an unquoted identifier.
-	 * An identifier cannot consist solely of digits, but this function doesn't
-	 * ensure that explicitly, as numbers are processed before identifiers in
-	 * the tokenization process, recognizing all digit-only sequences as numbers.
+	 * It accepts digit-only sequences too; callers scan those as numbers, except
+	 * after "." or "@@".
 	 *
 	 * Rules:
 	 *   1. Allowed characters are ASCII a-z, A-Z, 0-9, _, $, and Unicode U+0080-U+FFFF.
 	 *   2. Unquoted identifiers may begin with a digit but may not consist solely of digits.
+	 *      An exception is a part of a qualified name, such as "1" in "t.1".
 	 *
 	 *  See:
 	 *    https://dev.mysql.com/doc/refman/8.4/en/identifiers.html
@@ -2605,7 +2757,7 @@ class WP_MySQL_Lexer {
 			// First, let's try to parse an ASCII sequence.
 			$this->bytes_already_read += strspn(
 				$this->sql,
-				'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$',
+				self::IDENTIFIER_MASK,
 				$this->bytes_already_read
 			);
 
@@ -2653,17 +2805,25 @@ class WP_MySQL_Lexer {
 			break;
 		}
 
-		// An identifier cannot consist solely of digits, but we don't need to
-		// ensure that explicitly, as numbers are processed before identifiers.
+		if ( $this->bytes_already_read === $started_at ) {
+			return null; // Invalid input.
+		}
 
-		return $this->bytes_already_read - $started_at > 0
-			? self::IDENTIFIER
-			: null; // Invalid input.
+		// When "." and a name character follow, the "." is a separator.
+		// "$byte_1" already holds the byte after the name.
+		if (
+			0x2E === $byte_1
+			&& (
+				strspn( $this->sql, self::IDENTIFIER_MASK, $this->bytes_already_read + 1, 1 ) > 0
+				|| ( $this->sql[ $this->bytes_already_read + 1 ] ?? '' ) > "\x7F"
+			)
+		) {
+			$this->next_state = self::STATE_IDENTIFIER_SEPARATOR;
+		}
+		return self::IDENTIFIER;
 	}
 
 	private function read_number(): ?int {
-		// @TODO: Support numeric-only identifier parts after "." (e.g., 1ea10.1).
-
 		$byte       = $this->sql[ $this->bytes_already_read ] ?? null;
 		$next_byte  = $this->sql[ $this->bytes_already_read + 1 ] ?? null;
 		$third_byte = $this->sql[ $this->bytes_already_read + 2 ] ?? null;
@@ -2684,7 +2844,7 @@ class WP_MySQL_Lexer {
 			$this->bytes_already_read += strspn( $this->sql, self::HEX_DIGIT_MASK, $this->bytes_already_read );
 			if ( $is_quoted ) {
 				if (
-					$this->bytes_already_read >= strlen( $this->sql )
+					$this->bytes_already_read >= $this->sql_length
 					|| "'" !== $this->sql[ $this->bytes_already_read ]
 				) {
 					return null; // Invalid input.
@@ -2707,7 +2867,7 @@ class WP_MySQL_Lexer {
 			$this->bytes_already_read += strspn( $this->sql, '01', $this->bytes_already_read );
 			if ( $is_quoted ) {
 				if (
-					$this->bytes_already_read >= strlen( $this->sql )
+					$this->bytes_already_read >= $this->sql_length
 					|| "'" !== $this->sql[ $this->bytes_already_read ]
 				) {
 					return null; // Invalid input.
@@ -2739,7 +2899,7 @@ class WP_MySQL_Lexer {
 					strspn( $next_byte, self::DIGIT_MASK ) > 0
 					|| (
 						( '+' === $next_byte || '-' === $next_byte )
-						&& $this->bytes_already_read + 2 < strlen( $this->sql )
+						&& $this->bytes_already_read + 2 < $this->sql_length
 						&& strspn( $this->sql[ $this->bytes_already_read + 2 ], self::DIGIT_MASK ) > 0
 					)
 				);
@@ -2823,44 +2983,64 @@ class WP_MySQL_Lexer {
 	 *
 	 * Rules:
 	 *   1. Quotes can be escaped by doubling them ('', "", ``).
-	 *   2. Backslashes escape the next character, unless NO_BACKSLASH_ESCAPES is set.
-	 *
-	 * @param string $quote The quote character - ', ", or `.
+	 *   2. In string literals, backslashes escape the next character,
+	 *      unless the NO_BACKSLASH_ESCAPES SQL mode is set.
+	 *   3. In identifiers, backslashes are always literal and never escape.
 	 */
 	private function read_quoted_text(): ?int {
 		$quote                     = $this->sql[ $this->bytes_already_read ];
 		$this->bytes_already_read += 1; // Consume the quote.
 
-		$no_backslash_escapes = $this->is_sql_mode_active(
-			self::SQL_MODE_NO_BACKSLASH_ESCAPES
-		);
+		/*
+		 * Determine whether the quote opens an identifier or a string literal.
+		 * An identifier is quoted with a backtick or a double quote when the
+		 * ANSI_QUOTES SQL mode is active. Otherwise, it is a string literal.
+		 *
+		 * See: https://dev.mysql.com/doc/refman/8.4/en/sql-mode.html#sqlmode_ansi_quotes
+		 */
+		$is_identifier_quote = '`' === $quote
+			|| ( '"' === $quote && $this->is_sql_mode_active( self::SQL_MODE_ANSI_QUOTES ) );
+
+		/*
+		 * Backslash escapes apply only to string literals, and only when the
+		 * NO_BACKSLASH_ESCAPES SQL mode is not set.
+		 */
+		$backslash_is_escape = ! $is_identifier_quote
+			&& ! $this->is_sql_mode_active( self::SQL_MODE_NO_BACKSLASH_ESCAPES );
 
 		// We need to look for the closing quote in a loop, as it can be escaped,
 		// in which case the escape sequence is consumed and the loop continues.
 		$at = $this->bytes_already_read;
 		while ( true ) {
-			$at += strcspn( $this->sql, $quote, $at );
+			$quote_at = strpos( $this->sql, $quote, $at );
+			if ( false === $quote_at ) {
+				return null; // Invalid input.
+			}
+			$at = $quote_at;
 
 			/*
-			 * By default, quotes can be escaped with a "\".
-			 * When NO_BACKSLASH_ESCAPES SQL mode is active, the "\" treated as
-			 * a regular character.
+			 * In string literals, quotes can be escaped with a backslash. When
+			 * NO_BACKSLASH_ESCAPES SQL mode is active, the backslash is treated
+			 * as a regular character. Identifiers never use backslash escaping.
 			 *
 			 * The quote is escaped only when the number of preceding backslashes
 			 * is odd - "\" is an escape sequence, "\\" is an escaped backslash,
 			 * "\\\" is an escaped backslash and an escape sequence, and so on.
+			 *
+			 * The `($at - $i - 1) >= 0` guard prevents PHP's negative-string-
+			 * offset wraparound (PHP 7.1+) when the closing-quote candidate
+			 * sits at the very start of the input. The `?? null` covers
+			 * positive out-of-range indexes belt-and-suspenders.
 			 */
-			if ( ! $no_backslash_escapes ) {
-				for ($i = 0; '\\' === $this->sql[ $at - $i - 1 ]; $i += 1);
+			if ( $backslash_is_escape ) {
+				$i = 0;
+				while ( ( $at - $i - 1 ) >= 0 && '\\' === ( $this->sql[ $at - $i - 1 ] ?? null ) ) {
+					$i += 1;
+				}
 				if ( 1 === $i % 2 ) {
 					$at += 1;
 					continue;
 				}
-			}
-
-			// Unclosed string - unexpected EOF.
-			if ( ( $this->sql[ $at ] ?? null ) !== $quote ) {
-				return null; // Invalid input.
 			}
 
 			// Check if the quote is doubled.
@@ -2875,13 +3055,10 @@ class WP_MySQL_Lexer {
 
 		$this->bytes_already_read = $at;
 
-		if ( '`' === $quote ) {
+		if ( $is_identifier_quote ) {
 			return self::BACK_TICK_QUOTED_ID;
-		} elseif ( '"' === $quote ) {
-			return self::DOUBLE_QUOTED_TEXT;
-		} else {
-			return self::SINGLE_QUOTED_TEXT;
 		}
+		return '"' === $quote ? self::DOUBLE_QUOTED_TEXT : self::SINGLE_QUOTED_TEXT;
 	}
 
 	private function read_line_comment(): int {
@@ -2892,21 +3069,26 @@ class WP_MySQL_Lexer {
 	private function read_mysql_comment(): int {
 		// @TODO: Consider supporting optimizer hints (/*+ ... */) or document
 		// that they are not supported.
-		// @TODO: Implement six-digit version number support (from MySQL 8.4).
 
-		// MySQL-specific comment in one of the following forms:
-		// 1. /*! ... */      - The content is treated as SQL.
-		// 2. /*!12345 ... */ - The content is treated as SQL when "MySQL version >= 12345".
+		// MySQL-specific comments in the following forms:
+		// 1. /*! ... */       - The content is treated as SQL.
+		// 2. /*!80400 ... */  - SQL when the server version is at least 8.4.0.
+		// 3. /*!080400 ... */ - The same version in six-digit form (MySQL 8.1+).
+		//
+		// See: https://dev.mysql.com/doc/refman/8.4/en/comments.html
 		$this->bytes_already_read += 3; // Consume the '/*!'.
 
-		// Check if the next 5 characters are digits.
-		$digit_count        = strspn( $this->sql, self::DIGIT_MASK, $this->bytes_already_read, 5 );
-		$is_version_comment = 5 === $digit_count;
-
-		// For version comments, extract the version number.
-		$version = $is_version_comment
-			? (int) substr( $this->sql, $this->bytes_already_read, $digit_count )
-			: 0;
+		// Version has 5 digits (Mmmrr) or 6 digits (MMmmrr + whitespace, MySQL 8.1+).
+		$digit_count    = strspn( $this->sql, self::DIGIT_MASK, $this->bytes_already_read, 6 );
+		$version_length = $digit_count < 5 ? 0 : 5;
+		if (
+			6 === $digit_count
+			&& $this->mysql_version >= 80100
+			&& 1 === strspn( $this->sql, self::WHITESPACE_MASK, $this->bytes_already_read + 6, 1 )
+		) {
+			$version_length = 6;
+		}
+		$version = (int) substr( $this->sql, $this->bytes_already_read, $version_length );
 
 		if ( $this->mysql_version < $version ) {
 			// Version not satisfied. Treat the content as a regular comment.
@@ -2914,35 +3096,36 @@ class WP_MySQL_Lexer {
 			return self::COMMENT;
 		} else {
 			// Version satisfied or not specified. Treat the content as SQL code.
-			$this->bytes_already_read += $digit_count; // Skip the version number.
+			$this->bytes_already_read += $version_length; // Skip the version number.
 			$this->in_mysql_comment    = true;
 			return self::MYSQL_COMMENT_START;
 		}
 	}
 
 	private function read_comment_content(): void {
-		while ( true ) {
-			$this->bytes_already_read += strcspn( $this->sql, '*', $this->bytes_already_read );
-			$this->bytes_already_read += 1; // Consume the '*'.
-			$byte                      = $this->sql[ $this->bytes_already_read ] ?? null;
-			if ( null === $byte ) {
-				break;
-			}
-			if ( '/' === $byte ) {
-				$this->bytes_already_read += 1; // Consume the '/'.
-				break;
-			}
+		$comment_end = strpos( $this->sql, '*/', $this->bytes_already_read );
+		if ( false === $comment_end ) {
+			$this->bytes_already_read = $this->sql_length;
+		} else {
+			$this->bytes_already_read = $comment_end + 2;
 		}
 	}
 
 	private function determine_identifier_or_keyword_type( string $value ): int {
-		$value = strtoupper( $value );
-
-		// Lookup the string in the token table.
-		$type = self::TOKENS[ $value ] ?? self::IDENTIFIER;
+		$type = self::TOKENS[ strtoupper( $value ) ] ?? self::IDENTIFIER;
 		if ( self::IDENTIFIER === $type ) {
 			return self::IDENTIFIER;
 		}
+		return $this->resolve_keyword_type( $type );
+	}
+
+	/**
+	 * Resolve a keyword token id matched in self::TOKENS, applying version gating,
+	 * function-call lookahead, the SQL_MODE_HIGH_NOT_PRECEDENCE rule, and synonyms.
+	 *
+	 * @param int $type A token id already matched in self::TOKENS (never IDENTIFIER).
+	 */
+	private function resolve_keyword_type( int $type ): int {
 
 		// Apply MySQL version specifics (positive number: >= <version>, negative number: < <version>).
 		if ( isset( self::VERSIONS[ $type ] ) ) {
@@ -2976,11 +3159,12 @@ class WP_MySQL_Lexer {
 
 		// Determine function calls.
 		if ( isset( self::FUNCTIONS[ $type ] ) ) {
-			// Skip any whitespace character if the SQL mode says they should be ignored.
+			// Keep ignored whitespace outside the current token range.
+			$peek = $this->bytes_already_read;
 			if ( $this->is_sql_mode_active( self::SQL_MODE_IGNORE_SPACE ) ) {
-				$this->bytes_already_read += strspn( $this->sql, self::WHITESPACE_MASK, $this->bytes_already_read );
+				$peek += strspn( $this->sql, self::WHITESPACE_MASK, $peek );
 			}
-			if ( '(' !== ( $this->sql[ $this->bytes_already_read ] ?? null ) ) {
+			if ( '(' !== ( $this->sql[ $peek ] ?? null ) ) {
 				return self::IDENTIFIER;
 			}
 		}
