@@ -13,6 +13,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - The core PHPUnit updater reports failures and leaves existing includes untouched if generation fails.
 - The core PHPUnit updater falls back to installed PHP 8.3 when the default PHP is incompatible.
+- The SQLite plugin updater downloads and extracts the plugin in a staging directory, so a failed download leaves the bundled plugin intact and files removed upstream are not left behind.
+- The SQLite plugin updater fails when a required transformation no longer applies, instead of silently shipping an unpatched plugin.
+- The SQLite plugin updater requires `vendor/bin/phpcbf` and refuses to run without it, instead of leaving the generated files unformatted.
 
 ### Breaking change
 
