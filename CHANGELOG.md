@@ -8,15 +8,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Refresh the bundled WordPress core PHPUnit test includes.
-- Refresh the bundled `sqlite-database-integration` plugin to version 3.1.3.
+- Refresh the bundled `sqlite-database-integration` plugin to version 3.1.3 (#823).
+- The scaffold snapshots include the `.htaccess` and `index.php` files the plugin creates in the SQLite database directory (#823).
 
 ### Fixed
 
 - The core PHPUnit updater reports failures and leaves existing includes untouched if generation fails.
 - The core PHPUnit updater falls back to installed PHP 8.3 when the default PHP is incompatible.
-- The SQLite plugin updater downloads and extracts the plugin in a staging directory, so a failed download leaves the bundled plugin intact and files removed upstream are not left behind.
-- The SQLite plugin updater fails when a required transformation no longer applies, instead of silently shipping an unpatched plugin.
-- The SQLite plugin updater requires `vendor/bin/phpcbf` and refuses to run without it, instead of leaving the generated files unformatted.
+- The SQLite plugin updater downloads and extracts the plugin in a staging directory, so a failed download leaves the bundled plugin intact and files removed upstream are not left behind (#823).
+- The SQLite plugin updater fails when a required transformation no longer applies, instead of silently shipping an unpatched plugin (#823).
+- The SQLite plugin updater requires `vendor/bin/phpcbf` and refuses to run without it, instead of leaving the generated files unformatted (#823).
+- SQLite database dumps skip the `_wp_sqlite_*` tables the database integration plugin derives from the schema: version 3.1 creates them as `STRICT` tables and a dumped `NULL` (an empty string) is rejected by their `INTEGER` columns on import (#823).
 
 ### Breaking change
 
