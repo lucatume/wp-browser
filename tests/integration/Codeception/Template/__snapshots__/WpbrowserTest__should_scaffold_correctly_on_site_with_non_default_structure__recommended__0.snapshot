@@ -203,6 +203,14 @@ class EndToEndTester extends \Codeception\Actor
 
 <<< /Support/Data/.gitkeep <<<
 
+>>> /Support/Data/.htaccess >>>
+DENY FROM ALL
+<<< /Support/Data/.htaccess <<<
+
+>>> /Support/Data/index.php >>>
+<?php // Silence is golden.
+<<< /Support/Data/index.php <<<
+
 >>> /EndToEnd/_bootstrap.php >>>
 <?php
 /*

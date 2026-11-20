@@ -4,18 +4,42 @@ set -eu
 
 script_dir=$(dirname "$0")
 root_dir=$(cd "$script_dir/.." && pwd)
-plugin_file_src="https://downloads.wordpress.org/plugin/sqlite-database-integration.zip";
+plugin_dir="$root_dir/includes/sqlite-database-integration"
+plugin_file_src="https://downloads.wordpress.org/plugin/sqlite-database-integration.zip"
 
-# Download the zip file and unzip it in the includes/sqlite-database-integration directory
-curl -L "$plugin_file_src" -o "$root_dir/includes/sqlite-database-integration.zip"
-unzip -o "$root_dir/includes/sqlite-database-integration.zip" -d "$root_dir/includes/"
-# Remove the zip file
-rm "$root_dir/includes/sqlite-database-integration.zip"
+if [ ! -x "$root_dir/vendor/bin/phpcbf" ]; then
+    echo "vendor/bin/phpcbf is missing: run 'composer install' before updating the plugin." >&2
+    exit 1
+fi
+
+# Download and extract the plugin in a staging directory: a failed download or a partial extraction
+# must not leave the bundled plugin half-updated or keep files removed upstream.
+work_dir=$(mktemp -d)
+trap 'rm -rf "$work_dir"' EXIT INT TERM
+
+curl -fL --show-error "$plugin_file_src" -o "$work_dir/plugin.zip"
+unzip -q "$work_dir/plugin.zip" -d "$work_dir"
+
+if [ ! -f "$work_dir/sqlite-database-integration/load.php" ]; then
+    echo "The downloaded archive does not contain the SQLite plugin." >&2
+    exit 1
+fi
+
+rm -rf "$plugin_dir"
+mv "$work_dir/sqlite-database-integration" "$plugin_dir"
 
 echo "Applying transformations to SQLite plugin files..."
 
+# Fail the update when an upstream change makes a transformation a no-op.
+assert_transformed() {
+    if ! grep -qF "$2" "$1"; then
+        echo "Transformation not applied to $1: expected '$2'." >&2
+        exit 1
+    fi
+}
+
 # Transform db.copy file
-db_copy="${root_dir}/includes/sqlite-database-integration/db.copy"
+db_copy="${plugin_dir}/db.copy"
 
 # 1. Replace DATABASE_TYPE constant to use getenv()
 sed -i.bak "s/define( 'DATABASE_TYPE', 'sqlite' )/define( 'DATABASE_TYPE', getenv( 'DATABASE_TYPE' ) ?: 'sqlite' )/g" "$db_copy"
@@ -42,8 +66,14 @@ if( ! defined( '"'"'DB_FILE'"'"' ) && getenv( '"'"'DB_FILE'"'"' ) ) {\
 
 rm -f "${db_copy}.bak"
 
+assert_transformed "$db_copy" "define( 'DATABASE_TYPE', getenv( 'DATABASE_TYPE' ) ?: 'sqlite' );"
+assert_transformed "$db_copy" "define( 'DB_ENGINE', getenv( 'DB_ENGINE' ) ?: 'sqlite' );"
+assert_transformed "$db_copy" "define( 'SQLITE_MAIN_FILE', '{SQLITE_MAIN_FILE}' );"
+assert_transformed "$db_copy" "define( 'DB_DIR', realpath( getenv( 'DB_DIR' ) ) );"
+assert_transformed "$db_copy" "define( 'DB_FILE', getenv( 'DB_FILE' ) );"
+
 # Transform load.php file
-load_php="${root_dir}/includes/sqlite-database-integration/load.php"
+load_php="${plugin_dir}/load.php"
 
 # Wrap the SQLITE_MAIN_FILE constant definition in an if (!defined()) check
 sed -i.bak "/^define( 'SQLITE_MAIN_FILE', __FILE__ );$/ {
@@ -55,8 +85,10 @@ sed -i.bak "/^define( 'SQLITE_MAIN_FILE', __FILE__ );$/ {
 
 rm -f "${load_php}.bak"
 
+assert_transformed "$load_php" "if (!defined('SQLITE_MAIN_FILE')) {"
+
 # Transform class-wp-sqlite-db.php file to handle PHP 8.1+ setAccessible deprecation
-class_wp_sqlite_db="${root_dir}/includes/sqlite-database-integration/wp-includes/sqlite/class-wp-sqlite-db.php"
+class_wp_sqlite_db="${plugin_dir}/wp-includes/sqlite/class-wp-sqlite-db.php"
 
 # Make setAccessible calls conditional on PHP_VERSION_ID < 80100 (no-op since PHP 8.1, deprecated in PHP 8.5)
 sed -i.bak 's/\$property->setAccessible( true );/PHP_VERSION_ID < 80100 \&\& \$property->setAccessible( true );/g' "$class_wp_sqlite_db"
@@ -69,8 +101,11 @@ sed -i.bak 's|$wpdb_allow_unsafe_unquoted_parameters = $this->__get( '"'"'allow_
 
 rm -f "${class_wp_sqlite_db}.bak"
 
+assert_transformed "$class_wp_sqlite_db" "PHP_VERSION_ID < 80100 && \$property->setAccessible( true );"
+assert_transformed "$class_wp_sqlite_db" "property_exists( 'wpdb', 'allow_unsafe_unquoted_parameters' )"
+
 echo "Transformations complete!"
 
-# Run phpcbf to fix code style
+# Run phpcbf to fix code style; it exits non-zero when it fixes or cannot fix files.
 echo "Running phpcbf on sqlite-database-integration files..." &&
-vendor/bin/phpcbf --standard=WordPress "${root_dir}/includes/sqlite-database-integration" || true
+"$root_dir/vendor/bin/phpcbf" --standard=WordPress "$plugin_dir" || true

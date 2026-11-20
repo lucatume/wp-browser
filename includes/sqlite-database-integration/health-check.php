@@ -1,9 +1,6 @@
 <?php
 /**
  * Tweaks for the health-check screens.
- *
- * @since 1.0.0
- * @package wp-sqlite-integration
  */
 
 /**
@@ -36,13 +33,15 @@ function sqlite_plugin_filter_debug_data( $info ) {
 
 		$info['wp-database']['fields']['database_file'] = array(
 			'label'   => __( 'Database file', 'sqlite-database-integration' ),
-			'value'   => FQDB,
+			'value'   => DB_PATH,
 			'private' => true,
 		);
 
 		$info['wp-database']['fields']['database_size'] = array(
 			'label' => __( 'Database size', 'sqlite-database-integration' ),
-			'value' => size_format( filesize( FQDB ) ),
+			'value' => ':memory:' === DB_PATH
+				? __( 'Not available', 'sqlite-database-integration' )
+				: size_format( filesize( DB_PATH ) ),
 		);
 
 		unset( $info['wp-database']['fields']['extension'] );

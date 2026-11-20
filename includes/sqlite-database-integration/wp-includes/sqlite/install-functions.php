@@ -1,17 +1,12 @@
 <?php
 /**
  * Main integration file.
- *
- * @package wp-sqlite-integration
- * @since 1.0.0
  */
 
 /**
  * Function to create tables according to the schemas of WordPress.
  *
  * This is executed only once while installation.
- *
- * @since 1.0.0
  *
  * @return boolean
  *
@@ -25,99 +20,49 @@ function sqlite_make_db_sqlite() {
 	$table_schemas = wp_get_db_schema();
 	$queries       = explode( ';', $table_schemas );
 	try {
-		$pdo_class = PHP_VERSION_ID >= 80400 ? PDO\SQLite::class : PDO::class; // phpcs:ignore WordPress.DB.RestrictedClasses.mysql__PDO
-		$pdo       = new $pdo_class( 'sqlite:' . FQDB, null, null, array( PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ) ); // phpcs:ignore WordPress.DB.RestrictedClasses
+		$translator = new WP_MySQL_On_SQLite(
+			sprintf(
+				'mysql-on-sqlite:path=%s;dbname=%s',
+				str_replace( ';', ';;', DB_PATH ),
+				str_replace( ';', ';;', $wpdb->dbname )
+			),
+			null,
+			null,
+			array(
+				'sqlite_journal_mode' => defined( 'SQLITE_JOURNAL_MODE' ) ? SQLITE_JOURNAL_MODE : null,
+				'sqlite_busy_timeout' => defined( 'SQLITE_BUSY_TIMEOUT' ) ? SQLITE_BUSY_TIMEOUT : null,
+			)
+		);
+		$translator->setAttribute( PDO::ATTR_STRINGIFY_FETCHES, true ); // phpcs:ignore WordPress.DB.RestrictedClasses.mysql__PDO
 	} catch ( PDOException $err ) {
 		$err_data = $err->errorInfo; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$message  = 'Database connection error!<br />';
-		$message .= sprintf( 'Error message is: %s', $err_data[2] );
+		$message .= sprintf( 'Error message is: %s', $err_data[2] ?? $err->getMessage() );
 		wp_die( $message, 'Database Error!' );
 	}
 
-	if ( defined( 'WP_SQLITE_AST_DRIVER' ) && WP_SQLITE_AST_DRIVER ) {
-		$translator = new WP_SQLite_Driver(
-			new WP_SQLite_Connection( array( 'pdo' => $pdo ) ),
-			$wpdb->dbname
-		);
-	} else {
-		$translator = new WP_SQLite_Translator( $pdo );
-	}
 	$query = null;
 
 	try {
-		$translator->begin_transaction();
+		$translator->beginTransaction();
 		foreach ( $queries as $query ) {
 			$query = trim( $query );
 			if ( empty( $query ) ) {
 				continue;
 			}
 
-			$result = $translator->query( $query );
-			if ( false === $result ) {
-				throw new PDOException( $translator->get_error_message() );
-			}
+			$translator->query( $query );
 		}
 		$translator->commit();
 	} catch ( PDOException $err ) {
-		$err_data = $err->errorInfo; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		$err_code = $err_data[1];
-		$translator->rollback();
+		$translator->rollBack();
 		$message  = sprintf(
 			'Error occurred while creating tables or indexes...<br />Query was: %s<br />',
 			var_export( $query, true )
 		);
-		$message .= sprintf( 'Error message is: %s', $err_data[2] );
+		$message .= sprintf( 'Error message is: %s', $err->getMessage() );
 		wp_die( $message, 'Database Error!' );
 	}
-
-	/*
-	 * Debug: Cross-check with MySQL.
-	 * This is for debugging purpose only and requires files
-	 * that are present in the GitHub repository
-	 * but not the plugin published on WordPress.org.
-	 */
-	if ( defined( 'SQLITE_DEBUG_CROSSCHECK' ) && SQLITE_DEBUG_CROSSCHECK ) {
-		$host = DB_HOST;
-		$port = 3306;
-		if ( str_contains( $host, ':' ) ) {
-			$host_parts = explode( ':', $host );
-			$host       = $host_parts[0];
-			$port       = $host_parts[1];
-		}
-		$dsn       = 'mysql:host=' . $host . '; port=' . $port . '; dbname=' . DB_NAME;
-		$pdo_class = PHP_VERSION_ID >= 80400 ? PDO\MySQL::class : PDO::class; // phpcs:ignore WordPress.DB.RestrictedClasses.mysql__PDO
-		$pdo_mysql = new $pdo_class( $dsn, DB_USER, DB_PASSWORD, array( PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ) ); // phpcs:ignore WordPress.DB.RestrictedClasses.mysql__PDO
-		$pdo_mysql->query( 'SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";' );
-		$pdo_mysql->query( 'SET time_zone = "+00:00";' );
-		foreach ( $queries as $query ) {
-			$query = trim( $query );
-			if ( empty( $query ) ) {
-				continue;
-			}
-			try {
-				$pdo_mysql->beginTransaction();
-				$pdo_mysql->query( $query );
-			} catch ( PDOException $err ) {
-				$err_data = $err->errorInfo; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-				$err_code = $err_data[1];
-				// phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
-				if ( 5 == $err_code || 6 == $err_code ) {
-					// If the database is locked, commit again.
-					$pdo_mysql->commit();
-				} else {
-					$pdo_mysql->rollBack();
-					$message  = sprintf(
-						'Error occurred while creating tables or indexes...<br />Query was: %s<br />',
-						var_export( $query, true )
-					);
-					$message .= sprintf( 'Error message is: %s', $err_data[2] );
-					wp_die( $message, 'Database Error!' );
-				}
-			}
-		}
-	}
-
-	$pdo = null;
 
 	return true;
 }
@@ -128,8 +73,6 @@ if ( ! function_exists( 'wp_install' ) ) {
 	 *
 	 * Runs the required functions to set up and populate the database,
 	 * including primary admin user and initial options.
-	 *
-	 * @since 1.0.0
 	 *
 	 * @param string $blog_title    Site title.
 	 * @param string $user_name     User's username.
