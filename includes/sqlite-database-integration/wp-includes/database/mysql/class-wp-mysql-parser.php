@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * MySQL parser used by the SQLite driver.
+ *
+ * @access private
+ */
 class WP_MySQL_Parser extends WP_Parser {
 	/**
 	 * The current query AST.
@@ -7,6 +12,17 @@ class WP_MySQL_Parser extends WP_Parser {
 	 * @var WP_Parser_Node|null
 	 */
 	private $current_ast;
+
+	/**
+	 * Reset this parser with a new token stream.
+	 *
+	 * @param array<WP_Parser_Token> $tokens The parser tokens.
+	 */
+	public function reset_tokens( array $tokens ): void {
+		$this->tokens      = $tokens;
+		$this->position    = 0;
+		$this->current_ast = null;
+	}
 
 	/**
 	 * Parse the next query from the input SQL string.

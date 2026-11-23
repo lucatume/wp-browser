@@ -275,6 +275,43 @@ class SqliteDatabaseTest extends \Codeception\Test\Unit
     }
 
     /**
+     * It should exclude the SQLite driver internal tables when dumping
+     *
+     * @test
+     * @group fast
+     */
+    public function should_exclude_the_sqlite_driver_internal_tables_when_dumping(): void
+    {
+        $dir = FS::tmpDir('sqlite_');
+        $db = new SQLiteDatabase($dir, 'db.sqlite');
+        $db->create();
+        // The plugin creates STRICT information schema tables, some of their columns allow NULL:
+        // dumping and importing them quotes NULL as '' and the import fails on the INTEGER column.
+        $db->query(
+            'CREATE TABLE _wp_sqlite_mysql_information_schema_tables ('
+            . ' TABLE_NAME TEXT NOT NULL, AUTO_INCREMENT INTEGER, PRIMARY KEY (TABLE_NAME)) STRICT'
+        );
+        $db->query(
+            'INSERT INTO _wp_sqlite_mysql_information_schema_tables (TABLE_NAME, AUTO_INCREMENT)'
+            . ' VALUES (:name, NULL)',
+            [':name' => 'wp_options']
+        );
+        $db->query('CREATE TABLE wp_options (option_name TEXT PRIMARY KEY, option_value TEXT NOT NULL)');
+        $db->query('INSERT INTO wp_options VALUES (:name, :value)', [':name' => 'siteurl', ':value' => 'http://x.test']);
+
+        $dumpFile = $dir . '/dump.sql';
+        $db->dump($dumpFile);
+
+        $this->assertStringNotContainsString('_wp_sqlite_', (string)file_get_contents($dumpFile));
+
+        $restored = new SQLiteDatabase(FS::tmpDir('sqlite_'), 'db.sqlite');
+        $restored->create();
+        $restored->import($dumpFile);
+
+        $this->assertSame('http://x.test', $restored->getOption('siteurl'));
+    }
+
+    /**
      * It should throw if trying to import from non-existing file
      *
      * @test

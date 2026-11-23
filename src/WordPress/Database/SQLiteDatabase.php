@@ -19,6 +19,12 @@ class SQLiteDatabase implements DatabaseInterface
     public const ERR_DIR_NOT_FOUND = 1;
     public const ERR_DROP_DB_FAILED = 2;
     public const ERR_CONST_NOT_FOUND = 3;
+
+    /**
+     * Prefix of the tables the SQLite database integration plugin (WP_MySQL_On_SQLite::RESERVED_PREFIX)
+     * derives from the database schema. They are not dumped: the plugin rebuilds them on connection.
+     */
+    private const DRIVER_INTERNAL_TABLE_PREFIX = '_wp_sqlite_';
     /**
      * @var string
      */
@@ -281,7 +287,11 @@ class SQLiteDatabase implements DatabaseInterface
 
         $sql = "PRAGMA foreign_keys = OFF;\n\n";
 
-        $tables = $db->query("SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%';");
+        $tables = $db->query(
+            "SELECT name FROM sqlite_master WHERE type ='table'"
+            . " AND name NOT LIKE 'sqlite_%'"
+            . " AND name NOT GLOB '" . self::DRIVER_INTERNAL_TABLE_PREFIX . "*';"
+        );
 
         if ($tables === false) {
             throw new DbException("Could not read tables from database.", DbException::FAILED_DUMP);
