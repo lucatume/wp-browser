@@ -311,3 +311,11 @@ BUILTIN_SERVER_PORT=19830
 >>> /_data/.gitkeep >>>
 
 <<< /_data/.gitkeep <<<
+
+>>> /_data/.htaccess >>>
+DENY FROM ALL
+<<< /_data/.htaccess <<<
+
+>>> /_data/index.php >>>
+<?php // Silence is golden.
+<<< /_data/index.php <<<
