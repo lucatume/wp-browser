@@ -4,6 +4,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Transpile the v4 unreleased changes down to the PHP 7.1-compatible v3.5 line: refreshed bundled core PHPUnit includes, `sqlite-database-integration` plugin 3.1.3 (#822, #823, #824).
+
+### Fixed
+
+- SQLite database dumps skip the `_wp_sqlite_*` tables the database integration plugin derives from the schema: version 3.1 creates them as `STRICT` tables and a dumped `NULL` (an empty string) is rejected by their `INTEGER` columns on import (#823).
+
+### Breaking change
+
+- Core PHPUnit factories can now throw `WP_UnitTest_Factory_Exception` instead of returning `WP_Error`, `null`, or other failure values. This also affects factories used through `WPLoader::factory()` and `WPTestCase::factory()`.
+
 ## [3.8.2] 2026-08-26;
 
 ### Changed
