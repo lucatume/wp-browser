@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.8.3] 2026-11-23;
+
 ### Changed
 
 - Transpile the v4 unreleased changes down to the PHP 7.1-compatible v3.5 line: refreshed bundled core PHPUnit includes, `sqlite-database-integration` plugin 3.1.3 (#822, #823, #824).
@@ -2217,4 +2219,5 @@ Read the [migration guide here](https://wpbrowser.wptestkit.dev/migration/from-v
 [3.8.0]: https://github.com/lucatume/wp-browser/compare/3.7.19...3.8.0
 [3.8.1]: https://github.com/lucatume/wp-browser/compare/3.8.0...3.8.1
 [3.8.2]: https://github.com/lucatume/wp-browser/compare/3.8.1...3.8.2
-[unreleased]: https://github.com/lucatume/wp-browser/compare/3.8.2...HEAD
+[3.8.3]: https://github.com/lucatume/wp-browser/compare/3.8.2...3.8.3
+[unreleased]: https://github.com/lucatume/wp-browser/compare/3.8.3...HEAD
