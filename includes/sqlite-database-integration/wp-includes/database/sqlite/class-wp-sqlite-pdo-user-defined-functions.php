@@ -1,37 +1,28 @@
 <?php
 /**
  * Custom functions for the SQLite implementation.
- *
- * @package wp-sqlite-integration
- * @since 1.0.0
  */
 
 /**
- * This class defines user defined functions(UDFs) for PDO library.
+ * Registers MySQL-compatible functions with PDO SQLite.
  *
- * These functions replace those used in the SQL statement with the PHP functions.
+ * Each callback implements a MySQL SQL function that SQLite does not provide.
  *
- * Usage:
- *
- * <code>
- * new WP_SQLite_PDO_User_Defined_Functions(ref_to_pdo_obj);
- * </code>
- *
- * This automatically enables ref_to_pdo_obj to replace the function in the SQL statement
- * to the ones defined here.
+ * @access private
  */
 class WP_SQLite_PDO_User_Defined_Functions {
 
 	/**
-	 * Registers the user defined functions for SQLite to a PDO instance.
+	 * Register the user-defined SQLite functions on a PDO connection.
+	 *
 	 * The functions are registered using PDO::sqliteCreateFunction().
 	 *
-	 * @param PDO|PDO\SQLite $pdo The PDO object.
+	 * @param PDO|Pdo\Sqlite $pdo The PDO object.
 	 */
 	public static function register_for( $pdo ): self {
 		$instance = new self();
 		foreach ( $instance->functions as $f => $t ) {
-			if ( $pdo instanceof PDO\SQLite ) {
+			if ( $pdo instanceof Pdo\Sqlite ) {
 				$pdo->createFunction( $f, array( $instance, $t ) );
 			} else {
 				$pdo->sqliteCreateFunction( $f, array( $instance, $t ) );
@@ -69,7 +60,6 @@ class WP_SQLite_PDO_User_Defined_Functions {
 		'localtime'                    => 'now',
 		'localtimestamp'               => 'now',
 		'isnull'                       => 'isnull',
-		'if'                           => '_if',
 		'regexp'                       => 'regexp',
 		'field'                        => 'field',
 		'log'                          => 'log',
@@ -90,10 +80,44 @@ class WP_SQLite_PDO_User_Defined_Functions {
 		'utc_time'                     => 'utc_time',
 		'utc_timestamp'                => 'utc_timestamp',
 		'version'                      => 'version',
+		'reverse'                      => 'reverse',
 
 		// Internal helper functions.
 		'_helper_like_to_glob_pattern' => '_helper_like_to_glob_pattern',
 	);
+
+	/**
+	 * First element of the RAND(N) LCG state (the value the output is derived from).
+	 *
+	 * @var int|null
+	 */
+	private $rand_seed1 = null;
+
+	/**
+	 * Second element of the RAND(N) LCG state (the paired value used in the recurrence).
+	 *
+	 * @var int|null
+	 */
+	private $rand_seed2 = null;
+
+	/**
+	 * Last seed value passed to RAND(N) in the current statement.
+	 *
+	 * Used to detect whether the rand sequence is advancing with the same seed
+	 * (e.g. "SELECT RAND(3) FROM t"), or reseeding (starting a new sequence).
+	 *
+	 * @var int|null
+	 */
+	private $rand_last_seed = null;
+
+	/**
+	 * Clear any per-statement state held by the UDFs.
+	 */
+	public function flush(): void {
+		$this->rand_seed1     = null;
+		$this->rand_seed2     = null;
+		$this->rand_last_seed = null;
+	}
 
 	/**
 	 * A helper function to throw an error from SQLite expressions.
@@ -167,19 +191,74 @@ class WP_SQLite_PDO_User_Defined_Functions {
 	}
 
 	/**
-	 * Method to emulate MySQL RAND() function.
+	 * Method to emulate MySQL's seeded RAND(N) function.
 	 *
-	 * SQLite does have a random generator, but it is called RANDOM() and returns random
-	 * number between -9223372036854775808 and +9223372036854775807. So we substitute it
-	 * with PHP random generator.
+	 * Implements MySQL's deterministic LCG (Linear Congruential Generator),
+	 * producing bit-exact output for a given seed.
 	 *
-	 * This function uses mt_rand() which is four times faster than rand() and returns
-	 * the random number between 0 and 1.
+	 * Known divergences from MySQL:
 	 *
-	 * @return int
+	 *  1. In MySQL, RAND(N) behaves differently depending on whether the seed
+	 *     is constant expression or varies per invocation:
+	 *      - Constant seed (e.g. "SELECT RAND(3) FROM t"):
+	 *        LCG is initialized once per statement and advanced for each row.
+	 *      - Non-constant seed (e.g. "SELECT RAND(col) FROM t"):
+	 *        LCG is initialized for every row with its seed value.
+	 *
+	 *     A SQLite UDF cannot tell whether the seed expression is constant, so
+	 *     we just compare the seed against its last value. This diverges from
+	 *     MySQL in rare cases, and we can consider improving it in the future.
+	 *
+	 *  2. The LCG state is shared across call sites in the same query, so
+	 *     "SELECT RAND(1), RAND(1)" yields different results here than in MySQL.
+	 *     This is a rare edge case that we can consider improving in the future.
+	 *
+	 * Unseeded RAND() never reaches this function. The AST driver translates it
+	 * directly to a more efficient SQLite-native expression.
+	 *
+	 * @param int|float|string|null $seed Seed value.
+	 *
+	 * @return float A value in [0, 1).
 	 */
-	public function rand() {
-		return mt_rand( 0, 1 );
+	public function rand( $seed ) {
+		// Requires 64-bit PHP. Seed * 0x10000001 can exceed PHP_INT_MAX on 32-bit.
+		$max_value = 0x3FFFFFFF;
+
+		if ( null === $seed ) {
+			// MySQL treats NULL seed as 0.
+			$seed = 0;
+		} elseif ( ! is_int( $seed ) ) {
+			/*
+			 * MySQL rounds float values and numeric strings take the same path.
+			 * Reduce the value to a 32-bit range using "fmod" to avoid firing
+			 * the "out-of-range float to int" cast deprecation on PHP 8.1+.
+			 */
+			$seed = (int) fmod( round( (float) $seed, 0, PHP_ROUND_HALF_EVEN ), 0x100000000 );
+		}
+
+		// Initialize MySQL's internal 30-bit seeds.
+		if ( $seed !== $this->rand_last_seed ) {
+			/*
+			 * MySQL casts to uint32, and the intermediate results wrap at 32-bit
+			 * unsigned boundaries. We emulate this with & 0xFFFFFFFF masks.
+			 */
+			$seed_u32             = $seed & 0xFFFFFFFF;
+			$this->rand_seed1     = ( ( $seed_u32 * 0x10001 + 55555555 ) & 0xFFFFFFFF ) % $max_value;
+			$this->rand_seed2     = ( ( $seed_u32 * 0x10000001 ) & 0xFFFFFFFF ) % $max_value;
+			$this->rand_last_seed = $seed;
+		}
+
+		/*
+		 * MySQL's LCG recurrence:
+		 *   seed1 = (seed1 * 3 + seed2) % max_value
+		 *   seed2 = (seed1 + seed2 + 33) % max_value
+		 *
+		 * Note that seed1 is updated first and the new value is used for seed2.
+		 */
+		$this->rand_seed1 = ( $this->rand_seed1 * 3 + $this->rand_seed2 ) % $max_value;
+		$this->rand_seed2 = ( $this->rand_seed1 + $this->rand_seed2 + 33 ) % $max_value;
+
+		return (float) $this->rand_seed1 / (float) $max_value;
 	}
 
 	/**
@@ -486,21 +565,6 @@ class WP_SQLite_PDO_User_Defined_Functions {
 	}
 
 	/**
-	 * Method to emulate MySQL IF() function.
-	 *
-	 * As 'IF' is a reserved word for PHP, function name must be changed.
-	 *
-	 * @param mixed $expression The statement to be evaluated as true or false.
-	 * @param mixed $truthy     Statement or value returned if $expression is true.
-	 * @param mixed $falsy      Statement or value returned if $expression is false.
-	 *
-	 * @return mixed
-	 */
-	public function _if( $expression, $truthy, $falsy ) {
-		return ( true === $expression ) ? $truthy : $falsy;
-	}
-
-	/**
 	 * Method to emulate MySQL REGEXP() function.
 	 *
 	 * @param string $pattern Regular expression to match.
@@ -753,7 +817,7 @@ class WP_SQLite_PDO_User_Defined_Functions {
 	 * @return int long integer
 	 */
 	public function inet_aton( $addr ) {
-		return absint( ip2long( $addr ) );
+		return abs( (int) ip2long( $addr ) );
 	}
 
 	/**
@@ -842,14 +906,36 @@ class WP_SQLite_PDO_User_Defined_Functions {
 	}
 
 	/**
-	 * A helper to covert LIKE pattern to a GLOB pattern for "LIKE BINARY" support.
+	 * Method to emulate MySQL REVERSE() function.
+	 *
+	 * Reverse UTF-8 text by code point, matching MySQL behavior.
+	 *
+	 * @param string|null $str The string to reverse.
+	 *
+	 * @return string|null reversed string, or NULL.
+	 */
+	public function reverse( $str ) {
+		if ( null === $str ) {
+			return null;
+		}
+		if (
+			preg_match( '/[^\x00-\x7F]/', $str )
+			&& preg_match_all( '/./us', $str, $matches )
+		) {
+			return implode( '', array_reverse( $matches[0] ) );
+		}
+		return strrev( $str );
+	}
+
+	/**
+	 * A helper to convert a LIKE pattern to a GLOB pattern for "LIKE BINARY" support.
 
 	 * @TODO: Some of the MySQL string specifics described below are likely to
 	 *        affect also other patterns than just "LIKE BINARY". We should
 	 *        consider applying some of the conversions more broadly.
 	 *
-	 * @param string $pattern
-	 * @return string
+	 * @param string|null $pattern
+	 * @return string|null
 	 */
 	public function _helper_like_to_glob_pattern( $pattern ) {
 		if ( null === $pattern ) {
@@ -889,10 +975,9 @@ class WP_SQLite_PDO_User_Defined_Functions {
 		 * This is true also for multi-byte characters:
 		 *   SELECT '\\©' prints '\©', but LIKE '\\©' is equivalent to LIKE '©'.
 		 *
-		 * However, the multi-byte behavior is likely to depend on the charset.
-		 * For now, we'll assume UTF-8 and thus the "u" modifier for the regex.
+		 * Use "s" to include escaped newlines and omit "u" to preserve raw bytes.
 		 */
-		$pattern = preg_replace( '/\\\\(.)/u', '$1', $pattern );
+		$pattern = preg_replace( '/\\\\(.)/s', '$1', $pattern );
 
 		return $pattern;
 	}
